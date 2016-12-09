@@ -1,0 +1,36 @@
+<div class="table-responsive">
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th width="30px"></th>
+				<th width="100px">FY Name</th>
+				<th width="100px">From Year</th>
+				<th width="100px">To Year</th>
+				<th width="100px">From Date</th>
+				<th width="100px">To Date</th>
+			</tr>
+		</thead>
+		<tbody *ngFor="let row of viewFYDT let i=index">
+			<tr>
+				<td width="30px" class="textalign">
+					{{i+1}}
+				</td>
+				<td width="100px">
+					<a role="button" (click)="openFYDetails(row)">{{row.FYName}}</a>
+				</td>
+				<td width="100px">
+					{{row.FromYear}}
+				</td>
+				<td width="100px">
+					{{row.ToYear}}
+				</td>
+				<td width="100px">
+					{{row.FromDate}}
+				</td>
+				<td width="100px">
+					{{row.ToDate}}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

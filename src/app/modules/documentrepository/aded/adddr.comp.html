@@ -1,0 +1,83 @@
+<div class="panel panel-theme">
+	<div class="panel-heading">
+		<h3 class="panel-title">Add Document Repository</h3>
+	</div>
+
+	<div class="panel-body">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="control-label">Emp Name</label>
+				<input type="text" [(ngModel)]="EmpName" class="empame form-control" (keyup)="getAutoComplete()" />
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<table class="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Doc Title</th>
+					<th>Tag</th>
+					<th>File Path</th>
+					<th>File Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let row of drRowData let i=index">
+					<td class="textalign">
+						{{i+1}}
+					</td>
+					<td>
+						<input type="text" [(ngModel)]="row.DocTitle" class="form-control" (keyup.enter)="NewRowAdd()" />
+					</td>
+					<td class="textalign">
+						<select [(ngModel)]="row.Tag" name="Tag" id="Tag" class="form-control" (keyup.enter)="NewRowAdd()">
+                            <option *ngFor="let row of TagDT" [value]="row.ID">	
+                                {{row.Name}}
+                            </option>
+                        </select>
+					</td>
+					<td>
+						<div class="col-md-9">
+							<input type="file" [(ngModel)]="row.FilePath" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"
+								(change)="fileChangeEvent($event)" placeholder="Upload file..." />
+						</div>
+						<div class="col-md-3">
+							<img class="imgFilePath" src="" width="50" height="50" />
+						</div>
+					</td>
+					<td>
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>#</td>
+					<td>
+						<input type="text" [(ngModel)]="newDocTitle" class="form-control" (keyup.enter)="NewRowAdd()" />
+					</td>
+					<td>
+						<select [(ngModel)]="newTag" name="Tag" id="Tag" class="form-control" (keyup.enter)="NewRowAdd()">
+                            <option *ngFor="let row of TagDT" [value]="row.ID">	
+                                {{row.Name}}
+                            </option>
+                        </select>
+					</td>
+					<td>
+						<div class="col-md-9">
+							<input type="file" [(ngModel)]="newFilePath" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"
+								(change)="fileChangeEvent($event)" placeholder="Upload file..." />
+						</div>
+						<div class="col-md-3">
+							<img class="imgFilePath" src="" width="50" height="50" />
+						</div>
+					</td>
+					<td>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<button type="button" class="btn btn-primary" (click)="NewRowAdd()">Add</button>
+	</div>
+</div>

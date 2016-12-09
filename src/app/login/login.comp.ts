@@ -1,0 +1,47 @@
+import { Component } from '@angular/core';
+import { AuthenticationService } from '../_service/auth-service'
+import { UserService } from '../_service/user/user-service'
+import { UserReq } from '../_model/user_model';
+
+import { Router } from '@angular/router';
+
+@Component({
+    templateUrl: 'login.comp.html'
+})
+
+export class LoginComp {
+    public errorMsg = '';
+    public btnLoginText = 'Login';
+    _user = new UserReq("", "");
+
+    constructor(private _router: Router, private _service: AuthenticationService, private _loginModel: UserService) {
+
+    }
+
+    login(e) {
+        this.btnLoginText = "Loging..";
+
+        this._service.login(this._user).subscribe(d => {
+            if (d) {
+                if (d.status) {
+                    let usrobj = JSON.parse(d.data).Table;
+                    console.log(usrobj);
+                    let userDetails = usrobj[0];
+                    
+                    if (userDetails.status) {
+                        this._loginModel.setUser(userDetails);
+                        this._router.navigate(['/']);
+                    } else {
+                        this.btnLoginText = "Login";
+                        this.errorMsg = userDetails.errmsg;
+                    }
+                }
+            }
+        }, err => {
+            this.errorMsg = 'Failed to login';
+            this.btnLoginText = "Login";
+        });
+
+        e.preventDefault();
+    }
+}

@@ -1,0 +1,22 @@
+<div class="topdocbar">
+	<div class="row">
+		<div class="col-md-9 col-sm-8 col-xs-6"> HOME > ACCOUNTS > ENTRY</div>
+		<div class="col-md-3 col-sm-8 col-xs-6" style="height:100%">
+			<div class="actionbar">
+				<div *ngFor="let item of Input_Actionbuttons" style="display:inline;">
+					<button [disabled]="!item.enabled" *ngIf="!item.hide" class="btn btn-theme btn-sm"  title="{{item.text}}" (click)="callnotify(item.id)" type="button"><i class="fa fa-{{item.icon}}"></i></button>
+				</div>
+				<!--<div class="btn-group" role="group">
+					<button type="button" class="btn btn-theme btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i><span class="caret"></span></button>
+					<ul class="dropdown-menu">
+						<li **ngFor="let item of actionbuttonsmore"><a href="#" (click)="callnotify(item.id)">{{ item.text }}</a></li>
+					</ul>
+				</div>-->
+			</div>
+
+		</div>
+
+	</div>
+
+
+</div>

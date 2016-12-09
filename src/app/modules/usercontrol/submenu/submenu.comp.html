@@ -1,0 +1,12 @@
+<div id="sidebar">
+	<ul>
+		<li *ngFor="let item of submenulist">
+			<a routerLink="{{item.menulink}}" routerLinkActive="active"><i class="fa fa-file-text-o"></i> <span>{{item.menuname}}</span></a>
+		</li>
+	</ul>
+</div>
+<!--
+<nav>
+	<a routerLink="/accounts/" routerLinkActive="active">Dashboard</a>
+	<a routerLink="/accounts/entry" routerLinkActive="active">Entry</a>
+</nav>-->

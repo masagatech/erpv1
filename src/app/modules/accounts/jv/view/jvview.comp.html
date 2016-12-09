@@ -1,0 +1,101 @@
+<div class="table-responsive">
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th colspan="3">
+					<b>Total JV :</b> {{viewJVDT.length}}
+				</th>
+				<th width="850px" class="text-right">
+					<b>Total :</b>
+				</th>
+				<th width="150px" class="text-right">
+					<b>{{TotalDebitAmt() | number}}</b>
+				</th>
+				<th width="150px" class="text-right">
+					<b>{{TotalCreditAmt() | number}}</b>
+				</th>
+			</tr>
+			<tr>
+				<th></th>
+				<th width="100px">Doc No</th>
+				<th width="150px">Doc Date</th>
+				<th width="850px">Narration</th>
+				<th width="150px" class="text-right">Dr. Amt</th>
+				<th width="150px" class="text-right">Cr. Amt</th>
+			</tr>
+		</thead>
+		<tbody *ngFor="let row of viewJVDT">
+			<tr>
+				<td>
+					<button (click)="expandDetails(row)">
+						<i class="{{row.IsCollapse == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
+					</button>
+				</td>
+				<td>
+					<a role="button" (click)="openJVDetails(row)">{{row.DocNo}}</a>
+				</td>
+				<td>
+					{{row.FormattedDocDate}}
+				</td>
+				<td>
+					{{row.IsCollapse == 1 ? row.Narration : row.SmallNarration}}
+				</td>
+				<td class="text-right">
+					{{row.TotalDebitAmount | number}}
+				</td>
+				<td class="text-right">
+					{{row.TotalCreditAmount | number}}
+				</td>
+			</tr>
+			<tr [style.display]="row.IsCollapse == 0?'none':''">
+				<td></td>
+				<td colspan="5">
+					<table class="table table-striped table-bordered table-hover">
+						<thead>
+							<tr>
+								<th width="90px">A/C Code</th>
+								<th width="150px">A/C Name</th>
+								<th>Narration</th>
+								<th width="150px" class="text-right">Dr. Amt</th>
+								<th width="140px" class="text-right">Cr. Amt</th>
+							</tr>
+						</thead>
+						<tbody *ngFor="let drow of row.Details">
+							<tr>
+								<td>
+									{{drow.AccCode}}
+								</td>
+								<td>
+									{{drow.AccName}}
+								</td>
+								<td>
+									{{drow.Details_Narration}}
+								</td>
+								<td class="text-right">
+									{{drow.DebitAmount | number}}
+								</td>
+								<td class="text-right">
+									{{drow.CreditAmount | number}}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="3"></td>
+				<td class="text-right">
+					<b>Total :</b>
+				</td>
+				<td class="text-right">
+					<b>{{TotalDebitAmt() | number}}</b>
+				</td>
+				<td class="text-right">
+					<b>{{TotalCreditAmt() | number}}</b>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

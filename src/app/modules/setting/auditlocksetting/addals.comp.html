@@ -1,0 +1,71 @@
+<div class="panel panel-theme">
+	<div class="panel-heading">
+		<h3 class="panel-title">Audit Lock Setting</h3>
+	</div>
+	<div class="container">
+		<table class="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th></th>
+					<th width="10px">#</th>
+					<th width="350px">Module Name</th>
+					<th width="150px">Lock Date</th>
+					<th width="150px">Current Lock Date</th>
+					<th width="150px" class="textalign">Total Record</th>
+					<th width="150px" class="textalign">Unlocked Record</th>
+				</tr>
+			</thead>
+			<tbody *ngFor="let row of alsRowData let i=index">
+				<tr class="textTop">
+					<td>
+						<button (click)="expandDetails(row)">
+							<i class="{{row.IsCollapse == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
+						</button>
+					</td>
+					<td><b>{{row.Sr_No}}</b></td>
+					<td>{{row.ModuleName}}</td>
+					<td>
+						<input type="date" class="form-control" [(ngModel)]="row.LockDate" />
+					</td>
+					<td>{{row.CurrentLockDate}}</td>
+					<td class="text-right">{{row.TotalRecords}}</td>
+					<td class="text-right">{{row.UnlockedRecords}}</td>
+				</tr>
+				<tr [style.display]="row.IsCollapse == 0?'none':''">
+					<td></td>
+					<td></td>
+					<td colspan="5">
+						<table class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th width="150px">Lock Date</th>
+									<th width="350px">Created By</th>
+									<th width="150px">Created On</th>
+								</tr>
+							</thead>
+							<tbody *ngFor="let drow of row.Details">
+								<tr class="textTop">
+									<td>{{drow.PrevAuditDate}}</td>
+									<td>{{drow.CreatedBy}}</td>
+									<td>{{drow.CreatedOn}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="7">
+						<b>Remarks</b>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="7">
+						<textarea [(ngModel)]="Remark" class="form-control small-text-box" cols="150" rows="4"></textarea>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>

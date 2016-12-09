@@ -1,0 +1,187 @@
+<h3>
+	{{title}}
+</h3>
+
+<div class="col-md-8">
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">General Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-xs-4 col-sm-4 col-md-4">
+							<div class="form-group">
+								<label class="control-label">Code</label>
+								<input type="text" [(ngModel)]="CompanyCode" class="form-control input-sm" size="20">
+							</div>
+						</div>
+						<div class="col-xs-8 col-sm-8 col-md-8">
+							<div class="form-group">
+								<label class="control-label">Name</label>
+								<input type="text" [(ngModel)]="CompanyName" class="form-control input-sm" size="20">
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Industries</label>
+								<select [(ngModel)]="Industries" multiple="multiple" class="form-control">
+									<option *ngFor="let row of IndustriesDT" [value]="row.ID">
+										{{row.Name}}
+									</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Type Of Organisation</label>
+								<select [(ngModel)]="OrganisationType" class="form-control">
+									<option *ngFor="let row of OrganisationTypeDT" [value]="row.ID">
+										{{row.Name}}
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label">Description</label>
+						<textarea [(ngModel)]="CompanyDesc" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-8 col-sm-8 col-md-8">
+							<div class="form-group">
+								<label class="control-label">Logo</label>
+								<input type="file" class="form-control input-sm" (change)="fileChangeEvent($event)" />
+							</div>
+						</div>
+						<div class="col-xs-4 col-sm-4 col-md-4">
+							<img class="imgFilePath" src="" width="100" height="100" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Contact">
+				<h3 class="panel-title">Contact Details</h3>
+			</a>
+		</div>
+		<div id="Contact" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Contact Person</label>
+								<input type="text" [(ngModel)]="ContactPerson" class="form-control input-sm" size="20">
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Designation</label>
+								<select [(ngModel)]="Designation" class="form-control">
+									<option *ngFor="let row of DesignationDT" [value]="row.ID">
+										{{row.Name}}
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Mobile No</label>
+								<input type="number" [(ngModel)]="MobileNo" class="form-control input-sm" size="20" />
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Alternate Mobile No</label>
+								<input type="number" [(ngModel)]="AltMobileNo" class="form-control input-sm" size="20">
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Email Address</label>
+								<input type="email" [(ngModel)]="EmailAddress" class="form-control input-sm" size="20">
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Alternate Email Address</label>
+								<input type="email" [(ngModel)]="AltEmailAddress" class="form-control input-sm" size="20">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label">Address</label>
+						<textarea [(ngModel)]="PermanentAddress" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Country</label>
+								<select [(ngModel)]="Country" class="form-control">
+									<option *ngFor="let row of CountryDT" [value]="row.ID">
+										{{row.Name}}
+									</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">State</label>
+								<input type="text" [(ngModel)]="State" class="form-control input-sm" size="20">
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">City</label>
+								<input type="text" [(ngModel)]="City" class="form-control input-sm" size="20">
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-6">
+							<div class="form-group">
+								<label class="control-label">Pin Code</label>
+								<input type="text" [(ngModel)]="PinCode" class="form-control input-sm" size="20">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Remarks">
+				<h3 class="panel-title">Remarks</h3>
+			</a>
+		</div>
+		<div id="Remarks" class="panel-collapse collapse in">
+			<div class="form-group">
+				<textarea [(ngModel)]="Remarks" class="form-control small-text-box" cols="150" rows="5"></textarea>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html 🆖>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=1024">
+
+    <title>
+        <%= htmlWebpackPlugin.options.title %>
+    </title>
+
+    <meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
+
+    <% if (webpackConfig.htmlElements.headTags) { %>
+        <!-- Configured Head Tags  -->
+        <%= webpackConfig.htmlElements.headTags %>
+            <% } %>
+
+                <!-- base url -->
+                <base href="<%= htmlWebpackPlugin.options.metadata.baseUrl %>">
+
+</head>
+
+<body>
+    <div class="container-full">
+        <app>
+            Loading...
+        </app>
+    </div>
+    <script>
+        function loadjscssfile(filename, filetype, callback) {
+            if (filetype == "js") { //if filename is a external JavaScript file
+                var fileref = document.createElement('script');
+                fileref.setAttribute("type", "text/javascript");
+                fileref.setAttribute("src", window.location.origin + filename);
+                if (fileref.readyState) { //IE
+                    fileref.onreadystatechange = function() {
+                        if (fileref.readyState == "loaded" ||
+                            fileref.readyState == "complete") {
+                            fileref.onreadystatechange = null;
+                            callback();
+                        }
+                    };
+                } else { //Others
+                    fileref.onload = function() {
+                        callback();
+                    };
+                }
+
+
+            } else if (filetype == "css") { //if filename is an external CSS file
+                var fileref = document.createElement("link");
+                fileref.setAttribute("rel", "stylesheet");
+                fileref.setAttribute("type", "text/css");
+                fileref.setAttribute("href", window.location.origin + filename);
+                if (fileref.readyState) { //IE
+                    fileref.onreadystatechange = function() {
+                        if (fileref.readyState == "loaded" ||
+                            fileref.readyState == "complete") {
+                            fileref.onreadystatechange = null;
+                            callback();
+                        }
+                    };
+                } else { //Others
+                    fileref.onload = function() {
+                        callback();
+                    };
+                }
+            }
+            if (typeof fileref != "undefined") {
+                document.getElementsByTagName("head")[0].appendChild(fileref);
+            }
+        }
+
+        loadjscssfile('/assets/css/bootstrap.min.css', 'css', function() {
+            loadjscssfile('/assets/css/font-awesome.min.css', 'css', function() {
+                loadjscssfile('/assets/css/styles.css', 'css', function() {
+                    loadjscssfile('/assets/css/customstyle.css', 'css', function() {
+                        loadjscssfile('/assets/css/primeng.min.css', 'css', function() {
+                            loadjscssfile('/assets/css/jquery-ui.css', 'css', function() {
+
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        loadjscssfile('/assets/js/jquery.min.js', 'js', function() {
+            loadjscssfile('/assets/js/bootstrap.min.js', 'js', function() {
+                loadjscssfile('/assets/js/jquery.datatable.js', 'js', function() {
+                    loadjscssfile('/assets/js/submenu.js', 'js', function() {
+                        loadjscssfile('/assets/js/jquery-ui.js', 'js', function() {
+                            
+                        });
+                     });
+                });
+            });
+        });
+    </script>
+
+    <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
+        <script src="/webpack-dev-server.js"></script>
+        <% } %>
+</body>
+
+</html>

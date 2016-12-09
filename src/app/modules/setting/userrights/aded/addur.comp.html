@@ -1,0 +1,160 @@
+<div class="panel panel-theme">
+	<div class="panel-heading">
+		<h3 class="panel-title">{{title}}</h3>
+	</div>
+	<div class="panel-body">
+		<div class="col-md-12">
+			<div class="col-xs-12 col-md-6">
+				<div class="form-group">
+					<label class="control-label">User Name</label>
+					<input type="text" [(ngModel)]="UserName" class="username form-control" (keyup)="getUserAuto(this)" />
+				</div>
+			</div>
+			<div class="col-xs-12 col-md-6">
+				<div class="form-group">
+					<label class="control-label">Reference User Name</label>
+					<input type="text" [(ngModel)]="ReferenceUserName" class="refusername form-control" (keyup)="getReferenceUserAuto(this)"
+					/>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="col-xs-4 col-md-3" [style.display]="CompanyDetails.length == 0?'none':''">
+				<p-dataList [value]="CompanyDetails" [paginator]="true" [rows]="10" selectionMode="single">
+					<header>
+						List of Companies
+					</header>
+					<template let-row>
+						<p-panel [header]="row.CompanyName" [style]="{'text-align':'center'}">
+							<a role="button" (click)="getMenuDetails(row);">
+								<img src="http://localhost:3000/assets/img/logo/{{row.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
+									width="50" height="50" />
+							</a>
+						</p-panel>
+					</template>
+				</p-dataList>
+			</div>
+			<div class="col-xs-8 col-md-9" [style.display]="selectedCompany.length == 0?'none':''">
+				<div class="panel panel-theme">
+					<div class="panel-body">
+						<div class="ui-grid ui-grid-responsive ui-grid-pad" *ngIf="selectedCompany">
+							<div class="ui-grid-col-12">
+								<div class="ui-grid-row">
+									<select [(ngModel)]="FYID" class="form-control" (ngModelChange)="getUserRightsById(selectedCompany)">
+										<option value="0">-- Select Financial Year --</option>
+										<option *ngFor="let fyrow of FYDetails" [value]="fyrow.FYID">
+											{{fyrow.FYName}}
+										</option>
+									</select>
+								</div>
+							</div>
+							<hr />
+							<div class="ui-grid-col-12">
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-3">
+										<div class="ui-grid-row">
+											<img src="http://localhost:3000/assets/img/logo/{{selectedCompany.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
+												width="100" height="100" />
+										</div>
+									</div>
+									<div class="ui-grid-col-9">
+										<div class="ui-grid-row">
+											<div class="ui-grid-col-3">Company Name: </div>
+											<div class="ui-grid-col-9">
+												{{selectedCompany.CompanyName}}
+											</div>
+										</div>
+										<div class="ui-grid-row">
+											<div class="ui-grid-col-3">Address: </div>
+											<div class="ui-grid-col-9">
+												{{selectedCompany.Address}} {{selectedCompany.FullAddress}}
+											</div>
+										</div>
+										<div class="ui-grid-row">
+											<div class="ui-grid-col-3">Mobile No: </div>
+											<div class="ui-grid-col-9">
+												{{selectedCompany.MobileNo}}
+											</div>
+										</div>
+										<div class="ui-grid-row">
+											<div class="ui-grid-col-3">Pin Code: </div>
+											<div class="ui-grid-col-9">
+												{{selectedCompany.PinCode}}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="ui-grid-col-12">
+								<div class="panel panel-theme">
+									<div class="panel-heading">
+										<input id="menus" type="checkbox" [(ngModel)]="allCheck" (change)="selectAndDeselectAllCheckboxes()" />&nbsp;Select
+										All
+									</div>
+									<div class="panel-body">
+										<div *ngFor="let row of selectedCompany.MenuDetails" class="allcheckboxes">
+											<div class="ui-grid-col-12">
+												<div class="ui-grid-row">
+													<div class="col-md-4">
+														<input id="{{row.menuid}}" [(ngModel)]="row.IsMenuCheck" type="checkbox" value="{{row.menuid}}" (change)="selectAndDeselectMenuWiseCheckboxes(row)"
+														/>&nbsp;{{row.menuname}}
+													</div>
+													<div class="col-md-8" id="M{{row.menuid}}">
+														<span style="margin-right:5px;" *ngFor="let item of getMenuRights(row.menurights) let i = index">
+															<input id="{{row.menuid}}{{item}}" data-menuid="row.menucode" data-right="item" type="checkbox" value="{{item}}" class="actrights" />&nbsp;{{item}}
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div align="right">
+											<button type="button" class="btn btn-primary" (click)="saveUserRights(selectedCompany)"><i class="fa fa-save"></i> Save</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!--<p-dataTable #dt [value]="MenuDetails1" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true"
+						(onLazyLoad)="loadMenuDetails($event)">
+						<header>List of Menu Details</header>
+						<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+						<p-column field="menuname" header="Menu"></p-column>
+						<template let-row>
+							<p-dataTable [value]="row">
+								<p-column field="itemno" header="No" styleClass="text-right" [style]="{'width':'50px'}"></p-column>
+								<p-column field="itemnm" header="Items"></p-column>
+								<p-column field="saleqty" header="Sale Qty" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
+								<p-column field="compqty" header="Comp Qty" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
+								<p-column field="comboqty" header="Combo Qty" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
+								<p-column field="domqty" header="Deal of the Month" [style]="{'width':'150px'}" styleClass="text-right"></p-column>
+								<p-column field="amount" header="Amount" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
+							</p-dataTable>
+						</template>
+					</p-dataTable>-->
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!--<div class="col-xs-12 col-md-6">
+	<div class="form-group">
+		<a role="button" (click)="fyDropdown()" class="btn btn-primary">
+					Select Financial Year <i class="{{isOpenFYDDL == 1 ? 'fa fa-arrow-up' : 'fa fa-arrow-down'}}"></i>
+				</a>
+		<div [style.display]="isOpenFYDDL == 0?'none':''">
+			<div class="panel panel-theme">
+				<div class="panel-body">
+					<textarea [(ngModel)]="companyName" class="form-control min-text-box" disabled="disabled"></textarea>
+					<div class="col-md-6" *ngFor="let row of FYDetails">
+						<input id="chkFY" type="checkbox" (click)="getSelectedFY()" value="{{row.FYName}}" /> {{row.FYName}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>-->

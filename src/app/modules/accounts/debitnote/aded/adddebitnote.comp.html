@@ -1,0 +1,69 @@
+<div class="panel panel-theme">
+	<div class="panel-heading">
+		<h3 class="panel-title">Add Debit Note</h3>
+	</div>
+
+	<div class="panel-body">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label class="control-label">Account Name</label>
+						<input type="text" [(ngModel)]="dnAccName" class="dnaccname form-control" (keyup)="getAutoComplete(this, 2)" />
+					</div>
+					<div class="form-group">
+						<label class="control-label">Doc Date</label>
+						<input type="date" [(ngModel)]="dnDate" class="form-control">
+					</div>
+					<div class="form-group">
+						<label class="control-label">Debit Amount</label>
+						<input type="text" [(ngModel)]="DebitAmount" class="form-control" />
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="form-group">
+						<label class="control-label">Narration</label>
+						<textarea [(ngModel)]="dnNarration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<table class="table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Account</th>
+					<th>Credit</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let row of dnRowData let i=index">
+					<td class="textalign">
+						{{i+1}}
+					</td>
+					<td>
+						<input type="text" [(ngModel)]="row.AccName" class="accname form-control" (keyup)="getAutoComplete(row, 1)" />
+					</td>
+					<td class="textalign">
+						<input type="text" [(ngModel)]="row.CreditAmount" class="form-control" />
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>#</td>
+					<td>
+						<input type="text" [(ngModel)]="newAccName" class="accname form-control" (keyup)="getAutoComplete(this, 0)" />
+					</td>
+					<td>
+						<input type="text" [(ngModel)]="newCrAmt" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()" />
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<button type="button" class="btn btn-primary" (click)="NewRowAdd()">Add</button>
+	</div>
+</div>

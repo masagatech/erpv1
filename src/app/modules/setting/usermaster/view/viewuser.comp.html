@@ -1,0 +1,28 @@
+<div class="table-responsive">
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th width="30px"></th>
+				<th width="100px">User Code</th>
+				<th>User Full Name</th>
+				<th width="150px">Email ID</th>
+			</tr>
+		</thead>
+		<tbody *ngFor="let row of viewUserDT let i=index">
+			<tr>
+				<td width="30px" class="textalign">
+					{{i+1}}
+				</td>
+				<td width="100px">
+					<a role="button" (click)="openUserDetails(row)">{{row.UserCode}}</a>
+				</td>
+				<td>
+					{{row.UserFullName}}
+				</td>
+				<td>
+					{{row.EmailID}}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
