@@ -20,36 +20,36 @@
 		<tbody *ngFor="let row of viewEmployeeDT">
 			<tr>
 				<td>
-					<button (click)="expandDetails(row)">{{row.IsCollapse == 1 ? "-" : "+"}}</button>
+					<button (click)="expandDetails(row)">{{row.issh == 1 ? "-" : "+"}}</button>
 				</td>
 				<td>
-					{{row.EmpCode}}
+					{{row.ucode}}
 				</td>
 				<td>
-					{{row.EmpFullName}}
+					{{row.fullname}}
 				</td>
 				<td>
-					{{row.CompanyEmail}}
+					{{row.companyemail}}
 				</td>
 				<td>
-					{{row.DeptName}}
+					{{row.deptname}}
 				</td>
 				<td>
-					{{row.Designation}}
+					{{row.designame}}
 				</td>
 				<td>
-					{{row.Salary}}
+					{{row.salary}}
 				</td>
 				<td>
-					{{row.FormattedJoiningDate}}
+					{{row.doj}}
 				</td>
 			</tr>
-			<tr [style.display]="row.IsCollapse == 0?'none':''">
+			<tr [style.display]="row.issh == 0?'none':''">
 				<td></td>
 				<td></td>
 				<td colspan="4">
 					<table class="table table-striped table-bordered table-hover">
-						<tbody *ngFor="let drow of row.Details">
+						<tbody *ngFor="let drow of row.details">
 							<tr>
 								<td width="30px" rowspan="3">
 									<img src="http://localhost:3000/images/photopath/{{drow.PhotoPath}}" width="60" height="60" />
@@ -58,7 +58,7 @@
 									<b>Email : </b>
 								</td>
 								<td colspan="3">
-									{{drow.EmailID}}
+									{{drow.emailid}}
 								</td>
 							</tr>
 							<tr>
@@ -66,13 +66,13 @@
 									<b>Mobile : </b>
 								</td>
 								<td>
-									{{drow.MobileNo}}
+									{{drow.mobileno}}
 								</td>
 								<td>
 									<b>Birth Date : </b>
 								</td>
 								<td>
-									{{drow.FormattedDateOfBirth}}
+									{{drow.dob}}
 								</td>
 							</tr>
 							<tr>
@@ -80,13 +80,13 @@
 									<b>Gender : </b>
 								</td>
 								<td>
-									{{drow.Gender}}
+									{{drow.gender}}
 								</td>
 								<td>
 									<b>Marital Status : </b>
 								</td>
 								<td>
-									{{drow.MaritalStatus}}
+									{{drow.maritalstatus}}
 								</td>
 							</tr>
 							<tr>

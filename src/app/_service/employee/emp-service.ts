@@ -7,10 +7,10 @@ export class EmpService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
     viewEmployeeDetails(req: any) {
-        return this._dataserver.post("GetEmployeeMaster", req)
+        return this._dataserver.post("getEmployee", req)
     }
 
     saveEmployeeDetails(req: any) {
-        return this._dataserver.post("SaveEmployeeDetails", req)
+        return this._dataserver.post("saveEmployee", req)
     }
 }

@@ -30,7 +30,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
     }
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService) {
-        this.getEmployeeData("");
+        this.getEmployeeData();
     }
 
     ngOnInit() {
@@ -49,22 +49,23 @@ export class ViewEmployee implements OnInit, OnDestroy {
         console.log(this.autoEmpName);
     }
 
-    getEmployeeData(searchTxt) {
-        this._empservice.viewEmployeeDetails({ "FilterType": "", "UserID": "", "SearchTxt": searchTxt }).subscribe(data => {
-            this.viewEmployeeDT = JSON.parse(data.data);
+    getEmployeeData() {
+        this._empservice.viewEmployeeDetails({ "flag": "all" }).subscribe(data => {
+            this.viewEmployeeDT = data.data;
+            debugger;
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
         })
-    }    
+    }
 
     expandDetails(row) {
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
-            if (row.Details.length === 0) {
-                this._empservice.viewEmployeeDetails({ "FilterType": "Details", "UserID": row.UserID, "SearchTxt": "" }).subscribe(data => {
-                    row.Details = JSON.parse(data.data);
+        if (row.issh == 0) {
+            row.issh = 1;
+            if (row.details.length === 0) {
+                this._empservice.viewEmployeeDetails({ "flag": "details", "empid": row.empid }).subscribe(data => {
+                    row.details = data.data;
                 }, err => {
                     console.log("Error");
                 }, () => {
@@ -72,12 +73,12 @@ export class ViewEmployee implements OnInit, OnDestroy {
                 })
             }
         } else {
-            row.IsCollapse = 0;
+            row.issh = 0;
         }
     }
 
     openEmployeeDetails(row) {
-        this._router.navigate(['/employee/editemployee', row.UserID]);
+        this._router.navigate(['/employee/editemployee', row.empid]);
     }
 
     actionBarEvt(evt) {
