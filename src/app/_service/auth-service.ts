@@ -16,9 +16,9 @@ export class AuthenticationService {
   }
 
   login(user: UserReq) {
-    let loginRes: any = this._dataserver.post("GetLogin", {
-      "EmailId": user.email,
-      "Password": user.pwd
+    let loginRes: any = this._dataserver.post("getLogin", {
+      "email": user.email,
+      "pwd": user.pwd
     })
     console.log(loginRes);
     return loginRes;

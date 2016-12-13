@@ -24,7 +24,7 @@ export class LoginComp {
         this._service.login(this._user).subscribe(d => {
             if (d) {
                 if (d.status) {
-                    let usrobj = JSON.parse(d.data).Table;
+                    let usrobj = d.data;
                     console.log(usrobj);
                     let userDetails = usrobj[0];
                     

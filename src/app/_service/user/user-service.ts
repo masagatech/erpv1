@@ -13,11 +13,11 @@ export class UserService {
     }
 
     getMenuHead(req: any) {
-        return this._dataserver.post("GetHeadMenu", req)
+        return this._dataserver.post("getMenuHead", req)
     }
 
     getSubMenu(req: any) {
-        return this._dataserver.post("GetHeadMenu", req);
+        return this._dataserver.post("getMenu", req);
     }
 
     getUser() {
