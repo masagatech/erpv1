@@ -26,7 +26,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
     viewEmployeeDT: any[];
 
     filterEmployeeData() {
-        this.getEmployeeData(this.EmpName);
+        this.getEmployeeData();
     }
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService) {
