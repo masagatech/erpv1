@@ -19,51 +19,50 @@ export class UserControlHeadComp implements OnInit {
   subMenu: any;
   loginUser: any;
   loginUserName: string;
-  constructor(private _authservice: AuthenticationService, private _userService: UserService, private _router: Router) {
 
-    //alert( $('.dropdown-submenu > a'))//.submenupicker();
+  constructor(private _authservice: AuthenticationService, private _userService: UserService, private _router: Router) {
     //get login user details 
     this.loginUser = this._userService.getUser();
+
     if (this.loginUser == null) {
       return;
     }
+
     //set user name 
     this.loginUserName = this.loginUser.usrnm;
+
     //get menues according to loggedin user
-    this._userService.getMenuHead({ "userid": this.loginUser.uid }).subscribe(data => {
-      var data1 = JSON.parse(data.mainmenu);
-      this.subMenu = data1.Table2;
-      this.parentMenus = data1.Table1;
-      this.menuhead = data1.Table;
+    this._userService.getMenuHead({ "uid": this.loginUser.uid }).subscribe(data => {
+      var data1 = data.data;
+      console.log(data1);
+
+      this.subMenu = data1[2];
+      this.parentMenus = data1[1];
+      this.menuhead = data1[0];
+
       for (var i = 0; i <= this.menuhead.length - 1; i++) {
-        //console.log(this.menuhead[i]["mid"]);
         var _parentMenu = this.parentMenus.filter(item => item.mid === this.menuhead[i].mid);
+
         for (var j = 0; j <= _parentMenu.length - 1; j++) {
           _parentMenu[j].subsub = this.subMenu.filter(subitem => subitem.parentid === _parentMenu[j].parentid);
         }
+
         this.menuhead[i].sub = _parentMenu;
-        //console.log(_parentMenu);
-        // this.menuhead[i].sub = this.parentMenus.filter(item => item.parentid === this.menuhead[i].mid);
+        
         $('.dropdown-submenu > a').submenupicker();
       }
-
     }, err => {
 
     }, () => {
       // console.log("Complete");
     })
-
-
-
   }
 
   callRoute(item: any, click: any) {
     if (click === 0) {
-
       var link = item.menulink.toString();
       this._router.navigate([link]);
     }
-
   }
 
   ngOnInit() {
@@ -73,7 +72,4 @@ export class UserControlHeadComp implements OnInit {
   logout() {
     this._authservice.logout();
   }
-
 }
-
-
