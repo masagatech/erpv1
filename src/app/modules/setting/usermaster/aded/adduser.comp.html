@@ -9,19 +9,19 @@
 					<div class="col-md-4">
 						<div class="form-group">
 							<label class="control-label">User Code</label>
-							<input type="text" [(ngModel)]="newUserCode" class="form-control input-sm" size="20" required />
+							<input type="text" [(ngModel)]="ucode" class="form-control input-sm" size="20" required />
 						</div>
 					</div>
 					<div class="col-md-4">
 						<div class="form-group">
 							<label class="control-label">First Name</label>
-							<input type="text" [(ngModel)]="newFirstName" class="form-control input-sm" size="20">
+							<input type="text" [(ngModel)]="firstname" class="form-control input-sm" size="20">
 						</div>
 					</div>
 					<div class="col-md-4">
 						<div class="form-group">
 							<label class="control-label">Last Name</label>
-							<input type="text" [(ngModel)]="newLastName" class="form-control input-sm" size="20">
+							<input type="text" [(ngModel)]="lastname" class="form-control input-sm" size="20">
 						</div>
 					</div>
 				</div>
@@ -29,19 +29,19 @@
 					<div class="col-md-12">
 						<div class="form-group">
 							<label class="control-label">Email Address</label>
-							<input type="email" [(ngModel)]="newEmailAddress" class="form-control input-sm" size="20" required />
+							<input type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20" required />
 						</div>
-						<button (click)="IsChangePassword()" [style.display]="IsVisCPwd == 'N'?'none':''" class="btn {{IsCPwd == 'Y' ? 'btn-danger' : 'btn-primary'}}">
-							{{IsCPwd == "Y" ? "- No Change" : "+ Change Password"}}
+						<button (click)="isChangePwd()" [style.display]="isviscpwd == 'N'?'none':''" class="btn {{iscpwd == 'Y' ? 'btn-danger' : 'btn-primary'}}">
+							{{iscpwd == "Y" ? "- No Change" : "+ Change Password"}}
 						</button>
-						<div [style.display]="IsCPwd == 'N'?'none':''">
+						<div [style.display]="iscpwd == 'N'?'none':''">
 							<div class="form-group">
 								<label class="control-label">Password</label>
-								<input type="password" [(ngModel)]="newPassword" class="form-control input-sm" size="20" required />
+								<input type="password" [(ngModel)]="pwd" class="form-control input-sm" size="20" required />
 							</div>
 							<div class="form-group">
 								<label class="control-label">Confirm Password</label>
-								<input type="password" [(ngModel)]="newConfirmPassword" class="form-control input-sm" size="20" required />
+								<input type="password" [(ngModel)]="confpwd" class="form-control input-sm" size="20" required />
 							</div>
 						</div>
 					</div>

@@ -18,24 +18,23 @@ export class AddUser implements OnInit, OnDestroy {
     title: any;
     validSuccess: Boolean = true;
 
-    UserID: any;
-    newUserCode: any;
-    newFirstName: any;
-    newLastName: any;
-    newEmailAddress: any;
-    newPassword: any;
-    newConfirmPassword: any;
+    uid: any;
+    ucode: any;
+    firstname: any;
+    lastname: any;
+    emailid: any;
+    pwd: any;
+    confpwd: any;
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    IsCPwd: string = "N";
-    IsVisCPwd: string = 'N';
+    iscpwd: string = "N";
+    isviscpwd: string = 'N';
 
     private subscribeParameters: any;
 
     CompanyDetails: any = [];
-    viewUserDT: any = [];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _userservice: UserService, private _compservice: CompService) {
@@ -81,36 +80,36 @@ export class AddUser implements OnInit, OnDestroy {
         }
     }
 
-    IsChangePassword() {
+    isChangePwd() {
         var that = this;
 
-        if (that.IsCPwd == "N") {
-            that.IsCPwd = "Y";
+        if (that.iscpwd == "N") {
+            that.iscpwd = "Y";
         } else {
-            that.IsCPwd = "N";
+            that.iscpwd = "N";
         }
     }
 
     isValidSuccess() {
         var that = this;
 
-        if (that.newEmailAddress == undefined) {
+        if (that.emailid == undefined) {
             alert("Enter Email Address !!!!");
             return false;
         }
 
-        if (that.IsCPwd === 'Y') {
-            if (that.newPassword == undefined) {
+        if (that.iscpwd === 'Y') {
+            if (that.pwd == undefined) {
                 alert("Enter Password !!!!");
                 return false;
             }
 
-            if (that.newConfirmPassword == undefined) {
+            if (that.confpwd == undefined) {
                 alert("Enter Confirm Password !!!!");
                 return false;
             }
 
-            if (that.newPassword != that.newConfirmPassword) {
+            if (that.pwd != that.confpwd) {
                 alert("Password and Confirm Password not match !!!!");
                 return false;
             }
@@ -119,38 +118,36 @@ export class AddUser implements OnInit, OnDestroy {
         return true;
     }
 
-    getUserDetailsById(userId: string) {
+    getUserDataById(puid: number) {
         var that = this;
 
-        that._userservice.viewUserDetails({ "UserID": userId, "Flag": "ID" }).subscribe(data => {
-            that.viewUserDT = JSON.parse(data.data);
+        that._userservice.getUsers({ "flag": "id", "uid": puid }).subscribe(data => {
+            var UserDT = data.data;
 
-            that.UserID = that.viewUserDT[0].UserID;
-            that.newUserCode = that.viewUserDT[0].UserCode;
-            that.newFirstName = that.viewUserDT[0].UserFirstName;
-            that.newLastName = that.viewUserDT[0].UserLastName;
-            that.newEmailAddress = that.viewUserDT[0].EmailID;
+            that.uid = UserDT[0].uid;
+            that.ucode = UserDT[0].ucode;
+            that.firstname = UserDT[0].firstname;
+            that.lastname = UserDT[0].lastname;
+            that.emailid = UserDT[0].emailid;
 
-            var CompanyRights = JSON.parse(data.Table1);
+            // var CompanyRights = data.Table1;
 
-            var rights = null;
-            var companyitem = null;
+            // var rights = null;
+            // var companyitem = null;
 
-            for (var i = 0; i <= CompanyRights.length - 1; i++) {
-                companyitem = null;
-                rights = null;
+            // for (var i = 0; i <= CompanyRights.length - 1; i++) {
+            //     companyitem = null;
+            //     rights = null;
 
-                companyitem = CompanyRights[i];
-                rights = companyitem.rights.split(',');
+            //     companyitem = CompanyRights[i];
+            //     rights = companyitem.rights.split(',');
 
-                if (rights != null) {
-                    for (var j = 0; j <= rights.length - 1; j++) {
-                        $("#C" + companyitem.companyid).find("#" + companyitem.companyid + rights[j]).prop('checked', true);
-                        console.log("abc" + companyitem.companyid + rights[j]);
-                        //$(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', true);
-                    }
-                }
-            }
+            //     if (rights != null) {
+            //         for (var j = 0; j <= rights.length - 1; j++) {
+            //             $("#C" + companyitem.companyid).find("#" + companyitem.companyid + rights[j]).prop('checked', true);
+            //         }
+            //     }
+            // }
         }, err => {
             console.log("Error");
         }, () => {
@@ -193,32 +190,32 @@ export class AddUser implements OnInit, OnDestroy {
         console.log(that.validSuccess);
 
         var saveUser = {
-            "UserID": that.UserID,
-            "UserCode": that.newUserCode,
-            "UserFirstName": that.newFirstName,
-            "UserLastName": that.newLastName,
-            "EmailID": that.newEmailAddress,
-            "Password": that.newPassword,
-            "IsCPwd": that.IsCPwd,
-            "CompanyRights": that.getCompanyRights()
+            "uid": that.uid,
+            "ucode": that.ucode,
+            "firstname": that.firstname,
+            "lastname": that.lastname,
+            "emailid": that.emailid,
+            "pwd": that.pwd,
+            "iscpwd": that.iscpwd
+            //"companyrights": that.getCompanyRights()
         }
 
         if (that.validSuccess) {
-            that._userservice.saveUserMaster(saveUser).subscribe(data => {
-                var dataResult = JSON.parse(data.data);
+            that._userservice.saveUsers(saveUser).subscribe(data => {
+                var dataResult = data.data;
                 debugger;
                 console.log(dataResult);
 
-                if (dataResult[0].Doc == "-1") {
-                    alert("Error");
+                if (dataResult[0].funsave_user.doc == "1") {
+                    alert(dataResult[0].funsave_user.msg);
+                    that._router.navigate(['/setting/usermaster']);
                 }
-                else if (dataResult[0].Doc == "-2") {
-                    alert(dataResult[0].Status);
-                    that.newEmailAddress = "";
+                else if (dataResult[0].funsave_user.doc == "-1") {
+                    alert(dataResult[0].funsave_user.msg);
+                    that.emailid = "";
                 }
                 else {
-                    alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
-                    that._router.navigate(['/setting/usermaster']);
+                    alert("Error");
                 }
             }, err => {
                 console.log(err);
@@ -239,8 +236,8 @@ export class AddUser implements OnInit, OnDestroy {
             that.actionButton.find(a => a.id === "save").hide = false;
             that.actionButton.find(a => a.id === "edit").hide = true;
 
-            that.IsVisCPwd = 'Y';
-            that.IsCPwd = 'N';
+            that.isviscpwd = 'Y';
+            that.iscpwd = 'N';
         } else if (evt === "delete") {
             alert("delete called");
         }
@@ -257,24 +254,24 @@ export class AddUser implements OnInit, OnDestroy {
         that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
 
         that.subscribeParameters = that._routeParams.params.subscribe(params => {
-            if (params['UserID'] !== undefined) {
+            if (params['uid'] !== undefined) {
                 that.actionButton.find(a => a.id === "save").hide = true;
                 that.actionButton.find(a => a.id === "edit").hide = false;
 
-                that.UserID = params['UserID'];
-                that.getUserDetailsById(that.UserID);
+                that.uid = params['uid'];
+                that.getUserDataById(that.uid);
 
-                //$('input').attr('disabled', 'disabled');
-                that.IsCPwd = 'N';
-                that.IsVisCPwd = 'N';
+                $('input').attr('disabled', 'disabled');
+                that.iscpwd = 'N';
+                that.isviscpwd = 'N';
             }
             else {
                 that.actionButton.find(a => a.id === "save").hide = false;
                 that.actionButton.find(a => a.id === "edit").hide = true;
 
-                //$('input').removeAttr('disabled');
-                that.IsCPwd = 'Y';
-                that.IsVisCPwd = 'N';
+                $('input').removeAttr('disabled');
+                that.iscpwd = 'Y';
+                that.isviscpwd = 'N';
             }
         });
     }
