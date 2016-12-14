@@ -36,18 +36,18 @@ export class UserService {
         }
     }
 
-    setUser(userDetails) {
+    setUsers(userDetails) {
         this.loginUser = userDetails;
         Cookie.delete('usr');
         Cookie.set("usr", userDetails.uid);
     }
 
-    viewUserDetails(req: any) {
-        return this._dataserver.post("GetUserMaster", req)
+    getUsers(req: any) {
+        return this._dataserver.post("getUsers", req)
     }
 
-    saveUserMaster(req: any) {
-        return this._dataserver.post("SaveUserMaster", req)
+    saveUsers(req: any) {
+        return this._dataserver.post("saveUsers", req)
     }
 
     viewUserRights(req: any) {
