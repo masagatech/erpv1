@@ -29,7 +29,7 @@ export class LoginComp {
                     let userDetails = usrobj[0];
                     
                     if (userDetails.status) {
-                        this._loginModel.setUser(userDetails);
+                        this._loginModel.setUsers(userDetails);
                         this._router.navigate(['/']);
                     } else {
                         this.btnLoginText = "Login";
