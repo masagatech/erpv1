@@ -32,17 +32,17 @@ const routerConfig = [
         children: [
           { path: 'auditlocksetting', component: ALSAddEdit, canActivateChid: [AuthGuard], },
           { path: 'addcompany', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'editcompany/:CompanyID', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
+          { path: 'editcompany/:cmpid', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
           { path: 'company', component: ViewCompany, canActivateChid: [AuthGuard], },
           { path: 'adduser', component: AddUser, canActivateChid: [AuthGuard], },
-          { path: 'edituser/:UserID', component: AddUser, canActivateChid: [AuthGuard], },
+          { path: 'edituser/:uid', component: AddUser, canActivateChid: [AuthGuard], },
           { path: 'usermaster', component: ViewUser, canActivateChid: [AuthGuard], },
           { path: 'viewuserrights', component: ViewUserRights, canActivateChid: [AuthGuard], },
           { path: 'addfinancialyear', component: AddFY, canActivateChid: [AuthGuard], },
-          { path: 'editfinancialyear/:FYID', component: AddFY, canActivateChid: [AuthGuard], },
+          { path: 'editfinancialyear/:fyid', component: AddFY, canActivateChid: [AuthGuard], },
           { path: 'financialyear', component: ViewFY, canActivateChid: [AuthGuard], },
           { path: 'adduserrights', component: AddUserRights, canActivateChid: [AuthGuard], },
-          { path: 'edituserrights/:UserID', component: AddUserRights, canActivateChid: [AuthGuard], },
+          { path: 'edituserrights/:uid', component: AddUserRights, canActivateChid: [AuthGuard], },
           { path: '', component: SettingDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
