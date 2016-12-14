@@ -17,7 +17,7 @@
 			<ul class="nav navbar-nav">
 				<li [ngClass]="{'dropdown' : item.sub.length > 0}" *ngFor="let item of menuhead">
 					<a data-toggle="dropdown" role="button" (click)="callRoute(item, item.sub.length)">
-						{{item.name}} <i class="{{item.MIcon}}"></i> <span *ngIf="item.sub.length > 0" class="caret"></span>
+						{{item.name}} <i class="{{item.menuico}}"></i> <span *ngIf="item.sub.length > 0" class="caret"></span>
             		</a>
 					<!-- role="menu": fix moved by arrows (Bootstrap dropdown) -->
 					<ul [ngClass]="{'dropdown-menu' : item.sub.length > 0}" *ngIf="item.sub.length > 0" role="menu">
