@@ -25,12 +25,8 @@ export class ViewUser implements OnInit, OnDestroy {
 
     viewUserDT: any[];
 
-    filterUserData() {
-        this.getUserData(this.EmpName);
-    }
-
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _userservice: UserService) {
-        this.getUserData("");
+        this.getUserData();
     }
 
     ngOnInit() {
@@ -45,9 +41,9 @@ export class ViewUser implements OnInit, OnDestroy {
         console.log(this.autoEmpName);
     }
 
-    getUserData(searchTxt) {
-        this._userservice.viewUserDetails({ "FilterType": "", "UserID": "", "SearchTxt": searchTxt }).subscribe(data => {
-            this.viewUserDT = JSON.parse(data.data);
+    getUserData() {
+        this._userservice.getUsers({ "flag": "" }).subscribe(data => {
+            this.viewUserDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -56,7 +52,7 @@ export class ViewUser implements OnInit, OnDestroy {
     }    
 
     openUserDetails(row) {
-        this._router.navigate(['/setting/edituser', row.UserID]);
+        this._router.navigate(['/setting/edituser', row.uid]);
     }
 
     actionBarEvt(evt) {
