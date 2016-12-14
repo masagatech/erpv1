@@ -7,14 +7,13 @@
 			<div class="col-xs-12 col-md-6">
 				<div class="form-group">
 					<label class="control-label">User Name</label>
-					<input type="text" [(ngModel)]="UserName" class="username form-control" (keyup)="getUserAuto(this)" />
+					<input type="text" [(ngModel)]="uname" class="uname form-control" (keyup)="getUserAuto(this)" />
 				</div>
 			</div>
 			<div class="col-xs-12 col-md-6">
 				<div class="form-group">
 					<label class="control-label">Reference User Name</label>
-					<input type="text" [(ngModel)]="ReferenceUserName" class="refusername form-control" (keyup)="getReferenceUserAuto(this)"
-					/>
+					<input type="text" [(ngModel)]="refuname" class="refuname form-control" (keyup)="getRefUserAuto(this)" />
 				</div>
 			</div>
 		</div>
