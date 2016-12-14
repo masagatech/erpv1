@@ -8,42 +8,47 @@
 		<div class="panel-body">
 			<div class="col-sm-8 col-md-6">
 				<div class="form-group">
-					<label class="control-label">Date of Birth</label>
-					<div class="input-group date" data-provide="datepicker">
-						<input type="text" [(ngModel)]="DateOfBirth" name="DateOfBirth" id="DateOfBirth" class="form-control" />
-						<div class="input-group-addon">
-							<span class="glyphicon glyphicon-th"></span>
+					<label class="control-label">User Name</label>
+					<input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
+				</div>
+				<div class="row">
+					<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="form-group">
+							<label class="control-label">Date of Birth</label>
+							<input type="date" [(ngModel)]="dob" name="DateOfBirth" id="DateOfBirth" class="form-control" />
+						</div>
+					</div>
+					<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="form-group">
+							<label class="control-label">Gender</label>
+							<select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
+								<option [value]="'0'">Select Gender</option>
+								<option *ngFor="let row of genderDT" [value]="row.key">	
+									{{row.val}}
+								</option>
+							</select>
 						</div>
 					</div>
 				</div>
-
 				<div class="row">
-					<div class="col-xs-6 col-sm-4 col-md-4">
-						<div class="form-group">
-							<label class="control-label">Gender</label>
-							<select [(ngModel)]="Gender" name="Gender" id="Gender" class="form-control">
-								<option *ngFor="let row of GenderDT" [value]="row.ID">	
-									{{row.Name}}
-								</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-xs-6 col-sm-4 col-md-4">
+					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
 							<label class="control-label">Marital Status</label>
-							<select [(ngModel)]="MaritalStatus" class="form-control">
-								<option *ngFor="let row of MaritalStatusDT" [value]="row.ID">
-									{{row.Name}}
+							<select [(ngModel)]="maritalstatus" class="form-control">
+								<option [value]="'0'">Select Marital Status</option>
+								<option *ngFor="let row of maritalstatusDT" [value]="row.key">
+									{{row.val}}
 								</option>
 							</select>
 						</div>
 					</div>
-					<div class="col-xs-6 col-sm-4 col-md-4">
+					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
 							<label class="control-label">Blood Group</label>
-							<select [(ngModel)]="BloodGroup" class="form-control">
-								<option *ngFor="let row of BloodGroupDT" [value]="row.ID">
-									{{row.Name}}
+							<select [(ngModel)]="bloodgroup" class="form-control">
+								<option [value]="'0'">Select Blood Group</option>
+								<option *ngFor="let row of bloodgroupDT" [value]="row.key">
+									{{row.val}}
 								</option>
 							</select>
 						</div>
@@ -53,12 +58,12 @@
 			<div class="col-sm-8 col-md-6">
 				<div class="form-group">
 					<label class="control-label">Family Background</label>
-					<textarea [(ngModel)]="FamilyBackground" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					<textarea [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
 				</div>
 
 				<div class="form-group">
 					<label class="control-label">Health Details</label>
-					<textarea [(ngModel)]="HealthDetails" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					<textarea [(ngModel)]="healthdtls" class="form-control small-text-box" cols="150" rows="5"></textarea>
 				</div>
 			</div>
 		</div>
@@ -78,36 +83,38 @@
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
 							<label class="control-label">Mobile No</label>
-							<input type="number" [(ngModel)]="MobileNo" class="form-control input-sm" size="20" />
+							<input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
 						</div>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
 							<label class="control-label">Alternate Mobile No</label>
-							<input type="number" [(ngModel)]="AltMobileNo" class="form-control input-sm" size="20">
+							<input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
 						</div>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="control-label">Alternate Email Address</label>
-					<input type="email" [(ngModel)]="AltEmailAddress" class="form-control input-sm" size="20">
+					<label class="control-label">Alternate Email ID</label>
+					<input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
 				</div>
 
 				<div class="row">
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
 							<label class="control-label">Country</label>
-							<select [(ngModel)]="Country" class="form-control">
-								<option [value]="India">India</option>
-								<option [value]="Austrailia">Austrailia</option>
+							<select [(ngModel)]="country" class="form-control">
+								<option [value]="'0'">Select Country</option>
+								<option *ngFor="let row of countryDT" [value]="row.key">
+									{{row.val}}
+								</option>
 							</select>
 						</div>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Zone</label>
-							<input type="text" [(ngModel)]="Zone" class="form-control input-sm" size="20">
+							<label class="control-label">State</label>
+							<input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
 						</div>
 					</div>
 				</div>
@@ -115,32 +122,27 @@
 				<div class="row">
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">State</label>
-							<input type="text" [(ngModel)]="State" class="form-control input-sm" size="20">
+							<label class="control-label">City</label>
+							<input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
 						</div>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">City</label>
-							<input type="text" [(ngModel)]="City" class="form-control input-sm" size="20">
+							<label class="control-label">Pin Code</label>
+							<input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
 						</div>
 					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="control-label">Pin Code</label>
-					<input type="text" [(ngModel)]="PinCode" class="form-control input-sm" size="20">
 				</div>
 			</div>
 			<div class="col-sm-8 col-md-6">
 				<div class="form-group">
-					<label class="control-label">Permanent Address</label>
-					<textarea [(ngModel)]="PermanentAddress" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					<label class="control-label">Address Line 1</label>
+					<textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
 				</div>
 
 				<div class="form-group">
-					<label class="control-label">Current Address</label>
-					<textarea [(ngModel)]="CurrentAddress" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					<label class="control-label">Address Line 2</label>
+					<textarea [(ngModel)]="addressline2" class="form-control small-text-box" cols="150" rows="5"></textarea>
 				</div>
 			</div>
 		</div>
@@ -159,18 +161,14 @@
 				<div class="row">
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Branch</label>
-							<input type="text" [(ngModel)]="Branch" class="form-control input-sm" size="20" />
+							<label class="control-label">Company Name</label>
+							<input type="text" [(ngModel)]="companyname" class="form-control input-sm" size="20" />
 						</div>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Department</label>
-							<select [(ngModel)]="Department" class="form-control">
-								<option *ngFor="let row of DepartmentDT" [value]="row.ID">
-									{{row.Name}}
-								</option>
-							</select>
+							<label class="control-label">Company Email</label>
+							<input type="text" [(ngModel)]="companyemail" class="form-control input-sm" size="20" />
 						</div>
 					</div>
 				</div>
@@ -178,20 +176,22 @@
 				<div class="row">
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Designation</label>
-							<select [(ngModel)]="Designation" class="form-control">
-								<option *ngFor="let row of DesignationDT" [value]="row.ID">
-									{{row.Name}}
+							<label class="control-label">Department</label>
+							<select [(ngModel)]="deptid" class="form-control">
+								<option [value]="'0'">Select Department</option>
+								<option *ngFor="let row of departmentDT" [value]="row.key">
+									{{row.val}}
 								</option>
 							</select>
 						</div>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Salary Mode</label>
-							<select [(ngModel)]="SalaryMode" class="form-control">
-								<option *ngFor="let row of SalaryModeDT" [value]="row.ID">
-									{{row.Name}}
+							<label class="control-label">Designation</label>
+							<select [(ngModel)]="desigid" class="form-control">
+								<option [value]="'0'">Select Designation</option>
+								<option *ngFor="let row of designationDT" [value]="row.key">
+									{{row.val}}
 								</option>
 							</select>
 						</div>
@@ -199,27 +199,37 @@
 				</div>
 			</div>
 			<div class="col-sm-8 col-md-6">
-				<div class="form-group">
-					<label class="control-label">Copmany Email Address</label>
-					<input type="email" [(ngModel)]="CompanyEmailAddress" class="form-control input-sm" size="20" />
+				<div class="row">
+					<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="form-group">
+							<label class="control-label">Joining Date</label>
+							<input type="date" [(ngModel)]="doj" class="form-control" />
+						</div>
+					</div>
+					<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="form-group">
+							<label class="control-label">Notice Days</label>
+							<input type="number" [(ngModel)]="noticedays" class="form-control input-sm" size="20" />
+						</div>
+					</div>
 				</div>
 
 				<div class="row">
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Notice Days</label>
-							<input type="number" [(ngModel)]="NoticeDays" class="form-control input-sm" size="20" />
+							<label class="control-label">Salary</label>
+							<input type="text" [(ngModel)]="salary" class="form-control input-sm" size="20" />
 						</div>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6">
 						<div class="form-group">
-							<label class="control-label">Joining Date</label>
-							<div class="input-group date" data-provide="datepicker">
-								<input type="text" [(ngModel)]="JoiningDate" class="form-control" />
-								<div class="input-group-addon">
-									<span class="glyphicon glyphicon-th"></span>
-								</div>
-							</div>
+							<label class="control-label">Salary Mode</label>
+							<select [(ngModel)]="salarymode" class="form-control">
+								<option [value]="'0'">Select Salary Mode</option>
+								<option *ngFor="let row of salarymodeDT" [value]="row.ID">
+									{{row.val}}
+								</option>
+							</select>
 						</div>
 					</div>
 				</div>
@@ -237,7 +247,7 @@
 	<div id="AboutUs" class="panel-collapse collapse in">
 		<div class="panel-body">
 			<div class="form-group">
-				<textarea [(ngModel)]="AboutUs" class="form-control big-text-box hidden-text-box" cols="150" rows="5" height="300"></textarea>
+				<textarea [(ngModel)]="aboutus" class="form-control big-text-box hidden-text-box" cols="150" rows="5" height="300"></textarea>
 			</div>
 		</div>
 	</div>

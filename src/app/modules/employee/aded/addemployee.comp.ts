@@ -16,36 +16,36 @@ declare var $: any;
 export class EmployeeAddEdit implements OnInit, OnDestroy {
     title: any;
 
-    EmpID: any;
-    UserID: any;
-    Salutation: any;
-    FirstName: any;
-    LastName: any;
-    EmailAddress: any;
-    DateOfBirth: any;
-    Gender: any;
-    MaritalStatus: any;
-    BloodGroup: any;
-    FamilyBackground: any;
-    HealthDetails: any;
-    MobileNo: any;
-    AltMobileNo: any;
-    AltEmailAddress: any;
-    Country: any;
-    Zone: any;
-    State: any;
-    City: any;
-    PinCode: any;
-    PermanentAddress: any;
-    CurrentAddress: any;
-    Branch: any;
-    Department: any;
-    Designation: any;
-    SalaryMode: any;
-    CompanyEmailAddress: any;
-    NoticeDays: any;
-    JoiningDate: any;
-    AboutUs: any;
+    empid: number = 0;
+    uid: number = 0;
+    uname: string = "";
+    firstname: string = "";
+    lastname: string = "";
+    emailid: string = "";
+    dob: string = "";
+    gender: string = "";
+    maritalstatus: string = "";
+    bloodgroup: string = "";
+    familybg: string = "";
+    healthdtls: string = "";
+    mobileno: string = "";
+    altmobileno: string = "";
+    altemailid: string = "";
+    country: string = "";
+    state: string = "";
+    city: string = "";
+    pincode: string = "";
+    addressline1: string = "";
+    addressline2: string = "";
+    companyname: string = "";
+    companyemail: string = "";
+    deptid: number = 0;
+    desigid: number = 0;
+    salary: any = "";
+    salarymode: string = "";
+    noticedays: number = 0;
+    doj: string = "";
+    aboutus: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -54,42 +54,82 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     //MasterDDL: any[];
 
-    GenderDT: any[];
-    MaritalStatusDT: any[];
-    BloodGroupDT: any[];
-    DepartmentDT: any[];
-    DesignationDT: any[];
-    SalaryModeDT: any[];
-
-    viewEmpDetails: any[];
+    genderDT: any[];
+    maritalstatusDT: any[];
+    bloodgroupDT: any[];
+    countryDT: any[];
+    departmentDT: any[];
+    designationDT: any[];
+    salarymodeDT: any[];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService, private _commonservice: CommonService) {
-        this._commonservice.getMasterOfMaster({ "MasterType": "Employee" }).subscribe(data => {
-            var d = JSON.parse(data.data);
+        this.fillDropDownList("Gender");
+        this.fillDropDownList("MaritalStatus");
+        this.fillDropDownList("BloodGroup");
+        this.fillDropDownList("Country");
+        this.fillDropDownList("Department");
+        this.fillDropDownList("Designation");
+        this.fillDropDownList("SalaryMode");
+    }
 
-            // BIND Gender TO DROPDOWN
-            this.GenderDT = d.filter(a => a.Group === "Gender");
-            this.Gender = this.GenderDT[0].ID; // SET DEFAULT Gender VALUE
+    getUserAuto(me: any) {
+        var that = this;
 
-            // BIND MaritalStatus TO DROPDOWN
-            this.MaritalStatusDT = d.filter(a => a.Group === "MaritalStatus");
-            this.MaritalStatus = this.MaritalStatusDT[0].ID; // SET DEFAULT MaritalStatus VALUE
+        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+            $(".username").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.uid = ui.item.value;
+                    me.uname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
 
-            // BIND BloodGroup TO DROPDOWN
-            this.BloodGroupDT = d.filter(a => a.Group === "BloodGroup");
-            this.BloodGroup = this.BloodGroupDT[0].ID; // SET DEFAULT BloodGroup VALUE
+    fillDropDownList(group) {
+        this._commonservice.getMOM({ "group": group }).subscribe(data => {
+            var d = data.data;
 
-            // BIND Department TO DROPDOWN
-            this.DepartmentDT = d.filter(a => a.Group === "Department");
-            this.Department = this.DepartmentDT[0].ID; // SET DEFAULT Department VALUE
-
-            // BIND Designation TO DROPDOWN
-            this.DesignationDT = d.filter(a => a.Group === "Designation");
-            this.Designation = this.DesignationDT[0].ID; // SET DEFAULT Department VALUE
-
-            // BIND SalaryMode TO DROPDOWN
-            this.SalaryModeDT = d.filter(a => a.Group === "SalaryMode");
-            this.SalaryMode = this.SalaryModeDT[0].ID; // SET DEFAULT SalaryMode VALUE
+            if (group == "Gender") {
+                // BIND Gender TO DROPDOWN
+                this.genderDT = d;
+            }
+            else if (group == "MaritalStatus") {
+                // BIND MaritalStatus TO DROPDOWN
+                this.maritalstatusDT = d;
+            }
+            else if (group == "BloodGroup") {
+                // BIND Blood Group TO DROPDOWN
+                this.bloodgroupDT = d;
+            }
+            else if (group == "Country") {
+                // BIND Country TO DROPDOWN
+                this.countryDT = d;
+            }
+            else if (group == "Department") {
+                // BIND Department TO DROPDOWN
+                this.departmentDT = d;
+            }
+            else if (group == "Designation") {
+                // BIND Designation TO DROPDOWN
+                this.designationDT = d;
+            }
+            else if (group == "SalaryMode") {
+                // BIND Salary Mode TO DROPDOWN
+                this.salarymodeDT = d;
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -101,6 +141,97 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         $('input').attr('value', '');
         $('select').attr('value', '');
         $('textarea').attr('value', '');
+    }
+
+    saveEmployeeData() {
+        debugger;
+        var saveEmp = {
+            "empid": this.empid,
+            "uid": this.uid,
+            "dob": this.dob,
+            "gender": this.gender,
+            "maritalstatus": this.maritalstatus,
+            "bloodgroup": this.bloodgroup,
+            "familybg": this.familybg,
+            "healthdtls": this.healthdtls,
+            "mobileno": this.mobileno,
+            "altmobileno": this.altmobileno,
+            "altemailid": this.altemailid,
+            "country": this.country,
+            "state": this.state,
+            "city": this.city,
+            "pincode": this.pincode,
+            "addressline1": this.addressline1,
+            "addressline2": this.addressline2,
+            "companyname": this.companyname,
+            "companyemail": this.companyemail,
+            "deptid": this.deptid,
+            "desigid": this.desigid,
+            "salary": this.salary,
+            "salarymode": this.salarymode,
+            "noticedays": this.noticedays,
+            "doj": this.doj,
+            "aboutus": this.aboutus,
+            "createdby": "1-vivek",
+            "updatedby": "1-vivek"
+        }
+
+        console.log(saveEmp);
+
+        this._empservice.saveEmployee(saveEmp).subscribe(data => {
+            var dataResult = data.data;
+            console.log(dataResult);
+
+            if (dataResult[0].funsave_employee.doc != "-1") {
+                alert(dataResult[0].funsave_employee.msg + ', Doc : ' + dataResult[0].funsave_employee.doc);
+                this._router.navigate(['/employee/viewemployee']);
+            }
+            else {
+                alert("Error");
+            }
+        }, err => {
+            console.log(err);
+        }, () => {
+            // console.log("Complete");
+        });
+    }
+
+    getEmpDataById(pempid: number) {
+        this._empservice.getEmployee({ "flag": "id", "empid": pempid }).subscribe(data => {
+            var EmpDetails = data.data;
+
+            this.empid = EmpDetails[0].empid;
+            this.uid = EmpDetails[0].uid;
+            this.uname = EmpDetails[0].uname;
+            this.dob = EmpDetails[0].dob;
+            this.gender = EmpDetails[0].gender;
+            this.maritalstatus = EmpDetails[0].maritalstatus;
+            this.bloodgroup = EmpDetails[0].bloodgroup;
+            this.familybg = EmpDetails[0].familybg;
+            this.healthdtls = EmpDetails[0].healthdtls;
+            this.mobileno = EmpDetails[0].mobileno;
+            this.altmobileno = EmpDetails[0].altmobileno;
+            this.altemailid = EmpDetails[0].altemailid;
+            this.country = EmpDetails[0].country;
+            this.state = EmpDetails[0].state;
+            this.city = EmpDetails[0].city;
+            this.pincode = EmpDetails[0].pincode;
+            this.addressline1 = EmpDetails[0].addressline1;
+            this.addressline2 = EmpDetails[0].addressline2;
+            this.aboutus = EmpDetails[0].aboutus;
+            this.companyname = EmpDetails[0].companyname;
+            this.deptid = EmpDetails[0].deptid;
+            this.desigid = EmpDetails[0].desigid;
+            this.salary = EmpDetails[0].salary;
+            this.salarymode = EmpDetails[0].salarymode;
+            this.companyemail = EmpDetails[0].companyemail;
+            this.noticedays = EmpDetails[0].noticedays;
+            this.doj = EmpDetails[0].doj;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     ngOnInit() {
@@ -115,12 +246,12 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['UserID'] !== undefined) {
+            if (params['empid'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.UserID = params['UserID'];
-                this.getEmpDataById(this.UserID);
+                this.empid = params['empid'];
+                this.getEmpDataById(this.empid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -137,96 +268,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         });
     }
 
-    getEmpDataById(userId: string) {
-        this._empservice.viewEmployeeDetails({ "FilterType": "Details", "UserID": userId, "SearchTxt": "" }).subscribe(data => {
-            this.viewEmpDetails = JSON.parse(data.data);
-
-            console.log(this.UserID);
-            console.log("abc");
-            console.log(this.viewEmpDetails);
-
-            this.EmpID = this.viewEmpDetails[0].EmpID;
-            this.DateOfBirth = this.viewEmpDetails[0].DateOfBirth;
-            this.Gender = this.viewEmpDetails[0].GenderID;
-            this.MaritalStatus = this.viewEmpDetails[0].MaritalStatus;
-            this.BloodGroup = this.viewEmpDetails[0].BloodGroup;
-            this.FamilyBackground = this.viewEmpDetails[0].FamilyBackground;
-            this.HealthDetails = this.viewEmpDetails[0].HealthDetails;
-            this.MobileNo = this.viewEmpDetails[0].MobileNo;
-            this.AltMobileNo = this.viewEmpDetails[0].AlternateMobileNo;
-            this.AltEmailAddress = this.viewEmpDetails[0].AlternateEmailID;
-            this.Country = this.viewEmpDetails[0].Country;
-            this.Zone = this.viewEmpDetails[0].Zone;
-            this.State = this.viewEmpDetails[0].State;
-            this.City = this.viewEmpDetails[0].City;
-            this.PinCode = this.viewEmpDetails[0].PinCode;
-            this.PermanentAddress = this.viewEmpDetails[0].PermanentAddress;
-            this.CurrentAddress = this.viewEmpDetails[0].CurrentAddress;
-            this.AboutUs = this.viewEmpDetails[0].AboutUs;
-            this.Branch = this.viewEmpDetails[0].Branch;
-            this.Department = this.viewEmpDetails[0].DeptID;
-            this.Designation = this.viewEmpDetails[0].DesignationID;
-            this.SalaryMode = this.viewEmpDetails[0].SalaryMode;
-            this.CompanyEmailAddress = this.viewEmpDetails[0].CompanyEmail;
-            this.NoticeDays = this.viewEmpDetails[0].NoticeDays;
-            this.JoiningDate = this.viewEmpDetails[0].JoiningDate;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    saveEmployeeData() {
-        var saveEmp = {
-            "EmpID": this.EmpID,
-            "DateOfBirth": this.DateOfBirth,
-            "Gender": this.Gender,
-            "MaritalStatus": this.MaritalStatus,
-            "BloodGroup": this.BloodGroup,
-            "FamilyBackground": this.FamilyBackground,
-            "HealthDetails": this.HealthDetails,
-            "MobileNo": this.MobileNo,
-            "AlternateMobileNo": this.AltMobileNo,
-            "AlternateEmailID": this.AltEmailAddress,
-            "Country": this.Country,
-            "Zone": this.Zone,
-            "State": this.State,
-            "City": this.City,
-            "PinCode": this.PinCode,
-            "PermanentAddress": this.PermanentAddress,
-            "CurrentAddress": this.CurrentAddress,
-            "AboutUs": this.AboutUs,
-            "Branch": this.Branch,
-            "DeptID": this.Department,
-            "DesignationID": this.Designation,
-            "SalaryMode": this.SalaryMode,
-            "CompanyEmail": this.CompanyEmailAddress,
-            "NoticeDays": this.NoticeDays,
-            "JoiningDate": this.JoiningDate,
-            "CreatedBy": "vivek",
-            "UpdatedBy": "vivek",
-            "PreviousExperienceDetails": ""
-        }
-
-        this._empservice.saveEmployeeDetails(saveEmp).subscribe(data => {
-            var dataResult = JSON.parse(data.data);
-            console.log(dataResult);
-
-            if (dataResult[0].Doc != "-1") {
-                alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
-                this._router.navigate(['/employee/viewemployee']);
-            }
-            else {
-                alert("Error");
-            }
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
-    }
-
     actionBarEvt(evt) {
         if (evt === "save") {
             this.saveEmployeeData();
@@ -234,6 +275,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
+
+            $('#uname').attr('disabled', 'disabled');
 
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;

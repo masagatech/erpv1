@@ -50,7 +50,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
     }
 
     getEmployeeData() {
-        this._empservice.viewEmployeeDetails({ "flag": "all" }).subscribe(data => {
+        this._empservice.getEmployee({ "flag": "all" }).subscribe(data => {
             this.viewEmployeeDT = data.data;
             debugger;
         }, err => {
@@ -64,7 +64,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
         if (row.issh == 0) {
             row.issh = 1;
             if (row.details.length === 0) {
-                this._empservice.viewEmployeeDetails({ "flag": "details", "empid": row.empid }).subscribe(data => {
+                this._empservice.getEmployee({ "flag": "details", "empid": row.empid }).subscribe(data => {
                     row.details = data.data;
                 }, err => {
                     console.log("Error");

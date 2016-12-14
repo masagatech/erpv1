@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 export class EmpService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    viewEmployeeDetails(req: any) {
+    getEmployee(req: any) {
         return this._dataserver.post("getEmployee", req)
     }
 
-    saveEmployeeDetails(req: any) {
+    saveEmployee(req: any) {
         return this._dataserver.post("saveEmployee", req)
     }
 }

@@ -22,7 +22,7 @@ const routerConfig = [
         children: [
           { path: 'viewemployee', component: ViewEmployee, canActivateChid: [AuthGuard], },
           { path: 'addemployee', component: EmployeeAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'editemployee/:UserID', component: EmployeeAddEdit, canActivateChid: [AuthGuard], },
+          { path: 'editemployee/:empid', component: EmployeeAddEdit, canActivateChid: [AuthGuard], },
           { path: '', component: EmployeeDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
