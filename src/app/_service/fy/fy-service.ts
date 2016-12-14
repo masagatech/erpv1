@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 export class FYService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getFinancialYear(req: any) {
-        return this._dataserver.post("GetFinancialYear", req)
+    getfy(req: any) {
+        return this._dataserver.post("getfy", req)
     }
 
-    saveFinancialYear(req: any) {
-        return this._dataserver.post("SaveFinancialYear", req)
+    savefy(req: any) {
+        return this._dataserver.post("savefy", req)
     }
 }
