@@ -144,7 +144,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     saveEmployeeData() {
-        debugger;
         var saveEmp = {
             "empid": this.empid,
             "uid": this.uid,
