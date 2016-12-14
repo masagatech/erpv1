@@ -34,11 +34,11 @@ export class AddUserRights implements OnInit, OnDestroy {
     FYID: number = 0;
 
     DeptID: number = 0;
-    UserID: any = "";
-    UserName: any = "";
+    uid: any = "";
+    uname: any = "";
 
-    ReferenceUserID: any = "";
-    ReferenceUserName: any = "";
+    refuid: any = "";
+    refuname: any = "";
 
     MenuName: any;
     fyName: any;
@@ -51,11 +51,11 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     }
 
-    getUserAuto(me: any, type: any) {
+    getUserAuto(me: any) {
         var that = this;
 
-        this._commonservice.getAutoData({ "Type": "UserWithCode", "Key": this.UserName }).subscribe(data => {
-            $(".username").autocomplete({
+        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+            $(".uname").autocomplete({
                 source: data.data,
                 width: 300,
                 max: 20,
@@ -66,11 +66,11 @@ export class AddUserRights implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.UserID = ui.item.value;
-                    me.UserName = ui.item.label;
+                    me.uid = ui.item.value;
+                    me.uname = ui.item.label;
 
-                    me.ReferenceUserID = ui.item.value;
-                    me.ReferenceUserName = ui.item.label;
+                    me.Referenceuid = ui.item.value;
+                    me.refuname = ui.item.label;
 
                     that.getCompanyDetails(ui.item.value);
                 }
@@ -82,11 +82,11 @@ export class AddUserRights implements OnInit, OnDestroy {
         })
     }
 
-    getReferenceUserAuto(me: any, type: any) {
-        this._commonservice.getAutoData({ "UserID": this.UserID, "Type": "UserMenuMapp", "Key": this.ReferenceUserName }).subscribe(data => {
-            debugger;
+    getRefUserAuto(me: any) {
+        var that = this;
 
-            $(".refusername").autocomplete({
+        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+            $(".refuname").autocomplete({
                 source: data.data,
                 width: 300,
                 max: 20,
@@ -97,8 +97,8 @@ export class AddUserRights implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.ReferenceUserID = ui.item.value;
-                    me.ReferenceUserName = ui.item.label;
+                    me.refuid = ui.item.value;
+                    me.refuname = ui.item.label;
                 }
             });
         }, err => {
@@ -119,9 +119,6 @@ export class AddUserRights implements OnInit, OnDestroy {
         })
     }
 
-    HideMenu() {
-    }
-
     getMenuRights(rights) {
         return rights.split(',');
     }
@@ -129,7 +126,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     getFYDetails(row) {
         var that = this;
 
-        that._commonservice.getMOM({ "MasterType": "UsersFY", "UserID": this.UserID, "CompanyID": row.CompanyID }).subscribe(data => {
+        that._commonservice.getMOM({ "type": "UsersFY", "uid": this.uid, "CompanyID": row.CompanyID }).subscribe(data => {
             that.FYDetails = data.data;
         }, err => {
             console.log("Error");
@@ -141,7 +138,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     getMenuDetails(row) {
         var that = this;
 
-        that._userservice.getMenuMaster({ "userid": that.UserID, "companyid": row.CompanyID }).subscribe(data => {
+        that._userservice.getMenuMaster({ "uid": that.uid, "companyid": row.CompanyID }).subscribe(data => {
             row.MenuDetails = data.data;
             that.selectedCompany = row;
 
@@ -184,7 +181,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         debugger;
 
         var saveUR = {
-            "UserID": this.UserID,
+            "uid": this.uid,
             "CompanyID": this.selectedCompany.CompanyID,
             "FYID": this.FYID,
             "GiveRights": this.getUserRights(),
@@ -194,7 +191,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         console.log(saveUR);
 
-        if (this.UserID == "") {
+        if (this.uid == "") {
             alert("Please Enter User");
         }
         else if (this.FYID == 0) {
@@ -251,7 +248,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         var giverights = null;
         var rights = null;
         this.clearcheckboxes();
-        that._userservice.viewUserRights({ "UserID": that.ReferenceUserID, "CompanyID": row.CompanyID, "FYID": that.FYID, "FilterType": "Details" }).subscribe(data => {
+        that._userservice.viewUserRights({ "uid": that.Referenceuid, "CompanyID": row.CompanyID, "FYID": that.FYID, "FilterType": "Details" }).subscribe(data => {
             var viewUR = data.data;
             var menuitem = null;
             for (var i = 0; i <= viewUR.length - 1; i++) {
@@ -283,14 +280,14 @@ export class AddUserRights implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['UserID'] !== undefined) {
+            if (params['uid'] !== undefined) {
                 this.title = "Edit User Rights";
 
-                this.UserID = params['UserID'];
-                console.log(params['UserID']);
+                this.uid = params['uid'];
+                console.log(params['uid']);
 
                 //var row = this.CompanyDetails;
-                //this.getUserRightsById(params['UserID']);
+                //this.getUserRightsById(params['uid']);
             }
             else {
                 this.title = "Add User Rights";
