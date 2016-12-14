@@ -18,9 +18,9 @@ export class AddFY implements OnInit, OnDestroy {
     title: any;
     validSuccess: Boolean = true;
 
-    FYID: number = 0;
-    FromDate: any = "";
-    ToDate: any = "";
+    fyid: number = 0;
+    fromdt: any = "";
+    todt: any = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -28,30 +28,15 @@ export class AddFY implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     CompanyDetails: any = [];
-    YearDT: any = [];
-    viewFYDT: any = [];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService, ) {
-        this.getMOM();
-        this.getCompanyDetails();
-    }
-
-    getMOM() {
-        this._commonservice.getMOM({ "MasterType": "FinancialYear" }).subscribe(data => {
-            this.YearDT = JSON.parse(data.data);
-            this.FromDate = this.YearDT[0].ID;
-            this.ToDate = this.YearDT[0].ID;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            console.log("Complete");
-        })
+        //this.getCompanyDetails();
     }
 
     getCompanyDetails() {
         this._compservice.viewCompanyDetails({ "CompanyID": "0", "SearchTxt": "" }).subscribe(data => {
-            this.CompanyDetails = JSON.parse(data.data);
+            this.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -60,11 +45,11 @@ export class AddFY implements OnInit, OnDestroy {
     }
 
     isValidSuccess() {
-        if (this.FromDate == "") {
+        if (this.fromdt == "") {
             alert("Enter From Year !!!!");
             return false;
         }
-        if (this.ToDate == "") {
+        if (this.todt == "") {
             alert("Enter To Year !!!!");
             return false;
         }
@@ -72,14 +57,14 @@ export class AddFY implements OnInit, OnDestroy {
         return true;
     }
 
-    getFYDetailsById(FYId: number) {
-        this._fyservice.getFinancialYear({ "FYID": FYId, "FilterType": "Details" }).subscribe(data => {
-            this.viewFYDT = JSON.parse(data.data);
-            console.log(this.viewFYDT);
+    getFYDetailsById(pfyid: number) {
+        this._fyservice.getfy({ "flag": "id", "fyid": pfyid }).subscribe(data => {
+            var FYDT = data.data;
+            console.log(FYDT);
 
-            this.FYID = this.viewFYDT[0].FYID;
-            this.FromDate = this.viewFYDT[0].FromDate;
-            this.ToDate = this.viewFYDT[0].ToDate;
+            this.fyid = FYDT[0].fyid;
+            this.fromdt = FYDT[0].fromdt;
+            this.todt = FYDT[0].todt;
         }, err => {
             console.log("Error");
         }, () => {
@@ -95,42 +80,45 @@ export class AddFY implements OnInit, OnDestroy {
         debugger;
 
         var saveFY = {
-            "FYID": this.FYID,
-            "FromDate": this.FromDate,
-            "ToDate": this.ToDate,
-            "CreatedBy": "Vivek",
-            "UpdatedBy": "Vivek"
+            "fyid": this.fyid,
+            "fromdt": this.fromdt,
+            "todt": this.todt,
+            "createdby": "1:vivek",
+            "updatedby": "1:vivek"
         }
 
         if (this.validSuccess) {
-            this._fyservice.saveFinancialYear(saveFY).subscribe(data => {
-                var dataResult = JSON.parse(data.data);
+            this._fyservice.savefy(saveFY).subscribe(data => {
+                var dataResult = data.data;
                 console.log(dataResult);
 
-                if (dataResult[0].FYID !== "-1") {
-                    alert(dataResult[0].Status);
+                if (dataResult[0].funsave_fy.doc == "1") {
+                    alert(dataResult[0].funsave_fy.msg);
 
-                    var companyid = "";
-                    var fyrights = "<fy>";
+                    // var companyid = "";
+                    // var fyrights = "<fy>";
 
-                    for (var i = 0; i <= this.CompanyDetails.length - 1; i++) {
-                        companyitem = null;
-                        companyitem = this.CompanyDetails[i];
+                    // for (var i = 0; i <= this.CompanyDetails.length - 1; i++) {
+                    //     companyitem = null;
+                    //     companyitem = this.CompanyDetails[i];
 
-                        if (companyitem !== null) {
+                    //     if (companyitem !== null) {
 
-                            $("#C" + companyitem.CompanyID).find("input[type=checkbox]").each(function () {
-                                companyid += (this.checked ? $(this).val() + "," : "");
-                            });
-                        }
-                    }
+                    //         $("#C" + companyitem.CompanyID).find("input[type=checkbox]").each(function () {
+                    //             companyid += (this.checked ? $(this).val() + "," : "");
+                    //         });
+                    //     }
+                    // }
 
-                    fyrights += "<id>" + dataResult[0].FYID + "</id>";
-                    fyrights = "</fy>";
+                    // fyrights += "<id>" + dataResult[0].FYID + "</id>";
+                    // fyrights = "</fy>";
 
-                    this.updateCompanyFYMapping(companyid, fyrights);
+                    // this.updateCompanyFYMapping(companyid, fyrights);
 
                     this._router.navigate(['/setting/financialyear']);
+                }
+                else if (dataResult[0].funsave_fy.doc == "-1") {
+                    alert(dataResult[0].funsave_fy.msg);
                 }
                 else {
                     alert("Error");
@@ -145,48 +133,7 @@ export class AddFY implements OnInit, OnDestroy {
 
     updateCompanyFYMapping(strCompID, fyRights) {
         this._compservice.updateCompanyFYMapping({ "strCompID": strCompID, "FYRights": fyRights }).subscribe(data => {
-            var dataResult2 = JSON.parse(data.data);
-
-            if (dataResult2[0].FYID !== "-1") {
-            }
-            else {
-                alert("Error");
-            }
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
-    }
-
-    updateCompanyFYMappingOld(FYID) {
-        var CompanyFYMap = "<r>";
-        var GiveRights = "";
-
-        for (var i = 0; i <= this.CompanyDetails.length - 1; i++) {
-            debugger;
-            var company = this.CompanyDetails[i];
-
-            if (company !== null) {
-                GiveRights = "";
-
-                if (company.IsCompanyCheck == true) {
-                    GiveRights += FYID;
-                }
-            }
-
-            CompanyFYMap += "<i>";
-            CompanyFYMap += "<CompanyID>" + company.CompanyID + "</CompanyID>";
-            CompanyFYMap += "<FYRights>" + GiveRights + "</FYRights>";
-            CompanyFYMap += "</i>";
-        }
-
-        CompanyFYMap += "</r>";
-
-        console.log(CompanyFYMap);
-
-        this._compservice.updateCompanyFYMapping({ "CompanyFYMap": CompanyFYMap }).subscribe(data => {
-            var dataResult2 = JSON.parse(data.data);
+            var dataResult2 = data.data;
 
             if (dataResult2[0].FYID !== "-1") {
             }
@@ -222,12 +169,12 @@ export class AddFY implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['FYID'] !== undefined) {
+            if (params['fyid'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.FYID = params['FYID'];
-                this.getFYDetailsById(this.FYID);
+                this.fyid = params['fyid'];
+                this.getFYDetailsById(this.fyid);
 
                 $('select').attr('disabled', 'disabled');
             }

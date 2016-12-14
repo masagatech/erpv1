@@ -28,8 +28,8 @@ export class ViewFY implements OnInit, OnDestroy {
     }
 
     getFYData() {
-        this._fyservice.getFinancialYear({ "FYID": "0" }).subscribe(data => {
-            this.viewFYDT = JSON.parse(data.data);
+        this._fyservice.getfy({ "flag":"all" }).subscribe(data => {
+            this.viewFYDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -38,7 +38,7 @@ export class ViewFY implements OnInit, OnDestroy {
     }    
 
     openFYDetails(row) {
-        this._router.navigate(['/setting/editfinancialyear', row.FYID]);
+        this._router.navigate(['/setting/editfinancialyear', row.fyid]);
     }
 
     actionBarEvt(evt) {
