@@ -75,7 +75,7 @@ export class CompanyAddEdit implements OnInit, OnDestroy {
     }
 
     fillDropDownList() {
-        this._commonservice.getMasterOfMaster({ "MasterType": "Company" }).subscribe(data => {
+        this._commonservice.getMOM({ "MasterType": "Company" }).subscribe(data => {
             var d = JSON.parse(data.data);
 
             // BIND Industries TO DROPDOWN

@@ -33,12 +33,12 @@ export class AddFY implements OnInit, OnDestroy {
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService, ) {
-        this.getMasterOfMaster();
+        this.getMOM();
         this.getCompanyDetails();
     }
 
-    getMasterOfMaster() {
-        this._commonservice.getMasterOfMaster({ "MasterType": "FinancialYear" }).subscribe(data => {
+    getMOM() {
+        this._commonservice.getMOM({ "MasterType": "FinancialYear" }).subscribe(data => {
             this.YearDT = JSON.parse(data.data);
             this.FromDate = this.YearDT[0].ID;
             this.ToDate = this.YearDT[0].ID;

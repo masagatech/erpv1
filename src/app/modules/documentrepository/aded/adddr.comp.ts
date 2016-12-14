@@ -39,12 +39,8 @@ export class DRAddEdit implements OnInit, OnDestroy {
     viewEmpData: any[] = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _drservice: DRService, private _commonservice: CommonService) {
-        this._commonservice.getMasterOfMaster({ "MasterType": "DocumentRepository" }).subscribe(data => {
-            var d = JSON.parse(data.data);
-
-            // BIND Gender TO DROPDOWN
-            this.TagDT = d.filter(a => a.Group === "DocType");
-            this.newTag = this.TagDT[0].ID; // SET DEFAULT Gender VALUE
+        this._commonservice.getMOM({ "flag": "DocType" }).subscribe(data => {
+            this.TagDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -93,7 +89,7 @@ export class DRAddEdit implements OnInit, OnDestroy {
     }
 
     getAutoComplete() {
-        this._commonservice.getAutoCompleteData({ "Type": "EmpWithCode", "Key": this.EmpName }).subscribe(data => {
+        this._commonservice.getAutoData({ "Type": "EmpWithCode", "Key": this.EmpName }).subscribe(data => {
             $(".empame").autocomplete({
                 source: JSON.parse(data.data),
                 width: 300,

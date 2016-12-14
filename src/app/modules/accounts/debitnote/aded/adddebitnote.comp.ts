@@ -92,7 +92,7 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
     }
 
     getAutoComplete(me: any, arg: number) {
-        this._commonservice.getAutoCompleteData({ "Type": "CustName", "Key": arg == 1 ? me.AccName : arg == 2 ? me.dnAccName : me.newAccName }).subscribe(data => {
+        this._commonservice.getAutoData({ "Type": "CustName", "Key": arg == 1 ? me.AccName : arg == 2 ? me.dnAccName : me.newAccName }).subscribe(data => {
             $(function () {
                 this.viewCustomerDT = JSON.parse(data.data);
 

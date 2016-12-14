@@ -54,9 +54,9 @@ export class AddUserRights implements OnInit, OnDestroy {
     getUserAuto(me: any, type: any) {
         var that = this;
 
-        this._commonservice.getAutoCompleteData({ "Type": "UserWithCode", "Key": this.UserName }).subscribe(data => {
+        this._commonservice.getAutoData({ "Type": "UserWithCode", "Key": this.UserName }).subscribe(data => {
             $(".username").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -83,11 +83,11 @@ export class AddUserRights implements OnInit, OnDestroy {
     }
 
     getReferenceUserAuto(me: any, type: any) {
-        this._commonservice.getAutoCompleteData({ "UserID": this.UserID, "Type": "UserMenuMapp", "Key": this.ReferenceUserName }).subscribe(data => {
+        this._commonservice.getAutoData({ "UserID": this.UserID, "Type": "UserMenuMapp", "Key": this.ReferenceUserName }).subscribe(data => {
             debugger;
 
             $(".refusername").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -108,9 +108,9 @@ export class AddUserRights implements OnInit, OnDestroy {
         })
     }
 
-    getCompanyDetails(vuserid) {
-        this._commonservice.getMasterOfMaster({ "MasterType": "UsersCompany", "UserID": vuserid }).subscribe(data => {
-            this.CompanyDetails = JSON.parse(data.data);
+    getCompanyDetails(uid) {
+        this._commonservice.getMOM({ "flag": "company", "uid": uid }).subscribe(data => {
+            this.CompanyDetails = data.data;
             debugger;
         }, err => {
             console.log("Error");
@@ -129,8 +129,8 @@ export class AddUserRights implements OnInit, OnDestroy {
     getFYDetails(row) {
         var that = this;
 
-        that._commonservice.getMasterOfMaster({ "MasterType": "UsersFY", "UserID": this.UserID, "CompanyID": row.CompanyID }).subscribe(data => {
-            that.FYDetails = JSON.parse(data.data);
+        that._commonservice.getMOM({ "MasterType": "UsersFY", "UserID": this.UserID, "CompanyID": row.CompanyID }).subscribe(data => {
+            that.FYDetails = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -142,7 +142,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         var that = this;
 
         that._userservice.getMenuMaster({ "userid": that.UserID, "companyid": row.CompanyID }).subscribe(data => {
-            row.MenuDetails = JSON.parse(data.data);
+            row.MenuDetails = data.data;
             that.selectedCompany = row;
 
             that.getFYDetails(row);
@@ -203,7 +203,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         else {
             this._userservice.saveUserRights(saveUR).subscribe(data => {
                 debugger;
-                var dataResult = JSON.parse(data.data);
+                var dataResult = data.data;
                 console.log(dataResult);
 
                 if (dataResult[0].Doc != "-1") {
@@ -252,7 +252,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         var rights = null;
         this.clearcheckboxes();
         that._userservice.viewUserRights({ "UserID": that.ReferenceUserID, "CompanyID": row.CompanyID, "FYID": that.FYID, "FilterType": "Details" }).subscribe(data => {
-            var viewUR = JSON.parse(data.data);
+            var viewUR = data.data;
             var menuitem = null;
             for (var i = 0; i <= viewUR.length - 1; i++) {
                 menuitem = null;

@@ -61,7 +61,7 @@ export class JVAddEdit implements OnInit, OnDestroy {
     }
 
     getAutoComplete(me: any, arg: number) {
-        this._commonservice.getAutoCompleteData({ "Type": "CustName", "Key": arg == 0 ? me.newAccName : me.AccName }).subscribe(data => {
+        this._commonservice.getAutoData({ "Type": "CustName", "Key": arg == 0 ? me.newAccName : me.AccName }).subscribe(data => {
             $(".accname").autocomplete({
                 source: JSON.parse(data.data),
                 width: 300,

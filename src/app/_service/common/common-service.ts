@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 export class CommonService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getMasterOfMaster(req: any) {
-        return this._dataserver.post("GetMasterOfMaster", req)
+    getAutoData(req: any) {
+        return this._dataserver.post("getAutoData", req)
     }
 
-    getAutoCompleteData(req: any) {
-        return this._dataserver.post("GetAutoData", req)
+    getMOM(req: any) {
+        return this._dataserver.post("getMOM", req)
     }
 }

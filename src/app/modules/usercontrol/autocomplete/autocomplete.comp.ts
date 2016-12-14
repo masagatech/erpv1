@@ -25,7 +25,7 @@ export class AutoCompleteComponent implements OnInit, OnDestroy {
     }
 
     getAutoComplete(me: any) {
-        this._commonservice.getAutoCompleteData({ "Type": this.type, "Key": this.name }).subscribe(data => {
+        this._commonservice.getAutoData({ "Type": this.type, "Key": this.name }).subscribe(data => {
             $("#autocomplete").autocomplete({
                 source: JSON.parse(data.data),
                 delay: 100,
