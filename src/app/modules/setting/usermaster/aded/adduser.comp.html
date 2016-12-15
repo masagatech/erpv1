@@ -58,19 +58,17 @@
 								<div class="ui-grid-col-12">
 									<div class="ui-grid-row">
 										<div class="col-md-3">
-											<input id="{{row.CompanyID}}" type="checkbox" [(ngModel)]="row.IsCompanyCheck" value="{{row.CompanyID}}" (change)="selectAndDeselectCompanyWiseCheckboxes()"
-											/>&nbsp;{{row.CompanyName}}
+											<input id="{{row.cmpid}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" (change)="selectAndDeselectCompanyWiseCheckboxes(row)"
+											/>&nbsp;{{row.cmpname}}
 										</div>
 										<div class="col-md-1">
-											<img src="http://localhost:3000/assets/img/logo/{{row.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
-												width="50" height="50" />
+											<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50" height="50" />
 										</div>
-										<div class="col-md-8" id="C{{row.CompanyID}}">
-											<p-checkbox name="groupname" value="val1" label="text1"></p-checkbox>
-											<!--<label *ngFor="let fyrow of getFYRights(row.fyrights)">
+										<div class="col-md-8" id="C{{row.cmpid}}">
+											<label *ngFor="let fyrow of getFYData(row.fyrights)">
 												<input id="abc" type="checkbox" value="{{fyrow.fyid}}">
 												{{fyrow.fyname}}
-											</label>-->
+											</label>
 										</div>
 									</div>
 								</div>

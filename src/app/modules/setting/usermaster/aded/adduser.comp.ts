@@ -4,6 +4,7 @@ import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { UserService } from '../../../../_service/user/user-service' /* add reference for user */
 import { CompService } from '../../../../_service/company/comp-service' /* add reference for company */
+import { FYService } from '../../../../_service/fy/fy-service' /* add reference for view FY */
 import { Router, ActivatedRoute } from '@angular/router';
 import { LazyLoadEvent, Checkbox } from 'primeng/primeng';
 
@@ -11,13 +12,13 @@ declare var $: any;
 
 @Component({
     templateUrl: 'adduser.comp.html',
-    providers: [UserService, CompService]
+    providers: [UserService, CompService, FYService]
 })
 
 export class AddUser implements OnInit, OnDestroy {
     title: any;
     validSuccess: Boolean = true;
-
+    fydata: any = [];
     uid: any;
     ucode: any;
     firstname: any;
@@ -25,6 +26,7 @@ export class AddUser implements OnInit, OnDestroy {
     emailid: any;
     pwd: any;
     confpwd: any;
+    financialyear: any = [];
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -37,7 +39,7 @@ export class AddUser implements OnInit, OnDestroy {
     CompanyDetails: any = [];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
-        private _userservice: UserService, private _compservice: CompService) {
+        private _userservice: UserService, private _compservice: CompService, private _fyservice: FYService) {
         var that = this;
 
         that.getCompanyDetails();
@@ -46,8 +48,9 @@ export class AddUser implements OnInit, OnDestroy {
     getCompanyDetails() {
         var that = this;
 
-        that._compservice.viewCompanyDetails({ "CompanyID": "0" }).subscribe(data => {
-            that.CompanyDetails = JSON.parse(data.data);
+        that._compservice.getCompany({ "flag": "actwithfy" }).subscribe(data => {
+            that.CompanyDetails = data.data[0];
+            that.financialyear = data.data[1]
         }, err => {
             console.log("Error");
         }, () => {
@@ -55,8 +58,14 @@ export class AddUser implements OnInit, OnDestroy {
         })
     }
 
-    getFYRights(fyrights) {
-        return JSON.parse(fyrights);
+    getFYData(row) {
+        var that = this;
+
+        if (row != null) {
+            return that.fydata = that.financialyear.filter(a => row.map(function (d) { return parseInt(d['fyid']); }).indexOf(parseInt(a.fyid)) !== -1);
+        } else {
+            return [];
+        }
     }
 
     allCheck: boolean = false;
@@ -72,11 +81,11 @@ export class AddUser implements OnInit, OnDestroy {
 
     private selectAndDeselectCompanyWiseCheckboxes(row) {
         debugger;
-        if (row.IsCompanyCheck == true) {
-            $("#C" + row.CompanyID + " input[type=checkbox]").prop('checked', false);
+        if (row.iscmpcheck == true) {
+            $("#C" + row.cmpid + " input[type=checkbox]").prop('checked', false);
         }
         else {
-            $("#C" + row.CompanyID + " input[type=checkbox]").prop('checked', true);
+            $("#C" + row.cmpid + " input[type=checkbox]").prop('checked', true);
         }
     }
 
@@ -130,24 +139,17 @@ export class AddUser implements OnInit, OnDestroy {
             that.lastname = UserDT[0].lastname;
             that.emailid = UserDT[0].emailid;
 
-            // var CompanyRights = data.Table1;
+            var cmprights = UserDT[0].companyrights;
 
-            // var rights = null;
-            // var companyitem = null;
+            var rights = null;
+            var cmpitem = null;
 
-            // for (var i = 0; i <= CompanyRights.length - 1; i++) {
-            //     companyitem = null;
-            //     rights = null;
+            for (var i = 0; i <= cmprights.length - 1; i++) {
+                cmpitem = null;
+                cmpitem = cmprights[i];
 
-            //     companyitem = CompanyRights[i];
-            //     rights = companyitem.rights.split(',');
-
-            //     if (rights != null) {
-            //         for (var j = 0; j <= rights.length - 1; j++) {
-            //             $("#C" + companyitem.companyid).find("#" + companyitem.companyid + rights[j]).prop('checked', true);
-            //         }
-            //     }
-            // }
+                $("#C" + cmpitem.cmpid).find("#" + cmpitem.cmpid + cmprights[i]).prop('checked', true);
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -158,7 +160,7 @@ export class AddUser implements OnInit, OnDestroy {
     getCompanyRights() {
         var that = this;
 
-        var GiveRights = "<companys>";
+        var GiveRights = [];
         var companyitem = null;
 
         for (var i = 0; i <= that.CompanyDetails.length - 1; i++) {
@@ -168,17 +170,15 @@ export class AddUser implements OnInit, OnDestroy {
             if (companyitem !== null) {
                 var fyrights = "";
 
-                $("#C" + companyitem.CompanyID).find("input[type=checkbox]").each(function () {
+                $("#C" + companyitem.cmpid).find("input[type=checkbox]").each(function () {
                     fyrights += (this.checked ? $(this).val() + "," : "");
                 });
 
                 if (fyrights != "") {
-                    GiveRights += "<company id=\"" + companyitem.CompanyID + "\"><fyrights>" + fyrights.slice(0, -1) + "</fyrights></company>";
+                    GiveRights.push({ "cmpid": companyitem.cmpid, "fyid": fyrights.slice(0, -1) });
                 }
             }
         }
-
-        GiveRights += "</companys>";
 
         return GiveRights;
     }
@@ -187,7 +187,10 @@ export class AddUser implements OnInit, OnDestroy {
         var that = this;
 
         that.validSuccess = that.isValidSuccess();
-        console.log(that.validSuccess);
+        var cmprights = that.getCompanyRights();
+        console.log(cmprights);
+
+        debugger;
 
         var saveUser = {
             "uid": that.uid,
@@ -196,14 +199,13 @@ export class AddUser implements OnInit, OnDestroy {
             "lastname": that.lastname,
             "emailid": that.emailid,
             "pwd": that.pwd,
-            "iscpwd": that.iscpwd
-            //"companyrights": that.getCompanyRights()
+            "iscpwd": that.iscpwd,
+            "companyrights": cmprights
         }
 
         if (that.validSuccess) {
             that._userservice.saveUsers(saveUser).subscribe(data => {
                 var dataResult = data.data;
-                debugger;
                 console.log(dataResult);
 
                 if (dataResult[0].funsave_user.doc == "1") {
