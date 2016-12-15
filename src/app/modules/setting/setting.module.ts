@@ -19,7 +19,8 @@ import { GroupByPipe } from '../../_pipe/groupby.pipe'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule } from 'primeng/primeng';
+import { DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule,
+   FileUploadModule, GrowlModule, MessagesModule } from 'primeng/primeng';
 
 const routerConfig = [
   {
@@ -52,7 +53,8 @@ const routerConfig = [
 
 @NgModule({
   imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-    DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule],
+    DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule,
+    FileUploadModule, GrowlModule, MessagesModule],
   declarations: [
     CompanyAddEdit,
     ViewCompany,
