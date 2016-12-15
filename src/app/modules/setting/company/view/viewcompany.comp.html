@@ -2,27 +2,26 @@
 	<div class="col-md-10">
 	</div>
 	<div class="col-md-2" align="center">
-		<i ng-model="Grid" (click)="ShowHideCompany('Grid')" class="fa fa-th fa-lg"></i> &nbsp;
-		<i ng-model="List" (click)="ShowHideCompany('List')" class="fa fa-list fa-lg"></i>
+		<i ng-model="Grid" (click)="isshcompany('Grid')" class="fa fa-th fa-lg"></i> &nbsp;
+		<i ng-model="List" (click)="isshcompany('List')" class="fa fa-list fa-lg"></i>
 	</div>
 </div>
 <div class="col-md-12">
 	&nbsp;
 </div>
-<div class="col-md-12" style="height:70%; overflow-x: auto;" *ngIf="IsVisibleGrid">
-	<div class="col-md-2" *ngFor="let row of CompanyDetails" style="margin-bottom: 10px;">
+<div class="col-md-12" style="height:70%; overflow-x: auto;" *ngIf="isShowGrid">
+	<div class="col-md-2" *ngFor="let row of company" style="margin-bottom: 10px;">
 		<a role="button" (click)="openCompanyDetails(row)">
 			<div style="height: 140px; border: solid 1px #eeeeee; text-align: center; padding: 10px 0;">
-				<img src="http://localhost:3000/assets/img/logo/{{row.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
-					width="120px" />
+				<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="120px" />
 			</div>
 			<div style="border: solid 1px #eeeeee; text-align: center; padding: 5px 0;">
-				{{row.CompanyName}}
+				{{row.cmpname}}
 			</div>
 		</a>
 	</div>
 </div>
-<div class="col-md-12" *ngIf="IsVisibleList">
+<div class="col-md-12" *ngIf="isShowList">
 	<!--<ul class="list-group" style="height:70%; overflow-x: auto;">
 		<li class="list-group-item" *ngFor="let row of CompanyDetails">
 		</li>
@@ -38,28 +37,27 @@
 				<th width="150px">Created On</th>
 			</tr>
 		</thead>
-		<tbody *ngFor="let row of CompanyDetails">
+		<tbody *ngFor="let row of company">
 			<tr>
 				<td width="30px">
 					<a role="button" (click)="openCompanyDetails(row)">
-						<img src="http://localhost:3000/img/logo/{{row.CompanyLogo}}" onerror="this.src='http://localhost:3000/img/logo/No_img.gif';"
-							width="30px" />
+						<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_img.gif';" width="30px" />
 					</a>
 				</td>
 				<td width="200px">
-					{{row.CompanyName}}
+					{{row.cmpname}}
 				</td>
 				<td width="200px">
-					{{row.ContactPerson}}
+					{{row.contactperson}}
 				</td>
 				<td width="400px">
-					{{row.IsCollapseAddress == 1 ? row.Address : row.SmallAddress}}
+					{{row.isshaddr == 1 ? row.lgaddr : row.smaddr}}
 					<a role="button" (click)="viewFullAddress(row)" style="float:right;">
-                        {{row.IsCollapseAddress == 1 ? 'Less' : row.IsBigAddress}}
+                        {{row.isshaddr == 1 ? 'Less' : row.islgaddr}}
 					</a>
 				</td>
 				<td width="150px">
-					{{row.FormattedCreatedOn}}
+					{{row.createdon}}
 				</td>
 			</tr>
 		</tbody>

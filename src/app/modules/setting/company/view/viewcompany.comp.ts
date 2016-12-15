@@ -15,18 +15,18 @@ export class ViewCompany implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    IsVisibleGrid: any = true;
-    IsVisibleList: any = false;
+    isShowGrid: any = true;
+    isShowList: any = false;
 
-    CompanyDetails: any[];
+    company: any[];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _compservice: CompService) {
-        this.getCompanyDetails();
+        this.getCompany();
     }
 
-    getCompanyDetails() {
-        this._compservice.viewCompanyDetails({ "CompanyID": "0", "SearchTxt": "" }).subscribe(data => {
-            this.CompanyDetails = JSON.parse(data.data);
+    getCompany() {
+        this._compservice.getCompany({ "flag": "all" }).subscribe(data => {
+            this.company = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -35,35 +35,35 @@ export class ViewCompany implements OnInit, OnDestroy {
     }
 
     viewFullDesc(row) {
-        if (row.IsCollapseDesc == 0) {
-            row.IsCollapseDesc = 1;
+        if (row.isshdesc == 0) {
+            row.isshdesc = 1;
         } else {
-            row.IsCollapseDesc = 0;
+            row.isshdesc = 0;
         }
     }
 
     viewFullAddress(row) {
-        if (row.IsCollapseAddress == 0) {
-            row.IsCollapseAddress = 1;
+        if (row.isshaddr == 0) {
+            row.isshaddr = 1;
         } else {
-            row.IsCollapseAddress = 0;
+            row.isshaddr = 0;
         }
     }
 
-    ShowHideCompany(viewtype) {
+    isshcompany(viewtype) {
         if (viewtype == "Grid") {
-            this.IsVisibleGrid = true;
-            this.IsVisibleList = false;
+            this.isShowGrid = true;
+            this.isShowList = false;
         }
         else {
-            this.IsVisibleGrid = false;
-            this.IsVisibleList = true;
+            this.isShowGrid = false;
+            this.isShowList = true;
         }
     }
 
     openCompanyDetails(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/setting/editcompany', row.CompanyID]);
+            this._router.navigate(['/setting/editcompany', row.cmpid]);
         }
     }
 

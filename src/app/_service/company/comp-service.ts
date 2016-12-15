@@ -6,12 +6,12 @@ import { Router } from '@angular/router';
 export class CompService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    viewCompanyDetails(req: any) {
-        return this._dataserver.post("GetCompanyMaster", req)
+    getCompany(req: any) {
+        return this._dataserver.post("getCompany", req)
     }
 
-    saveCompanyDetails(req: any) {
-        return this._dataserver.post("SaveCompanyDetails", req)
+    saveCompany(req: any) {
+        return this._dataserver.post("saveCompany", req)
     }
 
     updateCompanyFYMapping(req: any) {

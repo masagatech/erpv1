@@ -2,97 +2,93 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
-import { CompService } from '../../../../_service/company/comp-service'; /* add reference for company view */
+import { CompService } from '../../../../_service/company/comp-service'; /* add reference for cmp view */
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for master of master */
 import { Router, ActivatedRoute } from '@angular/router';
+import { FileUpload, Growl, Message } from 'primeng/primeng';
 
 declare var $: any;
 
 @Component({
-    templateUrl: 'addcompany.comp.html',
+    templateUrl: 'addCompany.comp.html',
     providers: [CompService, CommonService]
 })
 
 export class CompanyAddEdit implements OnInit, OnDestroy {
-    title: any;
+    title: any = "";
 
-    CompanyID: any;
-    CompanyCode: any;
-    CompanyName: any;
-    CompanyDesc: any;
-    Remarks: any;
-    Industries: any;
-    OrganisationType: any;
-    CompanyLogo: any;
+    cmpid: number = 0;
+    cmpcode: string = "";
+    cmpname: string = "";
+    cmpdesc: string = "";
+    cmplogo: string = "";
+    cmptype: string = "";
+    industries: string = "";
+    remarks: string = "";
 
-    ContactPerson: any;
-    Designation: any;
-    MobileNo: any;
-    AltMobileNo: any;
-    EmailAddress: any;
-    AltEmailAddress: any;
-    Country: any;
-    Zone: any;
-    State: any;
-    City: any;
-    PinCode: any;
-    Address: any;
+    contactperson: string = "";
+    desigid: number = 0;
+    mobileno: string = "";
+    altmobileno: string = "";
+    emailid: string = "";
+    altemailid: string = "";
+    country: string = "";
+    state: string = "";
+    city: string = "";
+    pincode: string = "";
+    addressline1: string = "";
+    addressline2: string = "";
+    
+    msgs: Message[];
+    uploadedFiles: any[] = [];
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     private subscribeParameters: any;
 
-    IndustriesDT: any[] = [];
-    DesignationDT: any[] = [];
-    OrganisationTypeDT: any[] = [];
-    CountryDT: any[] = [];
+    industriesDT: any = [];
+    desigDT: any = [];
+    cmptypeDT: any = [];
+    countryDT: any = [];
 
-    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _compservice: CompService, private _commonservice: CommonService) {
-        this.fillDropDownList();
+    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _compservice: CompService, private _commonservice: CommonService) {
+        this.fillDropDownList("Industries");
+        this.fillDropDownList("Designation");
+        this.fillDropDownList("CompanyType");
+        this.fillDropDownList("Country");
     }
 
-    public fileChangeEvent(fileInput: any) {
-        if (fileInput.target.files && fileInput.target.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function (e: any) {
-                $('.imgFilePath').attr('src', e.target.result);
-            }
-
-            reader.readAsDataURL(fileInput.target.files[0]);
-            this.CompanyLogo = fileInput.target.files[0].name;
-
-            console.log(fileInput.target.files[0]);
+    onUpload(event) {
+        for(let file of event.files) {
+            this.uploadedFiles.push(file);
         }
+    
+        this.msgs = [];
+        this.msgs.push({severity: 'info', summary: 'File Uploaded', detail: ''});
     }
 
-    onChange(event) {
-        var files = event.srcElement.files;
-        console.log(files);
-        this.CompanyLogo = files[0].name;
-        $('.imgFilePath').attr('src', files.name);
-    }
+    fillDropDownList(flag) {
+        this._commonservice.getMOM({ "group": flag }).subscribe(data => {
+            var d = data.data;
 
-    fillDropDownList() {
-        this._commonservice.getMOM({ "MasterType": "Company" }).subscribe(data => {
-            var d = JSON.parse(data.data);
-
-            // BIND Industries TO DROPDOWN
-            this.IndustriesDT = d.filter(a => a.Group === "Industries");
-            this.Industries = this.IndustriesDT[0].ID; // SET DEFAULT Industries VALUE
-
-            // BIND Designation TO DROPDOWN
-            this.DesignationDT = d.filter(a => a.Group === "Designation");
-            this.Designation = this.DesignationDT[0].ID; // SET DEFAULT Designation VALUE
-
-            // BIND OrganisationType TO DROPDOWN
-            this.OrganisationTypeDT = d.filter(a => a.Group === "OrganisationType");
-            this.OrganisationType = this.OrganisationTypeDT[0].ID; // SET DEFAULT OrganisationType VALUE
-
-            // BIND Country TO DROPDOWN
-            this.CountryDT = d.filter(a => a.Group === "Country");
-            this.Country = this.CountryDT[0].ID; // SET DEFAULT Country VALUE
+            if (flag == "Industries") {
+                // BIND Industries TO DROPDOWN
+                this.industriesDT = d;
+            }
+            else if (flag == "Designation") {
+                // BIND Designation TO DROPDOWN
+                this.desigDT = d;
+            }
+            else if (flag == "CompanyType") {
+                // BIND Company Type TO DROPDOWN
+                this.cmptypeDT = d;
+            }
+            else if (flag == "Country") {
+                // BIND Country TO DROPDOWN
+                this.countryDT = d;
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -109,14 +105,14 @@ export class CompanyAddEdit implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['CompanyID'] !== undefined) {
+            if (params['cmpid'] !== undefined) {
                 this.title = "Edit Company Details";
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.CompanyID = params['CompanyID'];
-                this.getCompanyDetailsById(this.CompanyID);
+                this.cmpid = params['cmpid'];
+                this.getCompanyById(this.cmpid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -135,32 +131,33 @@ export class CompanyAddEdit implements OnInit, OnDestroy {
         });
     }
 
-    getCompanyDetailsById(dCompanyID: any) {
-        this._compservice.viewCompanyDetails({ "CompanyID": dCompanyID, "SearchTxt": "" }).subscribe(data => {
-            var viewCompanyDetails = JSON.parse(data.data);
+    getCompanyById(pcmpid: any) {
+        this._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
+            var company = data.data;
 
-            console.log(viewCompanyDetails);
+            console.log(company);
 
-            this.CompanyID = viewCompanyDetails[0].CompanyID;
-            this.CompanyCode = viewCompanyDetails[0].CompanyCode;
-            this.CompanyName = viewCompanyDetails[0].CompanyName;
-            this.CompanyDesc = viewCompanyDetails[0].CompanyDesc;
-            this.Remarks = viewCompanyDetails[0].Remarks;
-            this.OrganisationType = viewCompanyDetails[0].TypeOfOrganisation;
-            this.Industries = viewCompanyDetails[0].Industries;
-            this.CompanyLogo = viewCompanyDetails[0].CompanyLogo;
+            this.cmpid = company[0].cmpid;
+            this.cmpcode = company[0].cmpcode;
+            this.cmpname = company[0].cmpname;
+            this.cmpdesc = company[0].cmpdesc;
+            this.remarks = company[0].remarks;
+            this.cmptype = company[0].cmptype;
+            this.industries = company[0].industries;
+            this.cmplogo = company[0].cmplogo;
 
-            this.ContactPerson = viewCompanyDetails[0].ContactPerson;
-            this.Designation = viewCompanyDetails[0].Designation;
-            this.EmailAddress = viewCompanyDetails[0].EmailID;
-            this.AltEmailAddress = viewCompanyDetails[0].AlternateEmailID;
-            this.MobileNo = viewCompanyDetails[0].MobileNo;
-            this.AltMobileNo = viewCompanyDetails[0].AlternateMobileNo;
-            this.Address = viewCompanyDetails[0].Address;
-            this.Country = viewCompanyDetails[0].Country;
-            this.State = viewCompanyDetails[0].State;
-            this.City = viewCompanyDetails[0].City;
-            this.PinCode = viewCompanyDetails[0].PinCode;
+            this.contactperson = company[0].contactperson;
+            this.desigid = company[0].desigid;
+            this.emailid = company[0].emailid;
+            this.altemailid = company[0].altemailid;
+            this.mobileno = company[0].mobileno;
+            this.altmobileno = company[0].altmobileno;
+            this.addressline1 = company[0].addressline1;
+            this.addressline2 = company[0].addressline2;
+            this.country = company[0].country;
+            this.state = company[0].state;
+            this.city = company[0].city;
+            this.pincode = company[0].pincode;
         }, err => {
             console.log("Error");
         }, () => {
@@ -169,37 +166,37 @@ export class CompanyAddEdit implements OnInit, OnDestroy {
     }
 
     saveCompanyData() {
-        var saveCompany = {
-            "CompanyID": this.CompanyID,
-            "CompanyCode": this.CompanyCode,
-            "CompanyName": this.CompanyName,
-            "CompanyDesc": this.CompanyDesc,
-            "Remarks": this.Remarks,
-            "Industries": this.Industries,
-            "TypeOfOrganisation": this.OrganisationType,
-            "CompanyLogo": this.CompanyLogo,
+        var savecmp = {
+            "cmpid": this.cmpid,
+            "cmpcode": this.cmpcode,
+            "cmpname": this.cmpname,
+            "cmpdesc": this.cmpdesc,
+            "remarks": this.remarks,
+            "industries": this.industries,
+            "cmptype": this.cmptype,
+            "cmplogo": this.cmplogo,
 
-            "ContactPerson": this.ContactPerson,
-            "Designation": this.Designation,
-            "EmailID": this.EmailAddress,
-            "AlternateEmailID": this.AltEmailAddress,
-            "MobileNo": this.MobileNo,
-            "AlternateMobileNo": this.AltMobileNo,
-            "Address": this.Address,
-            "Country": this.Country,
-            "State": this.State,
-            "City": this.City,
-            "PinCode": this.PinCode,
-            "CreatedBy": "vivek",
-            "UpdatedBy": "vivek"
+            "contactperson": this.contactperson,
+            "desigid": this.desigid,
+            "emailid": this.emailid,
+            "altemailid": this.altemailid,
+            "mobileno": this.mobileno,
+            "altmobileno": this.altmobileno,
+            "addressline1": this.addressline1,
+            "addressline2": this.addressline2,
+            "state": this.state,
+            "city": this.city,
+            "pincode": this.pincode,
+            "createdby": "1",
+            "updatedby": "1"
         }
 
-        this._compservice.saveCompanyDetails(saveCompany).subscribe(data => {
-            var dataResult = JSON.parse(data.data);
+        this._compservice.saveCompany(savecmp).subscribe(data => {
+            var dataResult = data.data;
             console.log(dataResult);
 
-            if (dataResult[0].Doc != "-1") {
-                alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
+            if (dataResult[0].funsave_company.msgid != "-1") {
+                alert(dataResult[0].funsave_company.msg);
                 this._router.navigate(['/setting/company']);
             }
             else {
