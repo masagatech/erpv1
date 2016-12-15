@@ -248,7 +248,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         var giverights = null;
         var rights = null;
         this.clearcheckboxes();
-        that._userservice.viewUserRights({ "uid": that.Referenceuid, "CompanyID": row.CompanyID, "FYID": that.FYID, "FilterType": "Details" }).subscribe(data => {
+        that._userservice.viewUserRights({ "uid": that.refuid, "CompanyID": row.CompanyID, "FYID": that.FYID, "FilterType": "Details" }).subscribe(data => {
             var viewUR = data.data;
             var menuitem = null;
             for (var i = 0; i <= viewUR.length - 1; i++) {
