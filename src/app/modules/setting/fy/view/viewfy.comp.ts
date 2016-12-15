@@ -35,7 +35,7 @@ export class ViewFY implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }    
+    }
 
     openFYDetails(row) {
         this._router.navigate(['/setting/editfinancialyear', row.fyid]);
