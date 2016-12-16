@@ -34,8 +34,8 @@ export class AddFY implements OnInit, OnDestroy {
         //this.getCompanyDetails();
     }
 
-    getCompanyDetails() {
-        this._compservice.viewCompanyDetails({ "CompanyID": "0", "SearchTxt": "" }).subscribe(data => {
+    getCompany() {
+        this._compservice.getCompany({ "CompanyID": "0", "SearchTxt": "" }).subscribe(data => {
             this.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
