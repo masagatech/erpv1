@@ -41,13 +41,13 @@
 						{{i+1}}
 					</td>
 					<td>
-						<input type="text" [(ngModel)]="row.AccName" class="accname form-control" (keyup)="getAutoComplete(row, 1)" />
+						<input type="text" [(ngModel)]="row.accname" class="accname form-control" (keyup)="getAutoComplete(row, 1)" />
 					</td>
 					<td class="textalign">
-						<input type="text" [(ngModel)]="row.DebitAmount" class="form-control" (keyup)="setCrAmt(row, 1)" />
+						<input type="text" [(ngModel)]="row.dramt" class="form-control" (keyup)="setCrAmt(row, 1)" />
 					</td>
 					<td class="textalign">
-						<input type="text" [(ngModel)]="row.CreditAmount" class="form-control" (keyup)="setDrAmt(row, 1)" />
+						<input type="text" [(ngModel)]="row.cramt" class="form-control" (keyup)="setDrAmt(row, 1)" />
 					</td>
 					<td class="textalign">
 						<input type="text" [(ngModel)]="row.Details_Narration" class="form-control" />

@@ -16,7 +16,7 @@ declare var $: any;
 export class JVAddEdit implements OnInit, OnDestroy {
     viewCustomerDT: any[];
 
-    jvMasterAutoID: any;
+    jvmid: any;
     jvDate: any;
     jvNarration: any;
 
@@ -42,6 +42,8 @@ export class JVAddEdit implements OnInit, OnDestroy {
         this.jvDate = Date.now();
     }
 
+    // add jv details
+
     private NewRowAdd() {
         this.jvRowData.push({
             'counter': this.counter,
@@ -59,6 +61,8 @@ export class JVAddEdit implements OnInit, OnDestroy {
         this.newCrAmt = "";
         this.newNarration = "";
     }
+
+    // account details
 
     getAutoComplete(me: any, arg: number) {
         this._commonservice.getAutoData({ "Type": "CustName", "Key": arg == 0 ? me.newAccName : me.AccName }).subscribe(data => {
@@ -91,6 +95,8 @@ export class JVAddEdit implements OnInit, OnDestroy {
         })
     }
 
+    // set total debit amount
+
     setDrAmt(me: any, arg: number) {
         if (arg === 1) {
             if (me.CreditAmount > 0) {
@@ -103,6 +109,8 @@ export class JVAddEdit implements OnInit, OnDestroy {
             }
         }
     }
+
+    // set total credit amount
 
     setCrAmt(me: any, arg: number) {
         if (arg === 1) {
@@ -117,15 +125,17 @@ export class JVAddEdit implements OnInit, OnDestroy {
         }
     }
 
-    getJVDataById(JVMAutoID: number) {
-        this._jvservice.viewJVDetails({ "FilterType": "Edit", "JVMasterAutoID": JVMAutoID }).subscribe(data => {
-            this.viewJVData = JSON.parse(data.data);
+    // get jv master by id
 
-            this.jvMasterAutoID = this.viewJVData[0].JVMasterAutoID;
+    getJVDataById(pjvmid: number) {
+        this._jvservice.viewJVDetails({ "flag": "edit", "jvmid": pjvmid }).subscribe(data => {
+            this.viewJVData = data.data;
+
+            this.jvmid = this.viewJVData[0].JVMasterAutoID;
             this.jvDate = this.viewJVData[0].DocDate;
             this.jvNarration = this.viewJVData[0].Narration;
 
-            this.getJVDetailsByJVID(JVMAutoID);
+            this.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
         }, () => {
@@ -133,9 +143,11 @@ export class JVAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    getJVDetailsByJVID(JVMAutoID: number) {
-        this._jvservice.viewJVDetails({ "FilterType": "Details", "JVMasterAutoID": JVMAutoID }).subscribe(data => {
-            this.jvRowData = JSON.parse(data.data);
+    // get jv details by id
+
+    getJVDetailsByJVID(pjvmid: number) {
+        this._jvservice.viewJVDetails({ "flag": "details", "jvmid": pjvmid }).subscribe(data => {
+            this.jvRowData = data.data;
             console.log(this.jvRowData);
         }, err => {
             console.log("Error");
@@ -144,46 +156,17 @@ export class JVAddEdit implements OnInit, OnDestroy {
         })
     }
 
+    // save jv
+
     saveJVData() {
-        var xmldt = "<r>";
-
-        for (var i = 0; i < this.jvRowData.length; i++) {
-            var field = this.jvRowData[i];
-            xmldt += "<i>";
-
-            if (field.JVDetailsAutoID == undefined) {
-                xmldt += "<JVDAutoID>0</JVDAutoID>";
-            }
-            else {
-                xmldt += "<JVDAutoID>" + field.JVDetailsAutoID + "</JVDAutoID>";
-            }
-
-            xmldt += "<ACC>" + field.AccCode + "</ACC>";
-            xmldt += "<ACN>" + field.AccName + "</ACN>";
-            xmldt += "<D>" + field.DebitAmount + "</D>";
-            xmldt += "<C>" + field.CreditAmount + "</C>";
-            xmldt += "<N>" + field.Details_Narration + "</N>";
-            xmldt += "<R1></R1>";
-            xmldt += "<R2></R2>";
-            xmldt += "<R3></R3>";
-            xmldt += "</i>";
-        }
-
-        xmldt += "</r>";
-        console.log(xmldt);
-
         var saveJV = {
-            "JVMasterAutoID": this.jvMasterAutoID,
-            "FY": "5",
-            "DocDate": this.jvDate,
-            "Narration": this.jvNarration,
-            "CompCode": "MSG",
-            "CreatedBy": "vivek",
-            "UpdatedBy": "vivek",
-            "Remark1": "",
-            "Remark2": "",
-            "Remark3": "",
-            "JVDetails": xmldt
+            "jvmid": this.jvmid,
+            "fyid": "5",
+            "docdate": this.jvDate,
+            "narration": this.jvNarration,
+            "createdby": "vivek",
+            "updatedby": "vivek",
+            "JVDetails": this.jvRowData
         }
 
         this._jvservice.saveJVDetails(saveJV).subscribe(data => {
@@ -221,8 +204,8 @@ export class JVAddEdit implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.jvMasterAutoID = params['ID'];
-                this.getJVDataById(this.jvMasterAutoID);
+                this.jvmid = params['ID'];
+                this.getJVDataById(this.jvmid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');

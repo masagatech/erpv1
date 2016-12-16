@@ -19,7 +19,7 @@ export class ViewJV implements OnInit, OnDestroy {
     viewJVDT: any[] = [];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _jvservice: JVService) {
-        this._jvservice.viewJVDetails({ "FilterType": "DocRange", "JVMasterAutoID": "0", "FromJVNo": "1801", "ToJVNo": "1900", "FY": "5" }).subscribe(data => {
+        this._jvservice.viewJVDetails({ "flag": "docrange", "fromdocno": "1801", "todocno": "1900", "fyid": "5" }).subscribe(data => {
             this.viewJVDT = JSON.parse(data.data);
             console.log(this.viewJVDT);
         }, err => {
@@ -30,10 +30,10 @@ export class ViewJV implements OnInit, OnDestroy {
     }
 
     expandDetails(row) {
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
+        if (row.issh == 0) {
+            row.issh = 1;
             if (row.Details.length === 0) {
-                this._jvservice.viewJVDetails({ "FilterType": "Details", "JVMasterAutoID": row.JVMasterAutoID }).subscribe(data => {
+                this._jvservice.viewJVDetails({ "flag": "details", "jvmid": row.jvmid }).subscribe(data => {
                     row.Details = JSON.parse(data.data);
                 }, err => {
                     console.log("Error");
@@ -42,7 +42,7 @@ export class ViewJV implements OnInit, OnDestroy {
                 })
             }
         } else {
-            row.IsCollapse = 0;
+            row.issh = 0;
         }
     }
 

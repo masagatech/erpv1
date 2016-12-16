@@ -28,26 +28,26 @@
 			<tr>
 				<td>
 					<button (click)="expandDetails(row)">
-						<i class="{{row.IsCollapse == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
+						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
 					</button>
 				</td>
 				<td>
-					<a role="button" (click)="openJVDetails(row)">{{row.DocNo}}</a>
+					<a role="button" (click)="openJVDetails(row)">{{row.docno}}</a>
 				</td>
 				<td>
-					{{row.FormattedDocDate}}
+					{{row.docdate}}
 				</td>
 				<td>
-					{{row.IsCollapse == 1 ? row.Narration : row.SmallNarration}}
+					{{row.issh == 1 ? row.narration : row.smallnarr}}
 				</td>
 				<td class="text-right">
-					{{row.TotalDebitAmount | number}}
+					{{row.totdramt | number}}
 				</td>
 				<td class="text-right">
-					{{row.TotalCreditAmount | number}}
+					{{row.totcramt | number}}
 				</td>
 			</tr>
-			<tr [style.display]="row.IsCollapse == 0?'none':''">
+			<tr [style.display]="row.issh == 0?'none':''">
 				<td></td>
 				<td colspan="5">
 					<table class="table table-striped table-bordered table-hover">
@@ -63,19 +63,19 @@
 						<tbody *ngFor="let drow of row.Details">
 							<tr>
 								<td>
-									{{drow.AccCode}}
+									{{drow.accde}}
 								</td>
 								<td>
-									{{drow.AccName}}
+									{{drow.acname}}
 								</td>
 								<td>
-									{{drow.Details_Narration}}
+									{{drow.detnarr}}
 								</td>
 								<td class="text-right">
-									{{drow.DebitAmount | number}}
+									{{drow.dramt | number}}
 								</td>
 								<td class="text-right">
-									{{drow.CreditAmount | number}}
+									{{drow.cramt | number}}
 								</td>
 							</tr>
 						</tbody>
