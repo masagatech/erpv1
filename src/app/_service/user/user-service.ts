@@ -8,16 +8,12 @@ export class UserService {
     private loginUser: any
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getMenuMaster(req: any) {
-        return this._dataserver.post("GetMenuMaster", req)
-    }
-
     getMenuHead(req: any) {
         return this._dataserver.post("getMenuHead", req)
     }
 
-    getSubMenu(req: any) {
-        return this._dataserver.post("getMenu", req);
+    getMenuDetails(req: any) {
+        return this._dataserver.post("getMenuDetails", req);
     }
 
     getUser() {
@@ -50,8 +46,8 @@ export class UserService {
         return this._dataserver.post("saveUsers", req)
     }
 
-    viewUserRights(req: any) {
-        return this._dataserver.post("GetUserRights", req)
+    getUserRights(req: any) {
+        return this._dataserver.post("getUserRights", req)
     }
 
     saveUserRights(req: any) {
