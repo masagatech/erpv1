@@ -30,24 +30,25 @@ export class AddUserRights implements OnInit, OnDestroy {
     FYDetails: any = [];
     totalRecords: number;
 
-    CompanyID: any = 0;
-    FYID: number = 0;
+    cmpid: any = 0;
+    fyid: number = 0;
 
-    DeptID: number = 0;
+    deptid: number = 0;
     uid: any = "";
     uname: any = "";
 
     refuid: any = "";
     refuname: any = "";
 
-    MenuName: any;
-    fyName: any;
+    menuname: any;
+    fyname: any;
 
     selectedCompany: any = [];
     selectedMenu: any = [];
     MenuActions: any = [];
 
-    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _commonservice: CommonService, private _compservice: CompService, private _fyservice: FYService, private _userservice: UserService) {
+    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _commonservice: CommonService, private _compservice: CompService, private _fyservice: FYService, private _userservice: UserService) {
 
     }
 
@@ -69,10 +70,10 @@ export class AddUserRights implements OnInit, OnDestroy {
                     me.uid = ui.item.value;
                     me.uname = ui.item.label;
 
-                    me.Referenceuid = ui.item.value;
+                    me.refuid = ui.item.value;
                     me.refuname = ui.item.label;
 
-                    that.getCompanyDetails(ui.item.value);
+                    that.getCompanyRights(ui.item.value);
                 }
             });
         }, err => {
@@ -108,10 +109,11 @@ export class AddUserRights implements OnInit, OnDestroy {
         })
     }
 
-    getCompanyDetails(uid) {
-        this._commonservice.getMOM({ "flag": "company", "uid": uid }).subscribe(data => {
-            this.CompanyDetails = data.data;
-            debugger;
+    getCompanyRights(puid) {
+        var that = this;
+
+        that._compservice.getCompany({ "flag": "userrights", "uid": puid }).subscribe(data => {
+            that.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -126,7 +128,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     getFYDetails(row) {
         var that = this;
 
-        that._commonservice.getMOM({ "type": "UsersFY", "uid": this.uid, "CompanyID": row.CompanyID }).subscribe(data => {
+        that._compservice.getCompany({ "flag": "fyrights", "uid": row.uid, "cmpid": row.cmpid }).subscribe(data => {
             that.FYDetails = data.data;
         }, err => {
             console.log("Error");
@@ -138,8 +140,8 @@ export class AddUserRights implements OnInit, OnDestroy {
     getMenuDetails(row) {
         var that = this;
 
-        that._userservice.getMenuMaster({ "uid": that.uid, "companyid": row.CompanyID }).subscribe(data => {
-            row.MenuDetails = data.data;
+        this._userservice.getMenuDetails({ "flag": "all" }).subscribe(data => {
+            row.menudetails = data.data;
             that.selectedCompany = row;
 
             that.getFYDetails(row);
@@ -151,12 +153,15 @@ export class AddUserRights implements OnInit, OnDestroy {
     }
 
     getUserRights() {
-        var GiveRights = "<menus>";
+        var GiveRights = [];
         var menuitem = null;
 
-        for (var i = 0; i <= this.selectedCompany.MenuDetails.length - 1; i++) {
+        debugger;
+
+        for (var i = 0; i <= this.selectedCompany.menudetails.length - 1; i++) {
             menuitem = null;
-            menuitem = this.selectedCompany.MenuDetails[i];
+            menuitem = this.selectedCompany.menudetails[i];
+            console.log(menuitem);
 
             if (menuitem !== null) {
                 var actrights = "";
@@ -166,27 +171,27 @@ export class AddUserRights implements OnInit, OnDestroy {
                 });
 
                 if (actrights != "") {
-                    GiveRights += "<menu id=\"" + menuitem.menuid + "\"><rights>" + actrights.slice(0, -1) + "</rights></menu>";
+                    GiveRights.push({ "menuid": menuitem.menuid, "rights": actrights.slice(0, -1) });
                 }
             }
         }
 
-        GiveRights += "</menus>";
-
         return GiveRights;
     }
 
-    saveUserRights(row) {
-        console.log(this.getUserRights());
-        debugger;
+    saveUserRights() {
+        var that = this;
+
+        var giverights = that.getUserRights();
+        console.log(giverights);
 
         var saveUR = {
             "uid": this.uid,
-            "CompanyID": this.selectedCompany.CompanyID,
-            "FYID": this.FYID,
-            "GiveRights": this.getUserRights(),
-            "CreatedBy": "vivek",
-            "UpdatedBy": "vivek"
+            "cmpid": this.selectedCompany.cmpid,
+            "fyid": this.fyid,
+            "giverights": giverights,
+            "createdby": "1:vivek",
+            "updatedby": "1:vivek"
         }
 
         console.log(saveUR);
@@ -194,18 +199,16 @@ export class AddUserRights implements OnInit, OnDestroy {
         if (this.uid == "") {
             alert("Please Enter User");
         }
-        else if (this.FYID == 0) {
+        else if (this.fyid == 0) {
             alert("Please Select Financial Year");
         }
         else {
             this._userservice.saveUserRights(saveUR).subscribe(data => {
-                debugger;
                 var dataResult = data.data;
-                console.log(dataResult);
 
-                if (dataResult[0].Doc != "-1") {
-                    alert(dataResult[0].Status);
-                    this._router.navigate(['/setting/userrights']);
+                if (dataResult[0].funsave_userrights.msgid != "-1") {
+                    alert(dataResult[0].funsave_userrights.msg);
+                    this._router.navigate(['/setting/viewuserrights']);
                 }
                 else {
                     alert("Error");
@@ -244,28 +247,38 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     getUserRightsById(row) {
         var that = this;
-        var actrights = null;
-        var giverights = null;
-        var rights = null;
         this.clearcheckboxes();
-        that._userservice.viewUserRights({ "uid": that.refuid, "CompanyID": row.CompanyID, "FYID": that.FYID, "FilterType": "Details" }).subscribe(data => {
+
+        that._userservice.getUserRights({ "flag": "details", "uid": row.uid, "cmpid": row.cmpid, "fyid": that.fyid }).subscribe(data => {
             var viewUR = data.data;
+
+            var userrights = null;
+            var actrights = null;
             var menuitem = null;
-            for (var i = 0; i <= viewUR.length - 1; i++) {
-                menuitem = null;
-                menuitem = viewUR[i];
-                rights = null;
-                rights = menuitem.rights.split(',');
-          
-                if (rights != null) {
-                    for (var j = 0; j <= rights.length - 1; j++) {
-                        $("#M" + menuitem.menuid).find("#" + menuitem.menuid + rights[j]).prop('checked', true);
-                        //$(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', true);
+
+            if (viewUR[0] != null) {
+                userrights = null;
+                userrights = viewUR[0].giverights;
+
+                if (userrights != null) {
+                    for (var i = 0; i <= userrights.length - 1; i++) {
+                        menuitem = null;
+                        menuitem = userrights[i];
+
+                        if (menuitem != null) {
+                            actrights = null;
+                            actrights = menuitem.rights.split(',');
+
+                            if (actrights != null) {
+                                for (var j = 0; j <= actrights.length - 1; j++) {
+                                    $("#M" + menuitem.menuid).find("#" + menuitem.menuid + actrights[j]).prop('checked', true);
+                                    //$(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', true);
+                                }
+                            }
+                        }
                     }
                 }
             }
-
-            console.log(viewUR);
         }, err => {
             console.log("Error");
         }, () => {
@@ -297,7 +310,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            //this.saveUserRights(this.selectedCompany);
+            this.saveUserRights();
         }
     }
 

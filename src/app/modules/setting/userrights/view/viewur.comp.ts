@@ -28,7 +28,7 @@ export class ViewUserRights implements OnInit, OnDestroy {
     }
 
     getUserRights() {
-        this._userservice.viewUserRights({ "UserID": "", "FilterType": "" }).subscribe(data => {
+        this._userservice.getUserRights({ "UserID": "", "FilterType": "" }).subscribe(data => {
             this.viewUserDT = JSON.parse(data.data);
             console.log(this.viewUserDT);
         }, err => {
@@ -42,7 +42,7 @@ export class ViewUserRights implements OnInit, OnDestroy {
         if (row.IsCollapse == 0) {
             row.IsCollapse = 1;
             if (row.Details.length === 0) {
-                this._userservice.viewUserRights({ "UserID": row.UserID, "FilterType": "Details" }).subscribe(data => {
+                this._userservice.getUserRights({ "UserID": row.UserID, "FilterType": "Details" }).subscribe(data => {
                     row.Details = JSON.parse(data.data);
                 }, err => {
                     console.log("Error");

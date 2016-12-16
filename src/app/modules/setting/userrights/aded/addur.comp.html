@@ -24,10 +24,9 @@
 						List of Companies
 					</header>
 					<template let-row>
-						<p-panel [header]="row.CompanyName" [style]="{'text-align':'center'}">
+						<p-panel [header]="row.cmpname" [style]="{'text-align':'center'}">
 							<a role="button" (click)="getMenuDetails(row);">
-								<img src="http://localhost:3000/assets/img/logo/{{row.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
-									width="50" height="50" />
+								<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50" height="50" />
 							</a>
 						</p-panel>
 					</template>
@@ -39,10 +38,10 @@
 						<div class="ui-grid ui-grid-responsive ui-grid-pad" *ngIf="selectedCompany">
 							<div class="ui-grid-col-12">
 								<div class="ui-grid-row">
-									<select [(ngModel)]="FYID" class="form-control" (ngModelChange)="getUserRightsById(selectedCompany)">
+									<select [(ngModel)]="fyid" class="form-control" (ngModelChange)="getUserRightsById(selectedCompany)">
 										<option value="0">-- Select Financial Year --</option>
-										<option *ngFor="let fyrow of FYDetails" [value]="fyrow.FYID">
-											{{fyrow.FYName}}
+										<option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
+											{{fyrow.fyname}}
 										</option>
 									</select>
 								</div>
@@ -52,35 +51,35 @@
 								<div class="ui-grid-row">
 									<div class="ui-grid-col-3">
 										<div class="ui-grid-row">
-											<img src="http://localhost:3000/assets/img/logo/{{selectedCompany.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
-												width="100" height="100" />
+											<img src="assets/img/logo/{{selectedCompany.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="100" height="100"
+											/>
 										</div>
 									</div>
 									<div class="ui-grid-col-9">
 										<div class="ui-grid-row">
 											<div class="ui-grid-col-3">Company Name: </div>
 											<div class="ui-grid-col-9">
-												{{selectedCompany.CompanyName}}
+												{{selectedCompany.cmpname}}
 											</div>
 										</div>
-										<div class="ui-grid-row">
+										<!--<div class="ui-grid-row">
 											<div class="ui-grid-col-3">Address: </div>
 											<div class="ui-grid-col-9">
-												{{selectedCompany.Address}} {{selectedCompany.FullAddress}}
+												{{selectedCompany.address}} {{selectedCompany.location}}
 											</div>
 										</div>
 										<div class="ui-grid-row">
 											<div class="ui-grid-col-3">Mobile No: </div>
 											<div class="ui-grid-col-9">
-												{{selectedCompany.MobileNo}}
+												{{selectedCompany.mobile}}
 											</div>
 										</div>
 										<div class="ui-grid-row">
 											<div class="ui-grid-col-3">Pin Code: </div>
 											<div class="ui-grid-col-9">
-												{{selectedCompany.PinCode}}
+												{{selectedCompany.pincode}}
 											</div>
-										</div>
+										</div>-->
 									</div>
 								</div>
 							</div>
@@ -91,7 +90,7 @@
 										All
 									</div>
 									<div class="panel-body">
-										<div *ngFor="let row of selectedCompany.MenuDetails" class="allcheckboxes">
+										<div *ngFor="let row of selectedCompany.menudetails" class="allcheckboxes">
 											<div class="ui-grid-col-12">
 												<div class="ui-grid-row">
 													<div class="col-md-4">
@@ -99,15 +98,12 @@
 														/>&nbsp;{{row.menuname}}
 													</div>
 													<div class="col-md-8" id="M{{row.menuid}}">
-														<span style="margin-right:5px;" *ngFor="let item of getMenuRights(row.menurights) let i = index">
-															<input id="{{row.menuid}}{{item}}" data-menuid="row.menucode" data-right="item" type="checkbox" value="{{item}}" class="actrights" />&nbsp;{{item}}
+														<span style="margin-right:5px;" *ngFor="let item of getMenuRights(row.mrights) let i = index">
+															<input id="{{row.menuid}}{{item}}" data-menuid="row.menuid" data-right="item" type="checkbox" value="{{item}}" class="actrights" />&nbsp;{{item}}
 														</span>
 													</div>
 												</div>
 											</div>
-										</div>
-										<div align="right">
-											<button type="button" class="btn btn-primary" (click)="saveUserRights(selectedCompany)"><i class="fa fa-save"></i> Save</button>
 										</div>
 									</div>
 								</div>
@@ -115,45 +111,7 @@
 						</div>
 					</div>
 				</div>
-
-				<!--<p-dataTable #dt [value]="MenuDetails1" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true"
-						(onLazyLoad)="loadMenuDetails($event)">
-						<header>List of Menu Details</header>
-						<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-						<p-column field="menuname" header="Menu"></p-column>
-						<template let-row>
-							<p-dataTable [value]="row">
-								<p-column field="itemno" header="No" styleClass="text-right" [style]="{'width':'50px'}"></p-column>
-								<p-column field="itemnm" header="Items"></p-column>
-								<p-column field="saleqty" header="Sale Qty" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
-								<p-column field="compqty" header="Comp Qty" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
-								<p-column field="comboqty" header="Combo Qty" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
-								<p-column field="domqty" header="Deal of the Month" [style]="{'width':'150px'}" styleClass="text-right"></p-column>
-								<p-column field="amount" header="Amount" [style]="{'width':'100px'}" styleClass="text-right"></p-column>
-							</p-dataTable>
-						</template>
-					</p-dataTable>-->
 			</div>
 		</div>
 	</div>
 </div>
-
-
-
-<!--<div class="col-xs-12 col-md-6">
-	<div class="form-group">
-		<a role="button" (click)="fyDropdown()" class="btn btn-primary">
-					Select Financial Year <i class="{{isOpenFYDDL == 1 ? 'fa fa-arrow-up' : 'fa fa-arrow-down'}}"></i>
-				</a>
-		<div [style.display]="isOpenFYDDL == 0?'none':''">
-			<div class="panel panel-theme">
-				<div class="panel-body">
-					<textarea [(ngModel)]="companyName" class="form-control min-text-box" disabled="disabled"></textarea>
-					<div class="col-md-6" *ngFor="let row of FYDetails">
-						<input id="chkFY" type="checkbox" (click)="getSelectedFY()" value="{{row.FYName}}" /> {{row.FYName}}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>-->
