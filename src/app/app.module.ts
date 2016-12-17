@@ -2,6 +2,7 @@ import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { removeNgStyles, createNewHosts, createInputTransfer } from '@angularclass/hmr';
 
@@ -20,6 +21,7 @@ import { NoContentComponent } from './no-content';
 import { XLarge } from './home/x-large';
 import { SharedModule } from "./_shared/shared.module"
 import { LoginComp } from './login/login.comp'
+import { LoginStep1Comp } from './login/login-step1.comp'
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -43,6 +45,7 @@ type StoreType = {
     AboutComponent,
     HomeComponent,
     LoginComp,
+    LoginStep1Comp,
     NoContentComponent,
     XLarge
   ],
@@ -50,6 +53,7 @@ type StoreType = {
     BrowserModule,
     FormsModule,
     HttpModule,
+    CommonModule,
     RouterModule.forRoot(ROUTES, { useHash: false }),
     SharedModule.forRoot()
   ],

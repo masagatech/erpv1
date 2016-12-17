@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { DataService } from '../../_service/dataconnect';
+import { LoginUserModel } from '../../_model/user_model';
 import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 
 @Injectable()
 export class UserService {
-    private loginUser: any
+    private loginUser: LoginUserModel;
     constructor(private _dataserver: DataService, private _router: Router) { }
 
     getMenuHead(req: any) {
@@ -32,10 +33,11 @@ export class UserService {
         }
     }
 
-    setUsers(userDetails) {
+    setUsers(userDetails):LoginUserModel {
         this.loginUser = userDetails;
         Cookie.delete('usr');
         Cookie.set("usr", userDetails.uid);
+        return this.loginUser;
     }
 
     getUsers(req: any) {

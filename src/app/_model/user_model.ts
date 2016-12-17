@@ -7,3 +7,11 @@ export class UserReq {
 export class LoginUser {
   UserData: any;
 }
+
+export interface LoginUserModel {
+  uid: number;
+  cmpid: number;
+  fyid: number;
+  fyfrom: any;
+  fyto: any,
+}
