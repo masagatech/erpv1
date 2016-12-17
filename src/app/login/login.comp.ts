@@ -29,6 +29,8 @@ export class LoginComp {
                     let userDetails = usrobj[0];
                     
                     if (userDetails.status) {
+                        userDetails.cmpid = 2;
+                        userDetails.fyid = 7;
                         this._loginModel.setUsers(userDetails);
                         this._router.navigate(['/']);
                     } else {

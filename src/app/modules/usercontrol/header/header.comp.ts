@@ -32,7 +32,10 @@ export class UserControlHeadComp implements OnInit {
     this.loginUserName = this.loginUser.usrnm;
 
     //get menues according to loggedin user
-    this._userService.getMenuHead({ "uid": this.loginUser.uid }).subscribe(data => {
+
+    // this.loginUser.uid
+
+    this._userService.getMenuHead({ "flag": "", "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(data => {
       var data1 = data.data;
       console.log(data1);
 
@@ -48,7 +51,7 @@ export class UserControlHeadComp implements OnInit {
         }
 
         this.menuhead[i].sub = _parentMenu;
-        
+
         $('.dropdown-submenu > a').submenupicker();
       }
     }, err => {

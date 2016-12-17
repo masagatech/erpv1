@@ -21,7 +21,9 @@ export class SubMenuComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this._userService.getMenuDetails({ "uid": this.loginUser.uid, "ptype": this.menuid, "flag": "menu" }).subscribe(data => {
+        // this.loginUser.uid
+
+        this._userService.getMenuDetails({ "flag": "menu", "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid, "ptype": this.menuid }).subscribe(data => {
             var data1 = data.data;
             this.submenulist = data1;
         }, err => {
