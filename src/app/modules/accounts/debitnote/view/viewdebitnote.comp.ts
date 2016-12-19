@@ -31,8 +31,8 @@ export class ViewDebitNote implements OnInit, OnDestroy {
             return;
         }
 
-        this._dnservice.viewDebitNote({ "FilterType": "DocRange", "FY": "5", "DNAutoID": "0", "FromDocNo": "1801", "ToDocNo": "1900" }).subscribe(data => {
-            this.viewDebitNoteDT = JSON.parse(data.data);
+        this._dnservice.getDebitNote({ "flag": "docrange", "FY": "5", "DNAutoID": "0", "FromDocNo": "1801", "ToDocNo": "1900" }).subscribe(data => {
+            this.viewDebitNoteDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -43,9 +43,9 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     expandDetails(row) {
         if (row.IsCollapse == 0) {
             row.IsCollapse = 1;
-            if (row.Details.length === 0) {
-                this._dnservice.viewDebitNote({ "FilterType": "Details", "DNAutoID": row.DocNo }).subscribe(data => {
-                    row.Details = JSON.parse(data.data);
+            if (row.details.length === 0) {
+                this._dnservice.getDebitNote({ "flag": "details", "DNAutoID": row.DocNo }).subscribe(data => {
+                    row.details = data.data;
                 }, err => {
                     console.log("Error");
                 }, () => {

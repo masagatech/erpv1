@@ -15,24 +15,23 @@ declare var $: any;
 
 export class DebitNoteAddEdit implements OnInit, OnDestroy {
     viewCustomerDT: any[] = [];
-    duplicateAccCode: Boolean = true;
+    duplicateacid: Boolean = true;
 
-    DNAutoID: any;
-    dnAccCode: any;
-    dnAccName: any;
-    dnDate: any;
-    dnNarration: any;
-    DebitAmount: any;
+    dnid: any;
+    dnacid: any;
+    dnacname: any;
+    dndate: any;
+    dramt: any;
+    narration: any;
 
-    dnRowData: any[] = [];
-    viewDNData: any[] = [];
+    dnRowData: any = [];
+    viewDNData: any = [];
 
-    newDNDAutoID: any;
-    newAccCode: any;
-    newAccName: any;
-    newDrAmt: any;
-    newCrAmt: any;
-    newNarration: any;
+    newdnid: any;
+    newacid: any;
+    newacname: any;
+    newdramt: any;
+    newcramt: any;
 
     counter: any;
     title: any;
@@ -46,14 +45,14 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
 
     }
 
-    isDuplicateAccCode() {
+    isDuplicateacid() {
         for (var i = 0; i < this.dnRowData.length; i++) {
             var field = this.dnRowData[i];
 
-            if (field.AccCode == this.newAccCode) {
+            if (field.acid == this.newacid) {
                 alert("Duplicate Account not Allowed");
-                this.newAccCode = "";
-                this.newAccName = "";
+                this.newacid = "";
+                this.newacname = "";
                 return true;
             }
         }
@@ -62,72 +61,61 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
     }
 
     private NewRowAdd() {
-        if (this.newAccName == "" || this.newAccName == null) {
+        if (this.newacname == "" || this.newacname == null) {
             alert("Please Enter Account NAme");
             return;
         }
 
-        if (this.newCrAmt == "" || this.newCrAmt == null) {
+        if (this.newcramt == "" || this.newcramt == null) {
             alert("Please Enter Credit");
             return;
         }
 
         //Duplicate items Check
-        this.duplicateAccCode = this.isDuplicateAccCode();
+        this.duplicateacid = this.isDuplicateacid();
 
         //Add New Row
-        if (this.duplicateAccCode == false) {
+        if (this.duplicateacid == false) {
             this.dnRowData.push({
                 'counter': this.counter,
-                'AccCode': this.newAccCode,
-                'AccName': this.newAccName,
-                'CreditAmount': this.newCrAmt
+                'acid': this.newacid,
+                'acname': this.newacname,
+                'cramt': this.newcramt
             });
 
             this.counter++;
-            this.newAccCode = "";
-            this.newAccName = "";
-            this.newCrAmt = "";
+            this.newacid = "";
+            this.newacname = "";
+            this.newcramt = "";
         }
     }
 
     getAutoComplete(me: any, arg: number) {
-        this._commonservice.getAutoData({ "Type": "CustName", "Key": arg == 1 ? me.AccName : arg == 2 ? me.dnAccName : me.newAccName }).subscribe(data => {
-            $(function () {
-                this.viewCustomerDT = JSON.parse(data.data);
+        var that = this;
 
-                var finalData = $.map(this.viewCustomerDT, function (item) {
-                    return {
-                        label: item.Name,
-                        value: item.ID
+        this._commonservice.getAutoData({ "type": "customer", "search": arg == 1 ? me.acname : arg == 2 ? me.dnacname : me.newacname }).subscribe(data => {
+            $(arg == 1 ? ".accname" : arg == 2 ? ".dnaccname" : ".accname").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    if (arg === 1) {
+                        me.acname = ui.item.label;
+                        me.acid = ui.item.value;
+                    } else if (arg === 2) {
+                        me.dnacname = ui.item.label;
+                        me.dnacid = ui.item.value;
+                    } else {
+                        me.newacname = ui.item.label;
+                        me.newacid = ui.item.value;
                     }
-                });
-
-                $(arg == 1 ? ".accname" : arg == 2 ? ".dnaccname" : ".accname").autocomplete({
-                    source: finalData,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        this.AccCode = ui.item.value;
-
-                        if (arg === 1) {
-                            me.AccName = ui.item.label;
-                            me.AccCode = ui.item.value;
-                        } else if (arg === 2) {
-                            me.dnAccName = ui.item.label;
-                            me.dnAccCode = ui.item.value;
-                        } else {
-                            me.newAccName = ui.item.label;
-                            me.newAccCode = ui.item.value;
-                        }
-                    }
-                });
+                }
             });
         }, err => {
             console.log("Error");
@@ -136,17 +124,17 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    getDNDataByID(DNAutoID: number) {
-        this._dnservice.viewDebitNote({ "FilterType": "Edit", "DNAutoID": DNAutoID }).subscribe(data => {
+    getDNDataByID(pdnid: number) {
+        this._dnservice.getDebitNote({ "flag": "edit", "dnid": pdnid }).subscribe(data => {
             this.viewDNData = JSON.parse(data.data);
 
-            this.DNAutoID = this.viewDNData[0].DNAutoID;
-            this.dnAccCode = this.viewDNData[0].AccCode;
-            this.dnAccName = this.viewDNData[0].AccName;
-            this.dnDate = this.viewDNData[0].DocDate;
-            this.dnNarration = this.viewDNData[0].Narration;
+            this.dnid = this.viewDNData[0].DNAutoID;
+            this.dnacid = this.viewDNData[0].acid;
+            this.dnacname = this.viewDNData[0].acname;
+            this.dndate = this.viewDNData[0].DocDate;
+            this.narration = this.viewDNData[0].Narration;
 
-            this.getDNDetailsByID(DNAutoID);
+            this.getDNDetailsByID(pdnid);
         }, err => {
             console.log("Error");
         }, () => {
@@ -154,9 +142,9 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    getDNDetailsByID(DNAutoID: number) {
-        this._dnservice.viewDebitNote({ "FilterType": "Details", "DNAutoID": DNAutoID }).subscribe(data => {
-            this.dnRowData = JSON.parse(data.data);
+    getDNDetailsByID(pdnid: number) {
+        this._dnservice.getDebitNote({ "flag": "details", "dnid": pdnid }).subscribe(data => {
+            this.dnRowData = data.data;
             console.log(this.dnRowData);
         }, err => {
             console.log("Error");
@@ -166,58 +154,29 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
     }
 
     saveDNData() {
-        var xmldt = "<r>";
-
-        for (var i = 0; i < this.dnRowData.length; i++) {
-            var field = this.dnRowData[i];
-            xmldt += "<i>";
-
-            if (field.DNAutoID == undefined) {
-                xmldt += "<DNAutoID>0</DNAutoID>";
-            }
-            else {
-                xmldt += "<DNAutoID>" + field.DNAutoID + "</DNAutoID>";
-            }
-
-            xmldt += "<FY>5</FY>";
-            xmldt += "<DD>" + this.dnDate + "</DD>";
-            xmldt += "<AC>" + field.CustomerCode + "</AC>";
-            xmldt += "<CA>" + field.CreditAmount + "</CA>";
-            xmldt += "<R1></R1>";
-            xmldt += "<R2></R2>";
-            xmldt += "<R3></R3>";
-            xmldt += "</i>";
-        }
-
-        xmldt += "</r>";
-        console.log(xmldt);
-
         var saveDN = {
-            "DNAutoID": this.DNAutoID,
-            "FY": "5",
-            "DocDate": this.dnDate,
-            "AccountCode": this.dnAccCode,
-            "DebitAmount": this.DebitAmount,
-            "Narration": this.dnNarration,
-            "CreatedBy": "vivek",
-            "UpdatedBy": "vivek",
-            "Remark1": "",
-            "Remark2": "",
-            "Remark3": "",
-            "DebitNoteDetails": xmldt
+            "dnid": this.dnid,
+            "fyid": "5",
+            "docdate": this.dndate,
+            "acid": this.dnacid,
+            "dramt": this.dramt,
+            "narration": this.narration,
+            "createdby": "1:vivek",
+            "updatedby": "1:vivek",
+            "dndetails": this.dnRowData
         }
 
-        this.duplicateAccCode = this.isDuplicateAccCode();
-        console.log(this.duplicateAccCode);
+        this.duplicateacid = this.isDuplicateacid();
+        console.log(this.duplicateacid);
 
-        if (this.duplicateAccCode == false) {
+        if (this.duplicateacid == false) {
             this._dnservice.saveDebitNote(saveDN).subscribe(data => {
-                var dataResult = JSON.parse(data.data);
+                var dataResult = data.data;
                 debugger;
                 console.log(dataResult);
 
-                if (dataResult[0].Doc != "-1") {
-                    alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
+                if (dataResult[0].funsave_debitnote.msgid != "-1") {
+                    alert(dataResult[0].msg);
                     this._router.navigate(['/accounts/viewdebitnote']);
                 }
                 else {
@@ -232,7 +191,6 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.title = "Add dn";
         console.log('ngOnInit');
 
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
@@ -244,17 +202,19 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['ID'] !== undefined) {
+                this.title = "Add Debit Note";
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.DNAutoID = params['ID'];
-                this.getDNDataByID(this.DNAutoID);
+                this.dnid = params['ID'];
+                this.getDNDataByID(this.dnid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
+                this.title = "Edit Debit Note";
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
 

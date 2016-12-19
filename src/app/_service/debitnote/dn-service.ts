@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 export class DNService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    viewDebitNote(req: any) {
-        return this._dataserver.post("GetDebitNote", req)
+    getDebitNote(req: any) {
+        return this._dataserver.post("getDebitNote", req)
     }
 
     saveDebitNote(req: any) {
-        return this._dataserver.post("SaveDebitNote", req)
+        return this._dataserver.post("saveDebitNote", req)
     }
 }
