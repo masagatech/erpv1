@@ -33,7 +33,7 @@ export class UserService {
         }
     }
 
-    setUsers(userDetails):LoginUserModel {
+    setUsers(userDetails): LoginUserModel {
         this.loginUser = userDetails;
         Cookie.delete('usr');
         Cookie.set("usr", userDetails.uid);
@@ -55,4 +55,5 @@ export class UserService {
     saveUserRights(req: any) {
         return this._dataserver.post("SaveUserRights", req)
     }
+    
 }
