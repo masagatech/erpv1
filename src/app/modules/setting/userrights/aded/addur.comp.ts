@@ -208,7 +208,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
                 if (dataResult[0].funsave_userrights.msgid != "-1") {
                     alert(dataResult[0].funsave_userrights.msg);
-                    this._router.navigate(['/setting/viewuserrights']);
+                    this._router.navigate(['/setting/userrights']);
                 }
                 else {
                     alert("Error");
