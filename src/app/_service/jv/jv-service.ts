@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 export class JVService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    viewJVDetails(req: any) {
-        return this._dataserver.post("GetJVMaster", req)
+    getJVDetails(req: any) {
+        return this._dataserver.post("getjv", req)
     }
 
     saveJVDetails(req: any) {
-        return this._dataserver.post("SaveJVDetails", req)
+        return this._dataserver.post("savejv", req)
     }
 }
