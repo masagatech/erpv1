@@ -28,8 +28,8 @@ export class ViewUserRights implements OnInit, OnDestroy {
     }
 
     getUserRights() {
-        this._userservice.getUserRights({ "UserID": "", "FilterType": "" }).subscribe(data => {
-            this.viewUserDT = JSON.parse(data.data);
+        this._userservice.getUserRights({ "flag":"view", "uid":"1", "cmpid":"2", "fyid":"7" }).subscribe(data => {
+            this.viewUserDT = data.data[0].userrights;
             console.log(this.viewUserDT);
         }, err => {
             console.log("Error");
@@ -39,11 +39,11 @@ export class ViewUserRights implements OnInit, OnDestroy {
     }
 
     viewCompanyDT(row) {
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
-            if (row.Details.length === 0) {
-                this._userservice.getUserRights({ "UserID": row.UserID, "FilterType": "Details" }).subscribe(data => {
-                    row.Details = JSON.parse(data.data);
+        if (row.issh == 0) {
+            row.issh = 1;
+            if (row.details.length === 0) {
+                this._userservice.getUserRights({ "uid": row.uid, "cmpid": row.cmpid, "fyid": row.fyid, "flag": "view" }).subscribe(data => {
+                    row.details = data.data;
                 }, err => {
                     console.log("Error");
                 }, () => {
@@ -51,7 +51,7 @@ export class ViewUserRights implements OnInit, OnDestroy {
                 })
             }
         } else {
-            row.IsCollapse = 0;
+            row.issh = 0;
         }
     }
 

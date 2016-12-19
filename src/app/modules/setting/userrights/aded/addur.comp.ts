@@ -112,7 +112,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     getCompanyRights(puid) {
         var that = this;
 
-        that._compservice.getCompany({ "flag": "userrights", "uid": puid }).subscribe(data => {
+        that._compservice.getCompany({ "flag": "usrwise", "uid": puid }).subscribe(data => {
             that.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
@@ -128,7 +128,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     getFYDetails(row) {
         var that = this;
 
-        that._compservice.getCompany({ "flag": "fyrights", "uid": row.uid, "cmpid": row.cmpid }).subscribe(data => {
+        that._fyservice.getfy({ "flag": "usrcmpwise", "uid": row.uid, "cmpid": row.cmpid }).subscribe(data => {
             that.FYDetails = data.data;
         }, err => {
             console.log("Error");

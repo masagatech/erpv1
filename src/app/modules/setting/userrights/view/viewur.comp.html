@@ -7,26 +7,46 @@
 	<table class="table table-striped table-bordered table-hover">
 		<thead>
 			<tr>
-				<th width="30px"></th>
-				<th width="100px">User Code</th>
-				<th>User Full Name</th>
+				<th>User Name</th>
+				<th>Company Name</th>
+				<th>FY Name</th>
+				<th>Menu Name</th>
+				<th>Rights</th>
 			</tr>
 		</thead>
 		<tbody *ngFor="let row of viewUserDT">
 			<tr>
+				<td>
+					{{row.fullname}}
+				</td>
+				<td>
+					{{row.cmpname}}
+				</td>
+				<td>
+					{{row.fyname}}
+				</td>
+				<td>
+					{{row.menuname}}
+				</td>
+				<td>
+					{{row.rights}}
+				</td>
+			</tr>
+
+			<!--<tr>
 				<td width="30px">
-					<button (click)="viewCompanyDT(row)">{{row.IsCollapse == 1 ? "-" : "+"}}</button>
+					<button (click)="viewCompanyDT(row)">{{row.issh == 1 ? "-" : "+"}}</button>
 				</td>
 				<td width="100px">
 					<a role="button" (click)="openUserRights(row)">
-						{{row.UserCode}}
+						{{row.ucode}}
 					</a>
 				</td>
 				<td>
-					{{row.UserFullName}}
+					{{row.fullname}}
 				</td>
 			</tr>
-			<tr [style.display]="row.IsCollapse == 0?'none':''">
+			<tr [style.display]="row.issh == 0?'none':''">
 				<td></td>
 				<td colspan="4">
 					<table class="table table-striped table-bordered table-hover">
@@ -37,23 +57,25 @@
 								<th>Menu Name</th>
 							</tr>
 						</thead>
-						<tbody *ngFor="let drow of row.Details">
-							<tr>
+						<tbody *ngFor="let drow of row.details">
+							<tr *ngFor="let mdrow of drow.userrights">
 								<td width="50px">
-									<img src="http://localhost:3000/images/logo/{{drow.CompanyLogo}}" onerror="this.src='http://localhost:3000/images/logo/No_Images.gif';"
-										width="30px" />
+									<img src="assets/img/logo/{{mdrow.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="30px" />
 								</td>
 								<td width="200px">
-									{{drow.CompanyName}}
+									{{mdrow.cmpname}}
 								</td>
 								<td>
-									{{drow.MenuName}}
+									<div *ngFor="let grrow of mdrow.giverights">
+										{{grrow.menuname}}
+										{{grrow.rights}}
+									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</td>
-			</tr>
+			</tr>-->
 		</tbody>
 	</table>
 </div>
