@@ -16,15 +16,17 @@ export class LoginStep1Comp implements OnInit {
     cmpid: number = 0;
     CompanyDetails: any = [];
     loginUser: LoginUserModel;
+    btnLoginText: string = "";
+
     constructor(private _compservice: CompService, private _fyservice: FYService, private _userService: UserService,
         private _router: Router) {
         this.loginUser = this._userService.getUser();
 
         this.getCompanyDetails(this.loginUser.uid);
+        this.btnLoginText = "Go";
     }
 
     ngOnInit() { }
-
 
     getFYDetails(cmpid) {
         var that = this;
@@ -49,13 +51,9 @@ export class LoginStep1Comp implements OnInit {
         })
     }
 
-
-
-
     private next_click(e) {
         this.loginUser.cmpid = this.cmpid;
         this.loginUser.fyid = this.fyid;
         this._router.navigate(['/']);
     }
-
 }

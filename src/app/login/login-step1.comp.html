@@ -9,33 +9,36 @@
                 <div class="col-md-5">
                     <div class="form-group">
                         <div class="input-group">
-                            <label class="control-label">Code</label>
+                            <label class="control-label">Company</label>
                             <select [(ngModel)]="cmpid" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
-										<option value="0">-- Select Financial Year --</option>
-										<option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
-											{{row.cmpname}}
-										</option>
-									</select>
+                                <option value="0">-- Select Company --</option>
+                                <option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
+                                    {{row.cmpname}}
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-5">
                     <div class="form-group">
                         <div class="input-group">
-                            <label class="control-label">Code</label>
+                            <label class="control-label">Financial Year</label>
                             <select [(ngModel)]="fyid" class="form-control">
-										<option value="0">-- Select Financial Year --</option>
-										<option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
-											{{fyrow.fyname}}
-										</option>
-									</select>
+                                <option value="0">-- Select Financial Year --</option>
+                                <option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
+                                    {{fyrow.fyname}}
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
                         <div class="col-sm-12 controls">
-                            <button type="submit" [disabled]="btnLoginText == 'Loging..'" (click)="next_click($event)" tabindex="3" class="btn btn-theme btn-sm" name="action"> <span [hidden]="btnLoginText != 'Loging..'"><i class='fa fa-spinner fa-spin '></i></span>{{btnLoginText}}</button>
+                            <!--<button type="submit" [disabled]="btnLoginText == 'Loging..'" (click)="next_click($event)" tabindex="3" class="btn btn-theme btn-sm"
+                                name="action"> <span [hidden]="btnLoginText != 'Loging..'"><i class="fa fa-spinner fa-spin"></i></span>{{btnLoginText}}</button>-->
+
+                            <button type="submit" (click)="next_click($event)" tabindex="3" class="btn btn-primary btn-sm" name="action"><i class="fa fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>
