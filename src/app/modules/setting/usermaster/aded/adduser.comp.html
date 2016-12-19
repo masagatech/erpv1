@@ -59,18 +59,22 @@
 									<div class="ui-grid-row">
 										<div class="col-md-3">
 											<input id="{{row.cmpid}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" (change)="selectAndDeselectCompanyWiseCheckboxes(row)"
-											/>&nbsp;{{row.cmpname}}
+												[style.display]="row.isfyrights == 0?'none':''" />&nbsp;{{row.cmpname}}
 										</div>
 										<div class="col-md-1">
 											<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50" height="50" />
 										</div>
-										<div class="col-md-8" id="C{{row.cmpid}}">
+										<div id="C{{row.cmpid}}" class="col-md-8" [style.display]="row.isfyrights == 0?'none':''">
 											<label *ngFor="let fyrow of getFYData(row.fyrights)">
-												<input id="abc" type="checkbox" value="{{fyrow.fyid}}">
+												<input id="{{row.cmpid}}{{fyrow.fyid}}" type="checkbox" value="{{fyrow.fyid}}">
 												{{fyrow.fyname}}
 											</label>
 										</div>
+										<div id="C{{row.cmpid}}" class="col-md-8" [style.display]="row.isfyrights == 1?'none':''">
+											No FY
+										</div>
 									</div>
+									<hr />
 								</div>
 							</div>
 						</div>

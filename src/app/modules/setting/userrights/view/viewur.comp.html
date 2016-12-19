@@ -1,35 +1,40 @@
-<div class="input-group stylish-input-group">
-	<input type="text" class="form-control" placeholder="Search" [(ngModel)]="EmpName" (keyup)="filterEmployeeData()" />
-	<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-</div>
-
 <div class="table-responsive">
 	<table class="table table-striped table-bordered table-hover">
 		<thead>
 			<tr>
-				<th>User Name</th>
-				<th>Company Name</th>
+				<th width="20px"></th>
+				<th width="200px">User Name</th>
+				<th width="200px">Company Name</th>
 				<th>FY Name</th>
-				<th>Menu Name</th>
-				<th>Rights</th>
 			</tr>
 		</thead>
 		<tbody *ngFor="let row of viewUserDT">
 			<tr>
-				<td>
+				<td width="20px">
+					<button (click)="viewUserRights(row)">{{row.issh == 1 ? "-" : "+"}}</button>
+				</td>
+				<td width="200px">
 					{{row.fullname}}
 				</td>
-				<td>
+				<td width="200px">
 					{{row.cmpname}}
 				</td>
 				<td>
 					{{row.fyname}}
 				</td>
-				<td>
-					{{row.menuname}}
-				</td>
-				<td>
-					{{row.rights}}
+			</tr>
+			<tr [style.display]="row.isopenur == 0?'none':''">
+				<td width="20px"></td>
+				<td colSpan="3">
+					<div class="col-md-3" *ngFor="let drow of row.userrights">
+						<div class="panel panel-theme">
+							<div class="panel-body">
+								<b>{{drow.smname}} :</b>
+								<br />
+								{{drow.rights}}
+							</div>
+						</div>
+					</div>
 				</td>
 			</tr>
 

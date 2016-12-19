@@ -253,8 +253,8 @@ export class AddUserRights implements OnInit, OnDestroy {
             var viewUR = data.data;
 
             var userrights = null;
-            var actrights = null;
             var menuitem = null;
+            var actrights = null;
 
             if (viewUR[0] != null) {
                 userrights = null;

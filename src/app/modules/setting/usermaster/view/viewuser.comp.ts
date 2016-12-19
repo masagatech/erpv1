@@ -52,12 +52,12 @@ export class ViewUser implements OnInit, OnDestroy {
     }    
 
     openUserDetails(row) {
-        this._router.navigate(['/setting/edituser', row.uid]);
+        this._router.navigate(['/setting/usermaster/edit', row.uid]);
     }
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/setting/adduser']);
+            this._router.navigate(['/setting/usermaster/add']);
         }
     }
 

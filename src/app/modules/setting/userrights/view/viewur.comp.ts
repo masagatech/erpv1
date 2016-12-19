@@ -29,7 +29,7 @@ export class ViewUserRights implements OnInit, OnDestroy {
 
     getUserRights() {
         this._userservice.getUserRights({ "flag":"view", "uid":"1", "cmpid":"2", "fyid":"7" }).subscribe(data => {
-            this.viewUserDT = data.data[0].userrights;
+            this.viewUserDT = data.data;
             console.log(this.viewUserDT);
         }, err => {
             console.log("Error");
@@ -38,30 +38,21 @@ export class ViewUserRights implements OnInit, OnDestroy {
         })
     }
 
-    viewCompanyDT(row) {
-        if (row.issh == 0) {
-            row.issh = 1;
-            if (row.details.length === 0) {
-                this._userservice.getUserRights({ "uid": row.uid, "cmpid": row.cmpid, "fyid": row.fyid, "flag": "view" }).subscribe(data => {
-                    row.details = data.data;
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
+    viewUserRights(row) {
+        if (row.isopenur == 0) {
+            row.isopenur = 1;
         } else {
-            row.issh = 0;
+            row.isopenur = 0;
         }
     }
 
     openUserRights(row) {
-        this._router.navigate(['/setting/edituserrights', row.UserID]);
+        this._router.navigate(['/setting/userrights/edit', row.UserID]);
     }
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/setting/adduserrights']);
+            this._router.navigate(['/setting/userrights/add']);
         }
     }
 
