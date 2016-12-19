@@ -16,19 +16,18 @@ declare var $: any;
 export class JVAddEdit implements OnInit, OnDestroy {
     viewCustomerDT: any[];
 
-    jvmid: any;
-    jvDate: any;
-    jvNarration: any;
+    jvmid: number = 0;
+    docdate: any = "";
+    narration: string = "";
 
     jvRowData: any[] = [];
-    viewJVData: any[];
 
-    newJVDAutoID: any;
-    newAccCode: any;
-    newAccName: any;
-    newDrAmt: any;
-    newCrAmt: any;
-    newNarration: any;
+    newjvdid: number = 0;
+    newacid: number = 0;
+    newacname: string = "";
+    newdramt: any = "";
+    newcramt: any = "";
+    newdetnarr: string = "";
 
     counter: any;
     title: any;
@@ -39,7 +38,7 @@ export class JVAddEdit implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _jvservice: JVService, private _commonservice: CommonService) {
-        this.jvDate = Date.now();
+        this.docdate = Date.now();
     }
 
     // add jv details
@@ -47,27 +46,31 @@ export class JVAddEdit implements OnInit, OnDestroy {
     private NewRowAdd() {
         this.jvRowData.push({
             'counter': this.counter,
-            'AccCode': this.newAccCode,
-            'AccName': this.newAccName,
-            'DebitAmount': this.newDrAmt,
-            'CreditAmount': this.newCrAmt,
-            'Details_Narration': this.newNarration
+            'jvdid': this.newjvdid,
+            'acid': this.newacid,
+            'acname': this.newacname,
+            'dramt': this.newdramt,
+            'cramt': this.newcramt,
+            'detnarr': this.newdetnarr
         });
 
         this.counter++;
-        this.newAccCode = "";
-        this.newAccName = "";
-        this.newDrAmt = "";
-        this.newCrAmt = "";
-        this.newNarration = "";
+        this.newjvdid = 0;
+        this.newacid = 0;
+        this.newacname = "";
+        this.newdramt = "";
+        this.newcramt = "";
+        this.newdetnarr = "";
     }
 
     // account details
 
     getAutoComplete(me: any, arg: number) {
-        this._commonservice.getAutoData({ "Type": "CustName", "Key": arg == 0 ? me.newAccName : me.AccName }).subscribe(data => {
+        var that = this;
+
+        that._commonservice.getAutoData({ "type": "customer", "search": arg == 0 ? me.newacname : me.acname }).subscribe(data => {
             $(".accname").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -77,14 +80,12 @@ export class JVAddEdit implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    this.AccCode = ui.item.value;
-
                     if (arg === 1) {
-                        me.AccName = ui.item.label;
-                        me.AccCode = ui.item.value;
+                        me.acname = ui.item.label;
+                        me.acid = ui.item.value;
                     } else {
-                        me.newAccName = ui.item.label;
-                        me.newAccCode = ui.item.value;
+                        me.newacname = ui.item.label;
+                        me.newacid = ui.item.value;
                     }
                 }
             });
@@ -99,13 +100,13 @@ export class JVAddEdit implements OnInit, OnDestroy {
 
     setDrAmt(me: any, arg: number) {
         if (arg === 1) {
-            if (me.CreditAmount > 0) {
-                me.DebitAmount = 0;
+            if (me.cramt > 0) {
+                me.dramt = 0;
             }
         }
         else {
-            if (me.newCrAmt > 0) {
-                me.newDrAmt = 0;
+            if (me.newcramt > 0) {
+                me.newdramt = 0;
             }
         }
     }
@@ -114,13 +115,13 @@ export class JVAddEdit implements OnInit, OnDestroy {
 
     setCrAmt(me: any, arg: number) {
         if (arg === 1) {
-            if (me.DebitAmount > 0) {
-                me.CreditAmount = 0;
+            if (me.dramt > 0) {
+                me.cramt = 0;
             }
         }
         else {
-            if (me.newDrAmt > 0) {
-                me.newCrAmt = 0;
+            if (me.newdramt > 0) {
+                me.newcramt = 0;
             }
         }
     }
@@ -128,14 +129,16 @@ export class JVAddEdit implements OnInit, OnDestroy {
     // get jv master by id
 
     getJVDataById(pjvmid: number) {
-        this._jvservice.viewJVDetails({ "flag": "edit", "jvmid": pjvmid }).subscribe(data => {
-            this.viewJVData = data.data;
+        var that = this;
 
-            this.jvmid = this.viewJVData[0].JVMasterAutoID;
-            this.jvDate = this.viewJVData[0].DocDate;
-            this.jvNarration = this.viewJVData[0].Narration;
+        that._jvservice.getJVDetails({ "flag": "edit", "jvmid": pjvmid }).subscribe(data => {
+            var jvdata = data.data;
 
-            this.getJVDetailsByJVID(pjvmid);
+            that.jvmid = jvdata[0].jvmid;
+            that.docdate = jvdata[0].docdate;
+            that.narration = jvdata[0].narration;
+
+            that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
         }, () => {
@@ -146,7 +149,7 @@ export class JVAddEdit implements OnInit, OnDestroy {
     // get jv details by id
 
     getJVDetailsByJVID(pjvmid: number) {
-        this._jvservice.viewJVDetails({ "flag": "details", "jvmid": pjvmid }).subscribe(data => {
+        this._jvservice.getJVDetails({ "flag": "details", "jvmid": pjvmid }).subscribe(data => {
             this.jvRowData = data.data;
             console.log(this.jvRowData);
         }, err => {
@@ -161,21 +164,22 @@ export class JVAddEdit implements OnInit, OnDestroy {
     saveJVData() {
         var saveJV = {
             "jvmid": this.jvmid,
-            "fyid": "5",
-            "docdate": this.jvDate,
-            "narration": this.jvNarration,
-            "createdby": "vivek",
-            "updatedby": "vivek",
-            "JVDetails": this.jvRowData
+            "fyid": "7",
+            "cmpid": "2",
+            "docdate": this.docdate,
+            "narration": this.narration,
+            "createdby": "1:vivek",
+            "updatedby": "1:vivek",
+            "jvdetails": this.jvRowData
         }
 
         this._jvservice.saveJVDetails(saveJV).subscribe(data => {
-            var dataResult = JSON.parse(data.data);
+            var dataResult = data.data;
             debugger;
             console.log(dataResult);
 
-            if (dataResult[0].Doc != "-1") {
-                alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
+            if (dataResult[0].funsave_jv.msgid != "-1") {
+                alert(dataResult[0].funsave_jv.msg);
                 this._router.navigate(['/accounts/viewjv']);
             }
             else {

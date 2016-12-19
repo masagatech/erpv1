@@ -19,8 +19,8 @@ export class ViewJV implements OnInit, OnDestroy {
     viewJVDT: any[] = [];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _jvservice: JVService) {
-        this._jvservice.viewJVDetails({ "flag": "docrange", "fromdocno": "1801", "todocno": "1900", "fyid": "5" }).subscribe(data => {
-            this.viewJVDT = JSON.parse(data.data);
+        this._jvservice.getJVDetails({ "flag": "docrange", "fromdocno": "1", "todocno": "100", "fyid": "7" }).subscribe(data => {
+            this.viewJVDT = data.data;
             console.log(this.viewJVDT);
         }, err => {
             console.log("Error");
@@ -32,9 +32,9 @@ export class ViewJV implements OnInit, OnDestroy {
     expandDetails(row) {
         if (row.issh == 0) {
             row.issh = 1;
-            if (row.Details.length === 0) {
-                this._jvservice.viewJVDetails({ "flag": "details", "jvmid": row.jvmid }).subscribe(data => {
-                    row.Details = JSON.parse(data.data);
+            if (row.details.length === 0) {
+                this._jvservice.getJVDetails({ "flag": "details", "jvmid": row.jvmid }).subscribe(data => {
+                    row.details = data.data;
                 }, err => {
                     console.log("Error");
                 }, () => {
@@ -51,7 +51,7 @@ export class ViewJV implements OnInit, OnDestroy {
 
         for (var i = 0; i < this.viewJVDT.length; i++) {
             var items = this.viewJVDT[i];
-            DebitAmtTotal += parseInt(items.TotalDebitAmount);
+            DebitAmtTotal += parseInt(items.totdramt);
         }
 
         return DebitAmtTotal;
@@ -62,15 +62,15 @@ export class ViewJV implements OnInit, OnDestroy {
 
         for (var i = 0; i < this.viewJVDT.length; i++) {
             var items = this.viewJVDT[i];
-            CreditAmtTotal += parseInt(items.TotalCreditAmount);
+            CreditAmtTotal += parseInt(items.totcramt);
         }
 
         return CreditAmtTotal;
     }
 
     openJVDetails(row) {
-        if (!row.IsLocked) {
-            this._router.navigate(['/accounts/editjv', row.JVMasterAutoID]);
+        if (!row.islocked) {
+            this._router.navigate(['/accounts/editjv', row.jvmid]);
         }
     }
 

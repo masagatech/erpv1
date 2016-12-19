@@ -9,13 +9,13 @@
 				<div class="col-md-3">
 					<div class="form-group">
 						<label class="control-label">JV Date</label>
-						<input type="date" [(ngModel)]="jvDate" class="form-control">
+						<input type="date" [(ngModel)]="docdate" class="form-control">
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label class="control-label">Narration</label>
-						<textarea [(ngModel)]="jvNarration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+						<textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
 					</div>
 				</div>
 				<div class="col-md-3">
@@ -41,7 +41,7 @@
 						{{i+1}}
 					</td>
 					<td>
-						<input type="text" [(ngModel)]="row.accname" class="accname form-control" (keyup)="getAutoComplete(row, 1)" />
+						<input type="text" [(ngModel)]="row.acname" class="accname form-control" (keyup)="getAutoComplete(row, 1)" />
 					</td>
 					<td class="textalign">
 						<input type="text" [(ngModel)]="row.dramt" class="form-control" (keyup)="setCrAmt(row, 1)" />
@@ -50,7 +50,7 @@
 						<input type="text" [(ngModel)]="row.cramt" class="form-control" (keyup)="setDrAmt(row, 1)" />
 					</td>
 					<td class="textalign">
-						<input type="text" [(ngModel)]="row.Details_Narration" class="form-control" />
+						<input type="text" [(ngModel)]="row.detnarr" class="form-control" />
 					</td>
 				</tr>
 			</tbody>
@@ -58,15 +58,15 @@
 				<tr>
 					<td>#</td>
 					<td>
-						<input type="text" [(ngModel)]="newAccName" class="accname form-control" (keyup)="getAutoComplete(this, 0)" />
+						<input type="text" [(ngModel)]="newacname" class="accname form-control" (keyup)="getAutoComplete(this, 0)" />
 					</td>
 					<td>
-						<input type="text" [(ngModel)]="newDrAmt" class="form-control" (keyup)="setCrAmt(this, 0)" (keyup.enter)="NewRowAdd()" />
+						<input type="text" [(ngModel)]="newdramt" class="form-control" (keyup)="setCrAmt(this, 0)" (keyup.enter)="NewRowAdd()" />
 					</td>
 					<td>
-						<input type="text" [(ngModel)]="newCrAmt" class="form-control" (keyup)="setDrAmt(this, 0)" (keyup.enter)="NewRowAdd()" /></td>
+						<input type="text" [(ngModel)]="newcramt" class="form-control" (keyup)="setDrAmt(this, 0)" (keyup.enter)="NewRowAdd()" /></td>
 					<td>
-						<input type="text" [(ngModel)]="newNarration" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"
+						<input type="text" [(ngModel)]="newdetnarr" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"
 						/>
 					</td>
 				</tr>

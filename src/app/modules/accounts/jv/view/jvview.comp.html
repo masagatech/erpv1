@@ -9,10 +9,10 @@
 					<b>Total :</b>
 				</th>
 				<th width="150px" class="text-right">
-					<b>{{TotalDebitAmt() | number}}</b>
+					<b>{{TotalDebitAmt()}}</b>
 				</th>
 				<th width="150px" class="text-right">
-					<b>{{TotalCreditAmt() | number}}</b>
+					<b>{{TotalCreditAmt()}}</b>
 				</th>
 			</tr>
 			<tr>
@@ -41,10 +41,10 @@
 					{{row.issh == 1 ? row.narration : row.smallnarr}}
 				</td>
 				<td class="text-right">
-					{{row.totdramt | number}}
+					{{row.totdramt}}
 				</td>
 				<td class="text-right">
-					{{row.totcramt | number}}
+					{{row.totcramt}}
 				</td>
 			</tr>
 			<tr [style.display]="row.issh == 0?'none':''">
@@ -60,10 +60,10 @@
 								<th width="140px" class="text-right">Cr. Amt</th>
 							</tr>
 						</thead>
-						<tbody *ngFor="let drow of row.Details">
+						<tbody *ngFor="let drow of row.details">
 							<tr>
 								<td>
-									{{drow.accde}}
+									{{drow.acid}}
 								</td>
 								<td>
 									{{drow.acname}}
@@ -72,10 +72,10 @@
 									{{drow.detnarr}}
 								</td>
 								<td class="text-right">
-									{{drow.dramt | number}}
+									{{drow.dramt}}
 								</td>
 								<td class="text-right">
-									{{drow.cramt | number}}
+									{{drow.cramt}}
 								</td>
 							</tr>
 						</tbody>
@@ -90,10 +90,10 @@
 					<b>Total :</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalDebitAmt() | number}}</b>
+					<b>{{TotalDebitAmt()}}</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalCreditAmt() | number}}</b>
+					<b>{{TotalCreditAmt()}}</b>
 				</td>
 			</tr>
 		</tfoot>
