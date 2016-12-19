@@ -14,7 +14,7 @@ declare var $: any;
     providers: [CompService, CommonService]
 })
 
-export class CompanyAddEdit implements OnInit, OnDestroy {
+export class AddCompany implements OnInit, OnDestroy {
     title: any = "";
 
     cmpid: number = 0;
@@ -96,41 +96,6 @@ export class CompanyAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['cmpid'] !== undefined) {
-                this.title = "Edit Company Details";
-
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.cmpid = params['cmpid'];
-                this.getCompanyById(this.cmpid);
-
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Add Company Details";
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-            }
-        });
-    }
-
     getCompanyById(pcmpid: any) {
         this._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
             var company = data.data;
@@ -206,6 +171,41 @@ export class CompanyAddEdit implements OnInit, OnDestroy {
             console.log(err);
         }, () => {
             // console.log("Complete");
+        });
+    }
+
+    ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['cmpid'] !== undefined) {
+                this.title = "Edit Company Details";
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.cmpid = params['cmpid'];
+                this.getCompanyById(this.cmpid);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+            }
+            else {
+                this.title = "Add Company Details";
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+            }
         });
     }
 

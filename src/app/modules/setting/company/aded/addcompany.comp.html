@@ -58,8 +58,6 @@
 					<div class="form-group">
 						<label class="control-label">Logo</label>
 
-						<p-growl [value]="msgs"></p-growl>
-    
 						<p-fileUpload name="cmplogo[]" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="image/*"
 							maxFileSize="1000000">
 							<template pTemplate type="content">

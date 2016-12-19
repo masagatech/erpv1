@@ -63,7 +63,7 @@ export class ViewCompany implements OnInit, OnDestroy {
 
     openCompanyDetails(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/setting/editcompany', row.cmpid]);
+            this._router.navigate(['/setting/company/edit', row.cmpid]);
         }
     }
 
@@ -75,7 +75,7 @@ export class ViewCompany implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/setting/addcompany']);
+            this._router.navigate(['/setting/company/add']);
         }
     }
 

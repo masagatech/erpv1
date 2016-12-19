@@ -4,8 +4,6 @@ import { SettingComp } from '../setting/setting.comp';
 import { AuthGuard } from '../../_service/authguard-service';
 import { SettingDashboardComp } from '../setting/dashboard/dashboard.comp';
 import { ALSAddEdit } from '../setting/auditlocksetting/addals.comp';
-import { CompanyAddEdit } from '../setting/company/aded/addcompany.comp';
-import { ViewCompany } from '../setting/company/view/viewcompany.comp';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../_shared/shared.module'
 import { GroupByPipe } from '../../_pipe/groupby.pipe'
@@ -28,9 +26,18 @@ const routerConfig = [
         path: '',
         children: [
           { path: 'auditlocksetting', component: ALSAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'addcompany', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'editcompany/:cmpid', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'company', component: ViewCompany, canActivateChid: [AuthGuard], },
+
+          // {
+          //   path: 'auditlocksetting', loadChildren: () => System.import('./auditlocksetting').then((comp: any) => {
+          //     return comp.default;
+          //   }),
+          // },
+
+          {
+            path: 'company', loadChildren: () => System.import('./company').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           {
             path: 'fy', loadChildren: () => System.import('./fy').then((comp: any) => {
@@ -62,8 +69,6 @@ const routerConfig = [
     DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule,
     FileUploadModule, GrowlModule, MessagesModule],
   declarations: [
-    CompanyAddEdit,
-    ViewCompany,
     ALSAddEdit,
     SettingComp,
     SettingDashboardComp,
