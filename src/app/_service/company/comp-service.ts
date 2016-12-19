@@ -14,7 +14,7 @@ export class CompService {
         return this._dataserver.post("saveCompany", req)
     }
 
-    updateCompanyFYMapping(req: any) {
-        return this._dataserver.post("UpdateCompanyFYMapping", req)
+    saveCompanyFYMap(req: any) {
+        return this._dataserver.post("saveCompanyFYMap", req)
     }
 }
