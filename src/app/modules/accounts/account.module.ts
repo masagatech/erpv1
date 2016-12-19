@@ -5,11 +5,6 @@ import { AuthGuard } from '../../_service/authguard-service';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { AccountDashboardComp } from '../accounts/dashboard/dashboard.comp';
 
-import { JVAddEdit } from '../accounts/jv/aded/jv.comp';
-import { ViewJV } from '../accounts/jv/view/jvview.comp';
-import { DebitNoteAddEdit } from '../accounts/debitnote/aded/adddebitnote.comp';
-import { ViewDebitNote } from '../accounts/debitnote/view/viewdebitnote.comp';
-
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -22,13 +17,23 @@ const routerConfig = [
       {
         path: '',
         children: [
-          { path: 'viewjv', component: ViewJV, canActivateChid: [AuthGuard], },
-          { path: 'addjv', component: JVAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'editjv/:ID', component: JVAddEdit, canActivateChid: [AuthGuard], },
+          {
+            path: 'jv', loadChildren: () => System.import('./jv').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
-          { path: 'viewdebitnote', component: ViewDebitNote, canActivateChid: [AuthGuard], },
-          { path: 'adddebitnote', component: DebitNoteAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'editdebitnote/:ID', component: DebitNoteAddEdit, canActivateChid: [AuthGuard], },
+          {
+            path: 'debitnote', loadChildren: () => System.import('./debitnote').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'pdc', loadChildren: () => System.import('./pdc').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]
@@ -40,13 +45,8 @@ const routerConfig = [
 @NgModule({
   imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
   declarations: [
-    JVAddEdit,
     AccountsComp,
     AccountDashboardComp,
-    ViewJV,
-    JVAddEdit,
-    ViewDebitNote,
-    DebitNoteAddEdit,
   ],
   providers: [AuthGuard]
 })

@@ -13,25 +13,25 @@ declare var $: any;
     providers: [DNService, CommonService]
 })
 
-export class DebitNoteAddEdit implements OnInit, OnDestroy {
+export class AddDebitNote implements OnInit, OnDestroy {
     viewCustomerDT: any[] = [];
     duplicateacid: Boolean = true;
 
-    dnid: any;
-    dnacid: any;
-    dnacname: any;
-    dndate: any;
-    dramt: any;
-    narration: any;
+    dnid: number = 0;
+    dnacid: number = 0;
+    dnacname: string = "";
+    dndate: any = "";
+    dramt: any = "";
+    narration: string = "";
 
     dnRowData: any = [];
     viewDNData: any = [];
 
-    newdnid: any;
-    newacid: any;
-    newacname: any;
-    newdramt: any;
-    newcramt: any;
+    newdnid: any = 0;
+    newacid: any = 0;
+    newacname: string = "";
+    newdramt: any = "";
+    newcramt: any = "";
 
     counter: any;
     title: any;
@@ -154,16 +154,38 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
     }
 
     saveDNData() {
+        var jsondt = [];
+        var dnid = 0;
+
+        debugger;
+
+        for (var i = 0; i < this.dnRowData.length; i++) {
+            var field = this.dnRowData[i];
+
+            jsondt = [{
+                "dnid": field.dnid == undefined ? 0 : field.dnid,
+                "fyid": "7",
+                "cmpid": "2",
+                "docdate": "" + this.dndate + "",
+                "acid": + field.acid,
+                "dramt": "0",
+                "cramt": field.cramt
+            }];
+        }
+
+        console.log(jsondt);
+
         var saveDN = {
             "dnid": this.dnid,
-            "fyid": "5",
+            "fyid": "7",
+            "cmpid": "2",
             "docdate": this.dndate,
             "acid": this.dnacid,
             "dramt": this.dramt,
             "narration": this.narration,
             "createdby": "1:vivek",
             "updatedby": "1:vivek",
-            "dndetails": this.dnRowData
+            "dndetails": jsondt
         }
 
         this.duplicateacid = this.isDuplicateacid();
@@ -177,7 +199,7 @@ export class DebitNoteAddEdit implements OnInit, OnDestroy {
 
                 if (dataResult[0].funsave_debitnote.msgid != "-1") {
                     alert(dataResult[0].msg);
-                    this._router.navigate(['/accounts/viewdebitnote']);
+                    this._router.navigate(['/accounts/debitnote']);
                 }
                 else {
                     alert("Error");
