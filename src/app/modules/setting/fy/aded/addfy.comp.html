@@ -31,16 +31,14 @@
 						</thead>
 						<tbody>
 							<tr *ngFor="let row of CompanyDetails">
-								<td id="{{row.CompanyID}}">
-									<input id="{{row.CompanyID}}" type="checkbox" [(ngModel)]="row.IsCompanyCheck" value="{{row.CompanyID}}" class="companyCheck"
-									/>
+								<td id="{{row.cmpid}}">
+									<input id="{{row.cmpid}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" class="companyCheck" />
 								</td>
 								<td>
-									<img src="http://localhost:3000/assets/img/logo/{{row.CompanyLogo}}" onerror="this.src='http://localhost:3000/assets/img/logo/No_Images.gif';"
-										width="50" height="50" />
+									<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50" height="50" />
 								</td>
 								<td>
-									{{row.CompanyName}}
+									{{row.cmpname}}
 								</td>
 							</tr>
 						</tbody>

@@ -31,11 +31,11 @@ export class AddFY implements OnInit, OnDestroy {
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService, ) {
-        //this.getCompanyDetails();
+        this.getCompany();
     }
 
     getCompany() {
-        this._compservice.getCompany({ "CompanyID": "0", "SearchTxt": "" }).subscribe(data => {
+        this._compservice.getCompany({ "flag": "all" }).subscribe(data => {
             this.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
@@ -115,7 +115,7 @@ export class AddFY implements OnInit, OnDestroy {
 
                     // this.updateCompanyFYMapping(companyid, fyrights);
 
-                    this._router.navigate(['/setting/financialyear']);
+                    this._router.navigate(['/setting/fy']);
                 }
                 else if (dataResult[0].funsave_fy.doc == "-1") {
                     alert(dataResult[0].funsave_fy.msg);
@@ -131,8 +131,8 @@ export class AddFY implements OnInit, OnDestroy {
         }
     }
 
-    updateCompanyFYMapping(strCompID, fyRights) {
-        this._compservice.updateCompanyFYMapping({ "strCompID": strCompID, "FYRights": fyRights }).subscribe(data => {
+    saveCompanyFYMap(cmpid, fyRights) {
+        this._compservice.saveCompanyFYMap({ "cmpid": cmpid, "fyrights": fyRights }).subscribe(data => {
             var dataResult2 = data.data;
 
             if (dataResult2[0].FYID !== "-1") {

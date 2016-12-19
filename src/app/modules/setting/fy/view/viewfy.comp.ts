@@ -38,12 +38,12 @@ export class ViewFY implements OnInit, OnDestroy {
     }
 
     openFYDetails(row) {
-        this._router.navigate(['/setting/editfinancialyear', row.fyid]);
+        this._router.navigate(['/setting/fy/edit', row.fyid]);
     }
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/setting/addfinancialyear']);
+            this._router.navigate(['/setting/fy/add']);
         }
     }
 
