@@ -127,11 +127,17 @@ export class AddUser implements OnInit, OnDestroy {
         return true;
     }
 
+    private clearcheckboxes(): void {
+        $(".allcheckboxes input[type=checkbox]").prop('checked', false);
+    }
+
     getUserDataById(puid: number) {
         var that = this;
 
         that._userservice.getUsers({ "flag": "id", "uid": puid }).subscribe(data => {
             var UserDT = data.data;
+
+            debugger;
 
             that.uid = UserDT[0].uid;
             that.ucode = UserDT[0].ucode;
@@ -139,16 +145,31 @@ export class AddUser implements OnInit, OnDestroy {
             that.lastname = UserDT[0].lastname;
             that.emailid = UserDT[0].emailid;
 
-            var cmprights = UserDT[0].companyrights;
-
-            var rights = null;
+            var cmprights = null;
             var cmpitem = null;
+            var fyrights = null;
 
-            for (var i = 0; i <= cmprights.length - 1; i++) {
-                cmpitem = null;
-                cmpitem = cmprights[i];
+            if (UserDT[0] != null) {
+                cmprights = null;
+                cmprights = UserDT[0].companyrights;
 
-                $("#C" + cmpitem.cmpid).find("#" + cmpitem.cmpid + cmprights[i]).prop('checked', true);
+                if (cmprights != null) {
+                    for (var i = 0; i <= cmprights.length - 1; i++) {
+                        cmpitem = null;
+                        cmpitem = cmprights[i];
+
+                        if (cmpitem != null) {
+                            fyrights = null;
+                            fyrights = cmpitem.fyid.split(',');
+
+                            if (fyrights != null) {
+                                for (var j = 0; j <= fyrights.length - 1; j++) {
+                                    $("#C" + cmpitem.cmpid).find("#" + cmpitem.cmpid + fyrights[j]).prop('checked', true);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }, err => {
             console.log("Error");
@@ -190,8 +211,6 @@ export class AddUser implements OnInit, OnDestroy {
         var cmprights = that.getCompanyRights();
         console.log(cmprights);
 
-        debugger;
-
         var saveUser = {
             "uid": that.uid,
             "ucode": that.ucode,
@@ -202,6 +221,8 @@ export class AddUser implements OnInit, OnDestroy {
             "iscpwd": that.iscpwd,
             "companyrights": cmprights
         }
+
+        debugger;
 
         if (that.validSuccess) {
             that._userservice.saveUsers(saveUser).subscribe(data => {
@@ -261,7 +282,8 @@ export class AddUser implements OnInit, OnDestroy {
                 that.actionButton.find(a => a.id === "edit").hide = false;
 
                 that.uid = params['uid'];
-                that.getUserDataById(that.uid);
+
+                setTimeout(function () { that.getUserDataById(that.uid); }, 0);
 
                 $('input').attr('disabled', 'disabled');
                 that.iscpwd = 'N';

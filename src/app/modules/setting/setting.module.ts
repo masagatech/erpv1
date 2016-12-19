@@ -6,12 +6,6 @@ import { SettingDashboardComp } from '../setting/dashboard/dashboard.comp';
 import { ALSAddEdit } from '../setting/auditlocksetting/addals.comp';
 import { CompanyAddEdit } from '../setting/company/aded/addcompany.comp';
 import { ViewCompany } from '../setting/company/view/viewcompany.comp';
-import { AddUser } from '../setting/usermaster/aded/adduser.comp';
-import { ViewUser } from '../setting/usermaster/view/viewuser.comp';
-import { AddUserRights } from '../setting/userrights/aded/addur.comp';
-import { ViewUserRights } from '../setting/userrights/view/viewur.comp';
-import { AddFY } from '../setting/fy/aded/addfy.comp';
-import { ViewFY } from '../setting/fy/view/viewfy.comp';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../_shared/shared.module'
 import { GroupByPipe } from '../../_pipe/groupby.pipe'
@@ -19,8 +13,10 @@ import { GroupByPipe } from '../../_pipe/groupby.pipe'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule,
-   FileUploadModule, GrowlModule, MessagesModule } from 'primeng/primeng';
+import {
+  DataTableModule, DataListModule, CheckboxModule, DataGridModule, PanelModule, DialogModule,
+  FileUploadModule, GrowlModule, MessagesModule
+} from 'primeng/primeng';
 
 const routerConfig = [
   {
@@ -35,15 +31,25 @@ const routerConfig = [
           { path: 'addcompany', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
           { path: 'editcompany/:cmpid', component: CompanyAddEdit, canActivateChid: [AuthGuard], },
           { path: 'company', component: ViewCompany, canActivateChid: [AuthGuard], },
-          { path: 'adduser', component: AddUser, canActivateChid: [AuthGuard], },
-          { path: 'edituser/:uid', component: AddUser, canActivateChid: [AuthGuard], },
-          { path: 'usermaster', component: ViewUser, canActivateChid: [AuthGuard], },
-          { path: 'viewuserrights', component: ViewUserRights, canActivateChid: [AuthGuard], },
-          { path: 'addfinancialyear', component: AddFY, canActivateChid: [AuthGuard], },
-          { path: 'editfinancialyear/:fyid', component: AddFY, canActivateChid: [AuthGuard], },
-          { path: 'financialyear', component: ViewFY, canActivateChid: [AuthGuard], },
-          { path: 'adduserrights', component: AddUserRights, canActivateChid: [AuthGuard], },
-          { path: 'edituserrights/:uid', component: AddUserRights, canActivateChid: [AuthGuard], },
+
+          {
+            path: 'fy', loadChildren: () => System.import('./fy').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'usermaster', loadChildren: () => System.import('./usermaster').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'userrights', loadChildren: () => System.import('./userrights').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
           { path: '', component: SettingDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
@@ -59,12 +65,6 @@ const routerConfig = [
     CompanyAddEdit,
     ViewCompany,
     ALSAddEdit,
-    AddUser,
-    ViewUser,
-    AddUserRights,
-    ViewUserRights,
-    AddFY,
-    ViewFY,
     SettingComp,
     SettingDashboardComp,
     GroupByPipe
