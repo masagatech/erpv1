@@ -7,7 +7,7 @@ import { JVService } from '../../../../_service/jv/jv-service' /* add reference 
 import { Router } from '@angular/router';
 
 @Component({
-    templateUrl: 'jvview.comp.html',
+    templateUrl: 'viewjv.comp.html',
     providers: [JVService]
 })
 
@@ -70,7 +70,7 @@ export class ViewJV implements OnInit, OnDestroy {
 
     openJVDetails(row) {
         if (!row.islocked) {
-            this._router.navigate(['/accounts/editjv', row.jvmid]);
+            this._router.navigate(['/accounts/jv/edit', row.jvmid]);
         }
     }
 
@@ -83,7 +83,7 @@ export class ViewJV implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/accounts/addjv']);
+            this._router.navigate(['/accounts/jv/add']);
         }
     }
 

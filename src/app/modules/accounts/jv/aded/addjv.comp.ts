@@ -9,11 +9,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 
 @Component({
-    templateUrl: 'jv.comp.html',
+    templateUrl: 'addjv.comp.html',
     providers: [JVService, CommonService]
 })
 
-export class JVAddEdit implements OnInit, OnDestroy {
+export class AddJV implements OnInit, OnDestroy {
     viewCustomerDT: any[];
 
     jvmid: number = 0;
@@ -180,7 +180,7 @@ export class JVAddEdit implements OnInit, OnDestroy {
 
             if (dataResult[0].funsave_jv.msgid != "-1") {
                 alert(dataResult[0].funsave_jv.msg);
-                this._router.navigate(['/accounts/viewjv']);
+                this._router.navigate(['/accounts/jv']);
             }
             else {
                 alert("Error");
@@ -204,11 +204,11 @@ export class JVAddEdit implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['ID'] !== undefined) {
+            if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.jvmid = params['ID'];
+                this.jvmid = params['id'];
                 this.getJVDataById(this.jvmid);
 
                 $('input').attr('disabled', 'disabled');
