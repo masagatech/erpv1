@@ -30,10 +30,21 @@ const routerConfig = [
           },
 
           {
-            path: 'pdc', loadChildren: () => System.import('./pdc').then((comp: any) => {
+            path: 'bankpayment', loadChildren: () => System.import('./bankpayment').then((comp: any) => {
               return comp.default;
             }),
           },
+           {
+            path: 'bankreceipt', loadChildren: () => System.import('./bankreceipt').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          // {
+          //   path: 'pdc', loadChildren: () => System.import('./pdc').then((comp: any) => {
+          //     return comp.default;
+          //   }),
+          // },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]

@@ -2,37 +2,37 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { bankpaymentViewService } from "../../../../_service/bankpayment/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
+import { bankreceiptViewService } from "../../../../_service/bankreceipt/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
 
 import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
-    templateUrl: 'bpview.comp.html',
-    providers: [bankpaymentViewService]                         //Provides Add Service dcmaster-service.ts
+    templateUrl: 'brview.comp.html',
+    providers: [bankreceiptViewService]                         //Provides Add Service dcmaster-service.ts
     //,AutoService
 })
 
-export class bankpaymentview implements OnInit, OnDestroy {
+export class bankreceiptview implements OnInit, OnDestroy {
     //Button 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    //Veriable Declare 
-    BankPayId: any=0;
+    //Veriable Local Declare 
+    BankreId: any=0;
     BankNamelist: any=[];
-    BankPaymentView: any=[];
-    Bankid: any=0;
+    BankRecepitView: any=[];
+    BankCode: any="";
     FromDate: any="";
     ToDate: any="";
     tableLength: any;
 
-
-
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankpaymentViewService) { //Inherit Service dcmasterService
+    //constructor 
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankreceiptViewService) { //Inherit Service dcmasterService
         this.getBankMasterDrop();
-
     }
+
+    // Document Ready
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
@@ -42,9 +42,11 @@ export class bankpaymentview implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.tableLength = true;
 
+        $(".bankname").focus();
+
         setTimeout(function () {
             var date = new Date();
-            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate()-1);
+            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
             var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
             //From Date 
@@ -54,7 +56,7 @@ export class bankpaymentview implements OnInit, OnDestroy {
                 autoclose: true,
                 setDate: new Date()
             });
-              $("#FromDate").datepicker('setDate',Fromtoday);
+            $("#FromDate").datepicker('setDate', Fromtoday);
 
             //To Date
             $("#ToDate").datepicker({
@@ -63,21 +65,22 @@ export class bankpaymentview implements OnInit, OnDestroy {
                 setDate: new Date(),
                 autoclose: true
             });
-              $("#ToDate").datepicker('setDate',Totoday);
+            $("#ToDate").datepicker('setDate', Totoday);
         }, 0);
 
     }
 
     //Open Edit Mode 
     OpenEdit(row) {
-        if (!row.IsLocked) {
-            this._router.navigate(['accounts/bankpayment/bpedit', row.id]);
+        if (!row.islocked) {
+            this._router.navigate(['/accounts/bankreceipt/braded', row.id]);
         }
     }
 
+    //Any Button Click Event
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/accounts/bankpayment/bpadd']);
+            this._router.navigate(['/accounts/bankreceipt/braded']);
         }
         if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;
@@ -89,55 +92,12 @@ export class bankpaymentview implements OnInit, OnDestroy {
         }
     }
 
-
-
-    //Get Button Click Event
-    GetBankPayment() {
-        this.FromDate=$('#FromDate').val();
-        this.ToDate=$("#ToDate").val();
-        this.tableLength = true;
-        this.BankPaymentView = [];
-        if (this.Bankid == undefined || this.Bankid == '') {
-            alert('Please Select Bank');
-            return false;
-        }
-        if (this.FromDate == undefined || this.FromDate == '' || this.ToDate == undefined || this.ToDate == '') {
-            alert('Please Select Date');
-            return false;
-        }
-        this.BankServies.getBankPaymentView({
-            "cmpid": 1,
-            "fy": 5,
-            "flag":"",
-            "bankid": this.Bankid,
-            "fromdate": $('#FromDate').datepicker('getDate'),
-            "todate": $('#ToDate').datepicker('getDate')
-        }).subscribe(PaymentDetails => {
-            var dataset = PaymentDetails.data;
-            //if (dataset[0].length > 0) {
-                this.tableLength = false;
-                this.BankPaymentView = dataset;
-            //}
-            //else {
-            //     alert('No record found');
-            //     this.BankPaymentView = [];
-            //     this.tableLength = true;
-            //     return false;
-            // }
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-    }
-
-   getBankMasterDrop() {
+    //Bank Dropdown Bind   
+    getBankMasterDrop() {
         this.BankServies.getBankMaster({
             "type": "bank"
         }).subscribe(BankName => {
-            var dataset = BankName.data;
             this.BankNamelist = BankName.data;
-            //this.Typelist = dataset.Table1;
         }, err => {
             console.log('Error');
         }, () => {
@@ -145,16 +105,15 @@ export class bankpaymentview implements OnInit, OnDestroy {
         });
     }
 
-    //+ AND - Button Click 
+    //+ And  - Button Click  
     expandDetails(row) {
         row.Details=[];
         if (row.issh == 0) {
             row.issh = 1;
-            console.log(row);
             if (row.Details.length === 0) {
-                this.BankServies.getBankPaymentView({ 
+                this.BankServies.getBankRecieptView({ 
                     "flag": "Details",
-                    "bankid": row.id,
+                    "bankreid": row.id,
                     "cmpid":1,
                     "fy":5
                }).subscribe(data => {
@@ -170,21 +129,63 @@ export class bankpaymentview implements OnInit, OnDestroy {
         }
     }
 
+    //Bind Bank Receipt Table
+    GetBankRecepit() {
+        this.FromDate = $('#FromDate').val();
+        this.ToDate = $("#ToDate").val();
+        this.tableLength = true;
+        this.BankRecepitView = [];
+        if (this.BankCode == undefined || this.BankCode == '') {
+            alert('Please Select Bank');
+            return false;
+        }
+        if (this.FromDate == undefined || this.FromDate == '' || this.ToDate == undefined || this.ToDate == '') {
+            alert('Please Select Date');
+            return false;
+        }
+
+        this.BankServies.getBankRecieptView({
+            "cmpid": 1,
+            "fy": 5,
+            "bankid":this.BankCode,
+            "flag":"",
+            "fromdate": $('#FromDate').datepicker('getDate'),
+            "todate": $('#ToDate').datepicker('getDate')
+        }).subscribe(RecepitDetails => {
+            var dataset = RecepitDetails.data;
+            //if (dataset.length > 0) {
+                this.tableLength = false;
+                this.BankRecepitView = dataset;
+
+            //}
+            // else {
+            //     alert('No record found');
+            //     this.BankRecepitView = [];
+            //     this.tableLength = true;
+            //     return false;
+            // }
+        }, err => {
+            console.log('Error');
+        }, () => {
+            //Done Process
+        });
+    }
 
     //Total Sum in Bank Payment Amount
     TotalAmount() {
-        if (this.BankPaymentView != undefined) {
+        if (this.BankRecepitView != undefined) {
             var total = 0;
-            for (var i = 0; i < this.BankPaymentView.length; i++) {
-                total += parseInt(this.BankPaymentView[i].amount);
+            for (var i = 0; i < this.BankRecepitView.length; i++) {
+                var items = this.BankRecepitView[i];
+                total += parseInt(items.amount);
             }
             return total;
         }
 
     }
+
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
     }
-
 }

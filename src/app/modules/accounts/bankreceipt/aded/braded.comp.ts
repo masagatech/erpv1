@@ -3,120 +3,109 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
-import { bankpaymentService } from "../../../../_service/bankpayment/aded/bankpayment-service";  //Service Add Refrence Bankpay-service.ts
+import { bankReceiptService } from "../../../../_service/bankreceipt/aded/bankreceipt-service";  //Service Add Refrence Bankpay-service.ts
 
-import { Router,ActivatedRoute } from '@angular/router';
-
+import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 @Component({
-    templateUrl: 'bpae.comp.html',
-    providers: [bankpaymentService, CommonService]                         //Provides Add Service dcmaster-service.ts
+    templateUrl: 'braded.comp.html',
+    providers: [bankReceiptService, CommonService]                         //Provides Add Service dcmaster-service.ts
     //,AutoService
 })
-
-export class bankpaymentaddedit implements OnInit, OnDestroy {
-    //Button 
+export class bankreceiptaddedit implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    //Declare local Veriable
-    BankPayId:any=0;
-    BankNamelist: any=[];
-    Typelist: any=[];
+    //Declare Local Veriable 
+    private subscribeParameters: any;
+    BankName: any = "";
+    BankRecpId: any = 0;
+    Issuesdate: any = "";
     CustName: any = "";
     CustID:any=0;
-    Bankid: any=0;
-    BankCode: any='';
-    Amount: any=0;
-    ChequeNo: any=0;
-    Remark: any='';
-    Remark1: any='';
-    Remark2: any='';
-    Remark3: any='';
-    Refno: any='';
-    Type: any=0;
-    Issuesdate: any;
-     private subscribeParameters:any;
+    Refno: any = "";
+    DepDate: any = "";
+    TypeName: any = 0;
+    Amount: any = 0;
+    ChequeNo: any = 0;
+    Naration: any = "";
+    Remark1: any = "";
+    Remark2: any = "";
+    Remark3: any = "";
+    BankNamelist: any = [];
+    Typelist: any = [];
 
-    constructor(private setActionButtons: SharedVariableService, private BankServies: bankpaymentService, private _autoservice: CommonService,private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
+
+    //constructor Call Method 
+    constructor(private setActionButtons: SharedVariableService, private BankServies: bankReceiptService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
         this.getBankMasterDrop();
         this.getTypDrop();
     }
+
+    //Document Ready
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".bankpay").focus();
+
+        $(".bankname").focus();
+
         setTimeout(function () {
             var date = new Date();
             var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            //From Date 
-            $("#Issuesdate").datepicker({
-                dateFormat: "dd/mm/yy",
+
+            //DepDate 
+            $("#DepDate").datepicker({
+                dateFormat: "dd-mm-yy",
                 //startDate: new Date(),        //Disable Past Date
                 autoclose: true,
                 setDate: new Date()
             });
-            $("#Issuesdate").datepicker('setDate', today);
+            $("#DepDate").datepicker('setDate', today);
+
         }, 0);
 
-        //Edit Mode
-               this.subscribeParameters = this._routeParams.params.subscribe(params => {
+        //Table Row a Tag Click  
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.BankPayId = params['id'];
-                this.GetBankPayment(this.BankPayId);
+                this.BankRecpId = params['id'];
+                this.GetBankPayment(this.BankRecpId);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
-               this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+
     }
 
-    //CLear All Controll
-    ClearControll() {
-        this.Bankid = "";
-        this.Issuesdate = "";
-        this.CustName = "";
-        this.Refno = "";
-        this.Type = "";
-        this.Amount = "";
-        this.ChequeNo = "";
-        this.Remark = "";
-        this.Remark1 = "";
-        this.Remark2 = "";
-        this.Remark3 = "";
-         $(".bankpay").focus();
-    }
-
-    //Get Data With Row 
+    //Get And Fill Edit Mode
     GetBankPayment(BankPayId) {
-        this.BankServies.getBankPaymentView({
-            "BankPayId":this.BankPayId,
-            "cmpid":1,
-            "fy":5,
-            "flag":"edit"
-        }).subscribe(PaymentDetails => {
-            var dataset = PaymentDetails.data;
-            console.log(dataset);
-            this.Bankid=dataset[0].bank;
-            this.Issuesdate=dataset[0].issuedate;
+        this.BankServies.getBankReceiptView({
+            "bankreid": this.BankRecpId,
+            "cmpid": 1,
+            "fy": 5,
+            "flag": "edit"
+        }).subscribe(ReceiptDetails => {
+            var dataset = ReceiptDetails.data;
+            this.BankName = dataset[0].bank;
+            this.DepDate = dataset[0].depdate;
+            this.CustName = dataset[0].partyname;
             this.CustID=dataset[0].custid;
-            this.CustName=dataset[0].partyname;
-            this.Refno=dataset[0].refno;
-            this.Type=dataset[0].typ;
-            this.ChequeNo=dataset[0].cheqno;
-            this.Amount=dataset[0].amount;
-            this.Remark=dataset[0].remark;
+            this.Refno = dataset[0].refno;
+            this.TypeName = dataset[0].typ;
+            this.ChequeNo = dataset[0].cheqno;
+            this.Amount = dataset[0].amount;
+            this.Naration = dataset[0].naration;
         }, err => {
             console.log('Error');
         }, () => {
@@ -124,69 +113,85 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
         });
     }
 
-    //Send Paramter In Save Method
-    ParamJson()
-    {
-        var Param={
-                "cmpid": 1,
-                "createdby":"Admin",
-                "fy":5,
-                "bankpayid": this.BankPayId,
-                "refno": this.Refno,
-                "acid": this.CustID,
-                "bankid": this.Bankid,
-                "issuedate": $('#Issuesdate').datepicker('getDate'),
-                "typ": this.Type,
-                "amount": this.Amount,
-                "cheqno": this.ChequeNo,
-                "remark": this.Remark,
-                "remark1": this.Remark1,
-                "remark2": this.Remark2,
-                "remark3": this.Remark3
-        }
-        return Param;
-       
+    //Clear All Controll After Saving
+    ClearControll() {
+        this.BankName = "";
+        this.DepDate = "";
+        this.CustName = "";
+        this.Refno = "";
+        this.TypeName = "";
+        this.ChequeNo = "";
+        this.Amount = "";
+        this.Naration = "";
     }
 
-    //Any Button Click Event Add Edit And Save 
+    //Send Paramter In Save Method
+    ParamJson() {
+        var ParamName = {
+            "cmpid": 1,
+            "createdby": "Admin",
+            "fy": 5,
+            "refno": this.Refno,
+            "bankreid": this.BankRecpId,
+            "depdate": $('#DepDate').datepicker('getDate'),
+            "bankid": this.BankName,
+            "typ": this.TypeName,
+            "acid": this.CustID,
+            "cheqno": this.ChequeNo,
+            "amount": this.Amount,
+            "naration": this.Naration,
+            "remark1": "Remark1",
+            "remark2": "Remark2",
+            "remark3": "Remark3"
+        }
+        return ParamName;
+    }
+
+    // Any Button Click 
     actionBarEvt(evt) {
-            if(this.Bankid==undefined || this.Bankid==null)
+        if (evt === "save") {
+            this.DepDate = $('#DepDate').val();
+            if(this.BankName=="")
             {
                  alert('Please Selected Bank');
+                 $(".bankname").focus();
                  return false;
             }
-            if($('#Issuesdate').val()=="")
-            {
-                alert('Please Selected Issues Date');
+            if (this.DepDate == undefined || this.DepDate == null) {
+                alert('Please Selected Depside Date');
+                $("#DepDate").focus();
                 return false;
             }
             if(this.CustName==undefined || this.CustName==null)
             {
                  alert('Please Selected Account Code');
+                  $(".Custcode").focus();
                 return false;
             }
-
-        if (evt === "save") {
-            this.BankServies.saveBankPayment(
-               this.ParamJson()
-            ).subscribe(result => {
-                var returndata = result.data;
-                console.log(returndata);
-                if (returndata[0].funsave_bankpayment.msg == "Saved") {
-                    alert('Data Save Successfully');
+            this.BankServies.saveBankReceipt(
+                this.ParamJson()
+            ).subscribe(BankName => {
+                var dataset = BankName.data;
+                if (dataset[0].funsave_bankreceipt.msg == 'save') {
+                    alert("Data Save Successfully");
                     this.ClearControll();
+                    return false;
+                }
+                else {
+                    alert("Error");
+                    return false;
                 }
             }, err => {
-                console.log(err);
+                console.log('Error');
             }, () => {
-                //Complete
-            })
+                //Done Process
+            });
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-                $(".bankpay").focus();
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+            $(".bankname").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
@@ -196,9 +201,10 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     //Auto Completed Customer Name
     getAutoComplete(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": this.CustName }).subscribe(data => {
+        var that = this;
+        this._autoservice.getAutoData({ "type": "customer", "search": that.CustName }).subscribe(data => {
             $(".Custcode").autocomplete({
-                source: data.data,
+                source:data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -220,7 +226,7 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     }
 
     // Get Bank Master And Type
-  getBankMasterDrop() {
+    getBankMasterDrop() {
         this.BankServies.getBankMaster({
             "type": "bank"
         }).subscribe(BankName => {

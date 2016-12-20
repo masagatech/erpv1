@@ -1,0 +1,108 @@
+<div class="row">
+	<div class="col-lg-3 col-md-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-6">
+						Purchase Order
+					</div>
+					<div class="col-xs-6 text-right">
+						<div class="huge"><span>{{PurchaseOrd}}</span></div>
+					</div>
+				</div>
+			</div>
+			<a href="#">
+				<div class="panel-footer">
+					<span class="pull-left">View Details</span>
+					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+					<div class="clearfix"></div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-6">
+		<div class="panel panel-success">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-6">
+						Paid Bill
+					</div>
+					<div class="col-xs-6 text-right">
+						<div class="huge"><span>{{PaidBill}}</span></div>
+					</div>
+				</div>
+			</div>
+			<a href="#">
+				<div class="panel-footer">
+					<span class="pull-left">View Details</span>
+					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+					<div class="clearfix"></div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-6">
+		<div class="panel panel-warning">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-6">
+						Pending Bill
+					</div>
+					<div class="col-xs-6 text-right">
+						<div class="huge"><span>{{PenBill}}</span></div>
+					</div>
+				</div>
+			</div>
+			<a href="#">
+				<div class="panel-footer">
+					<span class="pull-left">View Details</span>
+					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+					<div class="clearfix"></div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-6">
+		<div class="panel panel-danger">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-xs-6">
+						Overdue
+					</div>
+					<div class="col-xs-6 text-right">
+						<div class="huge"><span>{{Overdue}}</span></div>
+					</div>
+				</div>
+			</div>
+			<a href="#">
+				<div class="panel-footer">
+					<span class="pull-left">View Details</span>
+					<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+					<div class="clearfix"></div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="container">
+		<table class="table table-striped table-bordered ">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Supplier</th>
+					<th>Email</th>
+					<th class="textalign">Pending Bill</th>
+					<th class="textalign">Balance</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let item of SupplierList let i=index" >
+					<td><span>{{i+1}}</span><span class="displayNone">{{item.SuppId}}</span></td>
+					<td><a role="button" (click)="RowClick(item)">{{item.SupNam}}</a> </td>
+					<td>{{item.Email}}</td>
+					<td class="textalign">{{item.PendingBill}}</td>
+					<td class="textalign">{{item.Balance}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -1,0 +1,94 @@
+<div class="panel panel-theme">
+	<div class="panel-heading">
+		<h3 class="panel-title">Bank Receipt Add</h3>
+	</div>
+	<br/>
+	<div class="container">
+		<div class='form-row col-md-12'>
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Bank</label>
+					<select class="form-control bankname" [(ngModel)]="BankName">
+					<option *ngFor="let items of BankNamelist" tabindex="1" [value]="items.value">
+						{{items.label}}
+					</option>
+				</select>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<label>Deposit Date</label>
+				<div class="controls">
+					<div class="input-group" tabindex="2">
+						<input id="date-picker-3" id="DepDate" type="text"  class="date-picker form-control" [(ngModel)]="DepDate" />
+						<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='form-row col-md-12'>
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Account Code</label>
+					<input type="text=" class="form-control Custcode" tabindex="3" value="" [(ngModel)]="CustName" (keyup)="getAutoComplete(this)"
+					/>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Reference No</label>
+					<input type="text=" class="form-control" tabindex="4" value="" [(ngModel)]=Refno />
+				</div>
+			</div>
+		</div>
+		<div class='form-row col-md-12'>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>Type</label>
+					<select class="form-control" [(ngModel)]="TypeName" tabindex="5">
+					<option *ngFor="let items of Typelist" [value]="items.value">
+						{{items.label}}
+					</option>
+				</select>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group card required'>
+					<label>Amount</label>
+					<input type="text=" tabindex="6" [(ngModel)]="Amount" class="form-control" value="" />
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>Cheque No</label>
+					<input type="text" class="form-control" tabindex="7" [(ngModel)]="ChequeNo" />
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Remark</label>
+					<textarea [(ngModel)]="Naration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3" cols="75"></textarea>
+				</div>
+			</div>
+		</div>
+		<!--<div class='form-row col-md-12'>
+		<div class="col-md-6">
+			<div class='form-group'>
+				<label>Remark1</label>
+				<textarea [(ngModel)]="Remark1" class="areatextbox" tabindex="9" autocomplete='off' rows="3" cols="81"></textarea>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class='form-group'>
+				<label>Remark2</label>
+				<textarea [(ngModel)]="Remark2" class="areatextbox" tabindex="10" autocomplete='off' rows="3" cols="81"></textarea>
+			</div>
+		</div>
+	</div>
+	<div class='form-row col-md-12'>
+		<div class='form-group'>
+			<label>Remark3</label>
+			<textarea [(ngModel)]="Remark3" class="areatextbox" tabindex="11" autocomplete='off' rows="3"></textarea>
+		</div>
+	</div>-->
+	</div>
+</div>
