@@ -73,14 +73,14 @@ export class bankreceiptview implements OnInit, OnDestroy {
     //Open Edit Mode 
     OpenEdit(row) {
         if (!row.islocked) {
-            this._router.navigate(['/accounts/bredit', row.id]);
+            this._router.navigate(['/accounts/bankreceipt/braded', row.id]);
         }
     }
 
     //Any Button Click Event
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/accounts/bradd']);
+            this._router.navigate(['/accounts/bankreceipt/braded']);
         }
         if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;
@@ -147,6 +147,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
         this.BankServies.getBankRecieptView({
             "cmpid": 1,
             "fy": 5,
+            "bankid":this.BankCode,
             "flag":"",
             "fromdate": $('#FromDate').datepicker('getDate'),
             "todate": $('#ToDate').datepicker('getDate')
