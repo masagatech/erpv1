@@ -15,5 +15,6 @@ export interface LoginUserModel {
   fyfrom: any;
   fyto: any,
   ucode:string,
-  email:string
+  email:string,
+  _sessiondetails:any
 }

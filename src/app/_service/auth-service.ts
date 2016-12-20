@@ -1,18 +1,33 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { UserReq } from '../../app/_model/user_model';
-import { DataService } from '../_service/dataconnect';
+import { UserReq, LoginUserModel } from '../_model/user_model';
+import { DataService } from './dataconnect';
+import { UserService } from './user/user-service';
+import { Cookie } from 'ng2-cookies/ng2-cookies';
+
 
 
 @Injectable()
 export class AuthenticationService {
 
-  constructor(private _router: Router, private _dataserver: DataService) { }
+  constructor(private _router: Router,
+    private _dataserver: DataService, private _userService: UserService) { }
 
-  logout() {
+  logout(callback?: any, error?: any) {
+    var usr: LoginUserModel = this._userService.getUser();
+
+    this._dataserver.post("getLogout", { "sessionid": usr._sessiondetails.sessionid }).subscribe(r => {
+      this._router.navigate(['login']);
+      Cookie.delete('_session_');
+      callback(r)
+    }, err => {
+      error(err)
+    }, () => {
+      callback('done')
+    });
     //Cookie.delete('user');
-    this._router.navigate(['login']);
+
   }
 
   login(user: UserReq) {

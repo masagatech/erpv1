@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DataService } from '../../_service/dataconnect';
+import { DataService } from '../dataconnect';
 import { LoginUserModel } from '../../_model/user_model';
 import { Router } from '@angular/router';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
@@ -19,7 +19,7 @@ export class UserService {
 
     getUser() {
         if (this.loginUser === undefined) {
-            let usr = Cookie.get('usr');
+            let usr = Cookie.get('_session_');
 
             if (usr) {
                 //this._router.navigate(['login']);
@@ -38,8 +38,8 @@ export class UserService {
 
     setUsers(userDetails): LoginUserModel {
         this.loginUser = userDetails;
-        Cookie.delete('usr');
-        Cookie.set("usr", userDetails.uid);
+        Cookie.delete('_session_');
+        Cookie.set("_session_", this.loginUser._sessiondetails.sessionid.toString());
         return this.loginUser;
     }
 
