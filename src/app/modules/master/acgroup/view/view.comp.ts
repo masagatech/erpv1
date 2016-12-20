@@ -84,7 +84,11 @@ declare var $: any;
             this.jsonPram()
         ).subscribe(result => {
             var dataset = result.data;
-            this.acgrouplist = dataset;
+            if(dataset.length > 0)
+            {
+                this.acgrouplist = dataset;
+            }
+            
         }, err => {
             console.log("Error");
 

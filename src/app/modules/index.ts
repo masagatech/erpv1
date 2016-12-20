@@ -46,6 +46,11 @@ const routerConfig =
                                 return comp.default;
                             })
                         },
+                        {
+                            path: 'supplier', loadChildren: () => System.import('./supplier/supplier.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
                     ]
                 }
             ]

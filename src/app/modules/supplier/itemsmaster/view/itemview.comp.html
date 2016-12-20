@@ -14,7 +14,7 @@
 							<div class="col-md-4">
 								<div class='form-group'>
 									<label>Items</label>
-									<input type="text=" class="form-control Product" tabindex="1" value="" [(ngModel)]="ProductName" (keyup)="getAutoCompleteProductName(this)"
+									<input type="text=" class="form-control items" tabindex="1" value="" [(ngModel)]="itemsName" (keyup)="getAutoCompleteProductName(this)"
 									/>
 								</div>
 							</div>
@@ -66,18 +66,18 @@
 			</thead>
 			<tbody *ngFor="let row of ItemDetails let i=index">
 				<tr>
-					<td><span>{{i+1}}</span></td>
+					<td><span>{{i+1}}</span><span class="hide">{{row.itemsid}}</span></td>
 					<td>
 						<button (click)="expandDetails(row)">
-						<i class="{{row.iscollapse == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
+						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
 					</button>
 					</td>
-					<td> <a role="button" (click)="EditItem(row)">{{row.itemsid}}</a></td>
+					<td> <a role="button" (click)="EditItem(row)">{{row.itemcode}}</a></td>
 					<td>{{row.itemname}}</td>
 					<td>{{row.catname}}</td>
 					<td>{{row.ImageShow}}</td>
 				</tr>
-				<tr [style.display]="row.IsCollapse == 0?'none':''">
+				<tr [style.display]="row.issh == 0?'none':''">
 					<td></td>
 					<td></td>
 					<td colspan="4">

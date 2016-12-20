@@ -30,7 +30,7 @@ declare var $: any;
     SaleDis1: any = 0;
     PurDis2: any = 0;
     CurID: any = 0;
-    ProdCodeTitle:any="";
+    ProdCodeTitle: any = "";
     Remark1: any = "";
     Remark2: any = "";
     Remark3: any = "";
@@ -38,9 +38,8 @@ declare var $: any;
     Remark5: any = "";
     Remark6: any = "";
     private subscribeParameters: any;
-    //, private _autoservice:AutoService
+
     constructor(private setActionButtons: SharedVariableService, private itemsaddServies: ItemAddService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service
-        //this.getPendingDocNo();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -62,7 +61,7 @@ declare var $: any;
             });
             $("#docdate").datepicker('setDate', CurrentDate);
         }, 0);
-         $('.ProdCode').removeAttr('disabled');
+        $('.ProdCode').removeAttr('disabled');
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -74,7 +73,7 @@ declare var $: any;
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
-                
+
             }
             else {
                 this.actionButton.find(a => a.id === "save").hide = false;
@@ -86,7 +85,7 @@ declare var $: any;
     //Edit Paramter
     EditParamJson() {
         var Param = {
-            "cmpid":1,
+            "cmpid": 1,
             "fy": 5,
             "itemsid": this.itemsid,
             "createdby": "",
@@ -99,22 +98,31 @@ declare var $: any;
 
     //Edit Item
     EditItems(ProdCode) {
-        var that=this;
+        var that = this;
         this.itemsaddServies.EditItem(
             this.EditParamJson()
         ).subscribe(result => {
             var returndata = result.data;
-            this.itemcode = returndata[0].funget_itemsmaster.itemscode;
-            this.Catid = returndata[0].funget_itemsmaster.catid;
-            this.Catname = returndata[0].funget_itemsmaster.catname;
-            this.itemname = returndata[0].funget_itemsmaster.itemname;
-            this.MRP = returndata[0].funget_itemsmaster.mrp1;
-            this.SaleDis1 = returndata[0].funget_itemsmaster.saledis;
-            this.SaleDesc = returndata[0].funget_itemsmaster.saledesc;
-            this.Cost = returndata[0].funget_itemsmaster.itemscost;
-            this.PurDis2 = returndata[0].funget_itemsmaster.purdis;
-            this.PurDesc = returndata[0].funget_itemsmaster.purdesc;
-            that.ProdCodeTitle= "(" + returndata[0].funget_itemsmaster.itemscode + ")";
+            if (returndata.length > 0) {
+                this.itemcode = returndata[0].itemcode;
+                this.Catid = returndata[0].catid;
+                this.Catname = returndata[0].catname;
+                this.itemname = returndata[0].itemname;
+                this.MRP = returndata[0].mrp1;
+                this.SaleDis1 = returndata[0].saledis;
+                this.SaleDesc = returndata[0].saledesc;
+                this.Cost = returndata[0].itemscost;
+                this.PurDis2 = returndata[0].purdis;
+                this.PurDesc = returndata[0].purdesc;
+                that.ProdCodeTitle = "(" + returndata[0].itemcode + ")";
+            }
+            else
+            {
+                alert('Record not found');
+                $(".Category").focus();
+                return;
+            }
+
         }, err => {
             console.log(err);
         }, () => {
@@ -124,9 +132,10 @@ declare var $: any;
 
     //Auto Completed Category
     getAutoCompleteCategory(me: any) {
-        this._autoservice.getAutoData({ "type": "category", "search": this.Catname, "CmpCode": "Mtech", "FY": 5 }).subscribe(data => {
+        var that = this;
+        this._autoservice.getAutoData({ "type": "category", "search": that.Catname, "cmpid": 1, "fy": 5 }).subscribe(data => {
             $(".Category").autocomplete({
-                source:data.data,
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -137,7 +146,7 @@ declare var $: any;
                 highlight: false,
                 select: function (event, ui) {
                     me.Catid = ui.item.value;
-                    me.CatName = ui.item.label;
+                    me.Catname = ui.item.label;
                 }
             });
         }, err => {
@@ -159,6 +168,7 @@ declare var $: any;
         this.Cost = "";
         this.PurDis2 = "";
         this.PurDesc = "";
+        $(".Category").val("");
         $(".Category").focus();
     }
 
@@ -170,7 +180,7 @@ declare var $: any;
             "fy": 5,
             "createdby": "admin",
             "itemcode": this.itemcode,
-            "catid": 1,//this.Catid,
+            "catid": this.Catid,
             "itemname": this.itemname,
             "saledesc": this.SaleDesc,
             "purdesc": this.PurDesc,
@@ -194,17 +204,16 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "save") {
-            debugger;
             this.itemsaddServies.itemsMasterSave(
                 this.ParamJson()
             ).subscribe(details => {
                 var dataset = details.data;
-                if (dataset[0].funsave_itemsmaster.maxid > 0) {
-                    alert("Data Save Succssfully Document :" + dataset[0].funsave_itemsmaster.maxid)
+                if (dataset[0].funsave_itemsmaster.msg == "Saved") {
+                    alert("Data Save Succssfully Document")
                     this.ClearControll();
                 }
                 else {
-                    console.log(dataset[0].funsave_itemsmaster);
+                    console.log('Error');
                     $(".Category").focus();
                     return;
                 }

@@ -17,7 +17,7 @@ declare var $: any;
     subscr_actionbarevt: Subscription;
 
     itemsName: any = "";
-    itemsCode: any = "";
+    itemsid: any = 0;
     FromDate: any = "";
     ToDate: any = "";
     ItemDetails: any = [];
@@ -36,7 +36,7 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        $(".Product").focus();
+        $(".items").focus();
         setTimeout(function () {
             var date = new Date();
             var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
@@ -62,8 +62,9 @@ declare var $: any;
     }
 
     getAutoCompleteProductName(me: any) {
-        this._autoservice.getAutoData({ "type": "prodname", "search": this.itemsName, "CmpCode": "Mtech", "FY": 5 }).subscribe(data => {
-            $(".Product").autocomplete({
+        var that=this;
+        this._autoservice.getAutoData({ "type": "CatProdName", "search": that.itemsName, "cmpid": 1, "FY": 5 }).subscribe(data => {
+            $(".items").autocomplete({
                 source:data.data,
                 width: 300,
                 max: 20,
@@ -74,8 +75,8 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.ProdCode = ui.item.value;
-                    me.ProductName = ui.item.label;
+                    me.itemsid = ui.item.value;
+                    me.itemsName = ui.item.label;
                 }
             });
         }, err => {
@@ -86,8 +87,8 @@ declare var $: any;
     }
 
     getItemsMaster() {
-        if ($(".Product").val() == "") {
-            this.itemsCode = "";
+        if ($(".items").val() == "") {
+            this.itemsid = "";
         }
         this.FromDate = $("#FromDate").val();
         this.ToDate = $("#ToDate").val();
@@ -95,13 +96,12 @@ declare var $: any;
             "cmpid": 1,
             "fy": 5,
             "flag": "",
-            "itemscode": this.itemsCode,
-            "createdby": "",
+            "itemsid":this.itemsid,
             "fromdate": this.FromDate,
             "todate": this.ToDate
         }).subscribe(details => {
             var dataset = details.data;
-            if (dataset[0].funget_itemsmaster.length > 0) {
+            if (dataset.length > 0) {
                 this.ItemDetails = dataset;
                 this.TableHide = false;
             }
@@ -128,8 +128,9 @@ declare var $: any;
 
     //More Button Click
     expandDetails(row) {
-        if (row.iscollapse == 0) {
-            row.iscollapse = 1;
+        row.Details=[];
+        if (row.issh == 0) {
+            row.issh = 1;
             if (row.Details.length === 0) {
                 this.itemViewServies.getItemsMaster({
                     "flag": "Details",
@@ -146,7 +147,7 @@ declare var $: any;
                 })
             }
         } else {
-            row.iscollapse = 0;
+            row.issh = 0;
         }
     }
 
