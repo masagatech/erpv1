@@ -101,7 +101,7 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     //Get Data With Row 
     GetBankPayment(BankPayId) {
         this.BankServies.getBankPaymentView({
-            "bankid":this.BankPayId,
+            "BankPayId":this.BankPayId,
             "cmpid":1,
             "fy":5,
             "flag":"edit"

@@ -71,13 +71,13 @@ export class bankpaymentview implements OnInit, OnDestroy {
     //Open Edit Mode 
     OpenEdit(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/accounts/bpedit', row.id]);
+            this._router.navigate(['accounts/bankpayment/bpedit', row.id]);
         }
     }
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/accounts/bpadd']);
+            this._router.navigate(['/accounts/bankpayment/bpadd']);
         }
         if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;
