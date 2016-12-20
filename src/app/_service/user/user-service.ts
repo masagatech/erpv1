@@ -32,6 +32,9 @@ export class UserService {
             return this.loginUser;
         }
     }
+    savePassword(req: any) {
+        return this._dataserver.post("savePassword", req);
+    }
 
     setUsers(userDetails): LoginUserModel {
         this.loginUser = userDetails;
@@ -55,5 +58,5 @@ export class UserService {
     saveUserRights(req: any) {
         return this._dataserver.post("SaveUserRights", req)
     }
-    
+
 }

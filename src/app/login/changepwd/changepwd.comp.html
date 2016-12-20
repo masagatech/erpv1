@@ -2,7 +2,7 @@
     <div id="loginbox" style="margin: 50px auto;min-width: 700px!important;width: 50%;" class="">
         <div class="panel panel-theme">
             <div class="panel-heading">
-                <div class="panel-title">Select company and FY to proceed >>
+                <div class="panel-title">Change password >>
 
                     <a role="button" class="pull-right" (click)="logout()" title="Log off"><i class="fa fa-power-off"></i></a>
                 </div>
@@ -12,26 +12,16 @@
                 <div class="col-md-5">
                     <div class="form-group">
                         <div class="input-group">
-                            <label class="control-label">Company</label>
-                            <select [(ngModel)]="cmpid" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
-                                <option value="0">-- Select Company --</option>
-                                <option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
-                                    {{row.cmpname}}
-                                </option>
-                            </select>
+                            <label class="control-label">New Password</label>
+                            <input [(ngModel)]="newpwd" autocomplete="false" id="newpwd" required tabindex="2" type="password" class="form-control" name="newpwd" placeholder="Enter New Password">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-5">
                     <div class="form-group">
                         <div class="input-group">
-                            <label class="control-label">Financial Year</label>
-                            <select [(ngModel)]="fyid" class="form-control">
-                                <option value="0">-- Select Financial Year --</option>
-                                <option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
-                                    {{fyrow.fyname}}
-                                </option>
-                            </select>
+                            <label class="control-label">Re-Enter New Password</label>
+                            <input [(ngModel)]="renewpwd" autocomplete="false" id="renewpwd" required tabindex="2" type="password" class="form-control" name="renewpwd" placeholder="Re-Enter New Password">
                         </div>
                     </div>
                 </div>

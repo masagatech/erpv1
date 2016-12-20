@@ -11,6 +11,12 @@ export const ROUTES: Routes = [
   { path: 'login', component: LoginComp },
   { path: 'login-step1', component: LoginStep1Comp },
   {
+    path: 'changepwd', loadChildren: () => System.import('./login/changepwd').then((comp: any) => {
+      return comp.default;
+    })
+    ,
+  },
+  {
     path: '', loadChildren: () => System.import('./modules').then((comp: any) => {
       return comp.default;
     })

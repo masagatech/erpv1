@@ -14,4 +14,6 @@ export interface LoginUserModel {
   fyid: number;
   fyfrom: any;
   fyto: any,
+  ucode:string,
+  email:string
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CompService } from '../_service/company/comp-service';
 import { FYService } from '../_service/fy/fy-service';
 import { UserService } from '../_service/user/user-service';
+import { AuthenticationService } from '../_service/auth-service'
 import { LoginUserModel } from '../_model/user_model';
 
 import { Router } from '@angular/router';
@@ -18,7 +19,7 @@ export class LoginStep1Comp implements OnInit {
     loginUser: LoginUserModel;
     btnLoginText: string = "";
 
-    constructor(private _compservice: CompService, private _fyservice: FYService, private _userService: UserService,
+    constructor(private _compservice: CompService, private _fyservice: FYService, private _authservice: AuthenticationService, private _userService: UserService,
         private _router: Router) {
         this.loginUser = this._userService.getUser();
 
@@ -55,5 +56,9 @@ export class LoginStep1Comp implements OnInit {
         this.loginUser.cmpid = this.cmpid;
         this.loginUser.fyid = this.fyid;
         this._router.navigate(['/']);
+    }
+
+    private logout() {
+        this._authservice.logout();
     }
 }
