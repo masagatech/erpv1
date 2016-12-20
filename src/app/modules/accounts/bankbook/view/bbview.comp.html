@@ -1,0 +1,59 @@
+<div class='form'>
+	<table class="table table-striped table-bordered">
+		<tr>
+			<td>
+				<div class='form-group col-md-12'>
+					<div class="col-md-4">
+						<div class='form-group'>
+							<label>Bank</label>
+							<select class="form-control" [(ngModel)]="BankCode">
+							<option *ngFor="let items of BankNamelist" tabindex="1" [value]="items.value">
+								{{items.value}}
+							</option>
+							</select>
+						</div>
+						<label><b>{{SelectedBank()}}</b></label>
+					</div>
+				
+					<div class="col-md-1">
+						<div class='form-group'>
+							<label>Action</label>
+							<button type="button" class="btn btn-primary" (click)="GetBankBook()">Get</button>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+
+	</table>
+    <table class="table table-striped table-bordered" [hidden]="tableLength">
+       <thead>
+			<tr>
+				<th class="col-xs-1">Month</th>
+				<th class="col-xs-1">Ope. Bal.</th>
+				<th class="col-xs-1">Debit</th>
+				<th class="col-xs-1">Credit</th>
+				<th class="col-xs-1">Clo. Bal.</th>
+				<th class="col-xs-1">Not Reco.</th>
+				<th class="col-xs-2">Reco. Same Month</th>
+                <th class="col-xs-2">Reco Other Month</th>
+                <th class="col-xs-2">Reco Data</th>
+			</tr>
+		</thead>
+        <tbody>
+            <tr *ngFor="let row of BankBookList">
+                <td><a role="button" target="_blank" (click)="MonthWise(row)">{{row.strMonthName}}</a></td>
+				<td>{{row.OpeningBalance}}</td>
+                <td>{{row.Debit}}</td>
+                <td>{{row.Credit}}</td>
+                <td>{{row.ClosingBalance}}</td>
+                <td><a role="button" (click)="MonthWise(row)">{{row.IsReco}}</a></td>
+                <td><a role="button" (click)="MonthWise(row)">{{row.IsnotReco}}</a></td>
+                <td><a role="button" (click)="MonthWise(row)">{{row.IsMonthReco}}</a></td>
+                <td><a role="button" (click)="MonthWise(row)">{{row.IsNotMonthReco}}</a></td>
+            </tr>    
+        </tbody>
+    </table>
+
+</div> 
+
