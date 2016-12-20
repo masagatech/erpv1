@@ -1,0 +1,46 @@
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { DRComp } from '../docrepo/docrepo.comp';
+import { AuthGuard } from '../../_service/authguard-service';
+import { DRDashboardComp } from '../docrepo/dashboard/dashboard.comp';
+import { AddDR } from '../docrepo/aded/adddr.comp';
+import { ViewDR } from '../docrepo/view/viewdr.comp';
+import { ActionBarModule } from '../../_shared/shared.module';
+
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { SharedComponentModule } from '../../_shared/sharedcomp.module';
+
+const routerConfig = [
+  {
+    path: '',
+    component: DRComp,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        children: [
+          { path: 'view', component: ViewDR, canActivateChid: [AuthGuard], },
+          { path: 'add', component: AddDR, canActivateChid: [AuthGuard], },
+          { path: 'edit/:uid', component: AddDR, canActivateChid: [AuthGuard], },
+          { path: '', component: DRDashboardComp, canActivateChid: [AuthGuard], },
+        ]
+      }
+    ]
+  }
+]
+
+@NgModule({
+  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule],
+  declarations: [
+    ViewDR,
+    AddDR,
+    
+    DRDashboardComp,
+    DRComp
+  ],
+  providers: [AuthGuard]
+})
+
+export default class DRModule {
+}
