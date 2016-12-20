@@ -20,11 +20,19 @@ export class AuthenticationService {
     this._dataserver.post("getLogout", { "sessionid": usr._sessiondetails.sessionid }).subscribe(r => {
       this._router.navigate(['login']);
       Cookie.delete('_session_');
-      callback(r)
+      if (callback) {
+        callback(r);
+      }
     }, err => {
-      error(err)
+      if (error) {
+        error(err);
+      }
+
     }, () => {
-      callback('done')
+      if (callback) {
+        callback('done');
+      }
+
     });
     //Cookie.delete('user');
 
