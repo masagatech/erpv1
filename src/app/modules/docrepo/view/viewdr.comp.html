@@ -1,0 +1,47 @@
+<div class="col-md-12">
+	<div class="col-md-3">
+		<!--table table-striped table-bordered table-hover-->
+		<div class="input-group stylish-input-group">
+			<input type="text" class="form-control" placeholder="Search" [(ngModel)]="EmpName" (keyup)="employeeFilter()" />
+			<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+		</div>
+
+		<div class="list-group" style="height:80%; overflow-y: auto;">
+			<button *ngFor="let row of EmpWiseDocs" type="button" class="list-group-item" (click)="getEmpWiseDocs(row)">{{row.EmpFullName}}</button>
+		</div>
+	</div>
+	<div class="col-md-9">
+		<div class="col-md-12">
+			<div *ngFor="let row of EmpCountDocTagWise" class="col-md-3">
+				<button class="list-group-item btn-5x textcenter" (click)="getEmpWiseDocs(row)">{{row.Tag}} <br /> ({{row.CountDoc}})</button>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-10">
+				<button type="button" class="btn btn-primary btn-xs" (click)="orderby('date')">By Latest</button>
+				<button type="button" class="btn btn-primary btn-xs" (click)="orderby('size')">By Size</button>
+				<button type="button" class="btn btn-primary btn-xs" (click)="orderby('name')">By Name</button>
+			</div>
+			<div class="col-md-2" align="center">
+				<i ng-model="Grid" (click)="ShowHideDocs('Grid')" class="fa fa-th fa-2x"></i> &nbsp;
+				<i ng-model="List" (click)="ShowHideDocs('List')" class="fa fa-list fa-2x"></i>
+			</div>
+		</div>
+		<div class="col-md-12" style="height:70%; overflow-x: auto;" *ngIf="IsVisibleGrid">
+			<div class="col-md-2 btn-lg" *ngFor="let row of EmpDocDetails">
+				<a href="http://localhost:3000/file/{{row.FilePath}}" title="{{row.Tag}}">
+					<i class="{{row.FileType}} fa-4x"></i>
+				</a>
+			</div>
+		</div>
+		<div class="col-md-12" *ngIf="IsVisibleList">
+			<ul class="list-group" style="height:70%; overflow-x: auto;">
+				<li class="list-group-item btn-sm" *ngFor="let row of EmpDocDetails">
+					<a href="http://localhost:3000/file/{{row.FilePath}}" title="{{row.Tag}}">
+						<i class="{{row.FileType}} fa-lg"></i> {{row.DocTitle}}
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

@@ -40,11 +40,11 @@ const routerConfig = [
             }),
           },
 
-          // {
-          //   path: 'pdc', loadChildren: () => System.import('./pdc').then((comp: any) => {
-          //     return comp.default;
-          //   }),
-          // },
+          {
+            path: 'pdc', loadChildren: () => System.import('./pdc').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]
