@@ -1006,3 +1006,28 @@ html select[disabled] {
 .panel-heading {
     padding: 3px 15px!important;
 }
+
+.sidepan {
+    width: 185px;
+    right: 0;
+    display: block!important;
+    min-height: 400px;
+    position: fixed;
+    border-left: 3px #d1d8dd dashed;
+    padding: 0px 5px;
+}
+
+.sidepan h3 {
+    font-size: 12px!important;
+    text-align: center;
+    color: #000;
+}
+
+.sidepan>.panel-theme {
+    box-shadow: 0 0px 0px 0 rgba(0, 0, 0, .2), 0 0px 0px 0 rgba(0, 0, 0, .14), 0 0px 0px 0px rgba(0, 0, 0, .12);
+}
+
+.middlepan {
+    width: calc(100% - 190px)!important;
+    float: left;
+}
