@@ -10,7 +10,9 @@ import { ActionBarModule } from '../../_shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
-
+import {
+  DataListModule, DataGridModule, PanelModule
+} from 'primeng/primeng';
 const routerConfig = [
   {
     path: '',
@@ -31,11 +33,12 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule],
+  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule,
+    SharedComponentModule, DataListModule, DataGridModule, PanelModule],
   declarations: [
     ViewDR,
     AddDR,
-    
+
     DRDashboardComp,
     DRComp
   ],
