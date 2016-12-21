@@ -76,4 +76,14 @@ export class UserControlHeadComp implements OnInit {
   logout() {
     this._authservice.logout();
   }
+
+  private showhidemenu() {
+
+    if ($('.container').hasClass('closeopenpan')) {
+      $('#sidebar').show();
+    } else {
+      $('#sidebar').hide();
+    }
+    $('.container').toggleClass('closeopenpan');
+  }
 }

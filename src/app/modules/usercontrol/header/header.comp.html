@@ -14,6 +14,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                <li>
+                    <a role="button" (click)="showhidemenu()" title="show/hide side menu"><i class="fa fa-bars"></i></a>
+                </li>
                 <li [ngClass]="{'dropdown' : item.sub.length > 0}" *ngFor="let item of menuhead">
                     <a data-toggle="dropdown" role="button" (click)="callRoute(item, item.sub.length)">
 						{{item.name}} <i class="{{item.menuico}}"></i> <span *ngIf="item.sub.length > 0" class="caret"></span>

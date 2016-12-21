@@ -774,10 +774,11 @@ body {
 }
 
 .btn-theme {
-    background-image: -webkit-linear-gradient(top, #fbfbfb 0%, #fbfbfb 100%);
-    background-image: -o-linear-gradient(top, #fbfbfb 0%, #fbfbfb 100%);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fbfbfb));
-    background-image: linear-gradient(to bottom, #fbfbfb 0%, #fbfbfb 100%);
+    background-image: -webkit-linear-gradient(top, #fff 0%, #ded6ce 100%);
+    background-image: -o-linear-gradient(top, #fff 0%, #ded6ce 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ded6ce));
+    background-image: linear-gradient(to bottom, #fff 0%, #ded6ce 100%);
+    background-repeat: repeat-x;
     filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#fffbfbfb', endColorstr='#fffbfbfb', GradientType=0);
     filter: progid: DXImageTransform.Microsoft.gradient(enabled=false);
     background-repeat: repeat-x;
@@ -786,7 +787,7 @@ body {
 
 .btn-theme:hover,
 .btn-theme:focus {
-    background-color: #fbfbfb;
+    background-color: #d2cccc;
     border-color: #e89d7e;
     background-position: 0 -15px;
 }
@@ -1030,4 +1031,8 @@ html select[disabled] {
 .middlepan {
     width: calc(100% - 190px)!important;
     float: left;
+}
+
+.container.closeopenpan {
+    padding-left: 20px!important;
 }
