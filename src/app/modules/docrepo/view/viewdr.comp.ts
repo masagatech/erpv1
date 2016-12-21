@@ -21,35 +21,33 @@ export class ViewDR implements OnInit, OnDestroy {
 
     sort: any;
 
-    UserID: any;
-    EmpCode: any;
-    EmpName: any;
+    uid: number = 0;
+    ucode: string = "";
+    uname: string = "";
+    tag: string = "";
 
     IsVisibleGrid: any = true;
     IsVisibleList: any = false;
 
-    EmpDocDetails: any[];
-    EmpWiseDocs: any[];
-    DocTypeWise: any[];
-    EmpCountDocTagWise: any[];
-    CountDocs: any[];
+    userDT: any = [];
+    drTagDT: any = [];
+    drViewDT: any = [];
+
+    selecteduid: number = 0;
 
     constructor(private _router: Router, private _drservice: DRService, private _commservice: CommonService, private _empservice: EmpService, private setActionButtons: SharedVariableService) {
-        this.getDRAutoComplete();
-        this.getDRData("");
+        var that = this;
+
+        that.getDRWiseUser();
+        that.getUserWiseTag(0);
     }
 
-    employeeFilter() {
-        this.getDRData(this.EmpName);
-    }
+    getDRWiseUser() {
+        var that = this;
 
-    getDRData(searchTxt) {
-        this._drservice.getDocRepo({ "DRAutoID": "0", "UserID": "", "Tag": "", "ViewedBy": "", "Flag": "EmpWiseDocs", "SearchTxt": searchTxt }).subscribe(data => {
-            this.EmpDocDetails = JSON.parse(data.data);
-            this.EmpWiseDocs = JSON.parse(data.Table1);
-            this.DocTypeWise = JSON.parse(data.Table2);
-            this.EmpCountDocTagWise = JSON.parse(data.Table2);
-            this.CountDocs = JSON.parse(data.Table3);
+        that._drservice.getDocRepo({ "flag": "drwiseuser", "search": that.uname }).subscribe(data => {
+            that.userDT = data.data;
+            debugger;
         }, err => {
             console.log("Error");
         }, () => {
@@ -57,18 +55,13 @@ export class ViewDR implements OnInit, OnDestroy {
         })
     }
 
-    getEmpWiseDocs(row) {
-        this._drservice.getDocRepo({ "DRAutoID": "0", "UserID": row.UserID, "Tag": row.Tag, "ViewedBy": "", "Flag": "EmpWiseDocs" }).subscribe(data => {
-            row.CountDocTagWise = JSON.parse(data.Table2);
-            row.EmpWiseDocDetails = JSON.parse(data.data);
+    getUserWiseTag(puid) {
+        var that = this;
 
-            this.EmpCountDocTagWise = row.CountDocTagWise;
-            this.EmpDocDetails = row.EmpWiseDocDetails;
-
-            this.UserID = this.EmpCountDocTagWise[0].UserID;
-
-            row.CountDocTagWise = [];
-            row.EmpWiseDocDetails = [];
+        that._drservice.getDocRepo({ "flag": "userwisedrtag", "uid": puid }).subscribe(data => {
+            that.drViewDT = [];
+            that.drTagDT = data.data;
+            that.selecteduid = puid;
         }, err => {
             console.log("Error");
         }, () => {
@@ -76,16 +69,62 @@ export class ViewDR implements OnInit, OnDestroy {
         })
     }
 
-    orderBy(ordtype) {
-        if (ordtype == 'date') {
-            this.sort = '-CreatedOn';
+    getTagWiseDR(puid, ptag) {
+        var that = this;
+
+        that._drservice.getDocRepo({ "flag": "tagwisedr", "uid": puid, "tag": ptag }).subscribe(data => {
+            that.drViewDT = data.data;
+            that.tag = this.drViewDT[0].tag;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ShowHideDocs(viewtype) {
+        var that = this;
+
+        if (viewtype == "Grid") {
+            that.IsVisibleGrid = true;
+            that.IsVisibleList = false;
         }
-        if (ordtype == 'size') {
-            this.sort = '-FileSize';
+        else {
+            that.IsVisibleGrid = false;
+            that.IsVisibleList = true;
         }
-        if (ordtype == 'name') {
-            this.sort = 'DocTitle';
+    }
+
+    actionBarEvt(evt) {
+        var that = this;
+
+        if (evt === "add") {
+            that._router.navigate(['/documentrepository/add']);
         }
+        if (evt === "edit") {
+            if (that.selecteduid == 0) {
+                alert("Please select 1 User !!!!")
+            }
+            else {
+                that._router.navigate(['/documentrepository/edit', that.selecteduid]);
+            }
+        }
+    }
+
+    ngOnInit() {
+        var that = this;
+
+        that.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        that.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        that.setActionButtons.setActionButtons(this.actionButton);
+        that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+    }
+
+    ngOnDestroy() {
+        var that = this;
+
+        that.subscr_actionbarevt.unsubscribe();
+        console.log('ngOnDestroy');
     }
 
     getDRAutoComplete() {
@@ -120,37 +159,5 @@ export class ViewDR implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    ShowHideDocs(viewtype) {
-        if (viewtype == "Grid") {
-            this.IsVisibleGrid = true;
-            this.IsVisibleList = false;
-        }
-        else {
-            this.IsVisibleGrid = false;
-            this.IsVisibleList = true;
-        }
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/documentrepository/add']);
-        }
-        if (evt === "edit") {
-            this._router.navigate(['/documentrepository/edit', this.UserID]);
-        }
-    }
-
-    ngOnDestroy() {
-        this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
     }
 }

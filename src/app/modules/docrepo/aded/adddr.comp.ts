@@ -14,13 +14,17 @@ declare var $: any;
 })
 
 export class AddDR implements OnInit, OnDestroy {
-    drAutoID: any;
-    UserID: any;
-    EmpCode: any;
-    EmpName: any;
-    newDocTitle: any;
-    newTag: any;
-    newFilePath: any;
+    docid: number = 0;
+    uid: number = 0;
+    uname: string = "";
+    cmpid: number = 0;
+    fyid: number = 0;
+
+    newdoctitle: string = "";
+    newtag: string = "";
+    newdocfile: string = "";
+    newfilesize: string = "";
+    newfiletype: string = "";
 
     counter: any;
     title: any;
@@ -48,33 +52,10 @@ export class AddDR implements OnInit, OnDestroy {
         })
     }
 
-    private NewRowAdd() {
-        if (this.newDocTitle == "" || this.newDocTitle == null) {
-            alert("Please Enter Doc Title");
-            return;
-        }
-
-        if (this.newTag == "" || this.newTag == null) {
-            alert("Please Select Tag");
-            return;
-        }
-
-        //Add New Row
-        this.drRowData.push({
-            'counter': this.counter,
-            'DocTitle': this.newDocTitle,
-            'Tag': this.newTag,
-            'FilePath': this.newFilePath
-        });
-
-        this.counter++;
-        this.newDocTitle = "";
-        this.newTag = "";
-        this.newFilePath = "";
-    }
+    // Get User Auto
 
     getAutoComplete() {
-        this._commonservice.getAutoData({ "Type": "EmpWithCode", "Key": this.EmpName }).subscribe(data => {
+        this._commonservice.getAutoData({ "Type": "userwithcode", "Key": this.uname }).subscribe(data => {
             $(".empame").autocomplete({
                 source: JSON.parse(data.data),
                 width: 300,
@@ -97,16 +78,45 @@ export class AddDR implements OnInit, OnDestroy {
         })
     }
 
-    getDRDataByUserID(drUserID: string) {
-        this._drservice.getDocRepo({ "UserID": drUserID, "Flag": "EmpWiseDocs" }).subscribe(data => {
+    // Add Doc Repo
+
+    private NewRowAdd() {
+        if (this.newdoctitle == "" || this.newdoctitle == null) {
+            alert("Please Enter Doc Title");
+            return;
+        }
+
+        if (this.newtag == "" || this.newtag == null) {
+            alert("Please Select Tag");
+            return;
+        }
+
+        //Add New Row
+        this.drRowData.push({
+            'counter': this.counter,
+            'doctitle': this.newdoctitle,
+            'tag': this.newtag,
+            'docfile': this.newdocfile
+        });
+
+        this.counter++;
+        this.newdoctitle = "";
+        this.newtag = "";
+        this.newdocfile = "";
+    }
+
+    // Get DR By DR ID
+
+    getDRDataByuid(druid: string) {
+        this._drservice.getDocRepo({ "uid": druid, "Flag": "EmpWiseDocs" }).subscribe(data => {
             this.drRowData = JSON.parse(data.data);
             this.viewEmpData = JSON.parse(data.Table4);
 
             console.log(this.drRowData);
             console.log(this.viewEmpData);
 
-            this.EmpCode = this.viewEmpData[0].EmpCode;
-            this.EmpName = this.viewEmpData[0].EmpFullName;
+            this.uid = this.viewEmpData[0].uid;
+            this.uname = this.viewEmpData[0].fullname;
         }, err => {
             console.log("Error");
         }, () => {
@@ -115,28 +125,8 @@ export class AddDR implements OnInit, OnDestroy {
     }
 
     saveDRData() {
-        var xmldt = "<r>";
-
-        for (var i = 0; i < this.drRowData.length; i++) {
-            var field = this.drRowData[i];
-            xmldt += "<i>";
-
-            xmldt += "<EID>" + field.EmpCode + "</EID>";
-            xmldt += "<DT>" + field.DocTitle + "</DT>";
-            xmldt += "<Tag>" + field.Tag + "</Tag>";
-            xmldt += "<FP>" + field.FilePath + "</FP>";
-            xmldt += "<FT>" + field.FileType + "</FT>";
-            xmldt += "<R1></R1>";
-            xmldt += "<R2></R2>";
-            xmldt += "<R3></R3>";
-            xmldt += "</i>";
-        }
-
-        xmldt += "</r>";
-        console.log(xmldt);
-
         var saveDR = {
-            "DocumentRepository": xmldt
+            "docrepo": this.drRowData
         }
 
         this._drservice.saveDocRepo(saveDR).subscribe(data => {
@@ -173,8 +163,8 @@ export class AddDR implements OnInit, OnDestroy {
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
 
-            this.UserID = params['UserID'];
-            this.getDRDataByUserID(this.UserID);
+            this.uid = params['uid'];
+            this.getDRDataByuid(this.uid);
         });
     }
 
