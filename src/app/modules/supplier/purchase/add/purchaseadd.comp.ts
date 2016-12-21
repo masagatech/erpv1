@@ -22,24 +22,24 @@ declare var $: any;
     Remark: any = '';
     CustNam: any = '';
     ItemsName: any = '';
-    ItemsCode: any = '';
-    NewItemsName: any;
-    NewItemsCode: any;
-    AccountID: any = '';
+    Itemsid: any = 0;
+    NewItemsName: any='';
+    NewItemsid: any=0;
+    AccountID: any = 0;
     AccountName: any = '';
     SupplierName: any = '';
-    SupplierID: any = '';
+    SupplierID: any = 0;
     Dis: any = 0;
     Rate: any = 0;
     Amount: any = 0;
     Qty: any = 0;
     Total: any = 0;
     DisTotal: any = 0;
-    newAddRow: any=[];
+    newAddRow: any = [];
     counter: any = 0;
     totalQty: any = 0;
     totalAmt: any = 0;
-    SupplierTitle:any;
+    SupplierTitle: any;
     Duplicateflag: boolean = true;
     Directinvoice: any = 0;
     private subscribeParameters: any;
@@ -94,10 +94,10 @@ declare var $: any;
     //Edit Param
     EditParamJson(PurOrid) {
         var Param = {
-            "CmpCode": "Mtech",
-            "FY": 5,
+            "cmpid": 1,
+            "fy": 5,
             "PurOrId": PurOrid,
-            "CreatedBy": "",
+            "createdby": "",
             "SupplierId": 0,
             "FilterType": "Edit",
             "flag": "",
@@ -108,7 +108,7 @@ declare var $: any;
 
     //Edit PO
     EditPO(PurOrid) {
-        var that=this;
+        var that = this;
         this.PurchaseServies.EditPO(
             this.EditParamJson(PurOrid)
         ).subscribe(result => {
@@ -123,7 +123,7 @@ declare var $: any;
             this.Adr = returndata.Table[0].Addresss;
             this.Remark = returndata.Table[0].Remark;
             this.newAddRow = returndata.Table1;
-            that.SupplierTitle= "(" + returndata.Table[0].SupplierName + ")";
+            that.SupplierTitle = "(" + returndata.Table[0].SupplierName + ")";
         }, err => {
             console.log(err);
         }, () => {
@@ -165,26 +165,25 @@ declare var $: any;
     //Return To Json
     ParamJson() {
         var Param = {
-            "PurOrId": this.PurOrId,
-            "CmpCode": "Mtech",
-            "FY": 5,
-            "InvNostr": this.InvNostr,
-            "DocDate": this.docdate,
-            "OtherRef": this.OtherRef,
-            "SupplierId": this.SupplierID,
-            "AccountId": this.AccountID,
+            "purorid": this.PurOrId,
+            "cmpid": 1,
+            "fy": 5,
+            "invno": this.InvNostr,
+            "docdate": $('#docdate').datepicker('getDate'),
+            "refno": this.OtherRef,
+            "suppid": this.SupplierID,
+            "acid": this.AccountID,
             "Directinvoice": this.Directinvoice,
-            "Address": this.Adr,
-            "Remark": this.Remark,
-            "xmldata": this.Paramxml(),
+            "adr": this.Adr,
+            "remark": this.Remark,
+            "jsondata": this.newAddRow,
             "Status": "Status",
-            "CreatedBy": "admin",
-            "Remark1": "Remark1",
-            "Remark2": "Remark2",
-            "Remark3": "Remark3",
-            "flag": "Flag",
-            "flag1": "Flag1"
+            "createdby": "admin",
+            "remark1": "Remark1",
+            "remark2": "Remark2",
+            "remark3": "Remark3"
         }
+        console.log(Param);
         return Param;
     }
 
@@ -192,8 +191,7 @@ declare var $: any;
     actionBarEvt(evt) {
         this.Directinvoice = 1;
         if (evt === "save") {
-            this.docdate = $('#docdate').val();
-            if (this.docdate === "" || this.docdate == undefined) {
+            if ($('#docdate').val() === "") {
                 alert("Please Select Document Date");
                 $("#docdate").focus();
                 return;
@@ -213,23 +211,24 @@ declare var $: any;
                 $(".AccountName").focus();
                 return;
             }
-            if (this.newAddRow.length == 0) {
-                alert("Please Enetr Items");
-                $("#foot_custname").focus();
-                return;
-            }
+            // if (this.newAddRow.length == 0) {
+            //     alert("Please Enetr Items");
+            //     $("#foot_custname").focus();
+            //     return;
+            // }
+            debugger;
             this.PurchaseServies.SaveOP(
                 this.ParamJson()
             ).subscribe(result => {
-                var returndata = JSON.parse(result.data);
-                if (returndata.Table[0].doc === 'INV') {
-                    alert(returndata.Table[0].status);
+                var returndata = result.data;
+                console.log(returndata);
+                if (returndata[0].funsave_purchaseord.msg === 'Save') {
+                    alert("Data Save Successfully");
                     $("#invNo").focus();
                     return;
                 }
-                if (returndata.Table[0].doc >= 1) {
-                    alert('Data Save Successfully Document No : ' + returndata.Table[0].doc);
-                    this.ClearControll();
+                else {
+                    console.log("Error");
                 }
             }, err => {
                 console.log(err);
@@ -272,6 +271,7 @@ declare var $: any;
         if (this.Duplicateflag == true) {
             this.newAddRow.push({
                 'ItemsName': this.ItemsName,
+                'Itemsid':this.Itemsid,
                 'Qty': this.Qty,
                 'Rate': this.Rate,
                 'Dis': this.Dis == "" ? "0" : this.Dis,
@@ -303,9 +303,9 @@ declare var $: any;
     getAutoCompleteAccount(me: any) {
         var _me = this;
         var that = this;
-        this._autoservice.getAutoData({ "type": "account", "search": that.AccountName }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "customer", "search": that.AccountName }).subscribe(data => {
             $(".AccountName").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -330,7 +330,7 @@ declare var $: any;
         var that = this;
         this._autoservice.getAutoData({ "type": "supplier", "search": that.SupplierName }).subscribe(data => {
             $(".SupplierName").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -351,10 +351,32 @@ declare var $: any;
         })
     }
 
+    ItemsSelected(Itemsid) {
+        this.PurchaseServies.getitemsDetails({
+            "itemsid": Itemsid,
+            "cmpid": 1,
+            "fy": 5
+        }).subscribe(result => {
+            var returndata = result.data;
+            this.Itemsid = Itemsid;
+            this.Qty = returndata[0].qty;
+            this.Rate = returndata[0].itemscost;
+            this.Dis = returndata[0].purdis;
+            this.Amount = returndata[0].amount;
+            console.log(returndata);
+        }, err => {
+            console.log(err);
+        }, () => {
+            //Complete
+        })
+    }
+
     getAutoCompleteProd(me: any, arg: number) {
-        this._autoservice.getAutoData({ "type": "prodname", "search": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
+        var _me = me;
+        var that = this;
+        this._autoservice.getAutoData({ "type": "product", "search": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
             $(".ProdName").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -367,12 +389,12 @@ declare var $: any;
                     me.ItemsName = ui.item.label;
                     if (arg === 1) {
                         me.ItemsName = ui.item.label;
-                        me.ItemsCode = ui.item.value;
-                        // _me.ItemsSelected(me.ItemsCode);
+                        me.Itemsid = ui.item.value;
+                        _me.ItemsSelected(me.Itemsid);
                     } else {
                         me.NewItemsName = ui.item.label;
-                        me.NewItemsCode = ui.item.value;
-                        //_me.ItemsSelected(me.NewItemsCode);
+                        me.NewItemsid = ui.item.value;
+                        _me.ItemsSelected(me.NewItemsid);
                     }
                 }
             });
