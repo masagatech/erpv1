@@ -33,7 +33,7 @@
 					<i ng-model="List" (click)="ShowHideDocs('List')" class="fa fa-list fa-2x"></i>
 				</div>
 			</div>
-			<div class="col-md-12" *ngIf="IsVisibleGrid">
+			<div class="col-md-12" style="height:70%; overflow-x: auto;" *ngIf="IsVisibleGrid">
 				<p-dataGrid [value]="drViewDT" [paginator]="true" [rows]="10" selectionMode="single">
 					<header>
 						{{tag}}

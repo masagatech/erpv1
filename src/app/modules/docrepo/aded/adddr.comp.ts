@@ -34,8 +34,13 @@ export class AddDR implements OnInit, OnDestroy {
 
     private subscribeParameters: any;
 
-    TagDT: any = [];
-    drRowData: any = [];
+    TagDT: any[];
+
+    viewEmpDT: any[] = [];
+
+    drRowData: any[] = [];
+    viewDNData: any[] = [];
+    viewEmpData: any[] = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _drservice: DRService, private _commonservice: CommonService) {
         this._commonservice.getMOM({ "flag": "DocType" }).subscribe(data => {
@@ -102,13 +107,16 @@ export class AddDR implements OnInit, OnDestroy {
 
     // Get DR By DR ID
 
-    getDRDataByID(puid: number) {
-        this._drservice.getDocRepo({ "flag": "id", "uid": puid }).subscribe(data => {
-            //this.drRowData = JSON.parse(data.data);
-            var viewEmpData = JSON.parse(data.data);
+    getDRDataByuid(druid: string) {
+        this._drservice.getDocRepo({ "uid": druid, "Flag": "EmpWiseDocs" }).subscribe(data => {
+            this.drRowData = JSON.parse(data.data);
+            this.viewEmpData = JSON.parse(data.Table4);
 
-            this.uid = viewEmpData[0].uid;
-            this.uname = viewEmpData[0].fullname;
+            console.log(this.drRowData);
+            console.log(this.viewEmpData);
+
+            this.uid = this.viewEmpData[0].uid;
+            this.uname = this.viewEmpData[0].fullname;
         }, err => {
             console.log("Error");
         }, () => {
@@ -156,7 +164,7 @@ export class AddDR implements OnInit, OnDestroy {
             this.actionButton.find(a => a.id === "edit").hide = true;
 
             this.uid = params['uid'];
-            this.getDRDataByID(this.uid);
+            this.getDRDataByuid(this.uid);
         });
     }
 
