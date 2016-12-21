@@ -10,39 +10,37 @@ import { ActionBarModule } from '../../_shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
-import {
-  DataListModule, DataGridModule, PanelModule
-} from 'primeng/primeng';
+import { DataListModule, DataGridModule, PanelModule } from 'primeng/primeng';
+
 const routerConfig = [
-  {
-    path: '',
-    component: DRComp,
-    canActivate: [AuthGuard],
-    children: [
-      {
+    {
         path: '',
+        component: DRComp,
+        canActivate: [AuthGuard],
         children: [
-          { path: 'view', component: ViewDR, canActivateChid: [AuthGuard], },
-          { path: 'add', component: AddDR, canActivateChid: [AuthGuard], },
-          { path: 'edit/:uid', component: AddDR, canActivateChid: [AuthGuard], },
-          { path: '', component: DRDashboardComp, canActivateChid: [AuthGuard], },
+            {
+                path: '',
+                children: [
+                    { path: 'view', component: ViewDR, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddDR, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:uid', component: AddDR, canActivateChid: [AuthGuard], },
+                    { path: '', component: DRDashboardComp, canActivateChid: [AuthGuard], },
+                ]
+            }
         ]
-      }
-    ]
-  }
+    }
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule,
-    SharedComponentModule, DataListModule, DataGridModule, PanelModule],
-  declarations: [
-    ViewDR,
-    AddDR,
-
-    DRDashboardComp,
-    DRComp
-  ],
-  providers: [AuthGuard]
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule,
+        SharedComponentModule, DataListModule, DataGridModule, PanelModule],
+    declarations: [
+        ViewDR,
+        AddDR,
+        DRDashboardComp,
+        DRComp
+    ],
+    providers: [AuthGuard]
 })
 
 export default class DRModule {

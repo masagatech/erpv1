@@ -24,9 +24,12 @@
 		<div class="row" [style.display]="drViewDT.length == 0?'none':''">
 			<div class="col-md-12">
 				<div class="col-md-10">
-					<button type="button" class="btn btn-primary btn-xs" (click)="orderby('date')">By Latest</button>
+					<!--<li *ngFor="todo in todos">{{todo.name}} {{todo.completed}}</li>-->
+
+
+					<!--<button type="button" class="btn btn-primary btn-xs" (click)="orderby('date')">By Latest</button>
 					<button type="button" class="btn btn-primary btn-xs" (click)="orderby('size')">By Size</button>
-					<button type="button" class="btn btn-primary btn-xs" (click)="orderby('name')">By Name</button>
+					<button type="button" class="btn btn-primary btn-xs" (click)="orderby('name')">By Name</button>-->
 				</div>
 				<div class="col-md-2" align="center">
 					<i ng-model="Grid" (click)="ShowHideDocs('Grid')" class="fa fa-th fa-2x"></i> &nbsp;
@@ -53,14 +56,19 @@
 			<div class="col-md-12" *ngIf="IsVisibleList">
 				<p-dataList [value]="drViewDT" [paginator]="true" [rows]="10" selectionMode="single">
 					<header>
-						Document Repository
+						{{tag}}
 					</header>
 					<template let-row>
-						<p-panel [header]="row.tag">
-							<a role="button" title="{{row.tag}}">
-								<i class="{{row.filetype}} fa-lg"></i> {{row.doctitle}}
-							</a>
-						</p-panel>
+						<div class="row" style="padding:3px">
+							<div class="col-md-3">
+								{{row.doctitle}}
+							</div>
+							<div class="col-md-9">
+								<a role="button" title="{{row.tag}}">
+									<i class="{{row.filetype}} fa-lg"></i> {{row.docfile}}
+								</a>
+							</div>
+						</div>
 					</template>
 				</p-dataList>
 			</div>

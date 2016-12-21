@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { DRService } from '../../../_service/docrepo/dr-service'; /* add reference for view document repository */
 import { EmpService } from '../../../_service/employee/emp-service'; /* add reference for view employee */
 import { CommonService } from '../../../_service/common/common-service'; /* add reference for view document repository */
+import { OrderByPipe } from '../../../_pipe/orderby.pipe';
 
 import { Router } from '@angular/router';
 
