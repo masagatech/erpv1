@@ -42,7 +42,7 @@ const routerConfig =
                             })
                         },
                         {
-                            path: 'docrepo', loadChildren: () => System.import('./docrepo/docrepo.module').then((comp: any) => {
+                            path: 'documentrepository', loadChildren: () => System.import('./docrepo/docrepo.module').then((comp: any) => {
                                 return comp.default;
                             })
                         },
