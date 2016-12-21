@@ -8,10 +8,14 @@ export class PurchaseaddService  {
 
     SaveOP(req:any)
     {
-        return this._dataserver.post("POSave",req);
+        return this._dataserver.post("savePurchaseOrder",req);
     }
     EditPO(req:any)
     {
         return this._dataserver.post("SupplierDetails",req);
+    }
+    getitemsDetails(req:any)
+    {
+        return this._dataserver.post("getitemsDetails",req);
     }
     }
