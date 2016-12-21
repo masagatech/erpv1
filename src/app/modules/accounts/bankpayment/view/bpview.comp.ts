@@ -114,16 +114,16 @@ export class bankpaymentview implements OnInit, OnDestroy {
             "todate": $('#ToDate').datepicker('getDate')
         }).subscribe(PaymentDetails => {
             var dataset = PaymentDetails.data;
-            //if (dataset[0].length > 0) {
+            if (dataset.length > 0) {
                 this.tableLength = false;
                 this.BankPaymentView = dataset;
-            //}
-            //else {
-            //     alert('No record found');
-            //     this.BankPaymentView = [];
-            //     this.tableLength = true;
-            //     return false;
-            // }
+            }
+            else {
+                alert('No record found');
+                this.BankPaymentView = [];
+                this.tableLength = true;
+                return false;
+            }
         }, err => {
             console.log('Error');
         }, () => {

@@ -13,8 +13,9 @@ export interface LoginUserModel {
   cmpid: number;
   fyid: number;
   fyfrom: any;
-  fyto: any,
-  ucode:string,
-  email:string,
-  _sessiondetails:any
+  fyto: any;
+  ucode:string;
+  email:string;
+  fullname:string;
+  _sessiondetails:any;
 }

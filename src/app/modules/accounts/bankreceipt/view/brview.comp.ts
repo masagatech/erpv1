@@ -153,17 +153,16 @@ export class bankreceiptview implements OnInit, OnDestroy {
             "todate": $('#ToDate').datepicker('getDate')
         }).subscribe(RecepitDetails => {
             var dataset = RecepitDetails.data;
-            //if (dataset.length > 0) {
+            if (dataset.length > 0) {
                 this.tableLength = false;
                 this.BankRecepitView = dataset;
-
-            //}
-            // else {
-            //     alert('No record found');
-            //     this.BankRecepitView = [];
-            //     this.tableLength = true;
-            //     return false;
-            // }
+            }
+            else {
+                alert('No record found');
+                this.BankRecepitView = [];
+                this.tableLength = true;
+                return false;
+            }
         }, err => {
             console.log('Error');
         }, () => {

@@ -84,7 +84,17 @@ declare var $: any;
             this.jsonPram()
         ).subscribe(result => {
             var dataset = result.data;
-            this.acgrouplist = dataset;
+            if(dataset.length > 0)
+            {
+                this.acgrouplist = dataset;
+            }
+            else
+            {
+                alert("Record not found");
+                $(".GroupName").focus();
+                return;
+            }
+            
         }, err => {
             console.log("Error");
 

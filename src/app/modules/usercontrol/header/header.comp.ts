@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../../_service/auth-service'
 import { UserService } from '../../../_service/user/user-service'
+import { LoginUserModel } from '../../../_model/user_model'
 import { ArrayFilterPipe } from '../../../_util/filter'
 import { Router } from '@angular/router';
 
@@ -17,7 +18,7 @@ export class UserControlHeadComp implements OnInit {
   menuhead: any;
   parentMenus: any;
   subMenu: any;
-  loginUser: any;
+  loginUser: LoginUserModel;
   loginUserName: string;
 
   constructor(private _authservice: AuthenticationService, private _userService: UserService, private _router: Router) {
@@ -29,7 +30,7 @@ export class UserControlHeadComp implements OnInit {
     }
 
     //set user name 
-    this.loginUserName = this.loginUser.usrnm;
+    this.loginUserName = this.loginUser.fullname;
 
     //get menues according to loggedin user
 
