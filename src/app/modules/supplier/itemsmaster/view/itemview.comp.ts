@@ -122,7 +122,7 @@ declare var $: any;
     //Edit Row
     EditItem(row) {
         if (!row.islocked) {
-            this._router.navigate(['/supplier/itemedit', row.itemsid]);
+            this._router.navigate(['/supplier/itemsmaster/itemedit', row.itemsid]);
         }
     }
 
@@ -154,7 +154,7 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/supplier/itemadd']);
+            this._router.navigate(['/supplier/itemsmaster/itemadd']);
         }
         else if (evt === "save") {
             //Save CLick Event

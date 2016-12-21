@@ -88,6 +88,12 @@ declare var $: any;
             {
                 this.acgrouplist = dataset;
             }
+            else
+            {
+                alert("Record not found");
+                $(".GroupName").focus();
+                return;
+            }
             
         }, err => {
             console.log("Error");
