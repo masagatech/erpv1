@@ -1,56 +1,55 @@
 <nav class="navbar navbar-default navbar-fixed-top" style="background-color:#ffffff;padding-top: 1px;">
-	<div class="container-fluid">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
-				aria-expanded="false">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
 				<span class="sr-only">Toggle navigation</span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">Close-Book</a>
-		</div>
+            <a class="navbar-brand" href="#">Close-Book</a>
+        </div>
 
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<ul class="nav navbar-nav">
-				<li [ngClass]="{'dropdown' : item.sub.length > 0}" *ngFor="let item of menuhead">
-					<a data-toggle="dropdown" role="button" (click)="callRoute(item, item.sub.length)">
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li [ngClass]="{'dropdown' : item.sub.length > 0}" *ngFor="let item of menuhead">
+                    <a data-toggle="dropdown" role="button" (click)="callRoute(item, item.sub.length)">
 						{{item.name}} <i class="{{item.menuico}}"></i> <span *ngIf="item.sub.length > 0" class="caret"></span>
             		</a>
-					<!-- role="menu": fix moved by arrows (Bootstrap dropdown) -->
-					<ul [ngClass]="{'dropdown-menu' : item.sub.length > 0}" *ngIf="item.sub.length > 0" role="menu">
-						<li [ngClass]="{'dropdown-submenu': subitem.subsub.length > 0 }" *ngFor="let subitem of item.sub">
-							<a tabindex="0" data-toggle="dropdown" (click)="callRoute(subitem, subitem.subsub.length)" role="button">{{ subitem.name }}</a>
+                    <!-- role="menu": fix moved by arrows (Bootstrap dropdown) -->
+                    <ul [ngClass]="{'dropdown-menu' : item.sub.length > 0}" *ngIf="item.sub.length > 0" role="menu">
+                        <li [ngClass]="{'dropdown-submenu': subitem.subsub.length > 0 }" *ngFor="let subitem of item.sub">
+                            <a tabindex="0" data-toggle="dropdown" (click)="callRoute(subitem, subitem.subsub.length)" role="button">{{ subitem.name }}</a>
 
-							<ul *ngIf="subitem.subsub.length > 0" class="dropdown-menu">
-								<li *ngFor="let subsubitem of subitem.subsub">
-									<a tabindex="0" role="button" (click)="callRoute(subsubitem, subitem.subsub.length)">{{ subsubitem.name }}</a>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-			</ul>
+                            <ul *ngIf="subitem.subsub.length > 0" class="dropdown-menu">
+                                <li *ngFor="let subsubitem of subitem.subsub">
+                                    <a tabindex="0" role="button" (click)="callRoute(subsubitem, subitem.subsub.length)">{{ subsubitem.name }}</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
 
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{loginUserName}} <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#">Action</a></li>
-						<li><a href="#">Another action</a></li>
-						<li><a href="#">Something else here</a></li>
-						<li role="separator" class="divider"></li>
-						<li><a (click)="logout()" style="cursor:pointer">Log off</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		<!-- /.navbar-collapse -->
-	</div>
-	<!-- /.container-fluid -->
-	<ng2-slim-loading-bar></ng2-slim-loading-bar>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{loginUserName}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+                        <li><a href="#"><i class="fa fa-file"></i> Documents</a></li>
+                        <li><a href="#"><i class="fa fa-gear"></i> Settings</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a (click)="logout()" style="cursor:pointer"><i class="fa fa-power-off"></i> Log off</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+    <ng2-slim-loading-bar></ng2-slim-loading-bar>
 </nav>
 
-<div style="height:70px;display:block;background-color:#ffffff"></div>
+<div style="height:70px;display:block;"></div>

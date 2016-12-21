@@ -7,7 +7,8 @@ import { ActionBarModule } from '../_shared/shared.module'
 import { AuthGuard } from '../_service/authguard-service';
 import { SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 import { DashboardComponent } from './dashboard/dashboard.comp';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 // import { HotkeyModule } from 'angular2-hotkeys';
 // canActivateChild: [AuthGuard]
 const routerConfig =
@@ -56,8 +57,9 @@ const routerConfig =
 @NgModule({
     imports: [RouterModule.forChild(routerConfig),
     SlimLoadingBarModule.forRoot(),
-    ActionBarModule.forRoot()
-
+    ActionBarModule.forRoot(),
+    FormsModule,
+    CommonModule,
     ],
     declarations: [
         UserControlHeadComp,
