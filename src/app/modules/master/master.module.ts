@@ -41,29 +41,9 @@ const routerConfig = [
     //Common Module
      MasterComp,
      MasterDashboardComp,
-
      //Ac Group Add And View 
      acadd,
      acview,
-
-    // //Supplier Bill 
-    //  billadd,
-    //  billview,
-
-    // //Supplier Payment 
-    // payadd,
-    // payview,
-
-    // //Supplier Items Master
-    // itemadd,
-    // itemview,
-    
-    // //Supplier Details
-    // supplierdetailsview,
-
-    // //Supplier Expenses 
-    // expadd,
-    // expview,
 
   ],
   providers: [AuthGuard]
