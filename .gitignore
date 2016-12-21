@@ -215,3 +215,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+node_modules.zip
+src/main.browser.ts
+src/app/_const/globals.ts
+config/webpack.common.js
+tsconfig.json
+config/webpack.common.js
