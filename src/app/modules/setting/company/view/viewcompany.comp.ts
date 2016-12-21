@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 @Component({
     templateUrl: 'viewcompany.comp.html',
     providers: [CompService]
+    //styles : [".div-panel{}"]
 })
 
 export class ViewCompany implements OnInit, OnDestroy {
