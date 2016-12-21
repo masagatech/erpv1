@@ -17,8 +17,10 @@ import { payview } from '../supplier/payment/view/payview.comp';                
 import { expadd } from '../supplier/exp/add/expadd.comp';                            //Exp Add
 import { expview } from '../supplier/exp/view/expview.comp';                         //Exp View
 
-import { itemadd } from '../supplier/itemsmaster/add/itemadd.comp';                            //item Add
-import { itemview } from '../supplier/itemsmaster/view/itemview.comp';                         //item View
+// import { itemadd } from '../supplier/itemsmaster/add/itemadd.comp';                            //item Add
+// import { itemview } from '../supplier/itemsmaster/view/itemview.comp';                         //item View
+
+
 
 import { supplierdetailsview } from '../supplier/supplierdetails/supplierdetails.comp';                         //Exp View
 
@@ -45,17 +47,23 @@ const routerConfig = [
           { path: 'billedit/:id', component: billadd, canActivateChid: [AuthGuard], },
           { path: 'billview', component: billview, canActivateChid: [AuthGuard], },
 
-           //Suppler Payment Add Edit And View
+          //Suppler Payment Add Edit And View
           { path: 'payadd', component: payadd, canActivateChid: [AuthGuard], },
           { path: 'payedit/:id', component: payadd, canActivateChid: [AuthGuard], },
           { path: 'payview', component: payview, canActivateChid: [AuthGuard], },
 
-          //Supplier Item Master
-          { path: 'itemadd', component: itemadd, canActivateChid: [AuthGuard], },
-          { path: 'itemedit/:id', component: itemadd, canActivateChid: [AuthGuard], },
-          { path: 'itemview', component: itemview, canActivateChid: [AuthGuard], },
+          // //Supplier Item Master
+          // { path: 'itemadd', component: itemadd, canActivateChid: [AuthGuard], },
+          // { path: 'itemedit/:id', component: itemadd, canActivateChid: [AuthGuard], },
+          // { path: 'itemview', component: itemview, canActivateChid: [AuthGuard], },
 
-           //Suppler Expenses Add Edit And View
+          {
+            path: 'itemsmaster', loadChildren: () => System.import('./itemsmaster').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          //Suppler Expenses Add Edit And View
           { path: 'expadd', component: expadd, canActivateChid: [AuthGuard], },
           { path: 'expedit/:id', component: expadd, canActivateChid: [AuthGuard], },
           { path: 'expview', component: expview, canActivateChid: [AuthGuard], },
@@ -74,25 +82,25 @@ const routerConfig = [
   imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
   declarations: [
     //Common Module
-     SupplierComp,
-     SupplierDashboardComp,
+    SupplierComp,
+    SupplierDashboardComp,
 
-     //Supplier Purchase 
-     purchaseadd,
-     purchaseview,
+    //Supplier Purchase 
+    purchaseadd,
+    purchaseview,
 
     //Supplier Bill 
-     billadd,
-     billview,
+    billadd,
+    billview,
 
     //Supplier Payment 
     payadd,
     payview,
 
     //Supplier Items Master
-    itemadd,
-    itemview,
-    
+    // itemadd,
+    // itemview,
+
     //Supplier Details
     supplierdetailsview,
 

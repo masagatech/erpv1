@@ -8,6 +8,6 @@ export class ItemViewService {
 
     getItemsMaster(req:any)
     {
-        return this._dataserver.post("ItemMasterGet",req);
+        return this._dataserver.post("getItemsMaster",req);
     }
 }

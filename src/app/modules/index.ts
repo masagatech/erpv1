@@ -43,7 +43,12 @@ const routerConfig =
                             })
                         },
                         {
-                            path: 'documentrepository', loadChildren: () => System.import('./documentrepository/documentrepository.module').then((comp: any) => {
+                            path: 'docrepo', loadChildren: () => System.import('./docrepo/docrepo.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
+                        {
+                            path: 'supplier', loadChildren: () => System.import('./supplier/supplier.module').then((comp: any) => {
                                 return comp.default;
                             })
                         },
