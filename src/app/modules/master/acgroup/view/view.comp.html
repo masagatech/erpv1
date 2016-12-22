@@ -63,7 +63,7 @@
 		</thead>
 		<tbody *ngFor="let row of acgrouplist let i=index">
 			<tr>
-				<td><span>{{i+1}}</span><span class="displayNone">{{row.autoid}}</span></td>
+				<td><span>{{i+1}}</span><span class="hide">{{row.autoid}}</span></td>
 				<td>
 					<button (click)="expandDetails(row)">
 						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
@@ -86,7 +86,7 @@
 					</thead>
 					<tbody>
 						<tr *ngFor="let drow of row.Details let x=index">
-							<td><span>{{x+1}}</span><span class="displayNone">{{drow.groupid}}</span></td>
+							<td><span>{{x+1}}</span><span class="hide">{{drow.groupid}}</span></td>
 							<td><a role="button" (click)="Editacgroup(drow)">{{drow.groupcode}}</a></td>
 							<td>{{drow.groupname}}</td>
 							<td>{{drow.val}}</td>
