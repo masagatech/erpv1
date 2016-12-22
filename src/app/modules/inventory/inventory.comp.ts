@@ -4,14 +4,13 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: '../mastertmpl.comp.html'
 })
 
-export class AccountsComp implements OnInit {
+export class InventoryComp implements OnInit {
   menuid: string;
-
-  constructor() {
-
-  }
   
+  constructor() {
+    this.menuid = "pset";
+  }
   ngOnInit() {
-    this.menuid = "accs";
+    this.menuid = "pset";
   }
 }

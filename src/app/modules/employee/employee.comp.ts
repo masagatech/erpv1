@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  templateUrl: './employee.comp.html'
+  templateUrl: '../mastertmpl.comp.html'
 })
 
 export class EmployeeComp implements OnInit {

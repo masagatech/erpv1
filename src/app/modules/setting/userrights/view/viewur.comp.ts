@@ -3,7 +3,6 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { UserService } from '../../../../_service/user/user-service' /* add reference for user */
-
 import { Router } from '@angular/router';
 
 @Component({

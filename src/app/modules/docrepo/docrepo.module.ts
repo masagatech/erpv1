@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DRComp } from '../docrepo/docrepo.comp';
+import { DocRepoComp } from '../docrepo/docrepo.comp';
 import { AuthGuard } from '../../_service/authguard-service';
 import { DRDashboardComp } from '../docrepo/dashboard/dashboard.comp';
 import { AddDR } from '../docrepo/aded/adddr.comp';
@@ -15,7 +15,7 @@ import { DataListModule, DataGridModule, PanelModule } from 'primeng/primeng';
 const routerConfig = [
     {
         path: '',
-        component: DRComp,
+        component: DocRepoComp,
         canActivate: [AuthGuard],
         children: [
             {
@@ -38,7 +38,7 @@ const routerConfig = [
         ViewDR,
         AddDR,
         DRDashboardComp,
-        DRComp
+        DocRepoComp
     ],
     providers: [AuthGuard]
 })

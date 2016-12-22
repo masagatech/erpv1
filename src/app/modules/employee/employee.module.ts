@@ -35,7 +35,6 @@ const routerConfig = [
   declarations: [
     ViewEmployee,
     EmployeeAddEdit,
-    
     EmployeeDashboardComp,
     EmployeeComp
   ],

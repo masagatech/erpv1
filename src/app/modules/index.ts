@@ -48,6 +48,11 @@ const routerConfig =
                             })
                         },
                         {
+                            path: 'inventory', loadChildren: () => System.import('./inventory/inventory.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
+                        {
                             path: 'supplier', loadChildren: () => System.import('./supplier/supplier.module').then((comp: any) => {
                                 return comp.default;
                             })
@@ -63,8 +68,8 @@ const routerConfig =
     imports: [RouterModule.forChild(routerConfig),
     SlimLoadingBarModule.forRoot(),
     ActionBarModule.forRoot(),
-    FormsModule,
-    CommonModule,
+        FormsModule,
+        CommonModule,
     ],
     declarations: [
         UserControlHeadComp,
@@ -74,5 +79,6 @@ const routerConfig =
     ],
     providers: [AuthGuard]
 })
+
 export default class ModuleModule {
 }
