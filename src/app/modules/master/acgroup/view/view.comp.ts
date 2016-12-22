@@ -134,7 +134,7 @@ declare var $: any;
     //Group Code (Edit) Group
     Editacgroup(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/master/acedit', row.groupid]);
+            this._router.navigate(['/master/acgroup/acedit', row.groupid]);
         }
     }
 
@@ -166,7 +166,7 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/master/acadd']);
+            this._router.navigate(['/master/acgroup/acadd']);
         }
         else if (evt === "save") {
             //Save CLick Event

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 
 @Component({
-  templateUrl: './transaction.comp.html'
+  templateUrl: '../mastertmpl.comp.html'
 })
 export class TransactionComp implements OnInit {
   menuid: string = "dcm";
