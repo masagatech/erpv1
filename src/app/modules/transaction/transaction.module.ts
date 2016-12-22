@@ -11,11 +11,6 @@ import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { FormsModule }          from '@angular/forms';
 import {CommonModule} from '@angular/common'
 
-//import { AccountEntryComp } from '../accounts/entry/entry.comp';
-
-//import { ActionBarModule } from '../../_shared/shared.module'
-//import { HotkeyModule } from 'angular2-hotkeys';
-
 const routerConfig =
   [
     {

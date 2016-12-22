@@ -54,6 +54,12 @@ const routerConfig = [
             }),
           },
 
+           {
+            path: 'attribute', loadChildren: () => System.import('./attribute').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
           { path: '', component: SettingDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
