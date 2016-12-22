@@ -52,6 +52,11 @@ const routerConfig =
                                 return comp.default;
                             })
                         },
+                        {
+                            path: 'master', loadChildren: () => System.import('./master/master.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
                     ]
                 }
             ]

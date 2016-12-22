@@ -5,9 +5,6 @@ import { AuthGuard } from '../../_service/authguard-service';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { MasterDashboardComp } from '../master/dashboard/dashboard.comp';
 
-import { acadd } from '../master/acgroup/add/add.comp';                //Purchase Add
-import { acview } from '../master/acgroup/view/view.comp';             //Purchase View
-
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -21,11 +18,12 @@ const routerConfig = [
         path: '',
         children: [
             
-           //Ac Group Add And View 
-          { path: 'acadd', component: acadd, canActivateChid: [AuthGuard], },
-          { path: 'acedit/:id', component: acadd, canActivateChid: [AuthGuard], },
-          { path: 'acview', component: acview, canActivateChid: [AuthGuard], },
-
+          //Ac Group Add And View 
+           {
+            path: 'acgroup', loadChildren: () => System.import('./acgroup').then((comp: any) => {
+              return comp.default;
+            }),
+          },
          
 
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
@@ -42,9 +40,6 @@ const routerConfig = [
      MasterComp,
      MasterDashboardComp,
      //Ac Group Add And View 
-     acadd,
-     acview,
-
   ],
   providers: [AuthGuard]
 })
