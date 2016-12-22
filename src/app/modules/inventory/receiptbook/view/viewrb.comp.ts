@@ -3,17 +3,42 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { Router } from '@angular/router';
+import { RBService } from '../../../../_service/receiptbook/rb-service' /* add reference for receipt book */
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
-    templateUrl: 'viewrb.comp.html'
+    templateUrl: 'viewrb.comp.html',
+    providers: [RBService]
 })
 
 export class ViewReceiptBook implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService) {
+    datasource: any = [];
+    receiptbook: any = [];
+    totalRecords: number = 0;
+    selectedRB1: any = [];
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _rbservice: RBService) {
         
+    }
+
+    BindReceiptBook(from: number, to: number) {
+        var that = this;
+        that._rbservice.getAllRB({ "flag":"all", "fyid":"7", "from": from, "to": to }).subscribe(data => {
+            that.totalRecords = data.data[1][0].recordstotal;
+            that.receiptbook = data.data[0];
+            console.log(data.data);
+        });
+    }
+
+    loadRBGrid(event: LazyLoadEvent) {
+        this.BindReceiptBook(event.first, (event.first + event.rows));
+    }
+
+    openRBDetails(row) {
+        this._router.navigate(["/inventory/receiptbook/edit", row.docno]);
     }
 
     ngOnInit() {

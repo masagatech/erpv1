@@ -5,7 +5,6 @@ import { AuthGuard } from '../../_service/authguard-service';
 import { InventoryDashboardComp } from '../Inventory/dashboard/dashboard.comp';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../_shared/shared.module'
-import { GroupByPipe } from '../../_pipe/groupby.pipe'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -39,8 +38,7 @@ const routerConfig = [
     DataListModule, DataGridModule, PanelModule],
   declarations: [
     InventoryComp,
-    InventoryDashboardComp,
-    GroupByPipe
+    InventoryDashboardComp
   ],
   providers: [AuthGuard]
 })

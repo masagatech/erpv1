@@ -8,9 +8,10 @@ export class InventoryComp implements OnInit {
   menuid: string;
   
   constructor() {
-    this.menuid = "pset";
+    this.menuid = "invaccs";
   }
+
   ngOnInit() {
-    this.menuid = "pset";
+    this.menuid = "invaccs";
   }
 }

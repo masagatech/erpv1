@@ -1,0 +1,112 @@
+<div class="middlepan">
+    <div class="panel panel-theme">
+        <div class="panel-body">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Date</label>
+                    <input type="date" [(ngModel)]="docdate" class="form-control" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Series No</label>
+                            <input type="number" [(ngModel)]="newseriesno" class="form-control text-right" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Quantity</label>
+                            <input type="number" [(ngModel)]="newqty" class="form-control text-right" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">No of Page</label>
+                            <input type="number" [(ngModel)]="newnoofpage" class="form-control text-right" (keyup.enter)="addRBRow()" (keydown.tab)="addRBRow()"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Narration</label>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-body" [style.display]="rbRowData.length == 0?'none':''">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th width="50px"></th>
+                        <th width="150px">Series No</th>
+                        <th width="150px">No of Page</th>
+                        <th>Narration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of rbRowData let i=index">
+                        <td width="50px" class="textalign">
+                            {{i+1}}
+                        </td>
+                        <td width="150px" class="textalign">
+                            <input type="number" [(ngModel)]="row.seriesno" class="form-control text-right" />
+                        </td>
+                        <td width="150px" class="textalign">
+                            <input type="number" [(ngModel)]="row.noofpage" class="form-control text-right" />
+                        </td>
+                        <td class="textalign">
+                            <input type="text" [(ngModel)]="row.detnarr" class="form-control" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="sidepan">
+    <!--widgit-->
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+</div>

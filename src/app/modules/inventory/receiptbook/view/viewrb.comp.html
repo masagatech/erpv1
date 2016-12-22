@@ -1,0 +1,17 @@
+<div class="table-responsive">
+    <p-dataTable #dt [value]="receiptbook" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBGrid($event)"
+        [(selection)]="selectedRB1">
+        <header>List of Receipt Book</header>
+        <p-column field="docno" header="Doc No" [style]="{'width':'50px','text-align':'right'}"></p-column>
+        <p-column field="docdate" header="Doc Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+        <p-column field="rbtitle" header="Book Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+        <p-column field="seriesno" header="Series No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column field="noofpage" header="No Of Page" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column field="qty" header="Quantity" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column styleClass="col-button" [style]="{'width':'100px'}">
+            <template let-row="rowData" pTemplate type="body">
+                <button type="button" pButton (click)="openRBDetails(row)" class="btn btn-primary">Edit</button>
+            </template>
+        </p-column>
+    </p-dataTable>
+</div>

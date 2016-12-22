@@ -9,7 +9,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { DataListModule, PanelModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,7 +43,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, PanelModule],
+        DataTableModule, DataListModule, PanelModule],
     declarations: [
         AddReceiptBook,
         ViewReceiptBook,
