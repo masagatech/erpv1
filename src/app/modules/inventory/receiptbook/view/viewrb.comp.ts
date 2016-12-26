@@ -26,10 +26,10 @@ export class ViewReceiptBook implements OnInit, OnDestroy {
 
     BindReceiptBook(from: number, to: number) {
         var that = this;
-        that._rbservice.getAllRB({ "flag":"all", "fyid":"7", "from": from, "to": to }).subscribe(data => {
+        that._rbservice.getAllRB({ "flag":"grid", "fyid":"7", "from": from, "to": to }).subscribe(data => {
+            console.log(data.data[1]);
             that.totalRecords = data.data[1][0].recordstotal;
             that.receiptbook = data.data[0];
-            console.log(data.data);
         });
     }
 

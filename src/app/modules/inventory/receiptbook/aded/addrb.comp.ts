@@ -48,9 +48,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
 
         that.rbRowData = [];
 
-        debugger;
-
-        that._commonservice.checkValidate({ "flag": "receiptbook", "frmno": that.newseriesno, "tono": that.newseriesno + that.newqty }).subscribe(data => {
+        that._commonservice.checkValidate({ "flag": "receiptbook", "frmno": that.newseriesno, "tono": that.newseriesno + that.newqty, "cmpid": "2", "fyid": "7" }).subscribe(data => {
             var dataResult = data.data;
             var frmno = 0;
             frmno = that.newseriesno;
@@ -90,7 +88,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
             "receiptbook": this.rbRowData
         }
 
-        this._rbservice.saveReceiptBook(saveRB).subscribe(data => {
+        this._rbservice.saveRBDetails(saveRB).subscribe(data => {
             var dataResult = data.data;
             debugger;
             console.log(dataResult);

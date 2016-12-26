@@ -5,6 +5,7 @@ import { AddReceiptBook } from './aded/addrb.comp';
 import { ViewReceiptBook } from './view/viewrb.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module'
+import { GroupByPipe } from '../../../_pipe/groupby.pipe'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -47,7 +48,8 @@ const routerConfig = [
     declarations: [
         AddReceiptBook,
         ViewReceiptBook,
-        ReceiptBookComp
+        ReceiptBookComp,
+        GroupByPipe
     ],
     providers: [AuthGuard]
 })

@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<!--<div class="table-responsive">
     <p-dataTable #dt [value]="receiptbook" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBGrid($event)"
         [(selection)]="selectedRB1">
         <header>List of Receipt Book</header>
@@ -8,10 +8,59 @@
         <p-column field="seriesno" header="Series No" [style]="{'width':'100px','text-align':'right'}"></p-column>
         <p-column field="noofpage" header="No Of Page" [style]="{'width':'100px','text-align':'right'}"></p-column>
         <p-column field="qty" header="Quantity" [style]="{'width':'100px','text-align':'right'}"></p-column>
-        <!--<p-column styleClass="col-button" [style]="{'width':'100px'}">
+        <p-column styleClass="col-button" [style]="{'width':'100px'}">
             <template let-row="rowData" pTemplate type="body">
                 <button type="button" pButton (click)="openRBDetails(row)" class="btn btn-primary">Edit</button>
             </template>
-        </p-column>-->
+        </p-column>
     </p-dataTable>
+</div>-->
+
+<div class="col-md-9">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="receiptbook" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBGrid($event)"
+            [(selection)]="selectedRB1" expandableRows="true">
+            <header>List of Receipt Book</header>
+            <p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+            <p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+            <p-column field="docdate" header="Doc Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column styleClass="col-button">
+                <template let-row="rowData" pTemplate type="body">
+                    <button type="button" pButton (click)="openRBDetails(row)" class="btn btn-primary">Edit</button>
+                </template>
+            </p-column>
+            <template let-rows>
+                <table class="table table-striped table-bordered table-hover" *ngFor="let row of rows.rbdetails | groupBy:'docno'">
+                    <thead>
+                        <tr>
+                            <th>Doc No</th>
+                            <th width="400px">Book Name</th>
+                            <th class="text-right">Series No</th>
+                            <th class="text-right">No Of Page</th>
+                            <th class="text-right">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let drow of row.value">
+                        <tr>
+                            <td align="right">
+                                {{drow.docno}}
+                            </td>
+                            <td width="400px">
+                                {{drow.rbtitle}}
+                            </td>
+                            <td class="text-right">
+                                {{drow.seriesno}}
+                            </td>
+                            <td class="text-right">
+                                {{drow.noofpage}}
+                            </td>
+                            <td class="text-right">
+                                {{drow.qty}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </template>
+        </p-dataTable>
+    </div>
 </div>
