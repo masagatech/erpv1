@@ -4,7 +4,8 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { AddUserRights } from './aded/addur.comp';
 import { ViewUserRights } from './view/viewur.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-import { ActionBarModule } from '../../../_shared/shared.module'
+import { ActionBarModule } from '../../../_shared/shared.module';
+import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -46,7 +47,8 @@ const routerConfig = [
     declarations: [
         AddUserRights,
         ViewUserRights,
-        UserRightsComp
+        UserRightsComp,
+        GroupByPipe
     ],
     providers: [AuthGuard]
 })
