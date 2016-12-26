@@ -25,7 +25,6 @@ const routerConfig = [
               return comp.default;
             }),
           },
-
           { path: '', component: InventoryDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }

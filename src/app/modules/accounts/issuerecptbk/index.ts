@@ -1,8 +1,8 @@
 import { NgModule, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
-import { AddUserRights } from './aded/addur.comp';
-import { ViewUserRights } from './view/viewur.comp';
+import { AddRBI } from './aded/addrbi.comp';
+import { ViewRBI } from './view/viewrbi.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
 import { GroupByPipe } from '../../../_pipe/groupby.pipe';
@@ -10,13 +10,13 @@ import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { DataListModule, PanelModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule, ConfirmDialogModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
 })
 
-export class UserRightsComp implements OnInit {
+export class ReceiptBookIssuedComp implements OnInit {
     constructor() {
     }
 
@@ -27,15 +27,15 @@ export class UserRightsComp implements OnInit {
 const routerConfig = [
     {
         path: '',
-        component: UserRightsComp,
+        component: ReceiptBookIssuedComp,
         canActivate: [AuthGuard],
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddUserRights, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:uid', component: AddUserRights, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewUserRights, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddRBI, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:irbid', component: AddRBI, canActivateChid: [AuthGuard], },
+                    { path: '', component: ViewRBI, canActivateChid: [AuthGuard], },
                 ]
             }
         ]
@@ -43,15 +43,16 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataListModule, PanelModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+        DataTableModule, DataListModule, PanelModule, ConfirmDialogModule],
     declarations: [
-        AddUserRights,
-        ViewUserRights,
-        UserRightsComp,
+        AddRBI,
+        ViewRBI,
+        ReceiptBookIssuedComp,
         GroupByPipe
     ],
     providers: [AuthGuard]
 })
 
-export default class UserRightsModule {
+export default class ReceiptBookIssuedModule {
 }

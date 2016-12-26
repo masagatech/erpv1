@@ -3,96 +3,47 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { bankreceiptViewService } from "../../../../_service/bankreceipt/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
-
 import { Router } from '@angular/router';
 
 declare var $: any;
+
 @Component({
     templateUrl: 'brview.comp.html',
-    providers: [bankreceiptViewService]                         //Provides Add Service dcmaster-service.ts
-    //,AutoService
+    providers: [bankreceiptViewService] //Provides Add Service dcmaster-service.ts, AutoService
 })
 
 export class bankreceiptview implements OnInit, OnDestroy {
-    //Button 
+    //Button
+
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    //Veriable Local Declare 
-    BankreId: any=0;
-    BankNamelist: any=[];
-    BankRecepitView: any=[];
-    BankCode: any="";
-    FromDate: any="";
-    ToDate: any="";
+    //Veriable Local declare
+
+    BankreId: any = 0;
+    BankNamelist: any = [];
+    BankRecepitView: any = [];
+    BankCode: any = "";
+    FromDate: any = "";
+    ToDate: any = "";
     tableLength: any;
 
-    //constructor 
+    //constructor
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankreceiptViewService) { //Inherit Service dcmasterService
         this.getBankMasterDrop();
     }
 
-    // Document Ready
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.tableLength = true;
+    //Open Edit Mode
 
-        $(".bankname").focus();
-
-        setTimeout(function () {
-            var date = new Date();
-            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', Fromtoday);
-
-            //To Date
-            $("#ToDate").datepicker({
-                dateFormat: 'dd/mm/yy',
-                 minDate: 0,
-                setDate: new Date(),
-                autoclose: true
-            });
-            $("#ToDate").datepicker('setDate', Totoday);
-        }, 0);
-
-    }
-
-    //Open Edit Mode 
     OpenEdit(row) {
         if (!row.islocked) {
             this._router.navigate(['/accounts/bankreceipt/braded', row.id]);
         }
     }
 
-    //Any Button Click Event
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/accounts/bankreceipt/braded']);
-        }
-        if (evt === "save") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "edit") {
-            // alert("edit called");
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
+    //Bank Dropdown Bind
 
-    //Bank Dropdown Bind   
     getBankMasterDrop() {
         this.BankServies.getBankMaster({
             "type": "bank"
@@ -105,18 +56,19 @@ export class bankreceiptview implements OnInit, OnDestroy {
         });
     }
 
-    //+ And  - Button Click  
+    //Button Click
+
     expandDetails(row) {
-        row.Details=[];
+        row.Details = [];
         if (row.issh == 0) {
             row.issh = 1;
             if (row.Details.length === 0) {
-                this.BankServies.getBankRecieptView({ 
+                this.BankServies.getBankRecieptView({
                     "flag": "Details",
                     "bankreid": row.id,
-                    "cmpid":1,
-                    "fy":5
-               }).subscribe(data => {
+                    "cmpid": 1,
+                    "fy": 5
+                }).subscribe(data => {
                     row.Details = data.data;
                 }, err => {
                     console.log("Error");
@@ -130,6 +82,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
     }
 
     //Bind Bank Receipt Table
+
     GetBankRecepit() {
         this.FromDate = $('#FromDate').val();
         this.ToDate = $("#ToDate").val();
@@ -147,8 +100,8 @@ export class bankreceiptview implements OnInit, OnDestroy {
         this.BankServies.getBankRecieptView({
             "cmpid": 1,
             "fy": 5,
-            "bankid":this.BankCode,
-            "flag":"",
+            "bankid": this.BankCode,
+            "flag": "",
             "fromdate": $('#FromDate').datepicker('getDate'),
             "todate": $('#ToDate').datepicker('getDate')
         }).subscribe(RecepitDetails => {
@@ -171,6 +124,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
     }
 
     //Total Sum in Bank Payment Amount
+
     TotalAmount() {
         if (this.BankRecepitView != undefined) {
             var total = 0;
@@ -178,9 +132,65 @@ export class bankreceiptview implements OnInit, OnDestroy {
                 var items = this.BankRecepitView[i];
                 total += parseInt(items.amount);
             }
+
             return total;
         }
+    }
 
+    //Any Button Click Event
+
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/accounts/bankreceipt/braded']);
+        }
+        if (evt === "save") {
+            this.actionButton.find(a => a.id === "save").hide = false;
+        } else if (evt === "edit") {
+            // alert("edit called");
+            this.actionButton.find(a => a.id === "save").hide = false;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
+    // Document Ready
+
+    ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        this.tableLength = true;
+
+        $(".bankname").focus();
+
+        setTimeout(function () {
+            var date = new Date();
+            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            //From Date 
+
+            $("#FromDate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $("#FromDate").datepicker('setDate', Fromtoday);
+
+            //To Date
+
+            $("#ToDate").datepicker({
+                dateFormat: 'dd/mm/yy',
+                minDate: 0,
+                setDate: new Date(),
+                autoclose: true
+            });
+            $("#ToDate").datepicker('setDate', Totoday);
+        }, 0);
     }
 
     ngOnDestroy() {

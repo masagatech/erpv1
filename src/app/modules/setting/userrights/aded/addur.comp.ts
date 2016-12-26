@@ -43,7 +43,8 @@ export class AddUserRights implements OnInit, OnDestroy {
     menuname: any;
     fyname: any;
 
-    selectedCompany: any = [];
+    selectedCompany: any = { "menudetails": [] };
+
     selectedMenu: any = [];
     MenuActions: any = [];
 

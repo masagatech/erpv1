@@ -5,8 +5,7 @@ import { AuthGuard } from '../../_service/authguard-service';
 import { SettingDashboardComp } from '../setting/dashboard/dashboard.comp';
 import { ALSAddEdit } from '../setting/auditlocksetting/addals.comp';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
-import { ActionBarModule } from '../../_shared/shared.module'
-import { GroupByPipe } from '../../_pipe/groupby.pipe'
+import { ActionBarModule } from '../../_shared/shared.module';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -78,8 +77,7 @@ const routerConfig = [
   declarations: [
     ALSAddEdit,
     SettingComp,
-    SettingDashboardComp,
-    GroupByPipe
+    SettingDashboardComp
   ],
   providers: [AuthGuard]
 })

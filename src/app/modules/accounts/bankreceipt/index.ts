@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 @Component({
     template: '<router-outlet></router-outlet>'
 })
+
 export class BankReceiptComp {
     constructor() {
     }
@@ -25,11 +26,10 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-
                     //Bank Payment Add Edit View
-                    { path: 'braded', component: bankreceiptaddedit, canActivateChid: [AuthGuard], },
-                    { path: 'braded/:id', component: bankreceiptaddedit, canActivateChid: [AuthGuard], },
-                    { path: 'brview', component: bankreceiptview, canActivateChid: [AuthGuard], },
+
+                    { path: 'add', component: bankreceiptaddedit, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:id', component: bankreceiptaddedit, canActivateChid: [AuthGuard], },
                     { path: '', component: bankreceiptview, canActivateChid: [AuthGuard], },
                 ]
             }

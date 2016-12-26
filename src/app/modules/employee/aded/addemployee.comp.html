@@ -23,11 +23,11 @@
                             <div class="form-group">
                                 <label class="control-label">Gender</label>
                                 <select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
-								<option [value]="'0'">Select Gender</option>
-								<option *ngFor="let row of genderDT" [value]="row.key">	
-									{{row.val}}
-								</option>
-							</select>
+                                    <option [value]="'0'">Select Gender</option>
+                                    <option *ngFor="let row of genderDT" [value]="row.key">	
+                                        {{row.val}}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </div>

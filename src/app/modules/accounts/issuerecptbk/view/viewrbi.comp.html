@@ -1,0 +1,17 @@
+<div class="table-responsive">
+    <p-dataTable #dt [value]="receiptbook" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+        [(selection)]="selectedRB1" expandableRows="true">
+        <header>List of Receipt Book</header>
+        <p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column field="docdate" header="Doc Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+        <p-column field="empname" header="Emp Name" [style]="{'text-align':'left'}"></p-column>
+        <p-column field="seriesno" header="Series No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column field="fromno" header="From No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column field="tono" header="To No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column styleClass="col-button" [style]="{'width':'100px','text-align':'left'}">
+            <template let-row="rowData" pTemplate type="body">
+                <button type="button" (click)="openRBIDetails(row)" class="btn btn-theme btn-sm"><i class="fa fa-edit"></i></button>
+            </template>
+        </p-column>
+    </p-dataTable>
+</div>

@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 declare var $: any;
 @Component({
     templateUrl: 'bpview.comp.html',
-    providers: [bankpaymentViewService]                         //Provides Add Service dcmaster-service.ts
-    //,AutoService
+    providers: [bankpaymentViewService] //Provides Add Service dcmaster-service.ts, AutoService
 })
 
 export class bankpaymentview implements OnInit, OnDestroy {
@@ -19,84 +18,34 @@ export class bankpaymentview implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
 
     //Veriable Declare 
-    BankPayId: any=0;
-    BankNamelist: any=[];
-    BankPaymentView: any=[];
-    Bankid: any=0;
-    FromDate: any="";
-    ToDate: any="";
+    BankPayId: any = 0;
+    BankNamelist: any = [];
+    BankPaymentView: any = [];
+    Bankid: any = 0;
+    FromDate: any = "";
+    ToDate: any = "";
     tableLength: any;
-
-
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankpaymentViewService) { //Inherit Service dcmasterService
         this.getBankMasterDrop();
-
-    }
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.tableLength = true;
-
-        setTimeout(function () {
-            var date = new Date();
-            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate()-1);
-            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-              $("#FromDate").datepicker('setDate',Fromtoday);
-
-            //To Date
-            $("#ToDate").datepicker({
-                dateFormat: 'dd/mm/yy',
-                 minDate: 0,
-                setDate: new Date(),
-                autoclose: true
-            });
-              $("#ToDate").datepicker('setDate',Totoday);
-        }, 0);
-
     }
 
-    //Open Edit Mode 
+    //Open Edit Mode
+
     OpenEdit(row) {
         if (!row.IsLocked) {
             this._router.navigate(['accounts/bankpayment/bpedit', row.id]);
         }
     }
 
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/accounts/bankpayment/bpadd']);
-        }
-        if (evt === "save") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "edit") {
-            // alert("edit called");
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
-
-
     //Get Button Click Event
+
     GetBankPayment() {
-        this.FromDate=$('#FromDate').val();
-        this.ToDate=$("#ToDate").val();
+        this.FromDate = $('#FromDate').val();
+        this.ToDate = $("#ToDate").val();
         this.tableLength = true;
         this.BankPaymentView = [];
+
         if (this.Bankid == undefined || this.Bankid == '') {
             alert('Please Select Bank');
             return false;
@@ -105,10 +54,11 @@ export class bankpaymentview implements OnInit, OnDestroy {
             alert('Please Select Date');
             return false;
         }
+
         this.BankServies.getBankPaymentView({
             "cmpid": 1,
             "fy": 5,
-            "flag":"",
+            "flag": "",
             "bankid": this.Bankid,
             "fromdate": $('#FromDate').datepicker('getDate'),
             "todate": $('#ToDate').datepicker('getDate')
@@ -131,7 +81,7 @@ export class bankpaymentview implements OnInit, OnDestroy {
         });
     }
 
-   getBankMasterDrop() {
+    getBankMasterDrop() {
         this.BankServies.getBankMaster({
             "type": "bank"
         }).subscribe(BankName => {
@@ -145,19 +95,20 @@ export class bankpaymentview implements OnInit, OnDestroy {
         });
     }
 
-    //+ AND - Button Click 
+    //Button Click 
+
     expandDetails(row) {
-        row.Details=[];
+        row.Details = [];
         if (row.issh == 0) {
             row.issh = 1;
             console.log(row);
             if (row.Details.length === 0) {
-                this.BankServies.getBankPaymentView({ 
+                this.BankServies.getBankPaymentView({
                     "flag": "Details",
                     "bankid": row.id,
-                    "cmpid":1,
-                    "fy":5
-               }).subscribe(data => {
+                    "cmpid": 1,
+                    "fy": 5
+                }).subscribe(data => {
                     row.Details = data.data;
                 }, err => {
                     console.log("Error");
@@ -170,8 +121,8 @@ export class bankpaymentview implements OnInit, OnDestroy {
         }
     }
 
-
     //Total Sum in Bank Payment Amount
+
     TotalAmount() {
         if (this.BankPaymentView != undefined) {
             var total = 0;
@@ -180,11 +131,58 @@ export class bankpaymentview implements OnInit, OnDestroy {
             }
             return total;
         }
-
     }
+
+    ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        this.tableLength = true;
+
+        setTimeout(function () {
+            var date = new Date();
+            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            //From Date 
+
+            $("#FromDate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+            $("#FromDate").datepicker('setDate', Fromtoday);
+
+            //To Date
+            
+            $("#ToDate").datepicker({
+                dateFormat: 'dd/mm/yy',
+                minDate: 0,
+                setDate: new Date(),
+                autoclose: true
+            });
+            $("#ToDate").datepicker('setDate', Totoday);
+        }, 0);
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/accounts/bankpayment/add']);
+        }
+        if (evt === "save") {
+            this.actionButton.find(a => a.id === "save").hide = false;
+        } else if (evt === "edit") {
+            this.actionButton.find(a => a.id === "save").hide = false;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
     }
-
 }

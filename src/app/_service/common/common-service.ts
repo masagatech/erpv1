@@ -17,4 +17,8 @@ export class CommonService {
     getMOM(req: any) {
         return this._dataserver.post("getMOM", req)
     }
+
+    getOtherDetails(req: any) {
+        return this._dataserver.post("getOtherDetails", req)
+    }
 }

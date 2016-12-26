@@ -1,0 +1,136 @@
+<div class="middlepan">
+    <div class="panel panel-theme">
+        <div class="panel-body">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Issued Date</label>
+                    <input type="date" [(ngModel)]="docdate" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Emp Name</label>
+                    <input id="empname" type="text" [(ngModel)]="empname" class="empname form-control" (keyup)="getEmpAuto(this)" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Series No</label>
+                            <select [(ngModel)]="rbid" name="SeriesNo" id="SeriesNo" class="form-control" (ngModelChange)="getFromNo()">
+                                <option [value]="'0'">Series No</option>
+                                <option *ngFor="let row of SeriesNoDT" [value]="row.seriesid">	
+                                    {{row.seriesno}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">From No</label>
+                            <input type="number" [(ngModel)]="fromno" class="form-control text-right" (keyup)="getToNoOnKey()" (keydown.tab)="getToNoOnTab()"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">To No</label>
+                            <input type="number" [(ngModel)]="tono" class="form-control text-right" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Narration</label>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <p-confirmDialog width="425"></p-confirmDialog>
+                    <!--<button type="button" (click)="confirm1()" pButton icon="fa-check" label="Confirm"></button>
+                    <button type="button" (click)="confirm2()" pButton icon="fa-trash" label="Delete"></button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="sidepan">
+    <!--widgit-->
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <h3 class="panel-title">Latest Series</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row" style="padding: 0 2px;">
+                <div class="row">
+                    <div class="col-md-4 text-right">
+                        <b>Series</b>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <b>From</b>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <b>To</b>
+                    </div>
+                </div>
+                <div *ngFor="let row of latestSeriesDT">
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {{row.seriesno}}
+                        </div>
+                        <div class="col-md-4 text-right">
+                            {{row.fromno}}
+                        </div>
+                        <div class="col-md-4 text-right">
+                            {{row.tono}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <h3 class="panel-title">Employee Series</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row" style="padding: 0 2px;">
+                <div class="row">
+                    <div class="col-md-4 text-right">
+                        <b>Series</b>
+                    </div>
+                    <div class="col-md-4">
+                        <b>Date</b>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <b>Pages</b>
+                    </div>
+                </div>
+                <div *ngFor="let row of empSeriesDT">
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {{row.seriesno}}
+                        </div>
+                        <div class="col-md-4">
+                            {{row.issueddate}}
+                        </div>
+                        <div class="col-md-4 text-right">
+                            {{row.noofpage}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <h3 class="panel-title">Any Other Details</h3>
+        </div>
+        <div class="panel-body"></div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <h3 class="panel-title">Any Other Details</h3>
+        </div>
+        <div class="panel-body"></div>
+    </div>
+</div>

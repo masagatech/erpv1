@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 export class RBService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
+    // Receipt Book
+
     getAllRB(req: any) {
         return this._dataserver.post("getAllRB", req)
     }
@@ -14,7 +16,21 @@ export class RBService {
         return this._dataserver.post("getRBDetails", req)
     }
 
-    saveReceiptBook(req: any) {
+    saveRBDetails(req: any) {
         return this._dataserver.post("saveReceiptBook", req)
+    }
+
+    // Receipt Book Issued
+
+    getAllRBI(req: any) {
+        return this._dataserver.post("getAllRBI", req)
+    }
+
+    getRBIDetails(req: any) {
+        return this._dataserver.post("getRBIDetails", req)
+    }
+
+    saveRBIDetails(req: any) {
+        return this._dataserver.post("saveRBIDetails", req)
     }
 }

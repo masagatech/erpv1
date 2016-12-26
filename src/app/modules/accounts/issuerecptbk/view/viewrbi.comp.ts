@@ -7,11 +7,11 @@ import { RBService } from '../../../../_service/receiptbook/rb-service' /* add r
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
-    templateUrl: 'viewrb.comp.html',
+    templateUrl: 'viewrbi.comp.html',
     providers: [RBService]
 })
 
-export class ViewReceiptBook implements OnInit, OnDestroy {
+export class ViewRBI implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
@@ -24,21 +24,21 @@ export class ViewReceiptBook implements OnInit, OnDestroy {
         
     }
 
-    BindReceiptBook(from: number, to: number) {
+    BindRBI(from: number, to: number) {
         var that = this;
-        that._rbservice.getAllRB({ "flag":"grid", "fyid":"7", "from": from, "to": to }).subscribe(data => {
-            console.log(data.data[1]);
+        that._rbservice.getAllRBI({ "flag":"grid", "fyid":"7", "from": from, "to": to }).subscribe(data => {
             that.totalRecords = data.data[1][0].recordstotal;
             that.receiptbook = data.data[0];
+            console.log(data.data);
         });
     }
 
-    loadRBGrid(event: LazyLoadEvent) {
-        this.BindReceiptBook(event.first, (event.first + event.rows));
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.BindRBI(event.first, (event.first + event.rows));
     }
 
-    openRBDetails(row) {
-        this._router.navigate(["/inventory/receiptbook/edit", row.docno]);
+    openRBIDetails(row) {
+        this._router.navigate(["/accounts/receiptbookissued/edit", row.irbid]);
     }
 
     ngOnInit() {
@@ -47,13 +47,9 @@ export class ViewReceiptBook implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    openReceiptBook(row) {
-        this._router.navigate(['/inventory/receiptbook/edit', row.UserID]);
-    }
-
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/inventory/receiptbook/add']);
+            this._router.navigate(['/accounts/receiptbookissued/add']);
         }
     }
 
