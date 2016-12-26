@@ -59,6 +59,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'hierar', loadChildren: () => System.import('./hierarchical').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: SettingDashboardComp, canActivateChid: [AuthGuard], },
         ]
