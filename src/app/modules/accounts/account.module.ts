@@ -34,8 +34,15 @@ const routerConfig = [
               return comp.default;
             }),
           },
-           {
+
+          {
             path: 'bankreceipt', loadChildren: () => System.import('./bankreceipt').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'receiptbookissued', loadChildren: () => System.import('./issuerecptbk').then((comp: any) => {
               return comp.default;
             }),
           },
