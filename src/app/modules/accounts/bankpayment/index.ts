@@ -25,11 +25,10 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-
                     //Bank Payment Add Edit View
-                    { path: 'bpadd', component: bankpaymentaddedit, canActivateChid: [AuthGuard], },
-                    { path: 'bpedit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard], },
-                    { path: 'bpview', component: bankpaymentview, canActivateChid: [AuthGuard], },
+                    
+                    { path: 'add', component: bankpaymentaddedit, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard], },
                     { path: '', component: bankpaymentview, canActivateChid: [AuthGuard], },
                 ]
             }
