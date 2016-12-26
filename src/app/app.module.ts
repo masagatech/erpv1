@@ -19,9 +19,10 @@ import { HomeComponent } from './home';
 import { AboutComponent } from './about';
 import { NoContentComponent } from './no-content';
 import { XLarge } from './home/x-large';
-import { SharedModule } from "./_shared/shared.module"
-import { LoginComp } from './login/login.comp'
-import { LoginStep1Comp } from './login/login-step1.comp'
+import { SharedModule, GlobalShared } from "./_shared/shared.module";
+import { LoginComp } from './login/login.comp';
+import { GrowlModule } from 'primeng/primeng';
+import { LoginStep1Comp } from './login/login-step1.comp';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -55,7 +56,9 @@ type StoreType = {
     HttpModule,
     CommonModule,
     RouterModule.forRoot(ROUTES, { useHash: false }),
-    SharedModule.forRoot()
+    SharedModule.forRoot(),
+    GlobalShared.forRoot(),
+    GrowlModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,

@@ -26,3 +26,17 @@ export class ActionBarModule {
         };
     }
 }
+
+
+
+import { MessageService } from "../_service/messages/message-service";
+@NgModule({})
+export class GlobalShared {
+    static forRoot(): ModuleWithProviders {
+        return {
+            ngModule: GlobalShared,
+            providers: [MessageService]
+        };
+    }
+
+}
