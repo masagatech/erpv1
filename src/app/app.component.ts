@@ -17,7 +17,9 @@ import { Subscription } from 'rxjs/Subscription';
   encapsulation: ViewEncapsulation.None,
   styleUrls: [],
   template: `<router-outlet></router-outlet>
-   <p-growl [class]="'zin2000'" [value]="messagestack"></p-growl>`
+   <p-growl [class]="'zin2000'" [value]="messagestack"></p-growl>
+    <p-confirmDialog width="425"></p-confirmDialog>
+   `
 })
 
 export class AppComponent {

@@ -22,6 +22,7 @@ import { XLarge } from './home/x-large';
 import { SharedModule, GlobalShared } from "./_shared/shared.module";
 import { LoginComp } from './login/login.comp';
 import { GrowlModule } from 'primeng/primeng';
+import { ConfirmDialogModule } from 'primeng/primeng';
 import { LoginStep1Comp } from './login/login-step1.comp';
 
 // Application wide providers
@@ -40,7 +41,7 @@ type StoreType = {
  * `AppModule` is the main entry point into Angular2's bootstraping process
  */
 @NgModule({
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     AboutComponent,
@@ -58,7 +59,8 @@ type StoreType = {
     RouterModule.forRoot(ROUTES, { useHash: false }),
     SharedModule.forRoot(),
     GlobalShared.forRoot(),
-    GrowlModule
+    GrowlModule,
+    ConfirmDialogModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,
@@ -66,7 +68,7 @@ type StoreType = {
   ]
 })
 export class AppModule {
-  constructor(public appRef: ApplicationRef, public appState: AppState) {}
+  constructor(public appRef: ApplicationRef, public appState: AppState) { }
 
   hmrOnInit(store: StoreType) {
     if (!store || !store.state) return;
@@ -92,7 +94,7 @@ export class AppModule {
     // recreate root elements
     store.disposeOldHosts = createNewHosts(cmpLocation);
     // save input values
-    store.restoreInputValues  = createInputTransfer();
+    store.restoreInputValues = createInputTransfer();
     // remove styles
     removeNgStyles();
   }

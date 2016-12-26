@@ -9,6 +9,7 @@ import { SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 import { DashboardComponent } from './dashboard/dashboard.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { GroupByPipe } from '../_pipe/groupby.pipe';
 // import { HotkeyModule } from 'angular2-hotkeys';
 // canActivateChild: [AuthGuard]
 const routerConfig =
@@ -80,7 +81,8 @@ const routerConfig =
         UserControlHeadComp,
         DocBarComponent,
         ModuleComponent,
-        DashboardComponent
+        DashboardComponent,
+        GroupByPipe
     ],
     providers: [AuthGuard]
 })
