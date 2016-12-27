@@ -5,12 +5,10 @@ import { AddRBI } from './aded/addrbi.comp';
 import { ViewRBI } from './view/viewrbi.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
-import { GroupByPipe } from '../../../_pipe/groupby.pipe';
-
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule, ConfirmDialogModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -44,12 +42,11 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule, DataListModule, PanelModule, ConfirmDialogModule],
+        DataTableModule, DataListModule, PanelModule],
     declarations: [
         AddRBI,
         ViewRBI,
-        ReceiptBookIssuedComp,
-        GroupByPipe
+        ReceiptBookIssuedComp
     ],
     providers: [AuthGuard]
 })
