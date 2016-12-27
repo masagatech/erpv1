@@ -76,7 +76,11 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "save") {
-            
+            this.ctrlServies.saveCtrlcenter(
+                this.paramjson()
+            ).subscribe(
+                
+            )
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             // alert("edit called");
