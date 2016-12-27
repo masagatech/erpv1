@@ -3,7 +3,7 @@
         <div class="panel-heading">
             <div class="panel-title">Select company and FY to proceed >>
 
-                <a role="button" class="pull-right" (click)="logout()" title="Log off"><i class="fa fa-power-off"></i></a>
+                <a role="button" class="pull-right" (click)="logout()" tabindex="4" title="Log off"><i class="fa fa-power-off"></i></a>
             </div>
         </div>
 
@@ -12,7 +12,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label">Company</label>
-                        <select [(ngModel)]="cmpid" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
+                        <select [(ngModel)]="cmpid" tabindex="1" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
                                 <option value="0">-- Select Company --</option>
                                 <option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
                                     {{row.cmpname}}
@@ -25,7 +25,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label">Financial Year</label>
-                        <select [(ngModel)]="fyid" class="form-control">
+                        <select [(ngModel)]="fyid" tabindex="2" class="form-control">
                                 <option value="0">-- Select Financial Year --</option>
                                 <option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
                                     {{fyrow.fyname}}
@@ -40,7 +40,7 @@
                         <!--<button type="submit" [disabled]="btnLoginText == 'Loging..'" (click)="next_click($event)" tabindex="3" class="btn btn-theme btn-sm"
                                 name="action"> <span [hidden]="btnLoginText != 'Loging..'"><i class="fa fa-spinner fa-spin"></i></span>{{btnLoginText}}</button>-->
 
-                        <button type="submit" (click)="next_click($event)" tabindex="3" class="btn btn-theme btn-sm" name="action"><i class="fa fa-arrow-right"></i></button>
+                        <button type="submit" tabindex="3" (click)="next_click($event)" tabindex="3" class="btn btn-theme btn-sm" name="action"><i class="fa fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>

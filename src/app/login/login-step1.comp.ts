@@ -23,11 +23,37 @@ export class LoginStep1Comp implements OnInit {
         private _router: Router) {
         this.loginUser = this._userService.getUser();
 
+        var that = this;
         this.getCompanyDetails(this.loginUser.uid);
         this.btnLoginText = "Go";
     }
 
-    ngOnInit() { }
+    ngOnInit() {
+
+
+        // that._userService.getSettings({ "flag": "single", "uid": this.loginUser.uid }).subscribe(r => {
+        //     var d = r.data;
+        //     var isvalid = false;
+        //     if (d.settings) {
+        //         if (d.settings.fy && d.settings.cmpid) {
+        //             this.loginUser.fyid = d.settings.fy;
+        //             this.loginUser.cmpid = d.settings.cmpid;
+        //             isvalid = true;
+        //         }
+        //     }
+        //     if (!isvalid) {
+        //         this.getCompanyDetails(this.loginUser.uid);
+        //     } else {
+        //         that._router.navigate(['/']);
+        //     }
+
+        // }, err => {
+        //     console.log("Error");
+        // }, () => {
+        //     // console.log("Complete");
+        // })
+
+    }
 
     getFYDetails(cmpid) {
         var that = this;
@@ -53,9 +79,21 @@ export class LoginStep1Comp implements OnInit {
     }
 
     private next_click(e) {
+        var that = this;
         this.loginUser.cmpid = this.cmpid;
         this.loginUser.fyid = this.fyid;
-        this._router.navigate(['/']);
+        var settings = [{ "key": "fy", "value": this.fyid }, { "key": "cmpid", "value": this.cmpid }];
+
+
+        this._userService.saveSettings({
+            "uid": this.loginUser.uid, "cmpid": this.cmpid,
+            settings, "userid": this.loginUser.login
+        }).subscribe(d => {
+
+            that._router.navigate(['/']);
+        }, err => { }, () => { });
+
+
     }
 
     private logout() {

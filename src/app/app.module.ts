@@ -51,7 +51,7 @@ type StoreType = {
     FormsModule,
     HttpModule,
     CommonModule,
-    RouterModule.forRoot(ROUTES, { useHash: false }),
+    RouterModule.forRoot(ROUTES, { useHash: true }),
     SharedModule.forRoot(),
     GlobalShared.forRoot(),
     GrowlModule,
