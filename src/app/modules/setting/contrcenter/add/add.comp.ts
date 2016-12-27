@@ -25,11 +25,12 @@ declare var $: any;
     remark: any = "";
     private subscribeParameters: any;
 
-    constructor(private setActionButtons: SharedVariableService, private ctrlServies: ContrService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) {
+    constructor(private _router: Router,private setActionButtons: SharedVariableService, private ctrlServies: ContrService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) {
 
     }
     //Add Save Edit Delete Button
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -63,13 +64,12 @@ declare var $: any;
             "ctrlid": autoid
         }).subscribe(result => {
             var dataset = result.data;
-            console.log(dataset);
-            this.centername = dataset[0].ctrlname;
-            this.profit = dataset[0].profitctr;
-            this.cost = dataset[0].costctr;
-            this.empid = dataset[0].empid;
-            this.empname = dataset[0].person;
-            this.remark = dataset[0].remark;
+            this.centername = dataset[0][0].ctrlname;
+            this.profit = dataset[0][0].profitctr;
+            this.cost = dataset[0][0].costctr;
+            this.empid = dataset[0][0].empid;
+            this.empname = dataset[0][0].person;
+            this.remark = dataset[0][0].remark;
             $(".centername").focus();
         }, err => {
             console.log("Error");
@@ -129,6 +129,9 @@ declare var $: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+        if (evt === "back") {
+            this._router.navigate(['/setting/contrcenter']);
+        }
         if (evt === "save") {
 
             if (this.centername == "" || this.centername == undefined) {

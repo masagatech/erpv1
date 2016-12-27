@@ -4,6 +4,7 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { ContrService } from "../../../../_service/contrcenter/contr-service";
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
@@ -17,8 +18,7 @@ declare var $: any;
     subscr_actionbarevt: Subscription;
 
     Ctrlview: any = [];
-
-
+    totalRecords: number = 0;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
     }
@@ -31,16 +31,22 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        this.getCtrlView();
+        // this.getCtrlView();
         $(".center").focus();
     }
 
-    getCtrlView() {
-        this.ContrServies.getCtrlcenter({
-            "cmpid": 1
+    getCtrlView(from: number, to: number) {
+        var that = this;
+        that.ContrServies.getCtrlcenter({
+            "cmpid": 1,
+            "from": from,
+            "to": to
         }).subscribe(result => {
             var dataset = result.data;
-            this.Ctrlview = dataset;
+            that.totalRecords = dataset[1][0].recordstotal;
+
+            //total row
+            that.Ctrlview = dataset[0];
         }, err => {
             console.log("Error");
         }, () => {
@@ -48,10 +54,14 @@ declare var $: any;
         });
     }
 
-    EditItem(row)
-    {
-       if (!row.islocked) {
-            this._router.navigate(['/setting/contrcenter/add', row.autoid]);
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getCtrlView(event.first, (event.first + event.rows));
+    }
+
+    EditItem(row) {
+        console.log(row);
+        if (!row.islocked) {
+            this._router.navigate(['/setting/contrcenter/edit', row.autoid]);
         }
     }
 
@@ -59,6 +69,9 @@ declare var $: any;
     actionBarEvt(evt) {
         if (evt === "add") {
             this._router.navigate(['/setting/contrcenter/add']);
+        }
+        if (evt === "back") {
+            this._router.navigate(['/setting/contrcenter']);
         }
         if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;

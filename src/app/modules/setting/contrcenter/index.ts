@@ -9,6 +9,8 @@ import { contrview } from './view/contrview.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+
 @Component({
     template: '<router-outlet></router-outlet>'
 })
@@ -28,7 +30,7 @@ const routerConfig = [
                 children: [
 
                     { path: 'add', component: contradd, canActivateChid: [AuthGuard], },
-                    { path: 'add/:id', component: contradd, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:id', component: contradd, canActivateChid: [AuthGuard], },
                     { path: '', component: contrview, canActivateChid: [AuthGuard], },
                 ]
             }
@@ -37,7 +39,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule],
     declarations: [
         contradd,
         contrview,
