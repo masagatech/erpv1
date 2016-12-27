@@ -28,6 +28,7 @@ const routerConfig = [
                 children: [
 
                     { path: 'add', component: contradd, canActivateChid: [AuthGuard], },
+                    { path: 'add/:id', component: contradd, canActivateChid: [AuthGuard], },
                     { path: '', component: contrview, canActivateChid: [AuthGuard], },
                 ]
             }

@@ -7,7 +7,7 @@
 		</div>
 		<div id="collapseOne" class="accordion-body">
 			<!--<div class="accordion-inner">-->
-			<table class="table table-striped table-bordered">
+			<!--<table class="table table-striped table-bordered">
 				<tr>
 					<td>
 						<div class='form-group col-md-12'>
@@ -50,63 +50,32 @@
 						</div>
 					</td>
 				</tr>
+			</table>-->
+
+			<table class="table table-striped table-bordered" [hidden]="TableHide">
+				<thead>
+					<tr>
+						<th class="col-sm-1">#</th>
+						<th class="col-sm-3">Ctrl. Name</th>
+						<th class="col-xs-1">Profit Ctrl.</th>
+						<th class="col-xs-1">Cost Ctrl</th>
+						<th class="col-sm-3">Responsible/Person</th>
+						<th class="col-xs-3">Remark</th>
+					</tr>
+				</thead>
+				<tbody *ngFor="let row of Ctrlview let i=index">
+					<tr>
+						<td><span>{{i+1}}</span></td>
+						<td><a role="button" (click)="EditItem(row)">{{row.ctrlname}}</a></td>
+						<td>{{row.profitctr}}</td>
+						<td>{{row.costctr}}</td>
+						<td>{{row.person}}</td>
+						<td>{{row.remark}}</td>
+					</tr>
+				</tbody>
 			</table>
+
 		</div>
 	</div>
-		<!--<table class="table table-striped table-bordered" [hidden]="TableHide">
-			<thead>
-				<tr>
-					<th class="col-sm-1">#</th>
-					<th class="col-sm-1">More</th>
-					<th class="col-xs-1">Item Code</th>
-					<th class="col-xs-3">Item Name</th>
-					<th class="col-sm-3">Category</th>
-					<th class="col-xs-3">Image</th>
-				</tr>
-			</thead>
-			<tbody *ngFor="let row of ItemDetails let i=index">
-				<tr>
-					<td><span>{{i+1}}</span><span class="hide">{{row.itemsid}}</span></td>
-					<td>
-						<button (click)="expandDetails(row)">
-						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
-					</button>
-					</td>
-					<td> <a role="button" (click)="EditItem(row)">{{row.itemcode}}</a></td>
-					<td>{{row.itemname}}</td>
-					<td>{{row.catname}}</td>
-					<td>{{row.ImageShow}}</td>
-				</tr>
-				<tr [style.display]="row.issh == 0?'none':''">
-					<td></td>
-					<td></td>
-					<td colspan="4">
-						<table class="table table-striped table-bordered">
-							<thead>
-								<tr>
-									<th>#</th>
-									<th class="textalign col-sm-1">Purchase</th>
-									<th class="textalign col-sm-1">Dis</th>
-									<th>Description</th>
-									<th>Sale</th>
-									<th class="textalign">Dis</th>
-									<th>Decription</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr *ngFor="let drow of row.Details let x=index">
-									<td>{{x+1}}</td>
-									<td class="textalign">{{drow.itemscost}}</td>
-									<td class="textalign">{{drow.purdis}}</td>
-									<td>{{drow.purdesc}}</td>
-									<td class="textalign">{{drow.mrp1}}</td>
-									<td class="textalign">{{drow.saledis}}</td>
-									<td>{{drow.saledesc}}</td>
-								</tr>
-							</tbody>
-						</table>
-					</td>
-				</tr>
-			</tbody>
-		</table>-->
+
 </div>

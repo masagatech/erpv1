@@ -16,46 +16,48 @@ declare var $: any;
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
+    Ctrlview: any = [];
 
-    constructor(private _router: Router,private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
+
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
     }
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-          $(".center").focus();
-        setTimeout(function () {
-            var date = new Date();
-            var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var ToDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        this.getCtrlView();
+        $(".center").focus();
+    }
 
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', FromDate);
+    getCtrlView() {
+        this.ContrServies.getCtrlcenter({
+            "cmpid": 1
+        }).subscribe(result => {
+            var dataset = result.data;
+            this.Ctrlview = dataset;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            'Final'
+        });
+    }
 
-            $("#ToDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#ToDate").datepicker('setDate', ToDate);
-        }, 0);
+    EditItem(row)
+    {
+       if (!row.islocked) {
+            this._router.navigate(['/setting/contrcenter/add', row.autoid]);
+        }
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-         if (evt === "add") {
+        if (evt === "add") {
             this._router.navigate(['/setting/contrcenter/add']);
         }
         if (evt === "save") {

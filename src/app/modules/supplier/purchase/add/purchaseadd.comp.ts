@@ -386,7 +386,7 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.ItemsName = ui.item.label;
+                   // me.ItemsName = ui.item.label;
                     if (arg === 1) {
                         me.ItemsName = ui.item.label;
                         me.Itemsid = ui.item.value;
