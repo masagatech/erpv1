@@ -63,6 +63,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+           {
+            path: 'contrcenter', loadChildren: () => System.import('./contrcenter').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: SettingDashboardComp, canActivateChid: [AuthGuard], },
         ]
