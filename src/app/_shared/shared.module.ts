@@ -27,10 +27,9 @@ export class ActionBarModule {
     }
 }
 
-
-
 import { MessageService } from "../_service/messages/message-service";
 import { ConfirmationService } from 'primeng/primeng';
+
 @NgModule({})
 export class GlobalShared {
     static forRoot(): ModuleWithProviders {
@@ -39,5 +38,4 @@ export class GlobalShared {
             providers: [MessageService, ConfirmationService]
         };
     }
-
 }

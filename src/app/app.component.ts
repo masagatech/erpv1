@@ -18,8 +18,7 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: [],
   template: `<router-outlet></router-outlet>
    <p-growl [class]="'zin2000'" [value]="messagestack"></p-growl>
-    <p-confirmDialog width="425"></p-confirmDialog>
-   `
+   <p-confirmDialog width="425"></p-confirmDialog>`
 })
 
 export class AppComponent {
@@ -28,7 +27,6 @@ export class AppComponent {
   url = 'https://twitter.com/AngularClass';
   subscription: Subscription;
   messagestack: Message[] = [];
-
 
   constructor(public appState: AppState, _messageServ: MessageService) {
     this.subscription = _messageServ.notificationReceiver$.subscribe(_messagestack => {
