@@ -53,7 +53,13 @@ const routerConfig = [
             }),
           },
 
-           {
+          {
+            path: 'masterofmaster', loadChildren: () => System.import('./mom').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
             path: 'attribute', loadChildren: () => System.import('./attribute').then((comp: any) => {
               return comp.default;
             }),

@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { EmpService } from '../../../_service/employee/emp-service' /* add reference for view employee */
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
 import { Router, ActivatedRoute } from '@angular/router';
+import { MessageService, messageType } from '../../../_service/messages/message-service';
 
 declare var $: any;
 
@@ -62,7 +63,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     designationDT: any[];
     salarymodeDT: any[];
 
-    constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService, private _commonservice: CommonService) {
+    constructor(private _routeParams: ActivatedRoute, private _router: Router,
+        private setActionButtons: SharedVariableService, private _empservice: EmpService,
+        private _commonservice: CommonService, private _msg: MessageService) {
         this.fillDropDownList("Gender");
         this.fillDropDownList("MaritalStatus");
         this.fillDropDownList("BloodGroup");
@@ -171,8 +174,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "noticedays": this.noticedays,
             "doj": this.doj,
             "aboutus": this.aboutus,
-            "createdby": "1-vivek",
-            "updatedby": "1-vivek"
+            "createdby": "1:vivek",
+            "updatedby": "1:vivek"
         }
 
         console.log(saveEmp);
@@ -182,11 +185,15 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             console.log(dataResult);
 
             if (dataResult[0].funsave_employee.doc != "-1") {
-                alert(dataResult[0].funsave_employee.msg + ', Doc : ' + dataResult[0].funsave_employee.doc);
+                //alert(dataResult[0].funsave_employee.msg + ', Doc : ' + dataResult[0].funsave_employee.doc);
+                var msg = dataResult[0].funsave_employee.msg;
+                this._msg.Show(messageType.success, "Success", msg);
+
                 this._router.navigate(['/employee/viewemployee']);
             }
             else {
-                alert("Error");
+                var msg = dataResult[0].funsave_employee.msg;
+                this._msg.Show(messageType.error, "Error", msg);;
             }
         }, err => {
             console.log(err);

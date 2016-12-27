@@ -2,44 +2,42 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
+import { CommonService } from '../../../../_service/common/common-service' /* add reference for MOM */
 import { Router } from '@angular/router';
-import { RBService } from '../../../../_service/receiptbook/rb-service' /* add reference for receipt book */
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
-import { GroupByPipe } from '../../../../_pipe/groupby.pipe';
 
 @Component({
-    templateUrl: 'viewrb.comp.html',
-    providers: [RBService]
+    templateUrl: 'viewMOM.comp.html',
+    providers: [CommonService]
 })
 
-export class ViewReceiptBook implements OnInit, OnDestroy {
+export class ViewMOM implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     datasource: any = [];
-    receiptbook: any = [];
+    mom: any = [];
     totalRecords: number = 0;
-    selectedRB1: any = [];
+    selectedMOM1: any = [];
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _rbservice: RBService) {
-        
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _commonservice: CommonService) {
+
     }
 
-    BindReceiptBook(from: number, to: number) {
+    BindMOMGrid(from: number, to: number) {
         var that = this;
-        that._rbservice.getAllRB({ "flag":"grid", "fyid":"7", "from": from, "to": to }).subscribe(data => {
-            console.log(data.data[1]);
+        that._commonservice.getMOMGrid({ "flag": "grid", "from": from, "to": to }).subscribe(data => {
             that.totalRecords = data.data[1][0].recordstotal;
-            that.receiptbook = data.data[0];
+            that.mom = data.data[0];
         });
     }
 
-    loadRBGrid(event: LazyLoadEvent) {
-        this.BindReceiptBook(event.first, (event.first + event.rows));
+    loadMOMGrid(event: LazyLoadEvent) {
+        this.BindMOMGrid(event.first, (event.first + event.rows));
     }
 
-    openRBDetails(row) {
-        this._router.navigate(["/inventory/receiptbook/edit", row.docno]);
+    openMOMDetails(row) {
+        this._router.navigate(["/setting/masterofmaster/edit", row.id]);
     }
 
     ngOnInit() {
@@ -48,13 +46,9 @@ export class ViewReceiptBook implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    openReceiptBook(row) {
-        this._router.navigate(['/inventory/receiptbook/edit', row.UserID]);
-    }
-
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/inventory/receiptbook/add']);
+            this._router.navigate(['/setting/masterofmaster/add']);
         }
     }
 

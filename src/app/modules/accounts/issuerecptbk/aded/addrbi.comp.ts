@@ -5,13 +5,13 @@ import { Subscription } from "rxjs/Subscription";
 import { Router, ActivatedRoute } from "@angular/router";
 import { RBService } from "../../../../_service/receiptbook/rb-service" /* add reference for receipt book */
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for validate series no */
-import { ConfirmDialogModule, ConfirmationService, Message } from 'primeng/primeng';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 declare var $: any;
 
 @Component({
     templateUrl: "addrbi.comp.html",
-    providers: [RBService, CommonService, ConfirmationService]
+    providers: [RBService, CommonService]
 })
 
 export class AddRBI implements OnInit, OnDestroy {
@@ -36,10 +36,8 @@ export class AddRBI implements OnInit, OnDestroy {
     latestSeriesDT: any = [];
     empSeriesDT: any = [];
 
-    msgs: Message[] = [];
-
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _rbservice: RBService, private _commonservice: CommonService, private confirmationService: ConfirmationService) {
+        private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService) {
         this.getLatestSeries();
         this.setDefaultDate();
         this.BindReceiptBook();
@@ -185,40 +183,36 @@ export class AddRBI implements OnInit, OnDestroy {
     // Save Receipt Book Issued
 
     saveRBIDetails() {
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to save?',
-            accept: () => {
-                var saveRBI = {
-                    "irbid": this.irbid,
-                    "cmpid": "2",
-                    "fyid": "7",
-                    "docno": this.docno,
-                    "docdate": this.docdate,
-                    "empid": this.empid,
-                    "rbid": this.rbid,
-                    "fromno": this.fromno,
-                    "tono": this.tono,
-                    "narration": this.narration,
-                    "uidcode": "1:vivek"
-                }
+        var that = this;
+        
+        var saveRBI = {
+            "irbid": this.irbid,
+            "cmpid": "2",
+            "fyid": "7",
+            "docno": this.docno,
+            "docdate": this.docdate,
+            "empid": this.empid,
+            "rbid": this.rbid,
+            "fromno": this.fromno,
+            "tono": this.tono,
+            "narration": this.narration,
+            "uidcode": "1:vivek"
+        }
 
-                this._rbservice.saveRBIDetails(saveRBI).subscribe(data => {
-                    var dataResult = data.data;
+        that._rbservice.saveRBIDetails(saveRBI).subscribe(data => {
+            var dataResult = data.data;
 
-                    if (dataResult[0].funsave_recptbkissued.msgid != "-1") {
-                        this.msgs = [];
-                        this.msgs.push({ severity: 'info', summary: 'Confirmed', detail: dataResult[0].funsave_recptbkissued.msg });
-                        this._router.navigate(["/accounts/receiptbookissued"]);
-                    }
-                    else {
-                        alert("Error");
-                    }
-                }, err => {
-                    console.log(err);
-                }, () => {
-                    // console.log("Complete");
-                });
+            if (dataResult[0].funsave_recptbkissued.msgid != "-1") {
+                that._msg.Show(messageType.success, 'Confirmed', dataResult[0].funsave_recptbkissued.msg.toString());
+                that._router.navigate(["/accounts/receiptbookissued"]);
             }
+            else {
+                that._msg.Show(messageType.error, 'Error', dataResult[0].funsave_recptbkissued.msg.toString());
+            }
+        }, err => {
+            that._msg.Show(messageType.error, 'Error', err);
+        }, () => {
+            // console.log("Complete");
         });
     }
 
@@ -256,7 +250,9 @@ export class AddRBI implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this.saveRBIDetails();
+            this._msg.confirm('Are you sure that you want to save?', () => {
+                this.saveRBIDetails();
+            });
         }
     }
 
