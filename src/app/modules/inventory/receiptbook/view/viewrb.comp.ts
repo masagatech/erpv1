@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { Router } from '@angular/router';
 import { RBService } from '../../../../_service/receiptbook/rb-service' /* add reference for receipt book */
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { GroupByPipe } from '../../../../_pipe/groupby.pipe';
 
 @Component({
     templateUrl: 'viewrb.comp.html',

@@ -5,6 +5,7 @@ import { Subscription } from "rxjs/Subscription";
 import { Router, ActivatedRoute } from "@angular/router";
 import { RBService } from "../../../../_service/receiptbook/rb-service" /* add reference for receipt book */
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for validate series no */
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 declare var $: any;
 
@@ -37,7 +38,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     rbRowData: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _rbservice: RBService, private _commonservice: CommonService) {
+        private _rbservice: RBService, private _commonservice: CommonService, private _message: MessageService) {
 
     }
 
@@ -84,18 +85,18 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     // save receipt book
 
     saveReceiptBook() {
+        var that = this;
+
         var saveRB = {
-            "receiptbook": this.rbRowData
+            "receiptbook": that.rbRowData
         }
 
-        this._rbservice.saveRBDetails(saveRB).subscribe(data => {
+        that._rbservice.saveRBDetails(saveRB).subscribe(data => {
             var dataResult = data.data;
-            debugger;
-            console.log(dataResult);
 
             if (dataResult[0].funsave_receiptbook.msgid != "-1") {
-                alert(dataResult[0].funsave_receiptbook.msg);
-                this._router.navigate(["/receiptbook"]);
+                that._message.Show(messageType.success, 'Confirmed', dataResult[0].funsave_receiptbook.msg.toString());
+                that._router.navigate(["/inventory/receiptbook"]);
             }
             else {
                 alert("Error");
@@ -105,6 +106,27 @@ export class AddReceiptBook implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         });
+    }
+
+    // get rb details by id
+
+    getRBDetailsByID(prbid: number) {
+        this._rbservice.getRBDetails({ "flag": "id", "docno": prbid }).subscribe(data => {
+            var dataresult = data.data;
+
+            this.rbid = dataresult[0].rbid;
+            this.docdate = dataresult[0].docdate;
+            this.newseriesno = dataresult[0].seriesno;
+            this.newqty = dataresult[0].qty;
+            this.newnoofpage = dataresult[0].noofpage;
+            this.narration = dataresult[0].narration;
+
+            this.rbRowData = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     ngOnInit() {
@@ -117,6 +139,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
             if (params["rbid"] !== undefined) {
                 this.title = "Receipt Book : Edit";
                 this.rbid = params["rbid"];
+                this.getRBDetailsByID(this.rbid);
             }
             else {
                 this.title = "Receipt Book : Add";
@@ -126,7 +149,9 @@ export class AddReceiptBook implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this.saveReceiptBook();
+            this._message.confirm('Are you sure that you want to save?', () => {
+                this.saveReceiptBook();
+            });
         }
     }
 
