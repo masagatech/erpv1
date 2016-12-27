@@ -18,6 +18,14 @@ export class CommonService {
         return this._dataserver.post("getMOM", req)
     }
 
+    getMOMGrid(req: any) {
+        return this._dataserver.post("getMOMGrid", req)
+    }
+
+    saveMOM(req: any) {
+        return this._dataserver.post("saveMOM", req)
+    }
+
     getOtherDetails(req: any) {
         return this._dataserver.post("getOtherDetails", req)
     }
