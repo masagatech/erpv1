@@ -6,14 +6,12 @@ import { Router } from '@angular/router';
 export class ContrService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    saveCtrlcenter(req:any)
-    {
-        return this._dataserver.post("saveCtrlcenter",req);
+    saveCtrlcenter(req: any) {
+        return this._dataserver.post("saveCtrlcenter", req);
     }
-    
-    getCtrlcenter(req:any)
-    {
-        return this._dataserver.post("getCtrlcenter",req);
+
+    getCtrlcenter(req: any) {
+        return this._dataserver.post("getCtrlcenter", req);
     }
-   
+
 }

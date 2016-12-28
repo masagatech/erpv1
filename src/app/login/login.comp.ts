@@ -26,12 +26,15 @@ export class LoginComp {
                 if (d.status) {
                     let usrobj = d.data;
                     console.log(usrobj);
-                    let userDetails = usrobj[0];
+                    let userDetails: LoginUserModel = usrobj[0];
 
                     if (userDetails.status) {
                         this._loginModel.setUsers(userDetails);
-                        if (userDetails.errcode === "chpwd") {
-                             this._router.navigate(['/changepwd']);
+
+                        if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
+                            this._router.navigate(['/']);
+                        } else if (userDetails.errcode === "chpwd") {
+                            this._router.navigate(['/changepwd']);
                         } else {
                             this._router.navigate(['/login-step1']);
                         }

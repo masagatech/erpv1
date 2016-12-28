@@ -38,6 +38,7 @@ export class UserService {
 
     setUsers(userDetails): LoginUserModel {
         this.loginUser = userDetails;
+        this.loginUser.login = this.loginUser.uid.toString() + ":" + this.loginUser.ucode;
         Cookie.delete('_session_');
         Cookie.set("_session_", this.loginUser._sessiondetails.sessionid.toString());
         return this.loginUser;
@@ -58,5 +59,14 @@ export class UserService {
     saveUserRights(req: any) {
         return this._dataserver.post("SaveUserRights", req)
     }
+
+    saveSettings(req: any) {
+        return this._dataserver.post("saveSettings", req);
+    }
+
+    getSettings(req: any) {
+        return this._dataserver.post("getSettings", req);
+    }
+
 
 }

@@ -49,10 +49,11 @@ declare var $: any;
 
     jsonparam() {
         var Param = {
-            "flag": "",
+            "flag": "at",
             "cmpid": 1,
             "fy": 5,
             "typ": "at",
+            "parent":0,
             "attid": this.attid,
             "attname": this.attName,
             "createdby": "admin",
@@ -99,6 +100,10 @@ declare var $: any;
                 $("#attnam").focus();
                 return;
             }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
         })
     }
 
@@ -115,20 +120,19 @@ declare var $: any;
             "cmpid": 1,
             "fy": 5,
             "flag": "del",
-            "createdby":"admin",
+            "createdby": "admin",
             "isact": row.val,
             "attid": row.autoid
         }).subscribe(result => {
             var dataset = result.data;
-            console.log(dataset);
-            if (dataset[0].funsave_attribute.maxid > 0) {
-                alert("Data Delete Successfully");
-            }
-            else {
-                console.log("Error");
-                $("#attnam").focus();
-                return;
-            }
+            // if (dataset[0].funsave_attribute.maxid > 0) {
+            //     alert("Data Delete Successfully");
+            // }
+            // else {
+            //     console.log("Error");
+            //     $("#attnam").focus();
+            //     return;
+            // }
         })
     }
 

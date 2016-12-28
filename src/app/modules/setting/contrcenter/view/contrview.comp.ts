@@ -4,6 +4,7 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { ContrService } from "../../../../_service/contrcenter/contr-service";
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
@@ -16,48 +17,60 @@ declare var $: any;
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
+    Ctrlview: any = [];
+    totalRecords: number = 0;
 
-    constructor(private _router: Router,private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
     }
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-          $(".center").focus();
-        setTimeout(function () {
-            var date = new Date();
-            var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var ToDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        // this.getCtrlView();
+        $(".center").focus();
+    }
 
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', FromDate);
+    getCtrlView(from: number, to: number) {
+        var that = this;
+        that.ContrServies.getCtrlcenter({
+            "cmpid": 1,
+            "from": from,
+            "to": to
+        }).subscribe(result => {
+            var dataset = result.data;
+            that.totalRecords = dataset[1][0].recordstotal;
 
-            $("#ToDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#ToDate").datepicker('setDate', ToDate);
-        }, 0);
+            //total row
+            that.Ctrlview = dataset[0];
+        }, err => {
+            console.log("Error");
+        }, () => {
+            'Final'
+        });
+    }
+
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getCtrlView(event.first, (event.first + event.rows));
+    }
+
+    EditItem(row) {
+        console.log(row);
+        if (!row.islocked) {
+            this._router.navigate(['/setting/contrcenter/edit', row.autoid]);
+        }
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-         if (evt === "add") {
+        if (evt === "add") {
             this._router.navigate(['/setting/contrcenter/add']);
         }
+        
         if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {

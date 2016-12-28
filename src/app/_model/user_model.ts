@@ -17,5 +17,9 @@ export interface LoginUserModel {
   ucode:string;
   email:string;
   fullname:string;
+  login:string ,
+  status:boolean,
+  errcode:string,
+  errmsg:string,
   _sessiondetails:any;
 }
