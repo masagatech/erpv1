@@ -45,7 +45,7 @@
                     <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
                 </div>
                 <div class="form-group">
-                   
+
                     <!--<button type="button" (click)="confirm1()" pButton icon="fa-check" label="Confirm"></button>
                     <button type="button" (click)="confirm2()" pButton icon="fa-trash" label="Delete"></button>-->
                 </div>
@@ -60,29 +60,27 @@
             <h3 class="panel-title">Latest Series</h3>
         </div>
         <div class="panel-body">
-            <div class="row" style="padding: 0 2px;">
+            <div class="row">
+                <div class="col-md-4 text-right">
+                    <b>Series</b>
+                </div>
+                <div class="col-md-4 text-right">
+                    <b>From</b>
+                </div>
+                <div class="col-md-4 text-right">
+                    <b>To</b>
+                </div>
+            </div>
+            <div *ngFor="let row of latestSeriesDT">
                 <div class="row">
                     <div class="col-md-4 text-right">
-                        <b>Series</b>
+                        {{row.seriesno}}
                     </div>
                     <div class="col-md-4 text-right">
-                        <b>From</b>
+                        {{row.fromno}}
                     </div>
                     <div class="col-md-4 text-right">
-                        <b>To</b>
-                    </div>
-                </div>
-                <div *ngFor="let row of latestSeriesDT">
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            {{row.seriesno}}
-                        </div>
-                        <div class="col-md-4 text-right">
-                            {{row.fromno}}
-                        </div>
-                        <div class="col-md-4 text-right">
-                            {{row.tono}}
-                        </div>
+                        {{row.tono}}
                     </div>
                 </div>
             </div>
@@ -93,29 +91,27 @@
             <h3 class="panel-title">Employee Series</h3>
         </div>
         <div class="panel-body">
-            <div class="row" style="padding: 0 2px;">
+            <div class="row">
+                <div class="col-md-4 text-right">
+                    <b>Series</b>
+                </div>
+                <div class="col-md-4">
+                    <b>Date</b>
+                </div>
+                <div class="col-md-4 text-right">
+                    <b>Pages</b>
+                </div>
+            </div>
+            <div *ngFor="let row of empSeriesDT">
                 <div class="row">
                     <div class="col-md-4 text-right">
-                        <b>Series</b>
+                        {{row.seriesno}}
                     </div>
                     <div class="col-md-4">
-                        <b>Date</b>
+                        {{row.issueddate}}
                     </div>
                     <div class="col-md-4 text-right">
-                        <b>Pages</b>
-                    </div>
-                </div>
-                <div *ngFor="let row of empSeriesDT">
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            {{row.seriesno}}
-                        </div>
-                        <div class="col-md-4">
-                            {{row.issueddate}}
-                        </div>
-                        <div class="col-md-4 text-right">
-                            {{row.noofpage}}
-                        </div>
+                        {{row.noofpage}}
                     </div>
                 </div>
             </div>
