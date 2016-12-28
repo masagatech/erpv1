@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { CompService } from '../_service/company/comp-service';
-import { FYService } from '../_service/fy/fy-service';
-import { UserService } from '../_service/user/user-service';
-import { AuthenticationService } from '../_service/auth-service'
-import { LoginUserModel } from '../_model/user_model';
+import { CompService } from '../../../../_service/company/comp-service';
+import { FYService } from '../../../../_service/fy/fy-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { AuthenticationService } from '../../../../_service/auth-service'
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
 @Component({
-    templateUrl: 'login-step1.comp.html',
+    templateUrl: 'defcmpfy.comp.html',
     providers: [CompService, FYService]
 })
-export class LoginStep1Comp implements OnInit {
+export class DefCmpFyComp implements OnInit {
     fyid: number = 0;
     FYDetails: any = [];
     cmpid: number = 0;

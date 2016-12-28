@@ -5,11 +5,14 @@ import { NoContentComponent } from './no-content';
 
 import { DataResolver } from './app.resolver';
 import { LoginComp } from './login/login.comp'
-import { LoginStep1Comp } from './login/login-step1.comp'
 
 export const ROUTES: Routes = [
   { path: 'login', component: LoginComp },
-  { path: 'login-step1', component: LoginStep1Comp },
+  {
+    path: 'usersettings', loadChildren: () => System.import('./modules/usersettings').then((comp: any) => {
+      return comp.default;
+    })
+  },
   {
     path: 'changepwd', loadChildren: () => System.import('./login/changepwd').then((comp: any) => {
       return comp.default;

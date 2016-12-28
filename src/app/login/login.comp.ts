@@ -36,7 +36,7 @@ export class LoginComp {
                         } else if (userDetails.errcode === "chpwd") {
                             this._router.navigate(['/changepwd']);
                         } else {
-                            this._router.navigate(['/login-step1']);
+                            this._router.navigate(['/usersettings/defaultcompandfy']);
                         }
                     } else {
                         this.btnLoginText = "Login";
