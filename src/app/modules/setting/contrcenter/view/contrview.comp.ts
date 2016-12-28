@@ -70,9 +70,7 @@ declare var $: any;
         if (evt === "add") {
             this._router.navigate(['/setting/contrcenter/add']);
         }
-        if (evt === "back") {
-            this._router.navigate(['/setting/contrcenter']);
-        }
+        
         if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
