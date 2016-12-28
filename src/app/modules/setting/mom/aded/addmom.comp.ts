@@ -32,14 +32,6 @@ export class AddMOM implements OnInit, OnDestroy {
 
     }
 
-    uploadedFiles: any[] = [];
-
-    onUpload(event) {
-        for (let file of event.files) {
-            this.uploadedFiles.push(file);
-        }
-    }
-    
     saveMOMDetails() {
         var that = this;
         debugger;

@@ -32,12 +32,14 @@
     </div>
 </div>
 <div class="col-md-12">
-    <p-fileUpload name="fileUploaded" url="http://192.168.1.100:3005/upload" (onUpload)="onUpload($event)" multiple="multiple" accept="image/*"
-        maxFileSize="1000000">
+    <!--<p-fileUpload name="fileUploaded" url="http://192.168.1.106:3002/upload" (onUpload)="onUpload($event)" multiple="multiple" accept="image/*"
+        maxFileSize="1000000" auto="auto">
         <template pTemplate type="content">
             <ul *ngIf="uploadedFiles.length">
                 <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
             </ul>
         </template>
-    </p-fileUpload>
+    </p-fileUpload>-->
+
+    
 </div>
