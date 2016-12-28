@@ -21,8 +21,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     @Output() onStart = new EventEmitter();
     @Output() onComplete = new EventEmitter();
 
-    path: string = "";
-
     constructor(private _attachservice: AttachService) {
 
     }
@@ -31,10 +29,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     onUpload(event) {
         var that = this;
+        debugger;
+        var xhr = JSON.parse(event.xhr.response); 
+        console.log(xhr);
 
-        for (let file of event.files) {
-            this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
-            console.log(file);
+        for (let file of xhr) {
+            this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.path, "type": file.type });
         }
 
         var saveAttach = {
@@ -45,6 +45,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         }
 
         if (that.isRaw) {
+            console.log(that.uploadedFiles);
             that.onComplete.emit(saveAttach);
         }
         else {
@@ -53,7 +54,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }
 
     saveAttach(saveAttach: any) {
-
         var that = this;
         that.onStart.emit();
 

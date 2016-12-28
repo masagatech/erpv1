@@ -48,6 +48,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     doj: string = "";
     aboutus: string = "";
 
+    attachfile: string = "";
+    module: string = "";
+
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
@@ -60,9 +63,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     departmentDT: any[];
     designationDT: any[];
     salarymodeDT: any[];
-
-    attachfile: any = [];
-    module: string = "";
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _empservice: EmpService, private _commonservice: CommonService, private _msg: MessageService) {
@@ -153,14 +153,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     onUploadComplete(e) {
-        //this.attachfile = e;
-
-        for (var i = 0; i < e.length; i++) {
-            this.attachfile += "{\"id\": \"" + e[i].id + "\"},";
-        }
-
-        console.log(this.attachfile.slice(0, -1));
-
+        this.attachfile = e.files[0].path;
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
@@ -174,7 +167,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "bloodgroup": this.bloodgroup,
             "familybg": this.familybg,
             "healthdtls": this.healthdtls,
-            "attachfile": "[" + this.attachfile.slice(0, -1) + "]",
+            "attachfile": this.attachfile,
             "mobileno": this.mobileno,
             "altmobileno": this.altmobileno,
             "altemailid": this.altemailid,
