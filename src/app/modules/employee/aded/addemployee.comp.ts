@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
-import { EmpService } from '../../../_service/employee/emp-service' /* add reference for view employee */
+import { EmpService } from '../../../_service/employee/emp-service' /* add reference for add employee */
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService, messageType } from '../../../_service/messages/message-service';
@@ -53,8 +53,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     private subscribeParameters: any;
 
-    //MasterDDL: any[];
-
     genderDT: any[];
     maritalstatusDT: any[];
     bloodgroupDT: any[];
@@ -63,9 +61,13 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     designationDT: any[];
     salarymodeDT: any[];
 
-    constructor(private _routeParams: ActivatedRoute, private _router: Router,
-        private setActionButtons: SharedVariableService, private _empservice: EmpService,
-        private _commonservice: CommonService, private _msg: MessageService) {
+    attachfile: any = [];
+    module: string = "";
+
+    constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
+        private _empservice: EmpService, private _commonservice: CommonService, private _msg: MessageService) {
+        this.module = "Employee";
+
         this.fillDropDownList("Gender");
         this.fillDropDownList("MaritalStatus");
         this.fillDropDownList("BloodGroup");
@@ -146,6 +148,22 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         $('textarea').attr('value', '');
     }
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        //this.attachfile = e;
+
+        for (var i = 0; i < e.length; i++) {
+            this.attachfile += "{\"id\": \"" + e[i].id + "\"},";
+        }
+
+        console.log(this.attachfile.slice(0, -1));
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     saveEmployeeData() {
         var saveEmp = {
             "empid": this.empid,
@@ -156,6 +174,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "bloodgroup": this.bloodgroup,
             "familybg": this.familybg,
             "healthdtls": this.healthdtls,
+            "attachfile": "[" + this.attachfile.slice(0, -1) + "]",
             "mobileno": this.mobileno,
             "altmobileno": this.altmobileno,
             "altemailid": this.altemailid,
@@ -174,18 +193,14 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "noticedays": this.noticedays,
             "doj": this.doj,
             "aboutus": this.aboutus,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek"
+            "uidcode": "1:vivek"
         }
 
         console.log(saveEmp);
 
         this._empservice.saveEmployee(saveEmp).subscribe(data => {
             var dataResult = data.data;
-            console.log(dataResult);
-
             if (dataResult[0].funsave_employee.doc != "-1") {
-                //alert(dataResult[0].funsave_employee.msg + ', Doc : ' + dataResult[0].funsave_employee.doc);
                 var msg = dataResult[0].funsave_employee.msg;
                 this._msg.Show(messageType.success, "Success", msg);
 
@@ -266,6 +281,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             else {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
+
+                this.clearEmployeeFields();
 
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');

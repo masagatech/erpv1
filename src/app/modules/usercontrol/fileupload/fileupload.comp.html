@@ -1,0 +1,12 @@
+<p-growl [value]="msgs"></p-growl>
+
+<p-fileUpload #fuimg name="fileUploaded" url="http://192.168.1.106:3002/upload" (onUpload)="onUpload($event)"
+    accept="image/*" maxFileSize="1000000" auto="auto">
+    <template pTemplate type="content">
+        <ul *ngIf="uploadedFiles.length">
+            <li *ngFor="let file of uploadedFiles">
+                {{file.name}} - {{file.size}} bytes
+            </li>
+        </ul>
+    </template>
+</p-fileUpload>

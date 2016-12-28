@@ -73,6 +73,21 @@
 
     <div class="panel panel-theme">
         <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#UploadPhoto">
+                <h3 class="panel-title">Upload Photo</h3>
+            </a>
+        </div>
+        <div id="UploadPhoto" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <div class="form-group">
+                    <fileupload [module]="module" [multi]="false" [isRaw]="true" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-theme">
+        <div class="panel-heading">
             <a data-toggle="collapse" data-parent="#accordion" href="#Contact">
                 <h3 class="panel-title">Contact Details</h3>
             </a>

@@ -1036,3 +1036,11 @@ html select[disabled] {
 .container.closeopenpan {
     padding-left: 20px!important;
 }
+
+.sidepan .panel-body {
+    padding: 5px!important;
+}
+
+.ui-fileupload-highlight {
+    background-color: #ccc!important;
+}
