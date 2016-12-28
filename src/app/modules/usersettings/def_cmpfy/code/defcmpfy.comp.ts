@@ -53,6 +53,10 @@ export class DefCmpFyComp implements OnInit {
         //     // console.log("Complete");
         // })
 
+        this.cmpid = this.loginUser.cmpid;
+        this.getFYDetails(this.loginUser.cmpid);
+        this.fyid = this.loginUser.fyid;
+
     }
 
     getFYDetails(cmpid) {
@@ -60,6 +64,7 @@ export class DefCmpFyComp implements OnInit {
 
         that._fyservice.getfy({ "flag": "usrcmpwise", "uid": this.loginUser.uid, "cmpid": cmpid }).subscribe(data => {
             that.FYDetails = data.data;
+
         }, err => {
             console.log("Error");
         }, () => {
@@ -71,6 +76,7 @@ export class DefCmpFyComp implements OnInit {
         var that = this;
         that._compservice.getCompany({ "flag": "usrwise", "uid": uid }).subscribe(data => {
             that.CompanyDetails = data.data;
+
         }, err => {
             console.log("Error");
         }, () => {
