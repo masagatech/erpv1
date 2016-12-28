@@ -2,7 +2,7 @@ import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-
+import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
 import { attrview } from './attview.comp';
 
 import { FormsModule } from '@angular/forms';
@@ -35,10 +35,11 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), FormsModule, CommonModule],
     declarations: [
         attrview,
-        AttributeComp
+        AttributeComp,
+        AddrbookComp
     ],
     providers: [AuthGuard]
 })

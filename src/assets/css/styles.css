@@ -1044,3 +1044,7 @@ html select[disabled] {
 .ui-fileupload-highlight {
     background-color: #ccc!important;
 }
+
+.form-group{
+    margin-bottom: 5px!important;
+}

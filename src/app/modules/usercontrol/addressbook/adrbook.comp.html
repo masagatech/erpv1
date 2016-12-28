@@ -1,0 +1,112 @@
+
+<div class="col-md-4" style="height:150px;" *ngFor="let item of addrbooklist">
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<h3 class="panel-title text-right"><button class="btn btn-theme btn-xs" type="button" title="Edit">
+                <i class="fa fa-edit"></i></button>
+			</h3>
+		</div>
+		<div class="panel-body">
+			{{item.address1}} {{item.address2}}
+
+		</div>
+	</div>
+</div>
+<div class="col-md-4" style="height:150px;">
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<h3 class="panel-title">New Address
+			</h3>
+		</div>
+		<div class="panel-body text-center">
+			<button type="button" class="btn btn-theme btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus fa-3x"></i></button>
+
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+<div id="myModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Address Book</h4>
+			</div>
+			<div class="panel-body">
+				<div class='col-md-12'>
+					<div class='form-group'>
+						<label>Address 1</label>
+						<input type="text" class="form-control groupcode" tabindex="1" [(ngModel)]="adr1">
+					</div>
+				</div>
+				<div class='col-md-12'>
+					<div class='form-group'>
+						<label>Address 2</label>
+						<input type="text" class="form-control groupcode" tabindex="2" [(ngModel)]="adr2">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Primary Mobile No</label>
+						<input type="text" class="form-control groupcode" tabindex="3" [(ngModel)]="mob">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Alternate Mobile No</label>
+						<input type="text" class="form-control groupcode" tabindex="5" [(ngModel)]="altmob">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Pin Code</label>
+						<input type="text" class="form-control groupcode" tabindex="4" [(ngModel)]="pin">
+					</div>
+
+
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>City</label>
+						<input type="text" class="form-control groupcode" tabindex="6" [(ngModel)]="city">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>State</label>
+						<input type="text" class="form-control groupcode" tabindex="7" [(ngModel)]="state">
+					</div>
+				</div>
+
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Country</label>
+						<input type="text" class="form-control groupcode" tabindex="8" [(ngModel)]="country">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Address type</label>
+						<input type="text" class="form-control groupcode" tabindex="9" [(ngModel)]="adrtype">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Land mark</label>
+						<input type="text" class="form-control groupcode" tabindex="10" [(ngModel)]="landmark">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-theme btn-sm" (click)="SaveAdr()" data-dismiss="modal">Save</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
