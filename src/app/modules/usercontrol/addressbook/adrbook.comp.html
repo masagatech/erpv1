@@ -1,14 +1,15 @@
-
 <div class="col-md-4" style="height:150px;" *ngFor="let item of addrbooklist">
 	<div class="panel panel-theme">
 		<div class="panel-heading">
-			<h3 class="panel-title text-right"><button class="btn btn-theme btn-xs" type="button" title="Edit">
+			<h3 class="panel-title text-right"><i title="Primary Address" class="fa fa-check pull-left" *ngIf="item.isprimary"></i><button class="btn btn-theme btn-xs" type="button"
+					data-toggle="modal" data-target="#myModal" (click)="EditAdr(item)" title="Edit">
                 <i class="fa fa-edit"></i></button>
 			</h3>
 		</div>
-		<div class="panel-body">
-			{{item.address1}} {{item.address2}}
-
+		<div class="panel-body" style="height:100px;overflow:hidden;padding-bottom:5px">
+			<div>{{item.address1}} {{item.city}} {{item.state}} {{item.pin}} </div>
+			<div>Email : {{item.email}}</div>
+			<div>Mob : {{item.mob}}</div>
 		</div>
 	</div>
 </div>
@@ -18,16 +19,11 @@
 			<h3 class="panel-title">New Address
 			</h3>
 		</div>
-		<div class="panel-body text-center">
-			<button type="button" class="btn btn-theme btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus fa-3x"></i></button>
-
+		<div class="panel-body text-center" style="height:100px;overflow:hidden;padding-bottom:5px">
+			<button type="button" class="btn btn-theme btn-lg" data-toggle="modal" (click)="AddBook()" data-target="#myModal"><i class="fa fa-plus fa-3x"></i></button>
 		</div>
 	</div>
 </div>
-
-
-
-
 
 
 <div id="myModal" class="modal fade" role="dialog">
@@ -35,78 +31,101 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Address Book</h4>
+				<h4 class="modal-title">Address Book <i title="Primary Address" class="fa fa-check" *ngIf="chkprimary"></i> </h4>
 			</div>
 			<div class="panel-body">
 				<div class='col-md-12'>
 					<div class='form-group'>
 						<label>Address 1</label>
-						<input type="text" class="form-control groupcode" tabindex="1" [(ngModel)]="adr1">
+						<input type="text" class="form-control addr1" tabindex="1" [(ngModel)]="adr1">
 					</div>
 				</div>
 				<div class='col-md-12'>
 					<div class='form-group'>
 						<label>Address 2</label>
-						<input type="text" class="form-control groupcode" tabindex="2" [(ngModel)]="adr2">
+						<input type="text" class="form-control" tabindex="2" [(ngModel)]="adr2">
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Primary Mobile No</label>
-						<input type="text" class="form-control groupcode" tabindex="3" [(ngModel)]="mob">
+						<input type="text" class="form-control" tabindex="3" [(ngModel)]="mob">
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Alternate Mobile No</label>
-						<input type="text" class="form-control groupcode" tabindex="5" [(ngModel)]="altmob">
+						<input type="text" class="form-control" tabindex="4" [(ngModel)]="altmob">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Email</label>
+						<input type="text" class="form-control" tabindex="5" [(ngModel)]="email">
+					</div>
+				</div>
+				<div class='col-md-6'>
+					<div class='form-group'>
+						<label>Alternate Email</label>
+						<input type="text" class="form-control" tabindex="6" [(ngModel)]="otheremail">
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Pin Code</label>
-						<input type="text" class="form-control groupcode" tabindex="4" [(ngModel)]="pin">
+						<input type="text" class="form-control" tabindex="7" [(ngModel)]="pin">
 					</div>
-
-
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>City</label>
-						<input type="text" class="form-control groupcode" tabindex="6" [(ngModel)]="city">
+						<input type="text" class="form-control" tabindex="8" [(ngModel)]="city">
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>State</label>
-						<input type="text" class="form-control groupcode" tabindex="7" [(ngModel)]="state">
+						<input type="text" class="form-control" tabindex="9" [(ngModel)]="state">
 					</div>
 				</div>
+
 
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Country</label>
-						<input type="text" class="form-control groupcode" tabindex="8" [(ngModel)]="country">
+						<select [(ngModel)]="country" class="form-control" tabindex="10">
+								<option [value]="'0'">Select Country</option>
+								<option *ngFor="let row of countryDT" [value]="row.id">
+									{{row.val}}
+								</option>
+							</select>
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Address type</label>
-						<input type="text" class="form-control groupcode" tabindex="9" [(ngModel)]="adrtype">
+						<input type="text" class="form-control" tabindex="11" [(ngModel)]="adrtype">
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Land mark</label>
-						<input type="text" class="form-control groupcode" tabindex="10" [(ngModel)]="landmark">
+						<input type="text" class="form-control" tabindex="12" [(ngModel)]="landmark">
+					</div>
+				</div>
+				<div class='col-md-12'>
+					<div class='form-group'>
+						<label>Remark</label>
+						<input type="text" class="form-control" tabindex="13" [(ngModel)]="remark">
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-theme btn-sm" (click)="SaveAdr()" data-dismiss="modal">Save</button>
+				<label class="pull-left"> Is Primary <input type="checkbox" [(ngModel)]="chkprimary" [disabled]="chkpri" name="chekprimay"/></label>
+				<button type="button" class="btn btn-theme btn-sm" (click)="SaveAdr()" tabindex="14">Save</button>
+				<button type="button" class="btn btn-theme btn-sm" (click)="SaveAdr()" tabindex="15" data-dismiss="modal">Save & Close</button>
 			</div>
 		</div>
 
 	</div>
 </div>
-

@@ -4,7 +4,7 @@
 			<div class="panel-heading">
 				<h3 class="panel-title">Attribute</h3>
 			</div>
-
+			<div class="panel-body">
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -19,15 +19,20 @@
 						<td><span class="hide">{{attid}}</span><input type="text" class="form-control" id="attnam" [(ngModel)]="attName" /></td>
 						<td class="col-md-2"><button type="button" class="btn btn-theme btn-sm" text="Add" (click)="NewRowAdd()"><i class="fa fa-save"></i></button></td>
 					</tr>
-					<tr *ngFor="let item of addNewAttr let i=index" >
+					<tr *ngFor="let item of addNewAttr let i=index">
 						<td><span>{{i+1}}</span><span class="hide">{{item.autoid}}</span></td>
-						<td (click)="editrow(item)"><span >{{item.atname}}</span></td>
+						<td (click)="editrow(item)"><span>{{item.atname}}</span></td>
 						<td>
-							<input type="checkbox" [(ngModel)]="item.val" name="checkdel" binary="true" (ngModelChange)="DeleteRow(item)"/>
+							<input type="checkbox" [(ngModel)]="item.val" name="checkdel" binary="true" (ngModelChange)="DeleteRow(item)" />
 						</td>
 					</tr>
 				</tbody>
 			</table>
+			</div>
 		</div>
+	</div>
+	<div class="col-md-12">
+		
+		<addressbook></addressbook>
 	</div>
 </div>
