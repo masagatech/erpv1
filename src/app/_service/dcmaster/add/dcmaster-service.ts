@@ -8,7 +8,7 @@ export class dcmasterService  {
 
     getdropdwn(req:any)
     {
-         return this._dataserver.post("GetCustomerSalesAdr",req);        
+         return this._dataserver.post("getdcdropdetails",req);        
     }
     getAutoCompleted(req:any)
     {
@@ -17,12 +17,12 @@ export class dcmasterService  {
 
     getItemsAutoCompleted(req:any)
     {
-        return this._dataserver.post("GetProductAuto",req);
+        return this._dataserver.post("getdcitemsdetails",req);
     }
 
     saveDcMaster(req:any)
     {
-        return this._dataserver.post("SaveDCDetails",req);
+        return this._dataserver.post("saveDcMaster",req);
     }
 
       getDcmasterView(req:any)

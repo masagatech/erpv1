@@ -1,68 +1,65 @@
 <div class="panel panel-theme">
-	<div class="panel-heading">
-		<h3 class="panel-title">Item Master {{ProdCodeTitle}}</h3>
-	</div>
-	<br/>
-	<div class="row">
-		<div class='form-row col-md-10'>
-			<div class="col-xs-4">
-				<label>Category</label>
-				<input type="text=" class="form-control Category" tabindex="1" value="" [(ngModel)]="Catname" (keyup)="getAutoCompleteCategory(this)"
-				/>
-			</div>
-			<div class="col-xs-2">
-				<div class='form-group'>
-					<label>Item Code</label>
-					<input type="text" class="form-control ProdCode" tabindex="2" [(ngModel)]="itemcode">
+	<div class="panel-body">
+		<div class="row">
+			<div class='form-row col-md-10'>
+				<div class="col-xs-4">
+					<label>Category</label>
+					<input type="text=" class="form-control Category" tabindex="1" value="" [(ngModel)]="Catname" (keyup)="getAutoCompleteCategory(this)"
+					/>
+				</div>
+				<div class="col-xs-2">
+					<div class='form-group'>
+						<label>Item Code</label>
+						<input type="text" class="form-control ProdCode" tabindex="2" [(ngModel)]="itemcode">
+					</div>
+				</div>
+				<div class="col-xs-4">
+					<div class='form-group'>
+						<label>Item Name</label>
+						<input type="text" class="form-control" tabindex="3" [(ngModel)]="itemname">
+					</div>
 				</div>
 			</div>
-			<div class="col-xs-4">
-				<div class='form-group'>
-					<label>Item Name</label>
-					<input type="text" class="form-control" tabindex="3" [(ngModel)]="itemname">
+			<div class='form-row col-md-10'>
+				<div class="col-xs-2">
+					<div class='form-group'>
+						<label>Sale Price/rate</label>
+						<input type="text" class="form-control" tabindex="4" [(ngModel)]="MRP">
+					</div>
+				</div>
+				<div class="col-xs-2">
+					<div class='form-group'>
+						<label>Discount</label>
+						<input type="text" class="form-control" tabindex="5" [(ngModel)]="SaleDis1">
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class='form-group'>
+						<label>Description</label>
+						<input type="text" class="form-control" tabindex="6" [(ngModel)]="SaleDesc">
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class='form-row col-md-10'>
-			<div class="col-xs-2">
-				<div class='form-group'>
-					<label>Sale Price/rate</label>
-					<input type="text" class="form-control" tabindex="4" [(ngModel)]="MRP">
+			<div class='form-row col-md-10'>
+				<div class="col-xs-2">
+					<div class='form-group'>
+						<label>Purchase Cost/rate</label>
+						<input type="text" class="form-control" tabindex="7" [(ngModel)]="Cost">
+					</div>
 				</div>
-			</div>
-			<div class="col-xs-2">
-				<div class='form-group'>
-					<label>Discount</label>
-					<input type="text" class="form-control" tabindex="5" [(ngModel)]="SaleDis1">
+				<div class="col-xs-2">
+					<div class='form-group'>
+						<label>Discount</label>
+						<input type="text" class="form-control" tabindex="8" [(ngModel)]="PurDis2">
+					</div>
 				</div>
-			</div>
-			<div class="col-xs-6">
-				<div class='form-group'>
-					<label>Description</label>
-					<input type="text" class="form-control" tabindex="6" [(ngModel)]="SaleDesc">
-				</div>
-			</div>
-		</div>
-		<div class='form-row col-md-10'>
-			<div class="col-xs-2">
-				<div class='form-group'>
-					<label>Purchase Cost/rate</label>
-					<input type="text" class="form-control" tabindex="7" [(ngModel)]="Cost">
-				</div>
-			</div>
-			<div class="col-xs-2">
-				<div class='form-group'>
-					<label>Discount</label>
-					<input type="text" class="form-control" tabindex="8" [(ngModel)]="PurDis2">
-				</div>
-			</div>
-			<div class="col-xs-6">
-				<div class='form-group'>
-					<label>Description</label>
-					<input type="text" class="form-control" tabindex="9" [(ngModel)]="PurDesc">
+				<div class="col-xs-6">
+					<div class='form-group'>
+						<label>Description</label>
+						<input type="text" class="form-control" tabindex="9" [(ngModel)]="PurDesc">
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<br/>
 </div>

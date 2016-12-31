@@ -1,0 +1,140 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-4">
+			<div class='form-group'>
+				<label>Customer</label>
+				<input type="text=" class="form-control Custcode" tabindex="1" value="" [(ngModel)]="CustName" (keyup)="getAutoComplete(this)"
+				/>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class='form-group'>
+				<label>From Date</label>
+				<div class="controls">
+					<div class="input-group">
+						<input type="text" id="FromDate" name="date-picker-3" tabindex="2" class="date-picker form-control" [(ngModel)]="FromDate"
+						/>
+						<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class='form-group'>
+				<label>To Date</label>
+				<div class="controls">
+					<div class="input-group date">
+						<input type="text" id="ToDate" tabindex="3" name="date-picker-4" class="date-picker form-control" [(ngModel)]="ToDate" />
+						<label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class='form-group'>
+				<label>Action</label>
+				<button type="button" class="btn btn-primary" (click)="getPendingDocNo()">Get</button>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12" [hidden]="tableHead">
+		<div class="row">
+			<div class="col-md-10">
+				<div [hidden]="tableDetails">
+					<div class="col-xs-2">
+						<div class='form-group'>
+							<label>Document No</label>
+							<input type="text=" class="form-control" readonly="true" [(ngModel)]="docNo" tabindex="1" value="" />
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class='form-group'>
+							<label>Salesman</label>
+							<input type="text" class="form-control" readonly="true" [(ngModel)]="Salesmandrop">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class='form-group'>
+							<label>Customer</label>
+							<input type="text=" class="form-control" readonly="true" tabindex="1" value="" [(ngModel)]="CustNam" />
+						</div>
+					</div>
+					<div class="col-xs-3">
+						<label>Document Date</label>
+						<div class="input-group date" data-provide="datepicker">
+							<input type="text=" class="form-control" [(ngModel)]="docdate" readonly="true" tabindex="2" value="" />
+							<div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-3">
+						<label>Delivery Date</label>
+						<div class="input-group date" data-provide="datepicker">
+							<input type="text=" class="form-control" [(ngModel)]="Deldate" readonly="true" tabindex="2" value="" />
+							<div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-8">
+						<div class='form-group'>
+							<label>Spe.Instruction</label>
+							<textarea [(ngModel)]="SpeInstr" class="form-control medium-text-box" cols="75" tabindex="8" readonly="true" autocomplete='off'
+								rows="3"></textarea>
+						</div>
+					</div>
+					<table class="table table-striped table-bordered" [hidden]="tableDetails">
+						<thead>
+							<tr>
+								<th>#No</th>
+								<th>Item Code</th>
+								<th>Item Name</th>
+								<th class="textCenter">Qty</th>
+								<th class="textCenter">Rate</th>
+								<th class="textCenter">Dis</th>
+								<th class="textCenter">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let item of DocDetailslist let i=index">
+								<td><span>{{i+1}}</span><span class="displayNone">{{item.DCNo}}</span><span class="displayNone">{{item.DCDetail}}</span></td>
+								<td>{{item.ProductCode}}</td>
+								<td>{{item.ProdName}}</td>
+								<td class="col-xs-1"><input type="text" class="form-control  textalign" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+										(change)="CulculateQty(item.ProductCode,item.OldQty,item.DCQty)" [(ngModel)]="item.DCQty"></td>
+								<td class="textalign col-xs-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.Rate"></td>
+								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.Disount"></td>
+								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.Amount"></td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr class="bg-warning">
+								<td colspan="7" class="textalign"><b>{{SubTotal()|number}}</b></td>
+							</tr>
+						</tfoot>
+					</table>
+
+
+				</div>
+			</div>
+			<div class="col-md-2" [hidden]="tabledoc">
+				<div style="height: 320px !important;overflow-y: scroll;">
+					<table class='table table-bordered table-condensed table-striped table-hover'>
+						<tbody>
+							<tr>
+								<input type="text" [(ngModel)]="DcNo" class="form-control" placeholder="Search Doc No">
+							</tr>
+							<tr>
+								<th>Doc No</th>
+							</tr>
+							<tr class="table-row" *ngFor="let item of doclist">
+								<td><a role="button" (click)=GetDetails(item)>{{item.DcNo}}</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

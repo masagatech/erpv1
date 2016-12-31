@@ -31,13 +31,13 @@ export class dcview implements OnInit, OnDestroy {
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.tableLength = true;
         setTimeout(function () {
-              $(".Custcode").focus();
+            $(".Custcode").focus();
             var date = new Date();
             var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
             var ToDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -74,39 +74,35 @@ export class dcview implements OnInit, OnDestroy {
 
     //Get Button Click Event 
     private GetData() {
-        this.FromData = $('#FromDate').val();
-        this.ToData = $('#ToDate').val();
+        this.FromData = $('#FromDate').datepicker('getDate');
+        this.ToData = $('#ToDate').datepicker('getDate');
         this.dcviewServies.getDcmasterView({                     //User getdcdropdown
-            "CmpCode": "Mtech",
-            "FY": 5,
-            "UserCode": "Admin",
-            "CustCode": this.CustID,
+            "cmpid": 1,
+            "fy": 5,
+            "createdby": "Admin",
+            "acid": this.CustID,
             "FromDoc": 0,
-            "FilterType": "",
+            "flag": "",
             "DCNo": 0,
             "ToDoc": 0,
             "FromDate": this.FromData,
-            "ToDate": this.ToData,
-            "Flag": '',
-            "Flag2": ''
-        }).subscribe(CustomerSeldata => {
-            var dataset = JSON.parse(CustomerSeldata.data);
-            if(dataset.Table.length>0)
-            {
-                this.DcDetails=dataset.Table;
+            "ToDate": this.ToData
+        }).subscribe(result => {
+            var dataset = result.data;
+            if (dataset.length > 0) {
+                this.DcDetails = dataset;
                 this.tableLength = false;
             }
-            else
-            {
+            else {
                 alert("Record Not Found");
                 this.tableLength = true;
                 $(".Custcode").focus();
             }
-            
+
         }, err => {
             console.log('Error');
         }, () => {
-            this.CustID="";
+            this.CustID = "";
         });
 
     }
@@ -118,9 +114,9 @@ export class dcview implements OnInit, OnDestroy {
     }
 
     expandDetails(row) {
-        console.log(row);
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
+        row.Details=[];
+        if (row.issh == 0) {
+            row.issh = 1;
             if (row.Details.length === 0) {
                 this.dcviewServies.getDcmasterView({
                     "FilterType": "Details",
@@ -128,8 +124,8 @@ export class dcview implements OnInit, OnDestroy {
                     "CmpCode": "Mtech",
                     "FY": 5
                 }).subscribe(data => {
-                    var detailsdata =data.data;
-                    row.Details=detailsdata.Table;
+                    var detailsdata = data.data;
+                    row.Details = detailsdata.Table;
                 }, err => {
                     console.log("Error");
                 }, () => {
@@ -137,14 +133,14 @@ export class dcview implements OnInit, OnDestroy {
                 })
             }
         } else {
-            row.IsCollapse = 0;
+            row.issh = 0;
         }
     }
 
     //Auto Completed Customer Name
     getAutoComplete(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "Type": "CustName", "Key": this.CustName }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "customer", "search": this.CustName }).subscribe(data => {
             $(".Custcode").autocomplete({
                 source: data.data,
                 width: 300,

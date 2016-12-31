@@ -8,6 +8,6 @@ export class dcviewService  {
 
      getDcmasterView(req:any)
     {
-        return this._dataserver.post("DCMaster_View",req);
+        return this._dataserver.post("getdcdetails",req);
     }
 }

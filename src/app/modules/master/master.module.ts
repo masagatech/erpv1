@@ -17,15 +17,14 @@ const routerConfig = [
       {
         path: '',
         children: [
-            
+
           //Ac Group Add And View 
-           {
+          {
             path: 'acgroup', loadChildren: () => System.import('./acgroup').then((comp: any) => {
               return comp.default;
             }),
           },
-         
-
+          
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
@@ -37,9 +36,8 @@ const routerConfig = [
   imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
   declarations: [
     //Common Module
-     MasterComp,
-     MasterDashboardComp,
-     //Ac Group Add And View 
+    MasterComp,
+    MasterDashboardComp,
   ],
   providers: [AuthGuard]
 })

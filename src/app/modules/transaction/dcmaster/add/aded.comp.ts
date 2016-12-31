@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { CommonService } from '../../../../_service/common/common-service'; /* add reference for view employee */
+import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";  //Service Add Refrence dcmaster-service.ts
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -62,7 +62,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     CustID: any = 0;
     CustName: any = '';
     ItemsName: any = '';
-    Itemsid: any = '';
+    Itemsid: any = 0;
     ProdSelectedCode: any = '';
     NewItemsName: any = "";
     NewItemsid: any = 0;
@@ -76,7 +76,6 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.counter = 0;
         this.totalQty = 0;
         this.totalAmt = 0;
-        // this.getAutoComplete();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -131,6 +130,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
         });
     }
 
+
+
     //Clear All Controll
     private ClearControll() {
         this.CustName = "";
@@ -146,10 +147,35 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     }
 
+    paramterjson() {
+        this.docdate = $('#docDate').datepicker('getDate');
+        this.delDate = $('#delDate').datepicker('getDate');
+        var param = {
+            "dcno": this.DocNo,
+            "docdate": this.docdate,
+            "acid": 1,
+            "refno": this.Token,
+            "deldate": this.delDate,
+            "salesid": this.Salesmandrop,
+            "othersalesid": this.OtherSalesid,
+            "traspo": this.Traspoter,
+            "billingadr": this.BillAdr,
+            "shippadr": this.shippAdr,
+            "fy": 5,
+            "cmpid": 1,
+            "createdby": "admin",
+            "remark": this.Remark,
+            "directinvoice": this.DirectInvoice,
+            "dcdetails": this.newAddRow,
+            "remark1": this.Remark1,
+            "remark2": this.Remark2,
+            "remark3": this.Remark3
+        }
+        return param;
+    }
+
     //Add Top Buttons
     actionBarEvt(evt) {
-        this.docdate = $("#docDate").val();
-        this.delDate = $("#delDate").val();
         this.DirectInvoice = 0;
         if (evt === "save") {
             if (this.CustName == '' || this.CustName == undefined) {
@@ -164,37 +190,16 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 alert('Please Select Transpoter');
                 return false;
             }
-            // if (this.newAddRow.length == 0) {
-            //     alert('Please Enter Items Details');
-            //     return false;
-            // }
+            if (this.newAddRow.length == 0) {
+                alert('Please Enter Items Details');
+                return false;
+            }
             this.dcServies.saveDcMaster(
-                {
-                    "dcno": this.DocNo,
-                    "docdate": this.docdate,
-                    "acid": 1,
-                    "refno": this.Token,
-                    "deldate": this.delDate,
-                    "salesid": this.Salesmandrop,
-                    "othersalesid": this.OtherSalesid,
-                    "traspo": this.Traspoter,
-                    "billingadr": this.BillAdr,
-                    "shippadr": this.shippAdr,
-                    "fy": 5,
-                    "cmpid": 1,
-                    "createdby": "admin",
-                    "remark": this.Remark,
-                    "directinvoice": this.DirectInvoice,
-                    "jsondata": this.newAddRow,
-                    "remark1": this.Remark1,
-                    "remark2": this.Remark2,
-                    "remark3": this.Remark3
-                }
+                this.paramterjson()
             ).subscribe(result => {
                 var returndata = result.data;
-                console.log(returndata);
-                if (returndata[0].doc > 0) {
-                    alert("Data Save Succesfuly Document No: " + returndata[0].maxid)
+                if (returndata[0].funsave_dcmaster.maxid > 0) {
+                    alert("Data Save Succesfuly Document No: " + returndata[0].funsave_dcmaster.maxid)
                     this.ClearControll();
                     $('.Custcode').focus();
                 }
@@ -284,7 +289,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Auto Completed Customer Name
     getAutoComplete(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "Type": "CustName", "Key": this.CustName }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "customer", "search": _me.CustName }).subscribe(data => {
             $(".Custcode").autocomplete({
                 source: data.data,
                 width: 300,
@@ -311,7 +316,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
         var _me = this;
-        this._autoservice.getAutoData({ "Type": "ProdName", "Key": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "CatProdName", "search": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -326,15 +331,15 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     me.ItemsName = ui.item.label;
                     if (arg === 1) {
                         me.ItemsName = ui.item.label;
-                        me.ItemsCode = ui.item.value;
-                        _me.ItemsSelected(me.ItemsCode);
+                        me.Itemsid = ui.item.value;
+                        _me.ItemsSelected(me.Itemsid);
                     } else {
                         me.NewItemsName = ui.item.label;
-                        me.NewItemsCode = ui.item.value;
-                        _me.ItemsSelected(me.NewItemsCode);
+                        me.Itemsid = ui.item.value;
+                        _me.ItemsSelected(me.Itemsid);
                     }
-                    // me.ItemsKey = ui.item.label;
-                    // _me.ItemsSelected(me.ItemsID);
+                    //   me.ItemsKey = ui.item.label;
+                    //  _me.ItemsSelected(me.ItemsID);
                 }
             });
         }, err => {
@@ -349,17 +354,16 @@ export class dcADDEdit implements OnInit, OnDestroy {
         if (val != "") {
             this.custKey = val;
             this.dcServies.getdropdwn({                     //User getdcdropdown
-                "CustCode": val,
-                "Salesman": '',
-                "Flag": '',
-                "Flag1": ''
-            }).subscribe(CustomerSeldata => {
-                var dataset = CustomerSeldata.data;                 //Return Data
-                this.Salesmanlist = dataset.Table;                //Return Data
-                this.CustAddress = dataset.Table1;
-                this.BillAdr = this.CustAddress[0].BillAdr;
-                this.shippAdr = this.CustAddress[0].BillAdr;
-                this.Transpoterlist = dataset.Table2;
+                "custid": val,
+                "cmpid": 1,
+                "flag": '',
+                "flag1": ''
+            }).subscribe(dropdetails => {
+                var dataset = dropdetails.data;                 //Return Data
+                this.Salesmanlist = dataset[0];
+                this.Transpoterlist = dataset[1];              //Return Data
+                this.BillAdr = dataset[2][0].adr;
+                this.shippAdr = dataset[2][0].adr;
             }, err => {
                 console.log('Error');
             }, () => {
@@ -372,38 +376,35 @@ export class dcADDEdit implements OnInit, OnDestroy {
     // //Selected Items
     ItemsSelected(val) {
         if (val != "") {
-            this.Qty = 1;
-            this.ProdSelectedCode = val;
             this.dcServies.getItemsAutoCompleted({
-                "Key": "",
-                "ProdCode": val,
-                "UserId": "",
-                "Flag1": "",
-                "Flag2": ""
+                "cmpid": 1,
+                "fy": 5,
+                "itemsid": val,
+                "createdby": ""
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
-                if (this.newAddRow.length == 0) {
-                    this.AddEdit = 'add'
-                }
-                if (this.AddEdit === 'add') {
-                    this.Qty = 1;
-                    this.Dis = ItemsResult[0].Discount;
-                    this.Rate = ItemsResult[0].MRPRate;
-                    this.Amount = ItemsResult[0].Amount;
-                    this.ItemsfilteredList = [];
-                }
-                else {
-                    for (var i = 0; i < this.newAddRow.length; i++) {
-                        if (this.newAddRow[i].counter === this.AddEdit) {
-                            this.newAddRow[i].Qty = 1;
-                            this.newAddRow[i].Dis = ItemsResult[0].Discount;
-                            this.newAddRow[i].Rate = ItemsResult[0].MRPRate;
-                            this.newAddRow[i].Amount = ItemsResult[0].Amount;
-                            break;
-                        }
-                    }
+                // if (this.newAddRow.length == 0) {
+                //     this.AddEdit = 'add'
+                // }
+                // if (this.AddEdit === 'add') {
+                this.Qty = 1;
+                this.Dis = ItemsResult[0].dis;
+                this.Rate = ItemsResult[0].salerate;
+                this.Amount = ItemsResult[0].dcamt;
+                this.ItemsfilteredList = [];
+                //  }
+                // else {
+                //     for (var i = 0; i < this.newAddRow.length; i++) {
+                //         if (this.newAddRow[i].counter === this.AddEdit) {
+                //             this.newAddRow[i].Qty = 1;
+                //             this.newAddRow[i].Dis = ItemsResult[0].Discount;
+                //             this.newAddRow[i].Rate = ItemsResult[0].MRPRate;
+                //             this.newAddRow[i].Amount = ItemsResult[0].Amount;
+                //             break;
+                //         }
+                //     }
 
-                }
+                //}
             }, err => {
                 console.log("Error");
             }, () => {
@@ -433,8 +434,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
             }
         }
         if (this.Duplicateflag == true) {
+            debugger;
             this.newAddRow.push({
                 'ItemsName': this.ItemsName,
+                "itemsid": this.Itemsid,
                 'Qty': this.Qty,
                 'Rate': this.Rate,
                 'Dis': this.Dis == "" ? "0" : this.Dis,
