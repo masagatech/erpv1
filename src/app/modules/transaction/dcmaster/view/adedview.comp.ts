@@ -62,7 +62,7 @@ export class dcview implements OnInit, OnDestroy {
     //Add Top Buttons
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/transaction/aded']);
+            this._router.navigate(['/transaction/dcmaster/add']);
             //this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             // alert("edit called");
@@ -109,7 +109,7 @@ export class dcview implements OnInit, OnDestroy {
 
     OpenEdit(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/transaction/adededit', row.DcNo]);
+            this._router.navigate(['/transaction/dcmaster/edit', row.DcNo]);
         }
     }
 

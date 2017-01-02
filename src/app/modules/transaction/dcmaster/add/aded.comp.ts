@@ -71,7 +71,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     //, private _autoservice:AutoService
-    constructor(private setActionButtons: SharedVariableService, private dcServies: dcmasterService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private dcServies: dcmasterService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
         this.newAddRow = [];
         this.counter = 0;
         this.totalQty = 0;
@@ -79,6 +79,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
     //Add Save Edit Delete Button
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -177,6 +178,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Add Top Buttons
     actionBarEvt(evt) {
         this.DirectInvoice = 0;
+        if (evt === "back") {
+            this._router.navigate(['transaction/dcmaster/view']);
+        }
         if (evt === "save") {
             if (this.CustName == '' || this.CustName == undefined) {
                 alert('Please Enter Customer');
