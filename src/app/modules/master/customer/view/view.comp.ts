@@ -3,24 +3,22 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { ContrService } from "../../../../_service/contrcenter/contr-service";
+import { CustomerViewService } from "../../../../_service/customer/view/view-service";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
-
 declare var $: any;
 @Component({
-    templateUrl: 'contrview.comp.html',
-    providers: [ContrService, CommonService]
-
-}) export class contrview implements OnInit, OnDestroy {
+    templateUrl: 'view.comp.html',
+    providers: [CustomerViewService, CommonService]
+    //,AutoService
+}) export class CustView implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-
-    Ctrlview: any = [];
+    customerlist: any = [];
     totalRecords: number = 0;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private CustViewServies: CustomerViewService, private _autoservice: CommonService) {
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -30,21 +28,18 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        // this.getCtrlView();
-        $(".center").focus();
     }
 
-    getCtrlView(from: number, to: number) {
+    getcustomer(from: number, to: number) {
         var that = this;
-        that.ContrServies.getCtrlcenter({
+        that.CustViewServies.getcustomer({
             "cmpid": 1,
             "from": from,
             "to": to
         }).subscribe(result => {
             that.totalRecords = result.data[1][0].recordstotal;
-            //total row
-            that.Ctrlview = result.data[0];
+            that.customerlist = result.data[0];
+
         }, err => {
             console.log("Error");
         }, () => {
@@ -53,22 +48,22 @@ declare var $: any;
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getCtrlView(event.first, (event.first + event.rows));
+        this.getcustomer(event.first, (event.first + event.rows));
     }
 
     EditItem(row) {
         if (!row.islocked) {
-            this._router.navigate(['/setting/contrcenter/edit', row.autoid]);
+            this._router.navigate(['master/customer/edit', row.autoid]);
         }
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/setting/contrcenter/add']);
+            this._router.navigate(['/master/customer/add']);
         }
-
         if (evt === "save") {
+            //Save CLick Event
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             // alert("edit called");

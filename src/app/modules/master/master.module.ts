@@ -24,6 +24,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'customer', loadChildren: () => System.import('./customer').then((comp: any) => {
+              return comp.default;
+            }),
+          },
           
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]

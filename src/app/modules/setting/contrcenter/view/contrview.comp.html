@@ -1,39 +1,3 @@
-<!--<div class="accordion" id="accordion">
-	<div class="panel panel-theme tablemarginH">
-		<div class="panel-heading">
-			<h3 class="panel-title">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Controlling Center View</a>
-			</h3>
-		</div>
-		<div id="collapseOne" class="accordion-body">
-			<table class="table table-striped table-bordered" [hidden]="TableHide">
-				<thead>
-					<tr>
-						<th class="col-sm-1">#</th>
-						<th class="col-sm-3">Ctrl. Name</th>
-						<th class="col-xs-1">Profit Ctrl.</th>
-						<th class="col-xs-1">Cost Ctrl</th>
-						<th class="col-sm-3">Responsible Person</th>
-						<th class="col-xs-3">Remark</th>
-					</tr>
-				</thead>
-				<tbody *ngFor="let row of Ctrlview let i=index">
-					<tr>
-						<td><span>{{i+1}}</span></td>
-						<td><a role="button" (click)="EditItem(row)">{{row.ctrlname}}</a></td>
-						<td>{{row.profitctr}}</td>
-						<td>{{row.costctr}}</td>
-						<td>{{row.person}}</td>
-						<td>{{row.remark}}</td>
-					</tr>
-				</tbody>
-			</table>
-
-		</div>
-	</div>
-
-</div>-->
-
 <div class="table-responsive">
     <p-dataTable #dt [value]="Ctrlview" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
         [(selection)]="selectedRB1" expandableRows="true">

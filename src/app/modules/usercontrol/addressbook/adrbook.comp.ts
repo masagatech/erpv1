@@ -154,6 +154,30 @@ export class AddrbookComp implements OnInit, OnDestroy {
     }
 
     SaveAdr() {
+        if(this.adr1=="")
+        {
+            alert("Please enter address1");
+            $(".addr1").focus();
+            return ;
+        }
+        if(this.mob=="")
+        {
+            alert("Please enter Primary Mobile No");
+            $(".prymob").focus();
+            return ;
+        }
+        if(this.email=="")
+        {
+            alert("Please enter address1");
+            $(".email").focus();
+            return ;
+        }
+        if(this.country==0)
+        {
+            alert("Please select conutry");
+            $(".country").focus();
+            return ;
+        }
         var that = this;
         that._adrbookservice.saveAdrBook(
             that.Parameter()
@@ -163,7 +187,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
                 alert("Data Save Siccessfully");
                 that.ClearControll();
                 that.getAddress();
-                $(".addr1").focus();
+                $('#myModal').modal('hide');
             }
             console.log(dataset);
         }, err => {

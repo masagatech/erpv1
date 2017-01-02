@@ -1,0 +1,86 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-1">
+				<div class='form-group'>
+					<label>Code</label>
+					<input type="text" class="form-control code" tabindex="1" [(ngModel)]="code">
+				</div>
+			</div>
+			<div class="col-xs-4">
+				<div class='form-group'>
+					<label>First Name</label>
+					<input type="text" class="form-control firstname" tabindex="2" [(ngModel)]="firstname">
+				</div>
+			</div>
+			<div class="col-xs-3">
+				<div class='form-group'>
+					<label>Middle Name</label>
+					<input type="text" class="form-control" tabindex="3" [(ngModel)]="middlename">
+				</div>
+			</div>
+			<div class="col-xs-4">
+				<div class='form-group'>
+					<label>Last Name</label>
+					<input type="text" class="form-control" tabindex="4" [(ngModel)]="lastname">
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-4">
+				<div class='form-group'>
+					<label>Company</label>
+					<select [(ngModel)]="company" class="form-control cmp" tabindex="5">
+						    <option [value]="'0'">Select Company</option>
+						<option *ngFor="let row of companylist" [value]="row.value">
+							 {{row.label}}
+						</option>
+					</select>
+				</div>
+			</div>
+			<!--<div class="col-xs-4">
+				<div class='form-group'>
+					<label>Warehouse</label>
+					<select [(ngModel)]="warehouse" class="form-control" tabindex="6">
+						<option [value]="'0'">Select Warehouse</option>
+						<option *ngFor="let row of warehouselist" [value]="row.value">
+							{{row.label}}
+					    </option>
+					</select>
+				</div>
+			</div>-->
+			<div class="col-xs-4">
+				<div class='form-group'>
+					<label>Billing Address</label>
+					<input type="text" class="form-control" tabindex="7" [(ngModel)]="billadr">
+				</div>
+			</div>
+			<div class="col-xs-4">
+				<div class='form-group'>
+					<label><input type="checkbox" class="checkbox-inline" [(ngModel)]="shippingchk" (ngModelChange)="sameadr()" value=""> Same as Bill Address Shipping</label>
+					<input type="text" class="form-control shipping" tabindex="8" [(ngModel)]="shippingadr">
+				</div>
+			</div>
+		</div>
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#contact" role="button" data-toggle="tab">Contact</a></li>
+			<li><a data-target="#adr" role="button" data-toggle="tab">Address book</a></li>
+			<li><a data-target="#attr" role="button" data-toggle="tab">Attribute</a></li>
+			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab">Warehouse</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="contact">Home</div>
+			<div class="tab-pane" id="adr">
+				<addressbook></addressbook>
+			</div>
+			<div class="tab-pane" id="attr">Message</div>
+			<div class="tab-pane" id="ware">
+				<div *ngFor="let row of warehouselist">
+					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" value="row.value">
+						{{row.label}}
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
