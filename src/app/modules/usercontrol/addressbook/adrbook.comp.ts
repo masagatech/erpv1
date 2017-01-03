@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { AdrBookService } from '../../../_service/addressbook/adrbook-service' //Add Address Book service
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
+import { MessageService, messageType } from '../../../_service/messages/message-service';
 
 declare var $: any;
 
@@ -27,12 +28,15 @@ export class AddrbookComp implements OnInit, OnDestroy {
     adrtype: any = 0;
     landmark: any = "";
     remark: any = "";
+    firstnam:any="";
+    middlenam:any="";
+    lastnam:any="";
     addrbooklist: any = [];
     countryDT: any[];
     chkprimary: boolean = false;
-    chkpri:boolean=false;
+    chkpri: boolean = false;
 
-    constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService) {
+    constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService, private _msg: MessageService) {
 
         this.getAddress();
     }
@@ -54,7 +58,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         that.ClearControll();
         that.filldropdown();
         setTimeout(function () {
-            $(".addr1").focus();
+            $(".firstnam").focus();
         }, 500);
     }
 
@@ -83,7 +87,10 @@ export class AddrbookComp implements OnInit, OnDestroy {
         that.country = "";
         that.adrtype = "";
         that.landmark = "";
-        that.remark="";
+        that.remark = "";
+        that.firstnam="";
+        that.middlenam="";
+        that.lastnam="";
         that.mod = "";
     }
 
@@ -96,6 +103,9 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "flag": "edit"
         }).subscribe(result => {
             var dataset = result.data;
+            _this.firstnam=dataset[0].firstnam;
+            _this.middlenam=dataset[0].middlenam;
+            _this.lastnam=dataset[0].lastnam;
             _this.adrbookid = dataset[0].id;
             _this.adr1 = dataset[0].address1;
             _this.adr2 = dataset[0].address2;
@@ -110,9 +120,9 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.adrtype = dataset[0].adrtype;
             _this.chkprimary = dataset[0].isprimary;
             _this.landmark = dataset[0].landmark;
-            _this.chkpri=dataset[0].isprimary;
+            _this.chkpri = dataset[0].isprimary;
             setTimeout(function () {
-                $(".addr1").focus();
+                $(".firstnam").focus();
             }, 500);
         }, err => {
             console.log("Error");
@@ -127,6 +137,9 @@ export class AddrbookComp implements OnInit, OnDestroy {
         var that = this;
         var Param = {
             "adrid": that.adrbookid,
+            "firstnam":that.firstnam,
+            "middlenam":that.middlenam,
+            "lastnam":that.lastnam,
             "adr1": that.adr1,
             "adr2": that.adr2,
             "mob": that.mob == "" ? 0 : that.mob,
@@ -154,29 +167,31 @@ export class AddrbookComp implements OnInit, OnDestroy {
     }
 
     SaveAdr() {
-        if(this.adr1=="")
-        {
-            alert("Please enter address1");
+        if (this.firstnam == "") {
+            this._msg.Show(messageType.info, "info", "Please enter first name");
+            $(".firstnam").focus();
+            return;
+        }
+        if (this.adr1 == "") {
+            this._msg.Show(messageType.info, "info", "Please enter address1");
             $(".addr1").focus();
-            return ;
+            return;
         }
-        if(this.mob=="")
-        {
-            alert("Please enter Primary Mobile No");
+        if (this.mob == "") {
+            this._msg.Show(messageType.info, "info", "Please enter Primary Mobile No");
             $(".prymob").focus();
-            return ;
+            return;
         }
-        if(this.email=="")
-        {
-            alert("Please enter address1");
+        if (this.email == "") {
+            this._msg.Show(messageType.info, "info", "Please enter primary email");
             $(".email").focus();
-            return ;
+            return;
         }
-        if(this.country==0)
-        {
+        if (this.country == 0) {
             alert("Please select conutry");
+            this._msg.Show(messageType.info, "info", "Please select conutry");
             $(".country").focus();
-            return ;
+            return;
         }
         var that = this;
         that._adrbookservice.saveAdrBook(
@@ -184,7 +199,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         ).subscribe(result => {
             var dataset = result.data;
             if (dataset[0].funsave_addressbook.maxid > 0) {
-                alert("Data Save Siccessfully");
+                  this._msg.Show(messageType.success, "success", "Data save successfully");
                 that.ClearControll();
                 that.getAddress();
                 $('#myModal').modal('hide');

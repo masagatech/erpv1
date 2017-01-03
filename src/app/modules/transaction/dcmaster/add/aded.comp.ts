@@ -435,6 +435,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         for (var i = 0; i < this.newAddRow.length; i++) {
             if (this.newAddRow[i].ItemsName == this.ItemsName) {
                 this.Duplicateflag = false;
+                break;
             }
         }
         if (this.Duplicateflag == true) {

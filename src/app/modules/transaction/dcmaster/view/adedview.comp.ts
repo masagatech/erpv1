@@ -109,23 +109,22 @@ export class dcview implements OnInit, OnDestroy {
 
     OpenEdit(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/transaction/dcmaster/edit', row.DcNo]);
+            this._router.navigate(['/transaction/dcmaster/edit', row.dcno]);
         }
     }
 
     expandDetails(row) {
-        row.Details=[];
+        row.Details = [];
         if (row.issh == 0) {
             row.issh = 1;
             if (row.Details.length === 0) {
                 this.dcviewServies.getDcmasterView({
-                    "FilterType": "Details",
-                    "DCNo": row.DcNo,
-                    "CmpCode": "Mtech",
-                    "FY": 5
+                    "flag": "Details",
+                    "doc": row.dcno,
+                    "cmpid": 1,
+                    "fy": 5
                 }).subscribe(data => {
-                    var detailsdata = data.data;
-                    row.Details = detailsdata.Table;
+                    row.Details = data.data;
                 }, err => {
                     console.log("Error");
                 }, () => {
