@@ -20,22 +20,34 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     @Input() isRaw: boolean = false;
     @Output() onStart = new EventEmitter();
     @Output() onComplete = new EventEmitter();
+    public progress: number = 0;
 
     constructor(private _attachservice: AttachService) {
 
     }
 
-    uploadedFiles: any[] = [];
+    uploadedFiles: any = [];
 
     onUpload(event) {
         var that = this;
-        debugger;
-        var xhr = JSON.parse(event.xhr.response); 
-        console.log(xhr);
+        var i = 0;
+        var path = null;
 
-        for (let file of xhr) {
-            this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.path, "type": file.type });
+        if (that.multi) {
+            for (let file of event.files) {
+                this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
+                console.log(file);
+            }
         }
+        else {
+            this.uploadedFiles = [];
+            var file = event.files[0];
+            console.log(file);
+            
+            this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
+        }
+
+        console.log(this.uploadedFiles);
 
         var saveAttach = {
             "files": that.uploadedFiles,
@@ -45,7 +57,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         }
 
         if (that.isRaw) {
-            console.log(that.uploadedFiles);
             that.onComplete.emit(saveAttach);
         }
         else {
