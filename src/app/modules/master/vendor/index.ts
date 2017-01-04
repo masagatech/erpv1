@@ -4,8 +4,8 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
 
-import { CustAdd } from './add/add.comp';                
-import { CustView } from './view/view.comp';             
+import { VenAdd } from './add/add.comp';
+import { VenView } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,7 @@ import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 @Component({
     template: '<router-outlet></router-outlet>'
 })
-export class CustomerComp {
+export class VendorComp {
     constructor() {
     }
 }
@@ -22,16 +22,16 @@ export class CustomerComp {
 const routerConfig = [
     {
         path: '',
-        component: CustomerComp,
+        component: VendorComp,
         canActivate: [AuthGuard],
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: CustAdd, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: CustAdd, canActivateChid: [AuthGuard], },
-                    { path: 'view', component: CustView, canActivateChid: [AuthGuard], },
-                    { path: '', component: CustView, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: VenAdd, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:id', component: VenAdd, canActivateChid: [AuthGuard], },
+                    { path: 'view', component: VenView, canActivateChid: [AuthGuard], },
+                    { path: '', component: VenView, canActivateChid: [AuthGuard], },
                 ]
             }
         ]
@@ -39,15 +39,15 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,DataTableModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule],
     declarations: [
-        CustAdd,
-        CustView,
+        VenAdd,
+        VenView,
         AddrbookComp,
-        CustomerComp
+        VendorComp
     ],
     providers: [AuthGuard]
 })
 
-export default class CustomerModule {
+export default class VendorModule {
 }

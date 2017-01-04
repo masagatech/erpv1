@@ -5,6 +5,8 @@ import { AuthGuard } from '../../_service/authguard-service';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { MasterDashboardComp } from '../master/dashboard/dashboard.comp';
 
+// import { AddrbookComp } from '../usercontrol/addressbook/adrbook.comp';
+
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -29,6 +31,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'vendor', loadChildren: () => System.import('./vendor').then((comp: any) => {
+              return comp.default;
+            }),
+          },
           
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]
@@ -38,9 +45,10 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+  imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule ],
   declarations: [
-    //Common Module
+    //Common Module,
+   // AddrbookComp,
     MasterComp,
     MasterDashboardComp,
   ],
