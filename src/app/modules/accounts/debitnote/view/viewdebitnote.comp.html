@@ -31,32 +31,32 @@
 			<tr>
 				<td>
 					<button (click)="expandDetails(row)">
-						<i class="{{row.IsCollapse == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
+						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
 					</button>
 				</td>
 				<td>
-					<a role="button" (click)="openDNDetails(row)">{{row.DocNo}}</a>
+					<a role="button" (click)="openDNDetails(row)">{{row.docno}}</a>
 				</td>
 				<td>
-					{{row.FormattedDocDate}}
+					{{row.docdate}}
 				</td>
 				<td>
-					{{row.AccCode}}
+					{{row.acid}}
 				</td>
 				<td>
-					{{row.AccName}}
+					{{row.acname}}
 				</td>
 				<td class="text-right">
-					{{row.DebitAmount | number}}
+					{{row.totdramt | number}}
 				</td>
 				<td class="text-right">
-					{{row.CreditAmount | number}}
+					{{row.totcramt | number}}
 				</td>
 				<td rowspan="3">
-					{{row.IsCollapse == 1 ? row.Narration : row.SmallNarration}}
+					{{row.issh == 1 ? row.narration : row.smallnarr}}
 				</td>
 			</tr>
-			<tr [style.display]="row.IsCollapse == 0?'none':''">
+			<tr [style.display]="row.issh == 0?'none':''">
 				<td></td>
 				<td></td>
 				<td></td>
@@ -72,10 +72,10 @@
 						</thead>
 						<tbody *ngFor="let drow of row.Details">
 							<tr class="textTop">
-								<td>{{drow.AccCode}}</td>
-								<td>{{drow.AccName}}</td>
-								<td class="text-right">{{drow.DebitAmount | number}}</td>
-								<td class="text-right">{{drow.CreditAmount | number}}</td>
+								<td>{{drow.acid}}</td>
+								<td>{{drow.acname}}</td>
+								<td class="text-right">{{drow.dramt | number}}</td>
+								<td class="text-right">{{drow.cramt | number}}</td>
 							</tr>
 						</tbody>
 					</table>

@@ -23,15 +23,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private _dnservice: DNService, private _userService: UserService) {
-
-        //get login user details 
-        this.loginUser = this._userService.getUser();
-
-        if (this.loginUser == null) {
-            return;
-        }
-
-        this._dnservice.getDebitNote({ "flag": "docrange", "FY": "5", "DNAutoID": "0", "FromDocNo": "1801", "ToDocNo": "1900" }).subscribe(data => {
+        this._dnservice.getDebitNote({ "flag": "docrange", "fyid": "7", "DNAutoID": "0", "fromdocno": "1", "todocno": "100" }).subscribe(data => {
             this.viewDebitNoteDT = data.data;
         }, err => {
             console.log("Error");
@@ -41,10 +33,10 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     }
 
     expandDetails(row) {
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
+        if (row.issh == 0) {
+            row.issh = 1;
             if (row.details.length === 0) {
-                this._dnservice.getDebitNote({ "flag": "details", "DNAutoID": row.DocNo }).subscribe(data => {
+                this._dnservice.getDebitNote({ "flag": "details", "docno": row.docno }).subscribe(data => {
                     row.details = data.data;
                 }, err => {
                     console.log("Error");
@@ -53,7 +45,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
                 })
             }
         } else {
-            row.IsCollapse = 0;
+            row.issh = 0;
         }
     }
 
