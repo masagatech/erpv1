@@ -1,6 +1,6 @@
 <p-growl [value]="msgs"></p-growl>
 
-<p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="image/*"
+<p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept=".gif,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
     maxFileSize="1000000" auto="auto">
     <template pTemplate type="content">
         <div *ngIf="uploadedFiles.length">
@@ -10,10 +10,10 @@
                         {{file.name}}
                     </div>
                     <div class="col-md-4">
-                        <b>Size : </b> {{file.size}}
+                        <b>Size : </b> {{formatSizeUnits(file.size)}}
                     </div>
                     <div class="col-md-4">
-                       <b>Type : </b> {{file.type}}
+                        <i class="{{file.type}}"></i>
                     </div>
                 </div>
             </div>

@@ -98,7 +98,7 @@
 		<div id="Personal" class="panel-collapse collapse in">
 			<div class="panel-body">
 				<fileupload [module]="module" [multi]="true" [isRaw]="false" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
-				<div [style.display]="uploadedfile.length == 0?'none':''" class="ui-fileupload-content ui-widget-content ui-corner-bottom">
+				<!--<div [style.display]="uploadedfile.length == 0?'none':''" class="ui-fileupload-content ui-widget-content ui-corner-bottom">
 					<div *ngFor="let file of uploadedfile">
 						<div class="row">
 							<div class="col-md-4">
@@ -112,7 +112,7 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div>-->
 			</div>
 		</div>
 	</div>

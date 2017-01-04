@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { FileUploadModule, FileUpload } from 'primeng/primeng';
 import { AttachService } from '../../../_service/attach/attach-service' /* add reference for ass attach */
+import { CommonService } from '../../../_service/common/common-service' /* add reference for view file type */
 
 declare var $: any;
 
@@ -22,11 +23,34 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     @Output() onComplete = new EventEmitter();
     public progress: number = 0;
 
-    constructor(private _attachservice: AttachService) {
+    constructor(private _attachservice: AttachService, private _commonservice: CommonService) {
 
     }
 
     uploadedFiles: any = [];
+
+    formatSizeUnits(bytes) {
+        if (bytes >= 1073741824) {
+            bytes = (bytes / 1073741824).toFixed(2) + ' GB';
+        }
+        else if (bytes >= 1048576) {
+            bytes = (bytes / 1048576).toFixed(2) + ' MB';
+        }
+        else if (bytes >= 1024) {
+            bytes = (bytes / 1024).toFixed(2) + ' KB';
+        }
+        else if (bytes > 1) {
+            bytes = bytes + ' bytes';
+        }
+        else if (bytes == 1) {
+            bytes = bytes + ' byte';
+        }
+        else {
+            bytes = '0 byte';
+        }
+
+        return bytes;
+    }
 
     onUpload(event) {
         var that = this;
@@ -35,14 +59,28 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
         if (that.multi) {
             for (let file of event.files) {
-                this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
+                this._commonservice.getMOM({ "flag": "allowedext", "val": file.name.split('.').pop() }).subscribe(data => {
+                    var filetype = data.data[0].fileicon;
+                    this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": filetype });
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    console.log("Complete");
+                })
             }
         }
         else {
             this.uploadedFiles = [];
             var file = event.files[0];
-            
-            this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
+
+            this._commonservice.getMOM({ "flag": "allowedext", "val": file.name.split('.').pop() }).subscribe(data => {
+                var filetype = data.data[0].fileicon;
+                this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": filetype });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                console.log("Complete");
+            })
         }
 
         console.log(this.uploadedFiles);
