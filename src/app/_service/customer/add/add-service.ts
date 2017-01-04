@@ -17,4 +17,8 @@ export class CustomerAddService {
     getcustomer(req: any) {
         return this._dataserver.post("getcustomer", req);
     }
+
+    getctrldetail(req: any) {
+        return this._dataserver.post("getctrldetails", req);
+    }
 }

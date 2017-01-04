@@ -3,7 +3,7 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { CustomerAddService } from "../../../../_service/customer/add/add-service";
+import { VendorAddService } from "../../../../_service/vendor/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -11,25 +11,21 @@ import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 @Component({
     templateUrl: 'add.comp.html',
-    providers: [CustomerAddService, CommonService]                    
+    providers: [VendorAddService, CommonService]
 
-}) export class CustAdd implements OnInit, OnDestroy {
+}) export class VenAdd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     //Add Local Veriable
-    custid: any = 0;
+    venid: any = 0;
     code: any = "";
-    Custname: any = "";
-    warehouse: any = 0;
+    vendor: any = "";
     dayslist: any = [];
     keyvallist: any = [];
-    warehouselist: any = [];
     debitlist: any = [];
     creditlist: any = [];
-    billadr: any = "";
     shippingchk: boolean = false;
-    shippingadr: any = "";
     issh: any = 0;
     key: any = "";
     value: any = "";
@@ -41,19 +37,15 @@ declare var $: any;
     remark: any = "";
     attrname: any = "";
     attrid: any = 0;
-    ctrlname: any = "";
-    ctrlid: any = 0;
     attrlist: any = [];
-    Ctrllist: any = [];
     attrtable: boolean = true;
-    ctrlhide: boolean = true;
     profflag: boolean = true;
     constflag: boolean = true;
 
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private CustAddServies: CustomerAddService, private _autoservice: CommonService,
+        private vendorAddServies: VendorAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService) {
     }
     //Add Save Edit Delete Button
@@ -71,8 +63,8 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.custid = params['id'];
-                this.EditCust(this.custid);
+                this.venid = params['id'];
+                this.EditVen(this.venid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -88,6 +80,7 @@ declare var $: any;
 
     //attribute list Add Div
     AttributeAdd() {
+        debugger;
         this.attrlist.push({
             'attrname': this.attrname,
             'value': this.attrid
@@ -98,11 +91,10 @@ declare var $: any;
 
     //Get Company And Warehouse Dropdown Bind
     getcustomerdrop() {
-        this.CustAddServies.getCustomerdrop({
+        this.vendorAddServies.getVendordrop({
             "cmpid": 1,
             "createdby": "admin"
         }).subscribe(result => {
-            this.warehouselist = result.data[0];
             this.debitlist = result.data[1];
             this.creditlist = result.data[1];
             this.dayslist = result.data[2];
@@ -169,46 +161,33 @@ declare var $: any;
 
     //Final Save Clear Controll 
     ClearControll() {
-        this.custid = 0;
+        this.venid = 0;
         this.code = "";
-        this.Custname = "";
-        this.warehouse = "";
-        this.billadr = "";
-        this.shippingadr = "";
+        this.vendor = "";
         this.shippingchk = false;
         this.issh = 0;
+        this.days = 0;
         this.remark = "";
-        this.warehouselist=[];
-        this.keyvallist=[];
-        this.debit=0;
-        this.credit=0;
-        this.days=0;
-        this.ope="";
+        this.keyvallist = [];
+        this.attrlist = [];
+        this.debit = 0;
+        this.credit = 0;
+        this.ope = "";
     }
 
     //Edit Customer 
-    EditCust(id) {
-        this.CustAddServies.getcustomer({
+    EditVen(id) {
+        this.vendorAddServies.getvendor({
             "cmpid": 1,
             "flag": "Edit",
-            "custid": id
+            "venid": id
         }).subscribe(result => {
-            this.custid = result.data[0][0].autoid;
+            console.log(result);
+            this.venid = result.data[0][0].autoid;
             this.code = result.data[0][0].code;
-            this.Custname = result.data[0][0].custname;
-            this.warehouselist = result.data[0][0].warehouseid;
+            this.vendor = result.data[0][0].vendor;
             this.keyvallist = result.data[0][0].keyval;
             this.attrlist = result.data[0][0].attr;
-            if(result.data[0][0].ctrl.length>0)
-            {
-                this.Ctrllist = result.data[0][0].ctrl;
-                this.ctrlhide=false;
-            }
-            else
-            {
-                this.ctrlhide=true;
-            }
-            
             this.debit = result.data[0][0].debit;
             this.credit = result.data[0][0].credit;
             this.ope = result.data[0][0].op;
@@ -219,26 +198,6 @@ declare var $: any;
         }, () => {
             console.log("Done");
         })
-    }
-
-    //Multipal Warehouse Selection Create a Json
-    warehousejson() {
-        var warehouseid = [];
-        for (let wareid of this.warehouselist) {
-            if (wareid.Warechk == true) {
-                warehouseid.push({ "value": wareid.value,"Warechk":wareid.Warechk });
-            }
-        }
-        return warehouseid;
-    }
-
-    Ctrljson() {
-        var Ctrllistdet = [];
-        for (let ctrid of this.Ctrllist) {
-                Ctrllistdet.push({ "ctrlname": ctrid.ctrlname, "proftcode": ctrid.proftcode,
-                 "costcode": ctrid.costcode,"profflag":ctrid.profflag,"constflag":ctrid.constflag });
-        }
-        return Ctrllistdet;
     }
 
     //Autocompleted Attribute Name
@@ -267,116 +226,12 @@ declare var $: any;
         })
     }
 
-    //Autocompleted Control Center
-    getAutoCompleteCtrl(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({ "type": "ctrl", "search": that.ctrlname, "cmpid": 1, "FY": 5 }).subscribe(data => {
-            $(".ctrl").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.ctrlid = ui.item.value;
-                    me.ctrlname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    Ctrl() {
-        setTimeout(function () {
-            $(".ctrl").val("");
-            $(".ctrl").focus();
-        }, 100)
-    }
-
-    //Add New Controll Center
-    AddNewCtrl() {
-        if (this.ctrlname == "") {
-            this._msg.Show(messageType.info, "info", "Please enter control name");
-            $(".ctrl").focus()
-            return;
-        }
-        this.CustAddServies.getctrldetail({
-            "id": this.ctrlid,
-            "cmpid": 1
-        }).subscribe(result => {
-            if (result.data.length > 0) {
-                this.Duplicateflag = true;
-                for (var i = 0; i < this.Ctrllist.length; i++) {
-                    if (this.Ctrllist[i].ctrlname == this.ctrlname) {
-                        this.Duplicateflag = false;
-                        break;
-                    }
-                }
-                if (this.Duplicateflag == true) {
-                    this.Ctrllist.push({
-                        "ctrlname": result.data[0].ctrlname,
-                        "proftcode": result.data[0].proftcode,
-                        "costcode": result.data[0].costcode,
-                        "profflag": this.profflag,
-                        "constflag": this.constflag
-                    });
-                    this.ctrlhide = false;
-                    this.ctrlid = 0;
-                    this.ctrlname = "";
-                    $(".ctrl").focus();
-
-                }
-                else {
-                    this._msg.Show(messageType.info, "info", "Duplicate control center");
-                    this.ctrlname = "";
-                    $(".ctrl").focus();
-                    return;
-                }
-            }
-            else {
-                this._msg.Show(messageType.info, "info", "Control name Not found");
-                this.ctrlname = "";
-                $(".ctrl").focus();
-                return;
-            }
-
-        }, err => {
-            console.log("Error")
-        }, () => {
-            console.log("completed")
-        })
-    }
-
-    //Delete Control Center Row
-    DeleteCtrl(row) {
-        var index = -1;
-        for (var i = 0; i < this.Ctrllist.length; i++) {
-            if (this.Ctrllist[i].ctrlname === row.ctrlname) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.Ctrllist.splice(index, 1);
-        $(".ctrl").focus();
-    }
-
     //Paramter Wth Json
     paramterjson() {
         var param = {
-            "custid": this.custid,
+            "venid": this.venid,
             "code": this.code,
-            "custname": this.Custname,
-            "warehouse": this.warehousejson(),
+            "vendor": this.vendor,
             "keyval": this.keyvallist,
             "attr": this.attrlist,
             "days": this.days == "" ? 0 : this.days,
@@ -385,7 +240,6 @@ declare var $: any;
             "op": this.ope == "" ? 0 : this.ope,
             "cmpid": 1,
             "remark": this.remark,
-            "ctrl": this.Ctrljson(),
             "createdby": "admin"
         }
         return param;
@@ -394,32 +248,32 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "back") {
-            this._router.navigate(['master/customer/view']);
+            this._router.navigate(['master/vendor/view']);
         }
         if (evt === "save") {
             if (this.code == "") {
-                this._msg.Show(messageType.info, "info", "Please enter customer code");
+                this._msg.Show(messageType.info, "info", "Please enter vendor code");
                 $(".code").focus();
                 return;
             }
-            if (this.Custname == "") {
-                this._msg.Show(messageType.info, "info", "Please enter customer first name");
-                $(".firstname").focus();
+            if (this.vendor == "") {
+                this._msg.Show(messageType.info, "info", "Please enter vendor name");
+                $(".vendor").focus();
                 return;
             }
-            this.CustAddServies.saveCustomer(
+            this.vendorAddServies.saveVendor(
                 this.paramterjson()
             ).subscribe(result => {
                 var dataset = result.data;
-                 if (dataset[0].funsave_customer.maxid == '-1') {
+                if (dataset[0].funsave_vendor.maxid == '-1') {
                     this._msg.Show(messageType.info, "info", "Data already exists");
                     $(".code").focus();
                     return;
                 }
-                if (dataset[0].funsave_customer.maxid > 0) {
+                if (dataset[0].funsave_vendor.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data save successfully");
-                    this.ClearControll();
                     $(".code").focus();
+                    this.ClearControll();
                 }
             }, err => {
                 console.log("Error");
@@ -454,26 +308,6 @@ declare var $: any;
             $(".val").val("");
             $(".key").focus();
         }, 100);
-    }
-
-    //Warehouse Tab Click Event 
-    TabWare() {
-        if (this.issh == 0) {
-            this.issh = 1;
-            this.CustAddServies.getCustomerdrop({
-                "cmpid": 1,
-                "createdby": "admin"
-            }).subscribe(result => {
-                this.warehouselist = result.data[0];
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } else {
-            this.issh == 0;
-        }
-
     }
 
     ngOnDestroy() {
