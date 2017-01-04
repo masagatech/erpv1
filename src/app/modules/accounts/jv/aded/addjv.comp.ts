@@ -19,6 +19,8 @@ export class AddJV implements OnInit, OnDestroy {
     jvmid: number = 0;
     docdate: any = "";
     narration: string = "";
+    docfile: any = [];
+    uploadedfile: any = [];
 
     jvRowData: any[] = [];
 
@@ -30,14 +32,17 @@ export class AddJV implements OnInit, OnDestroy {
     newdetnarr: string = "";
 
     counter: any;
-    title: any;
+    title: string = "";
+    module: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     private subscribeParameters: any;
 
-    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _jvservice: JVService, private _commonservice: CommonService) {
+    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _jvservice: JVService, private _commonservice: CommonService) {
+        this.module = "JV";
         this.docdate = Date.now();
     }
 
@@ -137,7 +142,8 @@ export class AddJV implements OnInit, OnDestroy {
             that.jvmid = jvdata[0].jvmid;
             that.docdate = jvdata[0].docdate;
             that.narration = jvdata[0].narration;
-
+            that.uploadedfile = jvdata[0].uploadedfile == null ? [] : jvdata[0].uploadedfile;
+            that.docfile = jvdata[0].docfile == null ? [] : jvdata[0].docfile;
             that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
@@ -161,12 +167,25 @@ export class AddJV implements OnInit, OnDestroy {
 
     // save jv
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     saveJVData() {
         var saveJV = {
             "jvmid": this.jvmid,
             "fyid": "7",
             "cmpid": "2",
             "docdate": this.docdate,
+            "docfile": this.docfile,
             "narration": this.narration,
             "createdby": "1:vivek",
             "updatedby": "1:vivek",
@@ -175,7 +194,6 @@ export class AddJV implements OnInit, OnDestroy {
 
         this._jvservice.saveJVDetails(saveJV).subscribe(data => {
             var dataResult = data.data;
-            debugger;
             console.log(dataResult);
 
             if (dataResult[0].funsave_jv.msgid != "-1") {

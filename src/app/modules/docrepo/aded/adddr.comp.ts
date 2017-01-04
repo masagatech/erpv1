@@ -37,22 +37,29 @@ export class AddDR implements OnInit, OnDestroy {
     TagDT: any = [];
     drRowData: any = [];
 
-    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _drservice: DRService, private _commonservice: CommonService) {
-        this._commonservice.getMOM({ "flag": "DocType" }).subscribe(data => {
-            this.TagDT = data.data;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            console.log("Complete");
-        })
+    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _drservice: DRService, private _commonservice: CommonService) {
+        this.getDocType();
+    }
+
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        //this.attachfile = e.files[0].path;
+        this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
     // Get User Auto
 
-    getAutoComplete() {
-        this._commonservice.getAutoData({ "Type": "userwithcode", "Key": this.uname }).subscribe(data => {
-            $(".empame").autocomplete({
-                source: JSON.parse(data.data),
+    getUserAuto(me: any) {
+        debugger;
+        var that = this;
+
+        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+            $(".uname").autocomplete({
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -62,14 +69,25 @@ export class AddDR implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    this.EmpName = ui.item.label;
-                    this.EmpCode = ui.item.value;
+                    me.uid = ui.item.value;
+                    me.uname = ui.item.label;
                 }
             });
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
+        })
+    }
+
+    getDocType() {
+        debugger;
+        this._commonservice.getMOM({ "flag": "", "group": "DocType" }).subscribe(data => {
+            this.TagDT = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
         })
     }
 
@@ -104,8 +122,7 @@ export class AddDR implements OnInit, OnDestroy {
 
     getDRDataByID(puid: number) {
         this._drservice.getDocRepo({ "flag": "id", "uid": puid }).subscribe(data => {
-            //this.drRowData = JSON.parse(data.data);
-            var viewEmpData = JSON.parse(data.data);
+            var viewEmpData = data.data;
 
             this.uid = viewEmpData[0].uid;
             this.uname = viewEmpData[0].fullname;
@@ -122,9 +139,7 @@ export class AddDR implements OnInit, OnDestroy {
         }
 
         this._drservice.saveDocRepo(saveDR).subscribe(data => {
-            var dataResult = JSON.parse(data.data);
-            debugger;
-            console.log(dataResult);
+            var dataResult = data.data;
 
             if (dataResult[0].Doc != "-1") {
                 alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
@@ -141,9 +156,6 @@ export class AddDR implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.title = "Add dn";
-        console.log('ngOnInit');
-
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -152,11 +164,21 @@ export class AddDR implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
+            if (params['uid'] !== undefined) {
+                this.title = "Edit Document Repository";
 
-            this.uid = params['uid'];
-            this.getDRDataByID(this.uid);
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                this.uid = params['uid'];
+                this.getDRDataByID(this.uid);
+            }
+            else {
+                this.title = "Add Document Repository";
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
         });
     }
 

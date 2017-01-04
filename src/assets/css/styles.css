@@ -1041,6 +1041,19 @@ html select[disabled] {
     padding: 5px!important;
 }
 
+.sidepan .row {
+    border-bottom: solid 1px #000000;
+    padding: 10px 0;
+}
+
+.sidepan .col-md-4 {
+    width:100%!important;
+}
+
+.ui-fileupload-content {
+    padding: 0 16px!important;
+}
+
 .ui-fileupload-highlight {
     background-color: #ccc!important;
 }

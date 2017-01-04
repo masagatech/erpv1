@@ -36,13 +36,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         if (that.multi) {
             for (let file of event.files) {
                 this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
-                console.log(file);
             }
         }
         else {
             this.uploadedFiles = [];
             var file = event.files[0];
-            console.log(file);
             
             this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": file.type });
         }

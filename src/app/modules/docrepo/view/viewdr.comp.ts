@@ -100,14 +100,14 @@ export class ViewDR implements OnInit, OnDestroy {
         var that = this;
 
         if (evt === "add") {
-            that._router.navigate(['/documentrepository/add']);
+            that._router.navigate(['/docrepo/add']);
         }
         if (evt === "edit") {
             if (that.selecteduid == 0) {
                 alert("Please select 1 User !!!!")
             }
             else {
-                that._router.navigate(['/documentrepository/edit', that.selecteduid]);
+                that._router.navigate(['/docrepo/edit', that.selecteduid]);
             }
         }
     }
@@ -126,39 +126,5 @@ export class ViewDR implements OnInit, OnDestroy {
 
         that.subscr_actionbarevt.unsubscribe();
         console.log('ngOnDestroy');
-    }
-
-    getDRAutoComplete() {
-        this._commservice.getMOM({ "flag": "userwithcode" }).subscribe(data => {
-            $(function () {
-                this.viewAutoEmpData = JSON.parse(data.data);
-
-                var finalData = $.map(this.viewAutoEmpData, function (item) {
-                    return {
-                        label: item.Name
-                    }
-                });
-
-                $("#empname").autocomplete({
-                    source: finalData,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 2,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        this.EmpCode = ui.item.value;
-                        this.EmpName = ui.item.label;
-                    }
-                });
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 }

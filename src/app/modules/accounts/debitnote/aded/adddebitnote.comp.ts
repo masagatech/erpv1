@@ -23,6 +23,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
     dndate: any = "";
     dramt: any = "";
     narration: string = "";
+    docfile: any = [];
+    uploadedfile: any = [];
 
     dnRowData: any = [];
     viewDNData: any = [];
@@ -34,15 +36,17 @@ export class AddDebitNote implements OnInit, OnDestroy {
     newcramt: any = "";
 
     counter: any;
-    title: any;
+    title: string = "";
+    module: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     private subscribeParameters: any;
 
-    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _dnservice: DNService, private _commonservice: CommonService) {
-
+    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _dnservice: DNService, private _commonservice: CommonService) {
+        this.module = "Debit Note";
     }
 
     isDuplicateacid() {
@@ -125,16 +129,20 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     getDNDataByID(pdnid: number) {
-        this._dnservice.getDebitNote({ "flag": "edit", "dnid": pdnid }).subscribe(data => {
-            this.viewDNData = JSON.parse(data.data);
+        var that = this;
 
-            this.dnid = this.viewDNData[0].DNAutoID;
-            this.dnacid = this.viewDNData[0].acid;
-            this.dnacname = this.viewDNData[0].acname;
-            this.dndate = this.viewDNData[0].DocDate;
-            this.narration = this.viewDNData[0].Narration;
+        that._dnservice.getDebitNote({ "flag": "edit", "dnid": pdnid }).subscribe(data => {
+            var dndata = data.data;
 
-            this.getDNDetailsByID(pdnid);
+            that.dnid = dndata[0].DNAutoID;
+            that.dnacid = dndata[0].acid;
+            that.dnacname = dndata[0].acname;
+            that.dndate = dndata[0].DocDate;
+            that.narration = dndata[0].Narration;
+            that.uploadedfile = dndata[0].uploadedfile == null ? [] : dndata[0].uploadedfile;
+            that.docfile = dndata[0].docfile == null ? [] : dndata[0].docfile;
+
+            that.getDNDetailsByID(pdnid);
         }, err => {
             console.log("Error");
         }, () => {
@@ -260,6 +268,14 @@ export class AddDebitNote implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         }
+    }
+
+    onUploadStart(e) {
+
+    }
+
+    onUploadComplete(e) {
+
     }
 
     ngOnDestroy() {
