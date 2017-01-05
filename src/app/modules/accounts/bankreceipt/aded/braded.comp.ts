@@ -35,6 +35,9 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     Remark3: any = "";
     BankNamelist: any = [];
     Typelist: any = [];
+    
+    docfile: any = [];
+    uploadedFiles: any = [];
 
     //constructor Call Method 
 
@@ -62,6 +65,8 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             this.ChequeNo = dataset[0].cheqno;
             this.Amount = dataset[0].amount;
             this.Naration = dataset[0].naration;
+            this.uploadedFiles.push(dataset[0].uploadedfile);
+            this.docfile.push(dataset[0].docfile);
         }, err => {
             console.log('Error');
         }, () => {
@@ -98,6 +103,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             "cheqno": this.ChequeNo,
             "amount": this.Amount,
             "naration": this.Naration,
+            "docfile": this.docfile,
             "remark1": "Remark1",
             "remark2": "Remark2",
             "remark3": "Remark3"

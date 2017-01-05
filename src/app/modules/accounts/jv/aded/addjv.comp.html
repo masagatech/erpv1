@@ -89,30 +89,28 @@
 			<div class="panel-body"></div>
 		</div>
 	</div>
+	<fileupload [module]="module" [multi]="true" [isRaw]="false" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
 	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">Supporting Docs</h3>
-			</a>
-		</div>
-		<div id="Personal" class="panel-collapse collapse in">
-			<div class="panel-body">
-				<fileupload [module]="module" [multi]="true" [isRaw]="false" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
-				<!--<div [style.display]="uploadedfile.length == 0?'none':''" class="ui-fileupload-content ui-widget-content ui-corner-bottom">
-					<div *ngFor="let file of uploadedfile">
-						<div class="row">
-							<div class="col-md-4">
-								{{file.name}}
-							</div>
-							<div class="col-md-4">
-								<b>Size : </b> {{file.size}}
-							</div>
-							<div class="col-md-4">
-								<b>Type : </b> {{file.type}}
-							</div>
+		<div class="panel-body">
+			<div class="ui-fileupload-content ui-widget-content ui-corner-bottom">
+				<div *ngFor="let file of uploadedFiles">
+					<div class="row">
+						<div class="col-md-4" [style.display]="file.name == null?'none':''">
+							{{file.name}}
+						</div>
+						<div class="col-md-4" [style.display]="file.size == null?'none':''">
+							<b>Size : </b> {{file.size}}
+						</div>
+						<div class="col-md-4" [style.display]="file.type == null?'none':''">
+							<b>Type : </b> {{file.type}}
 						</div>
 					</div>
-				</div>-->
+					<div class="row">
+						<div class="col-md-12" [style.display]="file.type != null?'none':''">
+							No any Docs
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

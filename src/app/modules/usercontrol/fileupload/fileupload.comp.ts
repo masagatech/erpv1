@@ -21,10 +21,13 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     @Input() isRaw: boolean = false;
     @Output() onStart = new EventEmitter();
     @Output() onComplete = new EventEmitter();
-    public progress: number = 0;
+
+    filetype: string = "";
+    filesize: string = "";
 
     constructor(private _attachservice: AttachService, private _commonservice: CommonService) {
-
+        this.getFileVal("filetype");
+        this.getFileVal("filesize");
     }
 
     uploadedFiles: any = [];
@@ -52,16 +55,44 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         return bytes;
     }
 
+    getFileVal(flag) {
+        var that = this;
+
+        that._commonservice.getMOM({ "flag": flag }).subscribe(data => {
+            if (flag == "filetype") {
+                that.filetype = data.data[0].filetype;
+            }
+            else if (flag == "filesize") {
+                that.filesize = data.data[0].filesize;
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
+        })
+    }
+
+    removeFileUpload() {
+        this.uploadedFiles.splice(0, 1);
+    }
+
     onUpload(event) {
         var that = this;
-        var i = 0;
-        var path = null;
 
         if (that.multi) {
             for (let file of event.files) {
-                this._commonservice.getMOM({ "flag": "allowedext", "val": file.name.split('.').pop() }).subscribe(data => {
-                    var filetype = data.data[0].fileicon;
-                    this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": filetype });
+                var fileext = file.name.split('.').pop();
+
+                that._commonservice.getMOM({ "flag": "fileicon", "val": fileext }).subscribe(data => {
+                    var fileicon = data.data[0].fileicon;
+                    var filetype = data.data[0].filetype;
+
+                    if (fileext == filetype) {
+                        that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": fileicon });
+                    }
+                    else {
+                        alert("This " + fileext + " is not allowed");
+                    }
                 }, err => {
                     console.log("Error");
                 }, () => {
@@ -70,20 +101,26 @@ export class FileUploadComponent implements OnInit, OnDestroy {
             }
         }
         else {
-            this.uploadedFiles = [];
+            that.uploadedFiles = [];
             var file = event.files[0];
+            var fileext = file.name.split('.').pop();
 
-            this._commonservice.getMOM({ "flag": "allowedext", "val": file.name.split('.').pop() }).subscribe(data => {
-                var filetype = data.data[0].fileicon;
-                this.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": filetype });
+            that._commonservice.getMOM({ "flag": "fileicon", "val": fileext }).subscribe(data => {
+                var fileicon = data.data[0].fileicon;
+                var filetype = data.data[0].filetype;
+
+                if (fileext == filetype) {
+                    that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": fileicon });
+                }
+                else {
+                    alert("This " + fileext + " is not allowed");
+                }
             }, err => {
                 console.log("Error");
             }, () => {
                 console.log("Complete");
             })
         }
-
-        console.log(this.uploadedFiles);
 
         var saveAttach = {
             "files": that.uploadedFiles,

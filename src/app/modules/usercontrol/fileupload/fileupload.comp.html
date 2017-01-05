@@ -1,25 +1,36 @@
-<p-growl [value]="msgs"></p-growl>
+<div class="panel panel-theme">
+    <div class="panel-heading">
+        <a data-toggle="collapse" data-parent="#accordion" href="#Docs">
+            <h3 class="panel-title">Supporting Docs</h3>
+        </a>
+    </div>
+    <div id="Docs" class="panel-collapse collapse in">
+        <div class="panel-body">
+            <p-growl [value]="msgs"></p-growl>
 
-<p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept=".gif,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
-    maxFileSize="1000000" auto="auto">
-    <template pTemplate type="content">
-        <div *ngIf="uploadedFiles.length">
-            <div *ngFor="let file of uploadedFiles">
-                <div class="row">
-                    <div class="col-md-4">
-                        {{file.name}}
+            <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="{{filetype}}"
+                maxFileSize="{{filesize}}" auto="auto">
+                <template pTemplate type="content">
+                    <div *ngIf="uploadedFiles.length">
+                        <div *ngFor="let file of uploadedFiles" class="box">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <a role="button" (click)="removeFileUpload()"><i class="fa fa-remove"></i></a>
+                                </div>
+                                <div class="col-md-5">
+                                    <i class="{{file.type}}"></i> {{file.name.substring(0, file.name.lastIndexOf('.'))}}
+                                </div>
+                                <div class="col-md-5">
+                                    <b>Size : </b> {{formatSizeUnits(file.size)}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <b>Size : </b> {{formatSizeUnits(file.size)}}
-                    </div>
-                    <div class="col-md-4">
-                        <i class="{{file.type}}"></i>
-                    </div>
-                </div>
-            </div>
+                </template>
+            </p-fileUpload>
         </div>
-    </template>
-</p-fileUpload>
+    </div>
+</div>
 
 <!--<ul *ngIf="uploadedFiles.length">
     <li *ngFor="let file of uploadedFiles">

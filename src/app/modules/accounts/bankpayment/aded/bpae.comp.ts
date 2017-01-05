@@ -36,6 +36,10 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     Refno: any = '';
     Type: any = 0;
     Issuesdate: any;
+    
+    docfile: any = [];
+    uploadedFiles: any = [];
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private BankServies: bankpaymentService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
@@ -60,6 +64,18 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
         $(".bankpay").focus();
     }
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     //Get Data With Row
 
     GetBankPayment(BankPayId) {
@@ -80,6 +96,8 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
             this.ChequeNo = dataset[0].cheqno;
             this.Amount = dataset[0].amount;
             this.Remark = dataset[0].remark;
+            this.uploadedFiles.push(dataset[0].uploadedfile);
+            this.docfile.push(dataset[0].docfile);
         }, err => {
             console.log('Error');
         }, () => {
@@ -99,6 +117,7 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
             "acid": this.CustID,
             "bankid": this.Bankid,
             "issuedate": $('#Issuesdate').datepicker('getDate'),
+            "docfile": this.docfile,
             "typ": this.Type,
             "amount": this.Amount,
             "cheqno": this.ChequeNo,

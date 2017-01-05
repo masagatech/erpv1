@@ -20,7 +20,7 @@ export class AddJV implements OnInit, OnDestroy {
     docdate: any = "";
     narration: string = "";
     docfile: any = [];
-    uploadedfile: any = [];
+    uploadedFiles: any = [];
 
     jvRowData: any[] = [];
 
@@ -135,6 +135,7 @@ export class AddJV implements OnInit, OnDestroy {
 
     getJVDataById(pjvmid: number) {
         var that = this;
+        debugger;
 
         that._jvservice.getJVDetails({ "flag": "edit", "jvmid": pjvmid }).subscribe(data => {
             var jvdata = data.data;
@@ -142,8 +143,8 @@ export class AddJV implements OnInit, OnDestroy {
             that.jvmid = jvdata[0].jvmid;
             that.docdate = jvdata[0].docdate;
             that.narration = jvdata[0].narration;
-            that.uploadedfile = jvdata[0].uploadedfile == null ? [] : jvdata[0].uploadedfile;
-            that.docfile = jvdata[0].docfile == null ? [] : jvdata[0].docfile;
+            that.uploadedFiles.push(jvdata[0].uploadedfile);
+            that.docfile.push(jvdata[0].docfile);
             that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");

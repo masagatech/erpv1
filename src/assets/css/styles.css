@@ -1041,18 +1041,23 @@ html select[disabled] {
     padding: 5px!important;
 }
 
-.sidepan .row {
+.sidepan .box {
     border-bottom: solid 1px #000000;
     padding: 10px 0;
 }
 
-.sidepan .col-md-4 {
+.sidepan .col-md-2 {
+    width:100%!important;
+    text-align: right;
+}
+
+.sidepan .col-md-5 {
     width:100%!important;
 }
 
-.ui-fileupload-content {
+/*.ui-fileupload-content {
     padding: 0 16px!important;
-}
+}*/
 
 .ui-fileupload-highlight {
     background-color: #ccc!important;
