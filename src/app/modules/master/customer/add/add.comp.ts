@@ -49,6 +49,8 @@ declare var $: any;
     ctrlhide: boolean = true;
     profflag: boolean = true;
     constflag: boolean = true;
+    adrbookid: any = [];
+    adrid: number = 0;
 
     private subscribeParameters: any;
 
@@ -386,8 +388,10 @@ declare var $: any;
             "cmpid": 1,
             "remark": this.remark,
             "ctrl": this.Ctrljson(),
-            "createdby": "admin"
+            "createdby": "admin",
+            "adrid":this.adrbookid
         }
+        console.log(param);
         return param;
     }
 

@@ -41,6 +41,9 @@ declare var $: any;
     attrtable: boolean = true;
     profflag: boolean = true;
     constflag: boolean = true;
+    adrbookid: any = [];
+    adrid: number = 0;
+
 
     private subscribeParameters: any;
 
@@ -193,6 +196,7 @@ declare var $: any;
             this.ope = result.data[0][0].op;
             this.days = result.data[0][0].days;
             this.remark = result.data[0][0].remark;
+            this.adrid = result.data[1][0].adrid;
         }, err => {
             console.log("error");
         }, () => {
@@ -226,6 +230,13 @@ declare var $: any;
         })
     }
 
+    attributeid() {
+        var attrilist = [];
+        for (let items of this.attrlist) {
+            attrilist.push({ "attrid": items.value })
+        }
+        return attrilist;
+    }
     //Paramter Wth Json
     paramterjson() {
         var param = {
@@ -233,15 +244,17 @@ declare var $: any;
             "code": this.code,
             "vendor": this.vendor,
             "keyval": this.keyvallist,
-            "attr": this.attrlist,
+            "attr": this.attributeid(),
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
             "op": this.ope == "" ? 0 : this.ope,
             "cmpid": 1,
             "remark": this.remark,
-            "createdby": "admin"
+            "createdby": "admin",
+            "adr": this.adrbookid
         }
+        console.log(param);
         return param;
     }
 
