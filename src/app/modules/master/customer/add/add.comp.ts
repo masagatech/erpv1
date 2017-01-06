@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 @Component({
     templateUrl: 'add.comp.html',
-    providers: [CustomerAddService, CommonService]                    
+    providers: [CustomerAddService, CommonService]
 
 }) export class CustAdd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
@@ -51,6 +51,7 @@ declare var $: any;
     constflag: boolean = true;
     adrbookid: any = [];
     adrid: number = 0;
+    docfile: any = [];
 
     private subscribeParameters: any;
 
@@ -90,12 +91,34 @@ declare var $: any;
 
     //attribute list Add Div
     AttributeAdd() {
-        this.attrlist.push({
-            'attrname': this.attrname,
-            'value': this.attrid
-        });
-        this.attrname = "";
-        $(".attr").focus();
+        if (this.attrid > 0) {
+            this.attrlist.push({
+                'attrname': this.attrname,
+                'value': this.attrid
+            });
+            this.attrname = "";
+            $(".attr").focus();
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            $(".attr").focus();
+            return;
+        }
+
+    }
+
+    //File Upload Start 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    //File Upload Complete 
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+        this.actionButton.find(a => a.id === "save").enabled = true;
+        console.log(this.docfile);
     }
 
     //Get Company And Warehouse Dropdown Bind
@@ -180,12 +203,12 @@ declare var $: any;
         this.shippingchk = false;
         this.issh = 0;
         this.remark = "";
-        this.warehouselist=[];
-        this.keyvallist=[];
-        this.debit=0;
-        this.credit=0;
-        this.days=0;
-        this.ope="";
+        this.warehouselist = [];
+        this.keyvallist = [];
+        this.debit = 0;
+        this.credit = 0;
+        this.days = 0;
+        this.ope = "";
     }
 
     //Edit Customer 
@@ -201,25 +224,24 @@ declare var $: any;
             this.warehouselist = result.data[0][0].warehouseid;
             this.keyvallist = result.data[0][0].keyval;
             this.attrlist = result.data[0][0].attr;
-            if(result.data[0][0].ctrl.length>0)
-            {
+            if (result.data[0][0].ctrl.length > 0) {
                 this.Ctrllist = result.data[0][0].ctrl;
-                this.ctrlhide=false;
+                this.ctrlhide = false;
             }
-            else
-            {
-                this.ctrlhide=true;
+            else {
+                this.ctrlhide = true;
             }
-            
             this.debit = result.data[0][0].debit;
             this.credit = result.data[0][0].credit;
             this.ope = result.data[0][0].op;
             this.days = result.data[0][0].days;
             this.remark = result.data[0][0].remark;
+            this.adrid=result.data[0][0].adrid;
         }, err => {
             console.log("error");
         }, () => {
             console.log("Done");
+            
         })
     }
 
@@ -228,17 +250,20 @@ declare var $: any;
         var warehouseid = [];
         for (let wareid of this.warehouselist) {
             if (wareid.Warechk == true) {
-                warehouseid.push({ "value": wareid.value,"Warechk":wareid.Warechk });
+                warehouseid.push({ "value": wareid.value, "Warechk": wareid.Warechk });
             }
         }
         return warehouseid;
     }
 
+    //Create a Json in controll
     Ctrljson() {
         var Ctrllistdet = [];
         for (let ctrid of this.Ctrllist) {
-                Ctrllistdet.push({ "ctrlname": ctrid.ctrlname, "proftcode": ctrid.proftcode,
-                 "costcode": ctrid.costcode,"profflag":ctrid.profflag,"constflag":ctrid.constflag });
+            Ctrllistdet.push({
+                "ctrlname": ctrid.ctrlname, "proftcode": ctrid.proftcode,
+                "costcode": ctrid.costcode, "profflag": ctrid.profflag, "constflag": ctrid.constflag
+            });
         }
         return Ctrllistdet;
     }
@@ -265,7 +290,7 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            // console.log("Complete");
+            this.attrid = 0;
         })
     }
 
@@ -381,6 +406,7 @@ declare var $: any;
             "warehouse": this.warehousejson(),
             "keyval": this.keyvallist,
             "attr": this.attrlist,
+            "docfile": this.docfile,
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
@@ -389,7 +415,7 @@ declare var $: any;
             "remark": this.remark,
             "ctrl": this.Ctrljson(),
             "createdby": "admin",
-            "adrid":this.adrbookid
+            "adrid": this.adrbookid
         }
         console.log(param);
         return param;
@@ -407,7 +433,7 @@ declare var $: any;
                 return;
             }
             if (this.Custname == "") {
-                this._msg.Show(messageType.info, "info", "Please enter customer first name");
+                this._msg.Show(messageType.info, "info", "Please enter customer name");
                 $(".firstname").focus();
                 return;
             }
@@ -415,7 +441,7 @@ declare var $: any;
                 this.paramterjson()
             ).subscribe(result => {
                 var dataset = result.data;
-                 if (dataset[0].funsave_customer.maxid == '-1') {
+                if (dataset[0].funsave_customer.maxid == '-1') {
                     this._msg.Show(messageType.info, "info", "Data already exists");
                     $(".code").focus();
                     return;
@@ -446,12 +472,15 @@ declare var $: any;
         }
     }
 
+    //Attribute Tab Click Event
     Attr() {
         setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
         }, 100);
     }
+
+    //Account Info Tab Click Event
     Acinfo() {
         setTimeout(function () {
             $(".key").val("");
@@ -462,21 +491,21 @@ declare var $: any;
 
     //Warehouse Tab Click Event 
     TabWare() {
-        if (this.issh == 0) {
-            this.issh = 1;
-            this.CustAddServies.getCustomerdrop({
-                "cmpid": 1,
-                "createdby": "admin"
-            }).subscribe(result => {
-                this.warehouselist = result.data[0];
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } else {
-            this.issh == 0;
-        }
+        // if (this.issh == 0) {
+        //     this.issh = 1;
+        //     this.CustAddServies.getCustomerdrop({
+        //         "cmpid": 1,
+        //         "createdby": "admin"
+        //     }).subscribe(result => {
+        //         this.warehouselist = result.data[0];
+        //     }, err => {
+        //         console.log("Error");
+        //     }, () => {
+        //         // console.log("Complete");
+        //     })
+        // } else {
+        //     this.issh == 0;
+        // }
 
     }
 

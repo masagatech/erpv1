@@ -15,7 +15,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
 
     @Input() adrbookid: any = [];
-    @Input() adrid: number = 0;
+    @Input() adrid:number = 0;
     mod: string = "";
     adr1: any = "";
     mob: any = 0;
@@ -64,17 +64,32 @@ export class AddrbookComp implements OnInit, OnDestroy {
         var that = this;
         that.ClearControll();
         that.adrid = 0;
-        setTimeout(function() {
+        setTimeout(function () {
             $(".firstnam").focus();
         }, 500);
     }
 
     public getAddress() {
         var _this = this;
-        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid": _this.adrid }).subscribe(result => {
-            _this.addrbooklist = result.data;
-            for (let items of _this.addrbooklist) {
-                _this.adrbookid.push({ "adrid": items.id });
+        console.log(_this.adrid);
+        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid":1 }).subscribe(result => {
+            var dataset = result.data;
+            if (dataset.length > 0) {
+               // _this.addrbooklist=dataset;
+                _this.addrbooklist.push({
+                    "firstnam": dataset[0].firstnam,
+                    "address1": dataset[0].address1,
+                    "city": dataset[0].city,
+                    "state": dataset[0].state,
+                    "pin": dataset[0].pin,
+                    "email": dataset[0].email,
+                    "mob": dataset[0].mob,
+                    "id": dataset[0].id,
+                    "isprimary":dataset[0].isprimary
+                });
+                for (let items of _this.addrbooklist) {
+                    _this.adrbookid.push({ "adrid": items.id });
+                }
             }
         }, err => {
             console.log("Error");
@@ -114,7 +129,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.firstnam = dataset[0].firstnam;
             _this.middlenam = dataset[0].middlenam;
             _this.lastnam = dataset[0].lastnam;
-            _this.adrbookid = dataset[0].id;
+            _this.adrid = dataset[0].id;
             _this.adr1 = dataset[0].address1;
             _this.mob = dataset[0].mob;
             _this.altmob = dataset[0].othermob;
@@ -128,7 +143,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.chkprimary = dataset[0].isprimary;
             _this.landmark = dataset[0].landmark;
             _this.chkpri = dataset[0].isprimary;
-            setTimeout(function() {
+            setTimeout(function () {
                 $(".firstnam").focus();
             }, 500);
         }, err => {
@@ -205,6 +220,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             var dataset = result.data;
             if (dataset[0].funsave_addressbook.maxid > 0) {
                 that.adrid = dataset[0].funsave_addressbook.maxid;
+                console.log(that.adrid);
                 this._msg.Show(messageType.success, "success", "Data save successfully");
                 that.ClearControll();
                 that.getAddress();
@@ -219,7 +235,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        setTimeout(function() {
+        setTimeout(function () {
 
         }, 1);
     }
