@@ -24,14 +24,34 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     filetype: string = "";
     filesize: string = "";
+    maxfilesize: string = "";
 
     constructor(private _attachservice: AttachService, private _commonservice: CommonService) {
         this.getFileVal("filetype");
         this.getFileVal("filesize");
+        this.getFileType();
+        this.getFileSize();
     }
 
-    uploadedFiles: any = [];
+    @Input() uploadedFiles: any = [];
+    fileTypeDT: any = [];
 
+    getFileType() {
+        var that = this;
+
+        that._commonservice.getMOM({ "flag": "fileicon", "type": "all" }).subscribe(data => {
+            that.fileTypeDT = data.data;
+        });
+    }
+    
+    getFileSize() {
+        var that = this;
+
+        that._commonservice.getMOM({ "flag": "filesize" }).subscribe(data => {
+            that.maxfilesize = that.formatSizeUnits(data.data[0].filesize);
+        });
+    }
+    
     formatSizeUnits(bytes) {
         if (bytes >= 1073741824) {
             bytes = (bytes / 1073741824).toFixed(2) + ' GB';
@@ -76,67 +96,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         this.uploadedFiles.splice(0, 1);
     }
 
-    onUpload(event) {
-        var that = this;
-
-        if (that.multi) {
-            for (let file of event.files) {
-                var fileext = file.name.split('.').pop();
-
-                that._commonservice.getMOM({ "flag": "fileicon", "val": fileext }).subscribe(data => {
-                    var fileicon = data.data[0].fileicon;
-                    var filetype = data.data[0].filetype;
-
-                    if (fileext == filetype) {
-                        that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": fileicon });
-                    }
-                    else {
-                        alert("This " + fileext + " is not allowed");
-                    }
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    console.log("Complete");
-                })
-            }
-        }
-        else {
-            that.uploadedFiles = [];
-            var file = event.files[0];
-            var fileext = file.name.split('.').pop();
-
-            that._commonservice.getMOM({ "flag": "fileicon", "val": fileext }).subscribe(data => {
-                var fileicon = data.data[0].fileicon;
-                var filetype = data.data[0].filetype;
-
-                if (fileext == filetype) {
-                    that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": fileicon });
-                }
-                else {
-                    alert("This " + fileext + " is not allowed");
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                console.log("Complete");
-            })
-        }
-
-        var saveAttach = {
-            "files": that.uploadedFiles,
-            "module": that.module,
-            "cmpid": 2,
-            "uid": "1:vivek"
-        }
-
-        if (that.isRaw) {
-            that.onComplete.emit(saveAttach);
-        }
-        else {
-            that.saveAttach(saveAttach);
-        }
-    }
-
     saveAttach(saveAttach: any) {
         var that = this;
         that.onStart.emit();
@@ -144,11 +103,98 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         that._attachservice.saveAttach(saveAttach).subscribe(data => {
             var dataResult = data.data;
             that.onComplete.emit(dataResult[0].funsave_attach.athids);
+            console.log(JSON.stringify(dataResult));
         }, err => {
             console.log(err);
         }, () => {
             // console.log("Complete");
         });
+    }
+    
+    saveMultiUploadedFile(event) {
+        var that = this;
+        var type;
+
+        for (let file of event.files) {
+            type = file.name.split('.').pop();
+            that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
+                that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": data.data[0].fileicon });
+            });
+        }
+
+        that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
+            if (type == data.data[0].filetype) {
+                var saveAttach = {
+                    "files": that.uploadedFiles,
+                    "module": that.module,
+                    "cmpid": 2,
+                    "uid": "1:vivek"
+                }
+
+                if (that.isRaw) {
+                    that.onComplete.emit(saveAttach);
+                }
+                else {
+                    that.saveAttach(saveAttach);
+                }
+            }
+            else {
+                alert("This " + type + " is not allowed");
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
+        })
+    }
+
+    saveSingleUploadedFile(event) {
+        var that = this;
+
+        that.uploadedFiles = [];
+        var file = event.files[0];
+        var fileext = file.name.split('.').pop();
+
+        that._commonservice.getMOM({ "flag": "fileicon", "type": fileext }).subscribe(data => {
+            var fileicon = data.data[0].fileicon;
+            var filetype = data.data[0].filetype;
+
+            if (fileext == filetype) {
+                that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "icon": fileicon });
+            }
+            else {
+                alert("This " + fileext + " is not allowed");
+            }
+
+            var saveAttach = {
+                "files": that.uploadedFiles,
+                "module": that.module,
+                "cmpid": 2,
+                "uid": "1:vivek"
+            }
+
+            if (that.isRaw) {
+                that.onComplete.emit(saveAttach);
+            }
+            else {
+                that.saveAttach(saveAttach);
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
+        })
+    }
+
+    onUpload(event) {
+        var that = this;
+
+        if (that.multi) {
+            that.saveMultiUploadedFile(event);
+        }
+        else {
+            that.saveSingleUploadedFile(event);
+        }
     }
 
     ngOnInit() {

@@ -1,13 +1,31 @@
 <div class="panel panel-theme">
     <div class="panel-heading">
-        <a data-toggle="collapse" data-parent="#accordion" href="#Docs">
-            <h3 class="panel-title">Supporting Docs</h3>
-        </a>
+        <div class="row">
+            <div class="col-md-9">
+                <a data-toggle="collapse" data-parent="#accordion" href="#Docs">
+                    <h3 class="panel-title">Supporting Docs</h3>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" (click)="getFileType()"><i class="fa fa-info"></i></a>
+                        <ul class="dropdown-menu">
+                            <li class="lispan">Allowed Files</li>
+                            <li class="lispan" *ngFor="let file of fileTypeDT">
+                                <i class="{{file.fileicon}}"></i> {{file.filetype}}
+                            </li>
+                            <li class="divider"></li>
+                            <li class="lispan">Max File Size : {{maxfilesize}}</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
     <div id="Docs" class="panel-collapse collapse in">
         <div class="panel-body">
             <p-growl [value]="msgs"></p-growl>
-
             <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="{{filetype}}"
                 maxFileSize="{{filesize}}" auto="auto">
                 <template pTemplate type="content">
