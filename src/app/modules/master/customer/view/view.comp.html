@@ -1,13 +1,16 @@
 <div class="table-responsive">
     <p-dataTable #dt [value]="customerlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
         [(selection)]="selectedRB1" expandableRows="true">
-        <p-column field="code" header="Code" [style]="{'width':'150px','text-align':'left'}">
+        <p-column field="code" header="Code" [style]="{'width':'50px','text-align':'left'}">
 			<template let-row="rowData" pTemplate type="body">
 				<a role="button" (click)="EditItem(row)">{{row.code}}</a>
             </template>
 		</p-column>
         <p-column field="custname" header="Customer Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-        <p-column field="days" header="Credit Days" [style]="{'width':'150px','text-align':'left'}"></p-column>
+        <p-column field="days" header="Credit Days" [style]="{'width':'50px','text-align':'left'}"></p-column>
+        <p-column field="address1" header="Address" [style]="{'width':'150px','text-align':'left'}"></p-column>
+        <p-column field="mob" header="Mobile" [style]="{'width':'50px','text-align':'left'}"></p-column>
+        <p-column field="email" header="Email" [style]="{'width':'50px','text-align':'left'}"></p-column>
         <p-column field="remark" header="Remark" [style]="{'width':'130px','text-align':'left'}"></p-column>
     </p-dataTable>
 </div>

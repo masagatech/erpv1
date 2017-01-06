@@ -52,16 +52,16 @@
 						<input type="text" class="form-control" tabindex="3" [(ngModel)]="lastnam">
 					</div>
 				</div>
-				<div class='col-md-12'>
+				<div class='col-md-6'>
 					<div class='form-group'>
-						<label>Address 1</label>
-						<input type="text" class="form-control addr1" tabindex="4" [(ngModel)]="adr1">
+						<label>Address</label>
+						<input type="text" class="form-control medium-text-box addr1" tabindex="4" [(ngModel)]="adr1">
 					</div>
 				</div>
-				<div class='col-md-12'>
+				<div class='col-md-6'>
 					<div class='form-group'>
-						<label>Address 2</label>
-						<input type="text" class="form-control" tabindex="5" [(ngModel)]="adr2">
+						<label>Remark</label>
+						<input type="text" class="form-control medium-text-box" tabindex="5" [(ngModel)]="remark">
 					</div>
 				</div>
 				<div class='col-md-6'>
@@ -106,8 +106,6 @@
 						<input type="text" class="form-control" tabindex="12" [(ngModel)]="state">
 					</div>
 				</div>
-
-
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Country</label>
@@ -122,7 +120,13 @@
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Address type</label>
-						<input type="text" class="form-control" tabindex="14" [(ngModel)]="adrtype">
+						<!--<input type="text" class="form-control" tabindex="14" [(ngModel)]="adrtype">-->
+						<select [(ngModel)]="adrtype" class="form-control adrtype" tabindex="14">
+								<option [value]="'0'">Select Actype</option>
+								<option *ngFor="let row of adrtypelist" [value]="row.id">
+									{{row.val}}
+								</option>
+							</select>
 					</div>
 				</div>
 				<div class='col-md-6'>
@@ -131,16 +135,11 @@
 						<input type="text" class="form-control" tabindex="15" [(ngModel)]="landmark">
 					</div>
 				</div>
-				<div class='col-md-12'>
-					<div class='form-group'>
-						<label>Remark</label>
-						<input type="text" class="form-control" tabindex="16" [(ngModel)]="remark">
-					</div>
-				</div>
+				
 			</div>
 			<div class="modal-footer">
 				<label class="pull-left"> Is Primary <input type="checkbox" [(ngModel)]="chkprimary" [disabled]="chkpri" name="chekprimay"/></label>
-				<button type="button" class="btn btn-theme btn-sm" (click)="SaveAdr()" tabindex="17">Save</button>
+				<button type="button" class="btn btn-theme btn-sm" (click)="SaveAdr()" tabindex="16">Save</button>
 			</div>
 		</div>
 	</div>

@@ -13,10 +13,11 @@ declare var $: any;
 
 export class AddrbookComp implements OnInit, OnDestroy {
 
-    adrbookid: any = 0;
+
+    @Input() adrbookid: any = [];
+    @Input() adrid: number = 0;
     mod: string = "";
     adr1: any = "";
-    adr2: any = "";
     mob: any = 0;
     pin: any = "";
     altmob: any = "";
@@ -26,25 +27,32 @@ export class AddrbookComp implements OnInit, OnDestroy {
     state: any = "";
     country: any = 0;
     adrtype: any = 0;
+    adrtypelist: any = [];
     landmark: any = "";
     remark: any = "";
-    firstnam:any="";
-    middlenam:any="";
-    lastnam:any="";
+    firstnam: any = "";
+    middlenam: any = "";
+    lastnam: any = "";
     addrbooklist: any = [];
     countryDT: any[];
     chkprimary: boolean = false;
     chkpri: boolean = false;
 
     constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService, private _msg: MessageService) {
-
         this.getAddress();
+        this.filldropdown("Country");
+        this.filldropdown("adrtyp");
     }
 
-    filldropdown() {
+    filldropdown(group) {
         var that = this;
-        this._commonservice.getMOM({ "group": "Country" }).subscribe(data => {
-            that.countryDT = data.data;
+        this._commonservice.getMOM({ "group": group }).subscribe(data => {
+            if (group == "Country") {
+                that.countryDT = data.data;
+            }
+            else {
+                that.adrtypelist = data.data;
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -52,20 +60,22 @@ export class AddrbookComp implements OnInit, OnDestroy {
         })
     }
 
-
     AddBook() {
         var that = this;
         that.ClearControll();
-        that.filldropdown();
-        setTimeout(function () {
+        that.adrid = 0;
+        setTimeout(function() {
             $(".firstnam").focus();
         }, 500);
     }
 
     public getAddress() {
         var _this = this;
-        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "" }).subscribe(result => {
+        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid": _this.adrid }).subscribe(result => {
             _this.addrbooklist = result.data;
+            for (let items of _this.addrbooklist) {
+                _this.adrbookid.push({ "adrid": items.id });
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -76,7 +86,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
     ClearControll() {
         var that = this;
         that.adr1 = "";
-        that.adr2 = "";
         that.mob = "";
         that.pin = "";
         that.altmob = "";
@@ -88,27 +97,25 @@ export class AddrbookComp implements OnInit, OnDestroy {
         that.adrtype = "";
         that.landmark = "";
         that.remark = "";
-        that.firstnam="";
-        that.middlenam="";
-        that.lastnam="";
+        that.firstnam = "";
+        that.middlenam = "";
+        that.lastnam = "";
         that.mod = "";
     }
 
     EditAdr(row) {
         var _this = this;
-        _this.filldropdown();
         this._adrbookservice.getAdrBook({
             "cmpid": 1,
             "adrid": row.id,
             "flag": "edit"
         }).subscribe(result => {
             var dataset = result.data;
-            _this.firstnam=dataset[0].firstnam;
-            _this.middlenam=dataset[0].middlenam;
-            _this.lastnam=dataset[0].lastnam;
+            _this.firstnam = dataset[0].firstnam;
+            _this.middlenam = dataset[0].middlenam;
+            _this.lastnam = dataset[0].lastnam;
             _this.adrbookid = dataset[0].id;
             _this.adr1 = dataset[0].address1;
-            _this.adr2 = dataset[0].address2;
             _this.mob = dataset[0].mob;
             _this.altmob = dataset[0].othermob;
             _this.email = dataset[0].email;
@@ -121,7 +128,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.chkprimary = dataset[0].isprimary;
             _this.landmark = dataset[0].landmark;
             _this.chkpri = dataset[0].isprimary;
-            setTimeout(function () {
+            setTimeout(function() {
                 $(".firstnam").focus();
             }, 500);
         }, err => {
@@ -136,12 +143,11 @@ export class AddrbookComp implements OnInit, OnDestroy {
     Parameter() {
         var that = this;
         var Param = {
-            "adrid": that.adrbookid,
-            "firstnam":that.firstnam,
-            "middlenam":that.middlenam,
-            "lastnam":that.lastnam,
+            "adrid": that.adrid,
+            "firstnam": that.firstnam,
+            "middlenam": that.middlenam,
+            "lastnam": that.lastnam,
             "adr1": that.adr1,
-            "adr2": that.adr2,
             "mob": that.mob == "" ? 0 : that.mob,
             "pin": that.pin,
             "altmob": that.altmob,
@@ -162,7 +168,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
-        console.log(Param);
         return Param;
     }
 
@@ -199,12 +204,12 @@ export class AddrbookComp implements OnInit, OnDestroy {
         ).subscribe(result => {
             var dataset = result.data;
             if (dataset[0].funsave_addressbook.maxid > 0) {
-                  this._msg.Show(messageType.success, "success", "Data save successfully");
+                that.adrid = dataset[0].funsave_addressbook.maxid;
+                this._msg.Show(messageType.success, "success", "Data save successfully");
                 that.ClearControll();
                 that.getAddress();
                 $('#myModal').modal('hide');
             }
-            console.log(dataset);
         }, err => {
             console.log("Error");
         }, () => {
@@ -214,7 +219,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        setTimeout(function () {
+        setTimeout(function() {
 
         }, 1);
     }
