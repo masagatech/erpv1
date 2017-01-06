@@ -135,7 +135,6 @@ export class AddJV implements OnInit, OnDestroy {
 
     getJVDataById(pjvmid: number) {
         var that = this;
-        debugger;
 
         that._jvservice.getJVDetails({ "flag": "edit", "jvmid": pjvmid }).subscribe(data => {
             var jvdata = data.data;
@@ -143,8 +142,8 @@ export class AddJV implements OnInit, OnDestroy {
             that.jvmid = jvdata[0].jvmid;
             that.docdate = jvdata[0].docdate;
             that.narration = jvdata[0].narration;
-            that.uploadedFiles.push(jvdata[0].uploadedfile);
-            that.docfile.push(jvdata[0].docfile);
+            that.uploadedFiles = jvdata[0].docfile == null ? [] : jvdata[0].uploadedfile;
+            that.docfile = jvdata[0].docfile == null ? [] : jvdata[0].docfile;
             that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
@@ -173,33 +172,37 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     onUploadComplete(e) {
+        var that = this;
+
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            that.docfile.push({ "id": e[i].id });
         }
 
-        this.actionButton.find(a => a.id === "save").enabled = true;
+        that.actionButton.find(a => a.id === "save").enabled = true;
     }
 
     saveJVData() {
+        var that = this;
+
         var saveJV = {
-            "jvmid": this.jvmid,
+            "jvmid": that.jvmid,
             "fyid": "7",
             "cmpid": "2",
-            "docdate": this.docdate,
-            "docfile": this.docfile,
-            "narration": this.narration,
+            "docdate": that.docdate,
+            "docfile": that.docfile,
+            "narration": that.narration,
             "createdby": "1:vivek",
             "updatedby": "1:vivek",
-            "jvdetails": this.jvRowData
+            "jvdetails": that.jvRowData
         }
-
-        this._jvservice.saveJVDetails(saveJV).subscribe(data => {
+        
+        that._jvservice.saveJVDetails(saveJV).subscribe(data => {
             var dataResult = data.data;
             console.log(dataResult);
 
             if (dataResult[0].funsave_jv.msgid != "-1") {
                 alert(dataResult[0].funsave_jv.msg);
-                this._router.navigate(['/accounts/jv']);
+                that._router.navigate(['/accounts/jv']);
             }
             else {
                 alert("Error");
@@ -209,6 +212,10 @@ export class AddJV implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         });
+    }
+
+    removeFileUpload() {
+        this.uploadedFiles.splice(0, 1);
     }
 
     ngOnInit() {
