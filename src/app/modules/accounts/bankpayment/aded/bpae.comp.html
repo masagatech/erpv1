@@ -103,31 +103,9 @@
 		</div>
 		<div class="panel-body"></div>
 	</div>
-	<fileupload [module]="module" [multi]="true" [isRaw]="false" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
-	<div class="panel panel-theme">
-		<div class="panel-body">
-			<div class="ui-fileupload-content ui-widget-content ui-corner-bottom">
-				<div *ngFor="let file of uploadedFiles">
-					<div class="row">
-						<div class="col-md-4" [style.display]="file.name == null?'none':''">
-							{{file.name}}
-						</div>
-						<div class="col-md-4" [style.display]="file.size == null?'none':''">
-							<b>Size : </b> {{file.size}}
-						</div>
-						<div class="col-md-4" [style.display]="file.type == null?'none':''">
-							<b>Type : </b> {{file.type}}
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12" [style.display]="file.type != null?'none':''">
-							No any Docs
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	
+	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
+	
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<h3 class="panel-title">Any Other Details</h3>

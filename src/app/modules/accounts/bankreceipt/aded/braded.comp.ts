@@ -65,8 +65,8 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             this.ChequeNo = dataset[0].cheqno;
             this.Amount = dataset[0].amount;
             this.Naration = dataset[0].naration;
-            this.uploadedFiles.push(dataset[0].uploadedfile);
-            this.docfile.push(dataset[0].docfile);
+            this.uploadedFiles = dataset[0].docfile == null ? [] : dataset[0].uploadedfile;
+            this.docfile = dataset[0].docfile == null ? [] : dataset[0].docfile;
         }, err => {
             console.log('Error');
         }, () => {

@@ -23,8 +23,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
     dndate: any = "";
     dramt: any = "";
     narration: string = "";
+    uploadedFiles: any = [];
     docfile: any = [];
-    uploadedfile: any = [];
 
     dnRowData: any = [];
     viewDNData: any = [];
@@ -134,15 +134,16 @@ export class AddDebitNote implements OnInit, OnDestroy {
         that._dnservice.getDebitNote({ "flag": "edit", "dnid": pdnid }).subscribe(data => {
             var dndata = data.data;
 
-            that.dnid = dndata[0].DNAutoID;
+            that.dnid = dndata[0].dnid;
             that.dnacid = dndata[0].acid;
             that.dnacname = dndata[0].acname;
-            that.dndate = dndata[0].DocDate;
-            that.narration = dndata[0].Narration;
-            that.uploadedfile = dndata[0].uploadedfile == null ? [] : dndata[0].uploadedfile;
+            that.dndate = dndata[0].docdate;
+            that.dramt = dndata[0].dramt;
+            that.narration = dndata[0].narration;
+            that.uploadedFiles = dndata[0].docfile == null ? [] : dndata[0].uploadedfile;
             that.docfile = dndata[0].docfile == null ? [] : dndata[0].docfile;
 
-            that.getDNDetailsByID(pdnid);
+            that.getDNDetailsByID(dndata[0].docno);
         }, err => {
             console.log("Error");
         }, () => {
@@ -150,8 +151,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
         })
     }
 
-    getDNDetailsByID(pdnid: number) {
-        this._dnservice.getDebitNote({ "flag": "details", "dnid": pdnid }).subscribe(data => {
+    getDNDetailsByID(pdocno: number) {
+        this._dnservice.getDebitNote({ "flag": "details", "docno": pdocno }).subscribe(data => {
             this.dnRowData = data.data;
             console.log(this.dnRowData);
         }, err => {
@@ -161,20 +162,34 @@ export class AddDebitNote implements OnInit, OnDestroy {
         })
     }
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        var that = this;
+
+        for (var i = 0; i < e.length; i++) {
+            that.docfile.push({ "id": e[i].id });
+        }
+
+        that.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     saveDNData() {
+        var that = this;
+
         var jsondt = [];
         var dnid = 0;
 
-        debugger;
-
-        for (var i = 0; i < this.dnRowData.length; i++) {
-            var field = this.dnRowData[i];
+        for (var i = 0; i < that.dnRowData.length; i++) {
+            var field = that.dnRowData[i];
 
             jsondt = [{
                 "dnid": field.dnid == undefined ? 0 : field.dnid,
                 "fyid": "7",
                 "cmpid": "2",
-                "docdate": "" + this.dndate + "",
+                "docdate": "" + that.dndate + "",
                 "acid": + field.acid,
                 "dramt": "0",
                 "cramt": field.cramt
@@ -184,30 +199,31 @@ export class AddDebitNote implements OnInit, OnDestroy {
         console.log(jsondt);
 
         var saveDN = {
-            "dnid": this.dnid,
+            "dnid": that.dnid,
             "fyid": "7",
             "cmpid": "2",
-            "docdate": this.dndate,
-            "acid": this.dnacid,
-            "dramt": this.dramt,
-            "narration": this.narration,
+            "docdate": that.dndate,
+            "acid": that.dnacid,
+            "dramt": that.dramt,
+            "narration": that.narration,
             "createdby": "1:vivek",
             "updatedby": "1:vivek",
+            "docfile": that.docfile,
             "dndetails": jsondt
         }
 
-        this.duplicateacid = this.isDuplicateacid();
-        console.log(this.duplicateacid);
+        that.duplicateacid = that.isDuplicateacid();
+        console.log(that.duplicateacid);
 
-        if (this.duplicateacid == false) {
-            this._dnservice.saveDebitNote(saveDN).subscribe(data => {
+        if (that.duplicateacid == false) {
+            that._dnservice.saveDebitNote(saveDN).subscribe(data => {
                 var dataResult = data.data;
                 debugger;
                 console.log(dataResult);
 
                 if (dataResult[0].funsave_debitnote.msgid != "-1") {
-                    alert(dataResult[0].msg);
-                    this._router.navigate(['/accounts/debitnote']);
+                    alert(dataResult[0].funsave_debitnote.msg);
+                    that._router.navigate(['/accounts/debitnote']);
                 }
                 else {
                     alert("Error");
@@ -231,12 +247,12 @@ export class AddDebitNote implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['ID'] !== undefined) {
+            if (params['id'] !== undefined) {
                 this.title = "Add Debit Note";
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.dnid = params['ID'];
+                this.dnid = params['id'];
                 this.getDNDataByID(this.dnid);
 
                 $('input').attr('disabled', 'disabled');
@@ -268,14 +284,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         }
-    }
-
-    onUploadStart(e) {
-
-    }
-
-    onUploadComplete(e) {
-
     }
 
     ngOnDestroy() {

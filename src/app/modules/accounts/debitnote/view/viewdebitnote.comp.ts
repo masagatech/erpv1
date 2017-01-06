@@ -73,7 +73,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
     openDNDetails(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/accounts/debitnote/edit', row.DNAutoID]);
+            this._router.navigate(['/accounts/debitnote/edit', row.dnid]);
         }
     }
 

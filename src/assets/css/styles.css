@@ -1011,13 +1011,15 @@ html select[disabled] {
 }
 
 .sidepan {
-    width: 185px;
+    width: 200px;
     right: 0;
     display: block!important;
     min-height: 400px;
     position: fixed;
     border-left: 3px #d1d8dd dashed;
     padding: 0px 5px;
+    height:100%;
+    overflow:auto;
 }
 
 .sidepan h3 {
@@ -1031,7 +1033,7 @@ html select[disabled] {
 }
 
 .middlepan {
-    width: calc(100% - 190px)!important;
+    width: calc(100% - 205px)!important;
     float: left;
 }
 
@@ -1063,6 +1065,10 @@ html select[disabled] {
 
 .ui-fileupload-highlight {
     background-color: #ccc!important;
+}
+
+.lispan {
+    padding: 5px;
 }
 
 .form-group{
