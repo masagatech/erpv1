@@ -961,7 +961,9 @@ textarea {
 .min-text-box {
     min-height: 30px!important;
 }
-
+.medium-text-box {
+    min-height:70px!important;
+}
 a {
     text-decoration: none;
 }
