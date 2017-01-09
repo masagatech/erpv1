@@ -38,6 +38,7 @@ declare var $: any;
             "from": from,
             "to": to
         }).subscribe(result => {
+            console.log(result);
             that.totalRecords = result.data[1][0].recordstotal;
             that.vendorlist = result.data[0];
 

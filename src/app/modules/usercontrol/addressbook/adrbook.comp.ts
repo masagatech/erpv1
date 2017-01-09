@@ -66,12 +66,17 @@ export class AddrbookComp implements OnInit, OnDestroy {
         console.log(that.addrbooklist);
         that.ClearControll();
         that.adrid = 0;
-        setTimeout(function () {
+        setTimeout(function() {
             $(".firstnam").focus();
         }, 500);
     }
 
+    public getTestComp() {
+        alert(1);
+    }
+
     public getAddress(_adrid: string) {
+        debugger;
         var _this = this;
         this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid": _adrid }).subscribe(result => {
             var dataset = result.data;
@@ -146,6 +151,11 @@ export class AddrbookComp implements OnInit, OnDestroy {
         that.mod = "";
     }
 
+    public ClearArray()
+    {
+        this.addrbooklist=[];
+    }
+
     EditAdr(row) {
         var _this = this;
         this._adrbookservice.getAdrBook({
@@ -171,7 +181,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.chkprimary = dataset[0].isprimary;
             _this.landmark = dataset[0].landmark;
             _this.chkpri = dataset[0].isprimary;
-            setTimeout(function () {
+            setTimeout(function() {
                 $(".firstnam").focus();
             }, 500);
         }, err => {
@@ -276,7 +286,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        setTimeout(function () {
+        setTimeout(function() {
 
         }, 1);
     }

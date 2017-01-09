@@ -53,7 +53,7 @@ declare var $: any;
     adrbookid: any = [];
     adrid: number = 0;
     docfile: any = [];
-    adttestid: any = "";
+    adrcsvid: any = "";
 
     allload: any = {
         "wearhouse": false,
@@ -185,8 +185,12 @@ declare var $: any;
     }
 
     checkalllead() {
+
         if (this.allload.otherdropdwn) {
-            this.EditCust(this._editid);
+            if (this._editid > 0) {
+                this.EditCust(this._editid);
+            }
+
         }
     }
 
@@ -263,6 +267,7 @@ declare var $: any;
         this.credit = 0;
         this.days = 0;
         this.ope = "";
+        this.addressBook.ClearArray();
     }
 
     //Edit Customer 
@@ -292,10 +297,11 @@ declare var $: any;
             that.days = result.data[0][0].days;
             that.remark = result.data[0][0].remark;
             that.adrid = result.data[0][0].adrid;
+
             for (let items of result.data[0][0].adr) {
-                that.adttestid += items.adrid + ',';
+                that.adrcsvid += items.adrid + ',';
             }
-            that.addressBook.getAddress(that.adttestid.slice(0, -1));
+            that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
             that.issh = 1;
 
             //Warehouse check edit mode
@@ -447,7 +453,7 @@ declare var $: any;
         }, err => {
             console.log("Error")
         }, () => {
-            console.log("completed")
+            //console.log("completed")
         })
     }
 

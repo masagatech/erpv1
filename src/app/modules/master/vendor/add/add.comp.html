@@ -42,7 +42,7 @@
 		<br/>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
-				<addressbook [adrbookid]="adrbookid" ngControl="adrid"></addressbook>
+				<addressbook #addrbook [adrbookid]="adrbookid" ngControl="adrid"></addressbook>
 			</div>
 			<div class="tab-pane" id="attr">
 				<div class="col-xs-3">
@@ -51,10 +51,12 @@
 						<input type="text=" class="form-control attr" tabindex="4" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
 							(keyup)="getAutoCompleteattr(this)" />
 					</div>
-					<div class="col-md-4" *ngFor="let row of attrlist">
-						<span class="tag label label-info">{{row.attrname}} 
-							<span data-role="remove"></span>
-						</span>
+					<div class="col-md-5" *ngFor="let row of attrlist">
+						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+							<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+							<span data-role="remove" (click)="Removeattr(row)"></span>
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>

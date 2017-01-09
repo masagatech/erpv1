@@ -2,7 +2,7 @@ import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
+//import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
 
 import { VenAdd } from './add/add.comp';
 import { VenView } from './view/view.comp';
@@ -43,7 +43,7 @@ const routerConfig = [
     declarations: [
         VenAdd,
         VenView,
-        AddrbookComp,
+        //AddrbookComp,
         VendorComp
     ],
     providers: [AuthGuard]

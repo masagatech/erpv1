@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
-import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
+import { ActionBtnProp } from '../../../../_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { VendorAddService } from "../../../../_service/vendor/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -43,7 +44,18 @@ declare var $: any;
     constflag: boolean = true;
     adrbookid: any = [];
     adrid: number = 0;
+    adrcsvid: string = "";
+    docfile: any = [];
 
+    allload: any = {
+        "wearhouse": false,
+        "otherdropdwn": false
+    }
+
+    _editid: number = 0;
+
+    @ViewChild('addrbook')
+    addressBook: AddrbookComp;
 
     private subscribeParameters: any;
 
@@ -84,12 +96,27 @@ declare var $: any;
     //attribute list Add Div
     AttributeAdd() {
         if (this.attrid > 0) {
-            this.attrlist.push({
-                'attrname': this.attrname,
-                'value': this.attrid
-            });
-            this.attrname = "";
-            $(".attr").focus();
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.attrlist.length; i++) {
+                if (this.attrlist[i].attrname == this.attrname) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.attrlist.push({
+                    'attrname': this.attrname,
+                    'value': this.attrid
+                });
+                this.attrname = "";
+                $(".attr").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                $(".attr").focus();
+                return;
+            }
+
         }
         else {
             this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
@@ -99,20 +126,47 @@ declare var $: any;
 
     }
 
+    Removeattr(row) {
+        var index = -1;
+        for (var i = 0; i < this.attrlist.length; i++) {
+            if (this.attrlist[i].value === row.value) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.attrlist.splice(index, 1);
+        $(".attr").focus();
+    }
+
     //Get Company And Warehouse Dropdown Bind
     getcustomerdrop() {
-        this.vendorAddServies.getVendordrop({
+        var that = this;
+        that.vendorAddServies.getVendordrop({
             "cmpid": 1,
             "createdby": "admin"
         }).subscribe(result => {
-            this.debitlist = result.data[1];
-            this.creditlist = result.data[1];
-            this.dayslist = result.data[2];
+            that.debitlist = result.data[1];
+            that.creditlist = result.data[1];
+            that.dayslist = result.data[2];
+            that.allload.otherdropdwn = true;
+            that.checkalllead();
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
         })
+    }
+
+    checkalllead() {
+        if (this.allload.otherdropdwn) {
+            if (this._editid > 0) {
+                this.EditVen(this._editid);
+            }
+
+        }
     }
 
     //Add Accounting Row
@@ -185,25 +239,36 @@ declare var $: any;
         this.ope = "";
     }
 
+    testeven() {
+        this.addressBook.getTestComp();
+    }
+
     //Edit Customer 
     EditVen(id) {
+        var that = this;
         this.vendorAddServies.getvendor({
             "cmpid": 1,
             "flag": "Edit",
             "venid": id
         }).subscribe(result => {
             console.log(result);
-            this.venid = result.data[0][0].autoid;
-            this.code = result.data[0][0].code;
-            this.vendor = result.data[0][0].vendor;
-            this.keyvallist = result.data[0][0].keyval;
-            this.attrlist = result.data[0][0].attr;
-            this.debit = result.data[0][0].debit;
-            this.credit = result.data[0][0].credit;
-            this.ope = result.data[0][0].op;
-            this.days = result.data[0][0].days;
-            this.remark = result.data[0][0].remark;
-            this.adrid = result.data[1][0].adrid;
+            that.venid = result.data[0][0].autoid;
+            that.code = result.data[0][0].code;
+            that.vendor = result.data[0][0].vendor;
+            that.keyvallist = result.data[0][0].keyval;
+            that.attrlist = result.data[0][0].attr;
+            that.debit = result.data[0][0].debit;
+            that.credit = result.data[0][0].credit;
+            that.ope = result.data[0][0].op;
+            that.days = result.data[0][0].days;
+            that.remark = result.data[0][0].remark;
+            //that.adrid = result.data[1][0].adr;
+            debugger;
+            for (let items of result.data[0][0].adr) {
+                that.adrcsvid += items.adrid + ',';
+            }
+            that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+            that.issh = 1;
         }, err => {
             console.log("error");
         }, () => {
@@ -237,13 +302,16 @@ declare var $: any;
         })
     }
 
-    attributeid() {
-        var attrilist = [];
-        for (let items of this.attrlist) {
-            attrilist.push({ "attrid": items.value })
-        }
-        return attrilist;
-    }
+    // attributeid() {
+    //     var attrilist = [];
+    //     for (let items of this.attrlist) {
+    //         attrilist.push({ "attrid": items.value, "attname": items.label })
+    //     }
+    //     console.log(attrilist)
+    //     return attrilist;
+    // }
+
+
     //Paramter Wth Json
     paramterjson() {
         var param = {
@@ -251,7 +319,7 @@ declare var $: any;
             "code": this.code,
             "vendor": this.vendor,
             "keyval": this.keyvallist,
-            "attr": this.attributeid(),
+            "attr": this.attrlist,
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
@@ -261,7 +329,6 @@ declare var $: any;
             "createdby": "admin",
             "adr": this.adrbookid
         }
-        console.log(param);
         return param;
     }
 
