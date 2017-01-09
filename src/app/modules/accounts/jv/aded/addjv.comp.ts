@@ -19,6 +19,8 @@ export class AddJV implements OnInit, OnDestroy {
     jvmid: number = 0;
     docdate: any = "";
     narration: string = "";
+
+    module: string = "";
     docfile: any = [];
     uploadedFiles: any = [];
 
@@ -33,7 +35,6 @@ export class AddJV implements OnInit, OnDestroy {
 
     counter: any;
     title: string = "";
-    module: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -136,14 +137,18 @@ export class AddJV implements OnInit, OnDestroy {
     getJVDataById(pjvmid: number) {
         var that = this;
 
-        that._jvservice.getJVDetails({ "flag": "edit", "jvmid": pjvmid }).subscribe(data => {
-            var jvdata = data.data;
+        that._jvservice.getJVDetails({ "flag": "edit", "cmpid": 2, "fyid": 7, "jvmid": pjvmid }).subscribe(data => {
+            var _jvdata = data.data[0]._jvdata;
+            var _uploadedfile = data.data[0]._uploadedfile;
+            var _docfile = data.data[0]._docfile;
 
-            that.jvmid = jvdata[0].jvmid;
-            that.docdate = jvdata[0].docdate;
-            that.narration = jvdata[0].narration;
-            that.uploadedFiles = jvdata[0].docfile == null ? [] : jvdata[0].uploadedfile;
-            that.docfile = jvdata[0].docfile == null ? [] : jvdata[0].docfile;
+            that.jvmid = _jvdata[0].jvmid;
+            that.docdate = _jvdata[0].docdate;
+            that.narration = _jvdata[0].narration;
+
+            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+            that.docfile = _docfile == null ? [] : _docfile;
+            
             that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
@@ -195,7 +200,7 @@ export class AddJV implements OnInit, OnDestroy {
             "updatedby": "1:vivek",
             "jvdetails": that.jvRowData
         }
-        
+
         that._jvservice.saveJVDetails(saveJV).subscribe(data => {
             var dataResult = data.data;
             console.log(dataResult);
@@ -219,9 +224,6 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.title = "Add JV";
-        console.log('ngOnInit');
-
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -231,6 +233,8 @@ export class AddJV implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
+                this.title = "Edit Journal Voucher";
+
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
@@ -242,6 +246,8 @@ export class AddJV implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
+                this.title = "Add Journal Voucher";
+
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
 
