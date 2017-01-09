@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-9">
                 <a data-toggle="collapse" data-parent="#accordion" href="#Docs">
-                    <h3 class="panel-title">Supporting Docs</h3>
+                    <h3 class="panel-title">{{headertitle}}</h3>
                 </a>
             </div>
             <div class="col-md-3">
@@ -26,8 +26,8 @@
     <div id="Docs" class="panel-collapse collapse in">
         <div class="panel-body">
             <p-growl [value]="msgs"></p-growl>
-            <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="{{filetype}}"
-                maxFileSize="{{filesize}}" auto="auto" >
+            <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)"
+                accept="{{filetype}}" maxFileSize="{{filesize}}" auto="auto">
                 <template pTemplate type="content">
                     <div *ngIf="uploadedFiles.length">
                         <div *ngFor="let file of uploadedFiles" class="box">
@@ -44,6 +44,7 @@
                             </div>
                         </div>
                     </div>
+                    <span>Drag File Here....</span>
                 </template>
             </p-fileUpload>
         </div>

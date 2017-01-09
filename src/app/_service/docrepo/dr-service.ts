@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 export class DRService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getDocRepo(req: any) {
-        return this._dataserver.post("getDocRepo", req)
+    getEmpDocRepo(req: any) {
+        return this._dataserver.post("getEmpDocRepo", req)
     }
 
-    saveDocRepo(req: any) {
-        return this._dataserver.post("saveDocRepo", req)
+    saveEmpDocRepo(req: any) {
+        return this._dataserver.post("saveEmpDocRepo", req)
     }
 }

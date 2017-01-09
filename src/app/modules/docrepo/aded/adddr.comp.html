@@ -9,10 +9,34 @@
 				<label class="control-label">Emp Name</label>
 				<input type="text" [(ngModel)]="uname" class="uname form-control" (keyup)="getUserAuto(this)" />
 			</div>
+			<div class="form-group">
+				<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+					(onComplete)="onUploadComplete($event)"></fileupload>
+			</div>
 		</div>
+		<!--<div class="col-md-6">
+			<div class="row">
+				<div class="col-xs-6 col-sm-6 col-md-6">
+					<div class="form-group">
+						<label class="control-label">Doc Title</label>
+						<input type="text" [(ngModel)]="doctitle" class="form-control" />
+					</div>
+				</div>
+				<div class="col-xs-6 col-sm-6 col-md-6">
+					<div class="form-group">
+						<label class="control-label">Tag</label>
+						<select [(ngModel)]="tag" class="form-control">
+							<option *ngFor="let row of TagDT" [value]="row.key">	
+								{{row.val}}
+							</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>-->
 	</div>
 
-	<div class="panel-body">
+	<!--<div class="panel-body">
 		<div class="col-md-12">
 			<table class="table table-striped table-bordered">
 				<thead>
@@ -32,15 +56,8 @@
 							<input type="text" [(ngModel)]="row.doctitle" class="form-control" (keyup.enter)="NewRowAdd()" />
 						</td>
 						<td class="textalign">
-							<select [(ngModel)]="row.tag" name="Tag" id="Tag" class="form-control" (keyup.enter)="NewRowAdd()">
-								<option *ngFor="let trow of TagDT" [value]="trow.key">	
-									{{trow.val}}
-								</option>
-							</select>
 						</td>
 						<td>
-							<!--<input type="file" [(ngModel)]="row.docfile" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"
-									(change)="fileChangeEvent($event)" placeholder="Upload file..." />-->
 							<fileupload [module]="module" [multi]="false" [isRaw]="true" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
 						</td>
 					</tr>
@@ -53,18 +70,18 @@
 						</td>
 						<td>
 							<select [(ngModel)]="newtag" name="Tag" id="Tag" class="form-control" (keyup.enter)="NewRowAdd()">
-								<option *ngFor="let row of TagDT" [value]="row.ID">	
-									{{row.Name}}
+								<option *ngFor="let row of TagDT" [value]="row.key">	
+									{{row.val}}
 								</option>
 							</select>
 						</td>
 						<td>
-							<fileupload [module]="module" [multi]="false" [isRaw]="true" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
+
 						</td>
 					</tr>
 				</tfoot>
 			</table>
 			<button type="button" class="btn btn-primary" (click)="NewRowAdd()">Add</button>
 		</div>
-	</div>
+	</div>-->
 </div>

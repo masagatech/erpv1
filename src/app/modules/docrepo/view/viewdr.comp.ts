@@ -46,7 +46,7 @@ export class ViewDR implements OnInit, OnDestroy {
     getDRWiseUser() {
         var that = this;
 
-        that._drservice.getDocRepo({ "flag": "drwiseuser", "search": that.uname }).subscribe(data => {
+        that._drservice.getEmpDocRepo({ "flag": "drwiseuser", "search": that.uname }).subscribe(data => {
             that.userDT = data.data;
             debugger;
         }, err => {
@@ -59,7 +59,7 @@ export class ViewDR implements OnInit, OnDestroy {
     getUserWiseTag(puid) {
         var that = this;
 
-        that._drservice.getDocRepo({ "flag": "userwisedrtag", "uid": puid }).subscribe(data => {
+        that._drservice.getEmpDocRepo({ "flag": "userwisedrtag", "uid": puid }).subscribe(data => {
             that.drViewDT = [];
             that.drTagDT = data.data;
             that.selecteduid = puid;
@@ -73,7 +73,7 @@ export class ViewDR implements OnInit, OnDestroy {
     getTagWiseDR(puid, ptag) {
         var that = this;
 
-        that._drservice.getDocRepo({ "flag": "tagwisedr", "uid": puid, "tag": ptag }).subscribe(data => {
+        that._drservice.getEmpDocRepo({ "flag": "tagwisedr", "uid": puid, "tag": ptag }).subscribe(data => {
             that.drViewDT = data.data;
             that.tag = this.drViewDT[0].tag;
         }, err => {

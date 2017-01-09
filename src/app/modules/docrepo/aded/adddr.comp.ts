@@ -26,8 +26,12 @@ export class AddDR implements OnInit, OnDestroy {
     newfilesize: string = "";
     newfiletype: string = "";
 
+    module: string = "";
+    empdocrepo: any = [];
+    uploadedFiles: any = [];
+
     counter: any;
-    title: any;
+    title: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -39,6 +43,7 @@ export class AddDR implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _drservice: DRService, private _commonservice: CommonService) {
+        this.module = "DocRepo";
         this.getDocType();
     }
 
@@ -48,13 +53,29 @@ export class AddDR implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         //this.attachfile = e.files[0].path;
+        var that = this;
+
+        for (var i = 0; i < e.length; i++) {
+            that.empdocrepo.push({
+                "uid": that.uid,
+                "cmpid": 2,
+                "fyid": 7,
+                "doctitle": "",
+                "tag": "",
+                "docfile": e[i].path,
+                "filesize": e[i].size,
+                "filetype": e[i].type,
+                "createdby": "1:admin",
+                "updatedby": "1:admin"
+            });
+        }
+
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
     // Get User Auto
 
     getUserAuto(me: any) {
-        debugger;
         var that = this;
 
         that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
@@ -81,7 +102,6 @@ export class AddDR implements OnInit, OnDestroy {
     }
 
     getDocType() {
-        debugger;
         this._commonservice.getMOM({ "flag": "", "group": "DocType" }).subscribe(data => {
             this.TagDT = data.data;
         }, err => {
@@ -121,7 +141,7 @@ export class AddDR implements OnInit, OnDestroy {
     // Get DR By DR ID
 
     getDRDataByID(puid: number) {
-        this._drservice.getDocRepo({ "flag": "id", "uid": puid }).subscribe(data => {
+        this._drservice.getEmpDocRepo({ "flag": "id", "uid": puid }).subscribe(data => {
             var viewEmpData = data.data;
 
             this.uid = viewEmpData[0].uid;
@@ -134,16 +154,18 @@ export class AddDR implements OnInit, OnDestroy {
     }
 
     saveDRData() {
+        var that = this;
+
         var saveDR = {
-            "docrepo": this.drRowData
+            "empdocrepo": that.empdocrepo
         }
 
-        this._drservice.saveDocRepo(saveDR).subscribe(data => {
+        that._drservice.saveEmpDocRepo(saveDR).subscribe(data => {
             var dataResult = data.data;
 
-            if (dataResult[0].Doc != "-1") {
-                alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
-                this._router.navigate(['/docrepo/view']);
+            if (dataResult[0].msgid != "-1") {
+                alert(dataResult[0].funsave_empdocrepo.msg);
+                that._router.navigate(['/docrepo']);
             }
             else {
                 alert("Error");
@@ -153,6 +175,17 @@ export class AddDR implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveDRData();
+        } else if (evt === "edit") {
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
     }
 
     ngOnInit() {
@@ -180,17 +213,6 @@ export class AddDR implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveDRData();
-        } else if (evt === "edit") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
     }
 
     ngOnDestroy() {

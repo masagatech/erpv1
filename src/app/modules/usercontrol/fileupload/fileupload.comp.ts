@@ -22,13 +22,15 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     @Input() isRaw: boolean = false;
     @Output() onStart = new EventEmitter();
     @Output() onComplete = new EventEmitter();
-    @Output() onError = new EventEmitter();
+    //@Output() onError = new EventEmitter();
 
+    headertitle: string = "";
     filetype: string = "";
     filesize: string = "";
     maxfilesize: string = "";
 
     constructor(private _attachservice: AttachService, private _commonservice: CommonService) {
+        this.getHeaderTitle();
         this.getFileVal("filetype");
         this.getFileVal("filesize");
         this.getFileType();
@@ -37,6 +39,20 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     @Input() uploadedFiles: any = [];
     fileTypeDT: any = [];
+
+    getHeaderTitle() {
+        var that = this;
+
+        if (that.module == "Employee") {
+            that.headertitle = "Upload Photo";
+        }
+        else if (that.module == "DocRepo") {
+            that.headertitle = "Upload Docs";
+        }
+        else {
+            that.headertitle = "Supporting Docs";
+        }
+    }
 
     getFileType() {
         var that = this;
@@ -82,7 +98,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
         that._commonservice.getMOM({ "flag": flag }).subscribe(data => {
             if (flag == "filetype") {
-                that.filetype = data.data[0].filetype;
+                if (that.module == "Employee") {
+                    that.filetype = "image/*";
+                }
+                else {
+                    that.filetype = data.data[0].filetype;
+                }
             }
             else if (flag == "filesize") {
                 that.filesize = data.data[0].filesize;
@@ -105,7 +126,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         that._attachservice.saveAttach(saveAttach).subscribe(data => {
             var dataResult = data.data;
             that.onComplete.emit(dataResult[0].funsave_attach.athids);
-            console.log(JSON.stringify(dataResult));
         }, err => {
             console.log(err);
         }, () => {
@@ -115,22 +135,37 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     saveMultiUploadedFile(event) {
         var that = this;
-        var type;
+        var type, validmsg;
 
         for (let file of event.files) {
-            type = file.name.split('.').pop();
-            that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
-                if (data.data.length !== 0) {
-                    that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": data.data[0].fileicon });
-                }
-            });
+            if (that.module == "Employee") {
+                that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": "fa fa-file-photo-o" });
+            }
+            else {
+                type = file.name.split('.').pop();
+
+                that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
+                    if (data.data.length === 0) {
+                        if (that.module == "Employee") {
+                            validmsg = "success";
+                        }
+                        else {
+                            validmsg = "failed";
+                        }
+                    }
+                    else {
+                        validmsg = "success";
+                    }
+
+                    if (validmsg === "success") {
+                        that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": data.data[0].fileicon });
+                    }
+                });
+            }
         }
 
         that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
-            if (data.data.length === 0) {
-                alert(type + " file not allowed !!!!");
-            }
-            else {
+            if (validmsg === "success") {
                 var saveAttach = {
                     "files": that.uploadedFiles,
                     "module": that.module,
@@ -145,14 +180,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
                     that.saveAttach(saveAttach);
                 }
             }
-        }, err => {
-            console.log("Error");
-        }, () => {
-            console.log("Complete");
-        })
+            else {
+                alert(type + " file not allowed !!!!");
+            }
+        });
     }
-
-
 
     saveSingleUploadedFile(event) {
         var that = this;
