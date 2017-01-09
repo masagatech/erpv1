@@ -35,14 +35,30 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     narration: string = "";
     detnarr: string = "";
 
+    module: string = "";
+    docfile: any = [];
+    uploadedFiles: any = [];
+
     rbRowData: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _rbservice: RBService, private _commonservice: CommonService, private _message: MessageService) {
-
+        this.module = "Receipt Book";
     }
 
     // add receipt book
+
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
 
     private addRBRow() {
         var that = this;
@@ -67,6 +83,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                         "qty": that.newqty,
                         "narration": that.narration,
                         "detnarr": that.detnarr,
+                        //"docfile": this.docfile,
                         "createdby": "1:vivek",
                         "updatedby": "1:vivek"
                     });
