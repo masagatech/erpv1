@@ -44,7 +44,7 @@
 		<br/>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
-				<addressbook [adrbookid]="adrbookid" ngControl="adrid"></addressbook>
+				<addressbook [adrbookid]="adrbookid" [adrid]="adrid"></addressbook>
 			</div>
 			<div class="tab-pane" id="attr">
 				<div class="col-xs-3">
@@ -54,7 +54,7 @@
 							(keyup)="getAutoCompleteattr(this)" />
 					</div>
 					<div class="col-md-4" *ngFor="let row of attrlist">
-						<span class="tag label label-info">{{row.attrname}} 
+						<span class="tag label label-info" style="font-size: 12px;">{{row.attrname}} 
 							<span data-role="remove"></span>
 						</span>
 					</div>
@@ -196,7 +196,7 @@
 				</div>
 			</div>
 			<div class="tab-pane" id="docup">
-				Document Upload
+				<fileupload [module]="module" [multi]="true" [isRaw]="false" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
 			</div>
 		</div>
 	</div>

@@ -83,13 +83,20 @@ declare var $: any;
 
     //attribute list Add Div
     AttributeAdd() {
-        debugger;
-        this.attrlist.push({
-            'attrname': this.attrname,
-            'value': this.attrid
-        });
-        this.attrname = "";
-        $(".attr").focus();
+        if (this.attrid > 0) {
+            this.attrlist.push({
+                'attrname': this.attrname,
+                'value': this.attrid
+            });
+            this.attrname = "";
+            $(".attr").focus();
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            $(".attr").focus();
+            return;
+        }
+
     }
 
     //Get Company And Warehouse Dropdown Bind
@@ -226,7 +233,7 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            // console.log("Complete");
+            this.attrid = 0;
         })
     }
 

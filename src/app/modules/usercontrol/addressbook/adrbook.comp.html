@@ -13,7 +13,7 @@
 <div class="col-md-4" style="height:150px;" *ngFor="let item of addrbooklist">
 	<div class="panel panel-theme">
 		<div class="panel-heading">
-			<h3 class="panel-title text-right"><i title="Primary Address" class="fa fa-check pull-left" *ngIf="item.isprimary"></i><span class="pull-left">{{item.firstnam}}</span><button class="btn btn-theme btn-xs"
+			<h3 class="panel-title text-right"><i title="Primary Address" class="fa fa-check pull-left" *ngIf="item.isprimary"></i><span class="hide">{{item.id}}</span><span class="pull-left">{{item.firstnam}}</span><button class="btn btn-theme btn-xs"
 					type="button" data-toggle="modal" data-target="#myModal" (click)="EditAdr(item)" title="Edit">
                 <i class="fa fa-edit"></i></button>
 			</h3>
@@ -55,13 +55,13 @@
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Address</label>
-						<input type="text" class="form-control medium-text-box addr1" tabindex="4" [(ngModel)]="adr1">
+						<textarea class="form-control medium-text-box addr1" tabindex="4" [(ngModel)]="adr1"></textarea>
 					</div>
 				</div>
 				<div class='col-md-6'>
 					<div class='form-group'>
 						<label>Remark</label>
-						<input type="text" class="form-control medium-text-box" tabindex="5" [(ngModel)]="remark">
+						<textarea class="form-control medium-text-box" tabindex="5" [(ngModel)]="remark"></textarea>
 					</div>
 				</div>
 				<div class='col-md-6'>
