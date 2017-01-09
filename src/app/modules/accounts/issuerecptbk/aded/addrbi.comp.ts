@@ -36,8 +36,13 @@ export class AddRBI implements OnInit, OnDestroy {
     latestSeriesDT: any = [];
     empSeriesDT: any = [];
 
+    module: string = "";
+    docfile: any = [];
+    uploadedFiles: any = [];
+
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService) {
+        this.module = "Receipt Book Issued";
         this.getLatestSeries();
         this.setDefaultDate();
         this.BindReceiptBook();
@@ -97,9 +102,12 @@ export class AddRBI implements OnInit, OnDestroy {
 
     BindReceiptBook() {
         var that = this;
-        that._rbservice.getRBDetails({ "flag": "dropdown" }).subscribe(data => {
-            that.SeriesNoDT = data.data;
-            console.log(that.SeriesNoDT);
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            this.irbid = params["irbid"];
+            that._rbservice.getRBDetails({ "flag": "dropdown", "irbid": this.irbid }).subscribe(data => {
+                that.SeriesNoDT = data.data;
+                console.log(that.SeriesNoDT);
+            });
         });
     }
 
@@ -109,18 +117,23 @@ export class AddRBI implements OnInit, OnDestroy {
         var that = this;
         var nop = 0;
 
-        that._rbservice.getRBIDetails({ "flag": "id", "irbid": pirbid }).subscribe(data => {
-            var rbidata = data.data[0];
+        that._rbservice.getRBIDetails({ "flag": "id", "cmpid": "2", "fyid": "7", "irbid": pirbid }).subscribe(data => {
+            var _rbidata = data.data[0]._rbidata;
+            var _uploadedfile = data.data[0]._uploadedfile;
+            var _docfile = data.data[0]._docfile;
 
-            that.irbid = rbidata.irbid;
-            that.rbid = rbidata.rbid;
-            that.empid = rbidata.empid;
-            that.empname = rbidata.empname;
-            that.docno = rbidata.docno;
-            that.docdate = rbidata.docdate;
-            that.fromno = rbidata.fromno;
-            that.tono = rbidata.tono;
-            that.narration = rbidata.narration;
+            that.irbid = _rbidata[0].irbid;
+            that.rbid = _rbidata[0].rbid;
+            that.empid = _rbidata[0].empid;
+            that.empname = _rbidata[0].empname;
+            that.docno = _rbidata[0].docno;
+            that.docdate = _rbidata[0].docdate;
+            that.fromno = _rbidata[0].fromno;
+            that.tono = _rbidata[0].tono;
+            that.narration = _rbidata[0].narration;
+
+            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+            that.docfile = _docfile == null ? [] : _docfile;
         });
 
         return nop;
@@ -182,9 +195,21 @@ export class AddRBI implements OnInit, OnDestroy {
 
     // Save Receipt Book Issued
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     saveRBIDetails() {
         var that = this;
-        
+
         var saveRBI = {
             "irbid": this.irbid,
             "cmpid": "2",
@@ -196,6 +221,7 @@ export class AddRBI implements OnInit, OnDestroy {
             "fromno": this.fromno,
             "tono": this.tono,
             "narration": this.narration,
+            "docfile": this.docfile,
             "uidcode": "1:vivek"
         }
 

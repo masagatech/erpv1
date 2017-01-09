@@ -131,19 +131,22 @@ export class AddDebitNote implements OnInit, OnDestroy {
     getDNDataByID(pdnid: number) {
         var that = this;
 
-        that._dnservice.getDebitNote({ "flag": "edit", "dnid": pdnid }).subscribe(data => {
-            var dndata = data.data;
+        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": "2", "fyid": "7", "dnid": pdnid }).subscribe(data => {
+            var _dndata = data.data[0]._dndata;
+            var _uploadedfile = data.data[0]._uploadedfile;
+            var _docfile = data.data[0]._docfile;
 
-            that.dnid = dndata[0].dnid;
-            that.dnacid = dndata[0].acid;
-            that.dnacname = dndata[0].acname;
-            that.dndate = dndata[0].docdate;
-            that.dramt = dndata[0].dramt;
-            that.narration = dndata[0].narration;
-            that.uploadedFiles = dndata[0].docfile == null ? [] : dndata[0].uploadedfile;
-            that.docfile = dndata[0].docfile == null ? [] : dndata[0].docfile;
-
-            that.getDNDetailsByID(dndata[0].docno);
+            that.dnid = _dndata[0].dnid;
+            that.dnacid = _dndata[0].acid;
+            that.dnacname = _dndata[0].acname;
+            that.dndate = _dndata[0].docdate;
+            that.dramt = _dndata[0].dramt;
+            that.narration = _dndata[0].narration;
+            
+            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+            that.docfile = _docfile == null ? [] : _docfile;
+            
+            that.getDNDetailsByID(_dndata[0].docno);
         }, err => {
             console.log("Error");
         }, () => {
