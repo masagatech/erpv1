@@ -44,7 +44,7 @@
 		<br/>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
-				<addressbook [adrbookid]="adrbookid" [adrid]="adrid"></addressbook>
+				<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid"></addressbook>
 			</div>
 			<div class="tab-pane" id="attr">
 				<div class="col-xs-3">
@@ -53,21 +53,22 @@
 						<input type="text=" class="form-control attr" tabindex="4" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
 							(keyup)="getAutoCompleteattr(this)" />
 					</div>
-					<div class="col-md-4" *ngFor="let row of attrlist">
-						<span class="tag label label-info" style="font-size: 12px;">{{row.attrname}} 
-							<span data-role="remove"></span>
-						</span>
+					<div class="col-md-5" *ngFor="let row of attrlist">
+						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+							<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+							<span data-role="remove" (click)="Removeattr(row)"></span>
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
 			<div class="tab-pane" id="ware">
-				<div class="col-md-8">
-					<span *ngFor="let row of warehouselist">
-					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" value="row.value"/>
-						{{row.label}}
-					</label>
-				</span>
+				<div class="col-md-3" *ngFor="let row of warehouselist">
+					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" id="M{{row.value}}" value="row.value"/>
+							{{row.label}} 
+						</label>
 				</div>
+
 			</div>
 			<div class="tab-pane" id="control">
 				<div class="col-md-6">

@@ -15,7 +15,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
 
     @Input() adrbookid: any = [];
-    @Input() adrid:number = 0;
+    @Input() adrid: number = 0;
     mod: string = "";
     adr1: any = "";
     mob: any = 0;
@@ -37,9 +37,10 @@ export class AddrbookComp implements OnInit, OnDestroy {
     countryDT: any[];
     chkprimary: boolean = false;
     chkpri: boolean = false;
+    editmodeflag: boolean = false;
 
     constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService, private _msg: MessageService) {
-        this.getAddress();
+        // this.getAddress();
         this.filldropdown("Country");
         this.filldropdown("adrtyp");
     }
@@ -62,6 +63,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     AddBook() {
         var that = this;
+        console.log(that.addrbooklist);
         that.ClearControll();
         that.adrid = 0;
         setTimeout(function () {
@@ -69,26 +71,52 @@ export class AddrbookComp implements OnInit, OnDestroy {
         }, 500);
     }
 
-    public getAddress() {
+    public getAddress(_adrid: string) {
         var _this = this;
-        console.log(_this.adrid);
-        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid":1 }).subscribe(result => {
+        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid": _adrid }).subscribe(result => {
             var dataset = result.data;
+            //_this.addrbooklist = dataset;
             if (dataset.length > 0) {
-               // _this.addrbooklist=dataset;
-                _this.addrbooklist.push({
-                    "firstnam": dataset[0].firstnam,
-                    "address1": dataset[0].address1,
-                    "city": dataset[0].city,
-                    "state": dataset[0].state,
-                    "pin": dataset[0].pin,
-                    "email": dataset[0].email,
-                    "mob": dataset[0].mob,
-                    "id": dataset[0].id,
-                    "isprimary":dataset[0].isprimary
-                });
-                for (let items of _this.addrbooklist) {
-                    _this.adrbookid.push({ "adrid": items.id });
+                var vid = _this.addrbooklist.filter(item => item.id);
+                if (_this.addrbooklist.length > 0) {
+                    for (let items of vid) {
+                        if (items.id === _adrid) {
+                            _this.editmodeflag = true;
+                        }
+                    }
+                    if (_this.editmodeflag == false) {
+                        _this.addrbooklist.push({
+                            "firstnam": dataset[0].firstnam,
+                            "address1": dataset[0].address1,
+                            "city": dataset[0].city,
+                            "state": dataset[0].state,
+                            "pin": dataset[0].pin,
+                            "email": dataset[0].email,
+                            "mob": dataset[0].mob,
+                            "id": dataset[0].id,
+                            "isprimary": dataset[0].isprimary
+                        });
+                    }
+
+                }
+                else {
+                    for (let items of dataset) {
+                        _this.addrbooklist.push({
+                            "firstnam": items.firstnam,
+                            "address1": items.address1,
+                            "city": items.city,
+                            "state": items.state,
+                            "pin": items.pin,
+                            "email": items.email,
+                            "mob": items.mob,
+                            "id": items.id,
+                            "isprimary": items.isprimary
+                        });
+                    }
+
+                }
+                for (var i = 0; i <= _this.addrbooklist.length - 1; i++) {
+                    _this.adrbookid.push({ "adrid": _this.addrbooklist[i].id });
                 }
             }
         }, err => {
@@ -219,12 +247,25 @@ export class AddrbookComp implements OnInit, OnDestroy {
         ).subscribe(result => {
             var dataset = result.data;
             if (dataset[0].funsave_addressbook.maxid > 0) {
-                that.adrid = dataset[0].funsave_addressbook.maxid;
-                console.log(that.adrid);
-                this._msg.Show(messageType.success, "success", "Data save successfully");
-                that.ClearControll();
-                that.getAddress();
+                var adridmaxid = dataset[0].funsave_addressbook.maxid;
+                that._msg.Show(messageType.success, "success", "Data save successfully");
+
                 $('#myModal').modal('hide');
+                that.getAddress(adridmaxid);
+                var vid = that.addrbooklist.filter(item => item.id);
+                for (let items of vid) {
+                    if (items.id == that.adrid) {
+                        items.firstnam = that.firstnam + " " + that.lastnam;
+                        items.adr1 = that.adr1;
+                        items.city = that.city;
+                        items.state = that.state;
+                        items.pin = that.pin;
+                        items.email = that.email;
+                        items.mob = that.mob;
+                        break;
+                    }
+                }
+                that.ClearControll();
             }
         }, err => {
             console.log("Error");
