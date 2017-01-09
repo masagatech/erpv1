@@ -27,7 +27,7 @@
         <div class="panel-body">
             <p-growl [value]="msgs"></p-growl>
             <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="{{filetype}}"
-                maxFileSize="{{filesize}}" auto="auto">
+                maxFileSize="{{filesize}}" auto="auto" >
                 <template pTemplate type="content">
                     <div *ngIf="uploadedFiles.length">
                         <div *ngFor="let file of uploadedFiles" class="box">

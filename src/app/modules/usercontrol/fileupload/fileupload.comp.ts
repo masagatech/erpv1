@@ -14,6 +14,7 @@ declare var $: any;
 export class FileUploadComponent implements OnInit, OnDestroy {
     @ViewChild('fuimg')
     fileupload: FileUpload;
+    invalidFileSizeMessageSummary: string;
 
     @Input() attachfile: any = [];
     @Input() module: string = "";
@@ -21,6 +22,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     @Input() isRaw: boolean = false;
     @Output() onStart = new EventEmitter();
     @Output() onComplete = new EventEmitter();
+    @Output() onError = new EventEmitter();
 
     filetype: string = "";
     filesize: string = "";
@@ -43,7 +45,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
             that.fileTypeDT = data.data;
         });
     }
-    
+
     getFileSize() {
         var that = this;
 
@@ -51,7 +53,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
             that.maxfilesize = that.formatSizeUnits(data.data[0].filesize);
         });
     }
-    
+
     formatSizeUnits(bytes) {
         if (bytes >= 1073741824) {
             bytes = (bytes / 1073741824).toFixed(2) + ' GB';
@@ -110,7 +112,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
             // console.log("Complete");
         });
     }
-    
+
     saveMultiUploadedFile(event) {
         var that = this;
         var type;
@@ -118,12 +120,17 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         for (let file of event.files) {
             type = file.name.split('.').pop();
             that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
-                that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": data.data[0].fileicon });
+                if (data.data.length !== 0) {
+                    that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": data.data[0].fileicon });
+                }
             });
         }
 
         that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
-            if (type == data.data[0].filetype) {
+            if (data.data.length === 0) {
+                alert(type + " file not allowed !!!!");
+            }
+            else {
                 var saveAttach = {
                     "files": that.uploadedFiles,
                     "module": that.module,
@@ -138,15 +145,14 @@ export class FileUploadComponent implements OnInit, OnDestroy {
                     that.saveAttach(saveAttach);
                 }
             }
-            else {
-                alert("This " + type + " is not allowed");
-            }
         }, err => {
             console.log("Error");
         }, () => {
             console.log("Complete");
         })
     }
+
+
 
     saveSingleUploadedFile(event) {
         var that = this;
