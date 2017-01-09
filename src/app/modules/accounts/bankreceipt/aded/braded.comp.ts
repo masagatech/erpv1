@@ -35,13 +35,16 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     Remark3: any = "";
     BankNamelist: any = [];
     Typelist: any = [];
-    
+
+    module: string = "";
     docfile: any = [];
     uploadedFiles: any = [];
 
     //constructor Call Method 
 
-    constructor(private setActionButtons: SharedVariableService, private BankServies: bankReceiptService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
+    constructor(private setActionButtons: SharedVariableService, private BankServies: bankReceiptService,
+        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router ) {
+        this.module = "Bank Receipt";
         this.getBankMasterDrop();
         this.getTypDrop();
     }
@@ -49,24 +52,23 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     //Get And Fill Edit Mode
 
     GetBankPayment(BankPayId) {
-        this.BankServies.getBankReceiptView({
-            "bankreid": this.BankRecpId,
-            "cmpid": 1,
-            "fy": 5,
-            "flag": "edit"
-        }).subscribe(ReceiptDetails => {
-            var dataset = ReceiptDetails.data;
-            this.BankName = dataset[0].bank;
-            this.DepDate = dataset[0].depdate;
-            this.CustName = dataset[0].partyname;
-            this.CustID = dataset[0].custid;
-            this.Refno = dataset[0].refno;
-            this.TypeName = dataset[0].typ;
-            this.ChequeNo = dataset[0].cheqno;
-            this.Amount = dataset[0].amount;
-            this.Naration = dataset[0].naration;
-            this.uploadedFiles = dataset[0].docfile == null ? [] : dataset[0].uploadedfile;
-            this.docfile = dataset[0].docfile == null ? [] : dataset[0].docfile;
+        this.BankServies.getBankReceiptView({ "bankreid": this.BankRecpId, "cmpid": 1, "fyid": 5, "flag": "edit" }).subscribe(data => {
+            var _bankreceipt = data.data[0]._bankreceipt;
+            var _uploadedfile = data.data[0]._uploadedfile;
+            var _docfile = data.data[0]._docfile;
+
+            this.BankName = _bankreceipt[0].bank;
+            this.DepDate = _bankreceipt[0].depdate;
+            this.CustName = _bankreceipt[0].partyname;
+            this.CustID = _bankreceipt[0].custid;
+            this.Refno = _bankreceipt[0].refno;
+            this.TypeName = _bankreceipt[0].typ;
+            this.ChequeNo = _bankreceipt[0].cheqno;
+            this.Amount = _bankreceipt[0].amount;
+            this.Naration = _bankreceipt[0].naration;
+
+            this.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+            this.docfile = _docfile == null ? [] : _docfile;
         }, err => {
             console.log('Error');
         }, () => {
@@ -89,24 +91,33 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
     //Send Paramter In Save Method
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     ParamJson() {
         var ParamName = {
             "cmpid": 1,
             "createdby": "Admin",
-            "fy": 5,
+            "fyid": 5,
             "refno": this.Refno,
             "bankreid": this.BankRecpId,
-            "depdate": $('#DepDate').datepicker('getDate'),
+            //"depdate": $('#DepDate').datepicker('getDate'),
             "bankid": this.BankName,
             "typ": this.TypeName,
             "acid": this.CustID,
             "cheqno": this.ChequeNo,
             "amount": this.Amount,
             "naration": this.Naration,
-            "docfile": this.docfile,
-            "remark1": "Remark1",
-            "remark2": "Remark2",
-            "remark3": "Remark3"
+            "docfile": this.docfile
         }
         return ParamName;
     }
@@ -172,6 +183,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     actionBarEvt(evt) {
         if (evt === "save") {
             this.DepDate = $('#DepDate').val();
+
             if (this.BankName == "") {
                 alert('Please Selected Bank');
                 $(".bankname").focus();
@@ -187,13 +199,13 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
                 $(".Custcode").focus();
                 return false;
             }
-            this.BankServies.saveBankReceipt(
-                this.ParamJson()
-            ).subscribe(BankName => {
+
+            this.BankServies.saveBankReceipt(this.ParamJson()).subscribe(BankName => {
                 var dataset = BankName.data;
+
                 if (dataset[0].funsave_bankreceipt.msg == 'save') {
                     alert("Data Save Successfully");
-                    this.ClearControll();
+                    this._router.navigate(['/accounts/bankreceipt']);
                     return false;
                 }
                 else {
@@ -205,13 +217,17 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             }, () => {
                 //Done Process
             });
-            this.actionButton.find(a => a.id === "save").hide = false;
+
+            this.actionButton.find(a => a.id === "save").hide = true;
+            this.actionButton.find(a => a.id === "edit").hide = false;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
             $(".bankname").focus();
+
             this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
         }
@@ -228,20 +244,20 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
         $(".bankname").focus();
 
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        // setTimeout(function () {
+        //     var date = new Date();
+        //     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-            //DepDate 
-            $("#DepDate").datepicker({
-                dateFormat: "dd-mm-yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#DepDate").datepicker('setDate', today);
+        //     //DepDate 
+        //     $("#DepDate").datepicker({
+        //         dateFormat: "dd-mm-yy",
+        //         //startDate: new Date(),        //Disable Past Date
+        //         autoclose: true,
+        //         setDate: new Date()
+        //     });
+        //     $("#DepDate").datepicker('setDate', today);
 
-        }, 0);
+        // }, 0);
 
         //Table Row a Tag Click  
         this.subscribeParameters = this._routeParams.params.subscribe(params => {

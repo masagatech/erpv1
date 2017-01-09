@@ -36,13 +36,16 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     Refno: any = '';
     Type: any = 0;
     Issuesdate: any;
-    
+
+    module: string = "";
     docfile: any = [];
     uploadedFiles: any = [];
 
     private subscribeParameters: any;
 
-    constructor(private setActionButtons: SharedVariableService, private BankServies: bankpaymentService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
+    constructor(private setActionButtons: SharedVariableService, private BankServies: bankpaymentService,
+        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router) {
+        this.module = "Bank Payment";
         this.getBankMasterDrop();
         this.getTypDrop();
     }
@@ -79,25 +82,25 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     //Get Data With Row
 
     GetBankPayment(BankPayId) {
-        this.BankServies.getBankPaymentView({
-            "BankPayId": this.BankPayId,
-            "cmpid": 1,
-            "fy": 5,
-            "flag": "edit"
-        }).subscribe(PaymentDetails => {
-            var dataset = PaymentDetails.data;
-            console.log(dataset);
-            this.Bankid = dataset[0].bank;
-            this.Issuesdate = dataset[0].issuedate;
-            this.CustID = dataset[0].custid;
-            this.CustName = dataset[0].partyname;
-            this.Refno = dataset[0].refno;
-            this.Type = dataset[0].typ;
-            this.ChequeNo = dataset[0].cheqno;
-            this.Amount = dataset[0].amount;
-            this.Remark = dataset[0].remark;
-            this.uploadedFiles = dataset[0].docfile == null ? [] : dataset[0].uploadedfile;
-            this.docfile = dataset[0].docfile == null ? [] : dataset[0].docfile;
+        this.BankServies.getBankPaymentView({ "bankpayid": this.BankPayId, "cmpid": 1, "fyid": 5, "flag": "edit" }).subscribe(data => {
+            console.log(data.data);
+
+            var _bankpayment = data.data[0]._bankpayment;
+            var _uploadedfile = data.data[0]._uploadedfile;
+            var _docfile = data.data[0]._docfile;
+
+            this.Bankid = _bankpayment[0].bank;
+            this.Issuesdate = _bankpayment[0].issuedate;
+            this.CustID = _bankpayment[0].custid;
+            this.CustName = _bankpayment[0].partyname;
+            this.Refno = _bankpayment[0].refno;
+            this.Type = _bankpayment[0].typ;
+            this.ChequeNo = _bankpayment[0].cheqno;
+            this.Amount = _bankpayment[0].amount;
+            this.Remark = _bankpayment[0].remark;
+
+            this.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+            this.docfile = _docfile == null ? [] : _docfile;
         }, err => {
             console.log('Error');
         }, () => {
@@ -194,18 +197,18 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
 
         $(".bankpay").focus();
 
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        // setTimeout(function () {
+        //     var date = new Date();
+        //     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-            //From Date 
-            $("#Issuesdate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#Issuesdate").datepicker('setDate', today);
-        }, 0);
+        //     //From Date 
+        //     $("#Issuesdate").datepicker({
+        //         dateFormat: "dd/mm/yy",
+        //         autoclose: true,
+        //         setDate: new Date()
+        //     });
+        //     $("#Issuesdate").datepicker('setDate', today);
+        // }, 0);
 
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -230,28 +233,26 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     //Any Button Click Event Add Edit And Save
 
     actionBarEvt(evt) {
-        if (this.Bankid == undefined || this.Bankid == null) {
-            alert('Please Selected Bank');
-            return false;
-        }
-        if ($('#Issuesdate').val() == "") {
-            alert('Please Selected Issues Date');
-            return false;
-        }
-        if (this.CustName == undefined || this.CustName == null) {
-            alert('Please Selected Account Code');
-            return false;
-        }
-
         if (evt === "save") {
-            this.BankServies.saveBankPayment(
-                this.ParamJson()
-            ).subscribe(result => {
+            if (this.Bankid == undefined || this.Bankid == null) {
+                alert('Please Selected Bank');
+                return false;
+            }
+            if ($('#Issuesdate').val() == "") {
+                alert('Please Selected Issues Date');
+                return false;
+            }
+            if (this.CustName == undefined || this.CustName == null) {
+                alert('Please Selected Account Code');
+                return false;
+            }
+
+            this.BankServies.saveBankPayment(this.ParamJson()).subscribe(result => {
                 var returndata = result.data;
                 console.log(returndata);
                 if (returndata[0].funsave_bankpayment.msg == "Saved") {
                     alert('Data Save Successfully');
-                    this.ClearControll();
+                    this._router.navigate(['/accounts/bankpayment']);
                 }
             }, err => {
                 console.log(err);
