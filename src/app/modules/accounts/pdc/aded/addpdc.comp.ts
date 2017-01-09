@@ -26,6 +26,10 @@ export class AddPDC implements OnInit, OnDestroy {
     pdctype: string = "";
     narration: string = "";
 
+    module: string = "";
+    docfile: any = [];
+    uploadedFiles: any = [];
+
     pdctypedt: any = [];
 
     actionButton: ActionBtnProp[] = [];
@@ -34,16 +38,8 @@ export class AddPDC implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _commonservice: CommonService, private _pdcservice: PDCService) {
+        this.module = "PDC";
         this.getPDCType();
-    }
-
-    getButtonValue() {
-        $("#divpdctype button").click(function () {
-            $(this).addClass('active').siblings().removeClass('active');
-
-            var diltertype = $(this).attr("data-state");
-            alert(diltertype);
-        });
     }
 
     getPDCType() {
@@ -84,30 +80,45 @@ export class AddPDC implements OnInit, OnDestroy {
 
     // save pdc
 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        var that = this;
+
+        for (var i = 0; i < e.length; i++) {
+            that.docfile.push({ "id": e[i].id });
+        }
+
+        that.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     savePDCData() {
+        var that = this;
+
         var savepdc = {
-            "pdcid": this.pdcid,
+            "pdcid": that.pdcid,
             "cmpid": "2",
             "fyid": "7",
-            "acid": this.acid,
-            "amount": this.amount,
-            "bankname": this.bankname,
-            "chequeno": this.chequeno,
-            "chequedate": this.chequedate,
-            "pdctype": this.pdctype,
-            "narration": this.narration,
+            "acid": that.acid,
+            "amount": that.amount,
+            "bankname": that.bankname,
+            "chequeno": that.chequeno,
+            "chequedate": that.chequedate,
+            "pdctype": that.pdctype,
+            "narration": that.narration,
+            "docfile": that.docfile,
             "createdby": "1:vivek",
             "updatedby": "1:vivek"
         }
 
-        this._pdcservice.savePDCDetails(savepdc).subscribe(data => {
+        that._pdcservice.savePDCDetails(savepdc).subscribe(data => {
             var dataResult = data.data;
-            debugger;
-            console.log(dataResult);
 
             if (dataResult[0].funsave_pdc.msgid != "-1") {
                 alert(dataResult[0].funsave_pdc.msg);
-                this._router.navigate(['/accounts/pdc']);
+                that._router.navigate(['/accounts/pdc']);
             }
             else {
                 alert("Error");
@@ -118,6 +129,8 @@ export class AddPDC implements OnInit, OnDestroy {
             // console.log("Complete");
         });
     }
+
+    // get pdc
 
     getPDCById(id) {
         var that = this;
@@ -134,6 +147,8 @@ export class AddPDC implements OnInit, OnDestroy {
             that.bankname = pdcdata[0].bankname;
             that.chequeno = pdcdata[0].chequeno;
             that.narration = pdcdata[0].narration;
+            that.uploadedFiles = pdcdata[0].docfile == null ? [] : pdcdata[0].uploadedfile;
+            that.docfile = pdcdata[0].docfile == null ? [] : pdcdata[0].docfile;
         }, err => {
             console.log("Error");
         }, () => {

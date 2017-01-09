@@ -1,10 +1,11 @@
-<div class="panel panel-theme">
-    <div class="panel-heading">
-        <h3 class="panel-title">{{title}}</h3>
-    </div>
+<div class="middlepan">
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{title}}</h3>
+        </div>
 
-    <div class="panel-body">
-        <!--<div class="form-group" align="center">
+        <div class="panel-body">
+            <!--<div class="form-group" align="center">
             <label class="btn btn-default">
                 <input type="radio" name="pdctype" [(ngModel)]="received" value="received" (change)="findPDCType()">
                 <span>Received</span>
@@ -15,62 +16,100 @@
             </label>
         </div>-->
 
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group" align="center">
-                        <select [(ngModel)]="pdctype" name="pdctype" id="pdctype" class="form-control">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group" align="center">
+                            <select [(ngModel)]="pdctype" name="pdctype" id="pdctype" class="form-control">
                             <option [value]="">Select PDC Type</option>
                             <option *ngFor="let row of pdctypedt" [value]="row.key">	
                                 {{row.val}}
                             </option>
                         </select>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Party Name</label>
+                    <input type="text" [(ngModel)]="acname" class="acname form-control" (keyup)="getCustAuto(this)" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Cheque Date</label>
+                            <input type="date" [(ngModel)]="chequedate" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Amount</label>
+                            <input type="number" [(ngModel)]="amount" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Bank Name</label>
+                            <input type="text" [(ngModel)]="bankname" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Cheque No</label>
+                            <input type="text" [(ngModel)]="chequeno" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Narration</label>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="control-label">Party Name</label>
-                <input type="text" [(ngModel)]="acname" class="acname form-control" (keyup)="getCustAuto(this)" />
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Cheque Date</label>
-                        <input type="date" [(ngModel)]="chequedate" class="form-control" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Amount</label>
-                        <input type="number" [(ngModel)]="amount" class="form-control" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Bank Name</label>
-                        <input type="text" [(ngModel)]="bankname" class="form-control" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Cheque No</label>
-                        <input type="text" [(ngModel)]="chequeno" class="form-control" />
-                    </div>
-                </div>
-            </div>
+    </div>
+</div>
+<div class="sidepan">
+    <!--widgit-->
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="control-label">Narration</label>
-                <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
-            </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+
+    <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+        (onComplete)="onUploadComplete($event)"></fileupload>
+
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
         </div>
     </div>
 </div>
