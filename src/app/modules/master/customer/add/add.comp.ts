@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
-import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
+import { ActionBtnProp } from '../../../../_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { CustomerAddService } from "../../../../_service/customer/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -52,6 +53,17 @@ declare var $: any;
     adrbookid: any = [];
     adrid: number = 0;
     docfile: any = [];
+    adttestid: any = "";
+
+    allload: any = {
+        "wearhouse": false,
+        "otherdropdwn": false
+    }
+
+    _editid: number = 0;
+
+    @ViewChild('addrbook')
+    addressBook: AddrbookComp;
 
     private subscribeParameters: any;
 
@@ -75,7 +87,8 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
                 this.custid = params['id'];
-                this.EditCust(this.custid);
+                this._editid = this.custid
+
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -92,12 +105,27 @@ declare var $: any;
     //attribute list Add Div
     AttributeAdd() {
         if (this.attrid > 0) {
-            this.attrlist.push({
-                'attrname': this.attrname,
-                'value': this.attrid
-            });
-            this.attrname = "";
-            $(".attr").focus();
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.attrlist.length; i++) {
+                if (this.attrlist[i].attrname == this.attrname) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.attrlist.push({
+                    'attrname': this.attrname,
+                    'value': this.attrid
+                });
+                this.attrname = "";
+                $(".attr").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                $(".attr").focus();
+                return;
+            }
+
         }
         else {
             this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
@@ -105,6 +133,21 @@ declare var $: any;
             return;
         }
 
+    }
+
+    Removeattr(row) {
+        var index = -1;
+        for (var i = 0; i < this.attrlist.length; i++) {
+            if (this.attrlist[i].value === row.value) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.attrlist.splice(index, 1);
+        $(".attr").focus();
     }
 
     //File Upload Start 
@@ -123,14 +166,17 @@ declare var $: any;
 
     //Get Company And Warehouse Dropdown Bind
     getcustomerdrop() {
+        var _this = this;
         this.CustAddServies.getCustomerdrop({
             "cmpid": 1,
             "createdby": "admin"
         }).subscribe(result => {
-            this.warehouselist = result.data[0];
-            this.debitlist = result.data[1];
-            this.creditlist = result.data[1];
-            this.dayslist = result.data[2];
+            _this.warehouselist = result.data[0];
+            _this.debitlist = result.data[1];
+            _this.creditlist = result.data[1];
+            _this.dayslist = result.data[2];
+            _this.allload.otherdropdwn = true;
+            _this.checkalllead();
         }, err => {
             console.log("Error");
         }, () => {
@@ -138,38 +184,45 @@ declare var $: any;
         })
     }
 
+    checkalllead() {
+        if (this.allload.otherdropdwn) {
+            this.EditCust(this._editid);
+        }
+    }
+
     //Add Accounting Row
     AddNewKyeval() {
-        if (this.key == "") {
-            this._msg.Show(messageType.info, "info", "Please enter key");
+        var that = this;
+        if (that.key == "") {
+            that._msg.Show(messageType.info, "info", "Please enter key");
             $(".key").focus()
             return;
         }
-        if (this.value == "") {
-            this._msg.Show(messageType.info, "info", "Please enter value");
+        if (that.value == "") {
+            that._msg.Show(messageType.info, "info", "Please enter value");
             $(".val").focus()
             return;
         }
-        this.Duplicateflag = true;
-        for (var i = 0; i < this.keyvallist.length; i++) {
-            if (this.keyvallist[i].key == this.key && this.keyvallist[i].value == this.value) {
-                this.Duplicateflag = false;
+        that.Duplicateflag = true;
+        for (var i = 0; i < that.keyvallist.length; i++) {
+            if (that.keyvallist[i].key == that.key && that.keyvallist[i].value == that.value) {
+                that.Duplicateflag = false;
                 break;
             }
         }
-        if (this.Duplicateflag == true) {
-            this.keyvallist.push({
-                'key': this.key,
-                'value': this.value
+        if (that.Duplicateflag == true) {
+            that.keyvallist.push({
+                'key': that.key,
+                'value': that.value
             });
-            this.key = "";
-            this.value = "";
-            this.attrtable = false;
+            that.key = "";
+            that.value = "";
+            that.attrtable = false;
             $(".key").focus();
 
         }
         else {
-            this._msg.Show(messageType.info, "info", "Duplicate key and value");
+            that._msg.Show(messageType.info, "info", "Duplicate key and value");
             $(".key").focus();
             return;
         }
@@ -205,6 +258,7 @@ declare var $: any;
         this.remark = "";
         this.warehouselist = [];
         this.keyvallist = [];
+        this.adrbookid = [];
         this.debit = 0;
         this.credit = 0;
         this.days = 0;
@@ -213,35 +267,51 @@ declare var $: any;
 
     //Edit Customer 
     EditCust(id) {
-        this.CustAddServies.getcustomer({
+        var that = this;
+        that.CustAddServies.getcustomer({
             "cmpid": 1,
             "flag": "Edit",
             "custid": id
         }).subscribe(result => {
-            this.custid = result.data[0][0].autoid;
-            this.code = result.data[0][0].code;
-            this.Custname = result.data[0][0].custname;
-            this.warehouselist = result.data[0][0].warehouseid;
-            this.keyvallist = result.data[0][0].keyval;
-            this.attrlist = result.data[0][0].attr;
+            that.custid = result.data[0][0].autoid;
+            that.code = result.data[0][0].code;
+            that.Custname = result.data[0][0].custname;
+            //that.warehouselist = result.data[0][0].warehouseid;
+            that.keyvallist = result.data[0][0].keyval;
+            that.attrlist = result.data[0][0].attr;
             if (result.data[0][0].ctrl.length > 0) {
-                this.Ctrllist = result.data[0][0].ctrl;
-                this.ctrlhide = false;
+                that.Ctrllist = result.data[0][0].ctrl;
+                that.ctrlhide = false;
             }
             else {
-                this.ctrlhide = true;
+                that.ctrlhide = true;
             }
-            this.debit = result.data[0][0].debit;
-            this.credit = result.data[0][0].credit;
-            this.ope = result.data[0][0].op;
-            this.days = result.data[0][0].days;
-            this.remark = result.data[0][0].remark;
-            this.adrid=result.data[0][0].adrid;
+            that.debit = result.data[0][0].debit;
+            that.credit = result.data[0][0].credit;
+            that.ope = result.data[0][0].op;
+            that.days = result.data[0][0].days;
+            that.remark = result.data[0][0].remark;
+            that.adrid = result.data[0][0].adrid;
+            for (let items of result.data[0][0].adr) {
+                that.adttestid += items.adrid + ',';
+            }
+            that.addressBook.getAddress(that.adttestid.slice(0, -1));
+            that.issh = 1;
+
+            //Warehouse check edit mode
+            if (that.warehouselist.length > 0) {
+                var wareedit = result.data[0][0].warehouseid;
+                for (var j = 0; j <= wareedit.length - 1; j++) {
+                    var chk = that.warehouselist.find(a => a.value === wareedit[j].value);
+                    chk.Warechk = true;
+                }
+            }
+
         }, err => {
             console.log("error");
         }, () => {
             console.log("Done");
-            
+
         })
     }
 
@@ -250,7 +320,7 @@ declare var $: any;
         var warehouseid = [];
         for (let wareid of this.warehouselist) {
             if (wareid.Warechk == true) {
-                warehouseid.push({ "value": wareid.value, "Warechk": wareid.Warechk });
+                warehouseid.push({ "value": wareid.value });
             }
         }
         return warehouseid;
@@ -466,6 +536,7 @@ declare var $: any;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".code").focus();
+            this.issh = 0;
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
@@ -489,23 +560,30 @@ declare var $: any;
         }, 100);
     }
 
+    warehouseBind() {
+        var that = this;
+        that.CustAddServies.getCustomerdrop({
+            "cmpid": 1,
+            "createdby": "admin"
+        }).subscribe(result => {
+            console.log("wearhouse");
+            that.warehouselist = result.data[0];
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     //Warehouse Tab Click Event 
     TabWare() {
-        // if (this.issh == 0) {
-        //     this.issh = 1;
-        //     this.CustAddServies.getCustomerdrop({
-        //         "cmpid": 1,
-        //         "createdby": "admin"
-        //     }).subscribe(result => {
-        //         this.warehouselist = result.data[0];
-        //     }, err => {
-        //         console.log("Error");
-        //     }, () => {
-        //         // console.log("Complete");
-        //     })
-        // } else {
-        //     this.issh == 0;
-        // }
+        var that = this;
+        if (that.issh == 0) {
+            that.issh = 1;
+            that.warehouseBind();
+        } else {
+            that.issh == 0;
+        }
 
     }
 

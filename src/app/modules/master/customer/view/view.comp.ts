@@ -39,7 +39,6 @@ declare var $: any;
         }).subscribe(result => {
             that.totalRecords = result.data[1][0].recordstotal;
             that.customerlist = result.data[0];
-
         }, err => {
             console.log("Error");
         }, () => {
