@@ -38,7 +38,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
 
     OpenEdit(row) {
         if (!row.islocked) {
-            this._router.navigate(['/accounts/bankreceipt/braded', row.id]);
+            this._router.navigate(['/accounts/bankreceipt/add', row.id]);
         }
     }
 
