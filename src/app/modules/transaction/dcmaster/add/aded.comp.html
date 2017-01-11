@@ -120,13 +120,13 @@
 				<tbody>
 					<tr *ngFor="let item of newAddRow let i=index" (click)=rowclick(item.counter)>
 						<td><span>{{i+1}}</span><span class="hide">{{item.DcDelid}}</span></td>
-						<td> <input type="text" class="form-control ProdName" autocomplete='off' value="" [(ngModel)]="item.ItemsName" (keyup)="getAutoCompleteProd(item,1)"
+						<td> <input type="text" class="form-control ProdName" autocomplete='off' value="" [(ngModel)]="item.itemsname" (keyup)="getAutoCompleteProd(item,1)"
 							/></td>
-						<td><input type="text" class="form-control textalign" [(ngModel)]="item.Qty" (keyup)="ConfirmQtyEdit(item.counter,item.Qty)"
+						<td><input type="text" class="form-control textalign" [(ngModel)]="item.qty" (keyup)="ConfirmQtyEdit(item.counter,item.qty)"
 								(keyup.enter)="setFocus()" /></td>
-						<td><input type="text" class="form-control textalign" [(ngModel)]="item.Rate" readonly="true" /></td>
-						<td><input type="text" class="form-control textalign" [(ngModel)]="item.Dis" readonly="true" /></td>
-						<td><input type="text" class="form-control textalign" [(ngModel)]="item.Amount" readonly="true" /></td>
+						<td><input type="text" class="form-control textalign" [(ngModel)]="item.rate" readonly="true" /></td>
+						<td><input type="text" class="form-control textalign" [(ngModel)]="item.dis" readonly="true" /></td>
+						<td><input type="text" class="form-control textalign" [(ngModel)]="item.amount" readonly="true" /></td>
 						<td>
 							<button class="btn btn-danger" (click)="DeleteRow(item.counter,item.DcDelid)"><i class="fa fa-trash"></i></button>
 						</td>

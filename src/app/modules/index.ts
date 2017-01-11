@@ -62,8 +62,12 @@ const routerConfig =
                             path: 'master', loadChildren: () => System.import('./master/master.module').then((comp: any) => {
                                 return comp.default;
                             })
+                        },
+                        {
+                            path: 'warehouse', loadChildren: () => System.import('./warehouse/warehouse.module').then((comp: any) => {
+                                return comp.default;
+                            })
                         }
-                        
                     ]
                 }
             ]

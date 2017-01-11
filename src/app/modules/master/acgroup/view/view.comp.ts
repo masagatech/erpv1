@@ -16,8 +16,8 @@ declare var $: any;
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    FromDate: any;
-    ToDate: any;
+    // FromDate: any;
+    // ToDate: any;
     GroupName: any = "";
     Groupcode: any = 0;
     acgrouplist: any = [];
@@ -32,36 +32,12 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-         $(".GroupName").focus();
+        $(".GroupName").focus();
         this.getAccountGroupView();
-       
-
-        setTimeout(function () {
-            var date = new Date();
-            var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var ToDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', FromDate);
-            $("#ToDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#ToDate").datepicker('setDate', ToDate);
-        }, 0);
     }
 
     //Get Button CLick Event
-    GetAccountGroup()
-    {
+    GetAccountGroup() {
         
     }
 
@@ -70,7 +46,7 @@ declare var $: any;
         var Param = {
             "groupid": 0,
             "groupcode": "0",
-            "CmpCode": "Mtech",
+            "cmpid": 1,
             "FY": 5,
             "CreatedBy": "admin",
             "flag": "all"
@@ -84,17 +60,15 @@ declare var $: any;
             this.jsonPram()
         ).subscribe(result => {
             var dataset = result.data;
-            if(dataset.length > 0)
-            {
+            if (dataset.length > 0) {
                 this.acgrouplist = dataset;
             }
-            else
-            {
+            else {
                 alert("Record not found");
                 $(".GroupName").focus();
                 return;
             }
-            
+
         }, err => {
             console.log("Error");
 
@@ -105,16 +79,16 @@ declare var $: any;
 
     //More Button Click Event
     expandDetails(row) {
-        row.Details=[];
+        row.Details = [];
         if (row.issh == 0) {
             row.issh = 1;
             if (row.Details.length === 0) {
                 this.acgroupServies.acGroupView({
                     "flag": "",
                     "neturid": row.autoid,
-                    "groupid":0,
-                    "fromdate":"",
-                    "todate":"",
+                    "groupid": 0,
+                    "fromdate": "",
+                    "todate": "",
                     "cmpid": 1,
                     "fy": 5
                 }).subscribe(data => {
@@ -140,9 +114,9 @@ declare var $: any;
 
     //Auto Completed Nature
     getAutoCompleteGroupName(me: any) {
-        this._autoservice.getAutoData({ "Type": "acgroup", "Key": this.GroupName, "CmpCode": "Mtech", "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "nature", "search": this.GroupName, "CmpCode":1, "FY": 5 }).subscribe(data => {
             $(".GroupName").autocomplete({
-                source: JSON.parse(data.data),
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,

@@ -46,6 +46,9 @@ declare var $: any;
     adrid: number = 0;
     adrcsvid: string = "";
     docfile: any = [];
+    module: string = "";
+    uploadedFiles: any = [];
+    accode:string="";
 
     allload: any = {
         "wearhouse": false,
@@ -62,6 +65,7 @@ declare var $: any;
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private vendorAddServies: VendorAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService) {
+        this.module = "vend";
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -91,6 +95,11 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+    }
+
+     Getcode() {
+        this.addressBook.AddBook(this.code);
+        this.accode = this.code;
     }
 
     //attribute list Add Div
@@ -129,7 +138,7 @@ declare var $: any;
     Removeattr(row) {
         var index = -1;
         for (var i = 0; i < this.attrlist.length; i++) {
-            if (this.attrlist[i].value === row.value) {
+            if (this.attrlist[i].attrid === row.attrid) {
                 index = i;
                 break;
             }
@@ -237,10 +246,20 @@ declare var $: any;
         this.debit = 0;
         this.credit = 0;
         this.ope = "";
+        this.addressBook.ClearArray();
     }
 
-    testeven() {
-        this.addressBook.getTestComp();
+    //File Upload Start 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    //File Upload Complete 
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+        this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
     //Edit Customer 
@@ -251,20 +270,28 @@ declare var $: any;
             "flag": "Edit",
             "venid": id
         }).subscribe(result => {
-            console.log(result);
-            that.venid = result.data[0][0].autoid;
-            that.code = result.data[0][0].code;
-            that.vendor = result.data[0][0].vendor;
-            that.keyvallist = result.data[0][0].keyval;
-            that.attrlist = result.data[0][0].attr;
-            that.debit = result.data[0][0].debit;
-            that.credit = result.data[0][0].credit;
-            that.ope = result.data[0][0].op;
-            that.days = result.data[0][0].days;
-            that.remark = result.data[0][0].remark;
-            //that.adrid = result.data[1][0].adr;
             debugger;
-            for (let items of result.data[0][0].adr) {
+            var _venddata = result.data[0][0]._venddata;
+            var _uploadedfile = result.data[0][0]._uploadedfile;
+            var _docfile = result.data[0][0]._docfile;
+
+            that.venid = _venddata[0].autoid;
+            that.code = _venddata[0].code;
+            that.vendor = _venddata[0].vendor;
+            that.keyvallist = _venddata[0].keyval;
+            that.attrlist = _venddata[0].attr;
+            that.debit = _venddata[0].debit;
+            that.credit = _venddata[0].credit;
+            that.ope = _venddata[0].op;
+            that.days = _venddata[0].days;
+            that.remark = _venddata[0].remark;
+
+            if (_uploadedfile != null) {
+                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+                that.docfile = _docfile == null ? [] : _docfile;
+            }
+
+            for (let items of _venddata[0].adr) {
                 that.adrcsvid += items.adrid + ',';
             }
             that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
@@ -319,6 +346,7 @@ declare var $: any;
             "code": this.code,
             "vendor": this.vendor,
             "keyval": this.keyvallist,
+            "docfile": this.docfile,
             "attr": this.attrlist,
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
@@ -353,7 +381,7 @@ declare var $: any;
             ).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].funsave_vendor.maxid == '-1') {
-                    this._msg.Show(messageType.info, "info", "Data already exists");
+                    this._msg.Show(messageType.info, "info", "Vendor code already exists");
                     $(".code").focus();
                     return;
                 }

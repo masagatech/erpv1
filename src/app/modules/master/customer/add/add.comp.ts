@@ -50,10 +50,17 @@ declare var $: any;
     ctrlhide: boolean = true;
     profflag: boolean = true;
     constflag: boolean = true;
+
+    //Other Module Declare
     adrbookid: any = [];
     adrid: number = 0;
     docfile: any = [];
+    module: string = "";
+    uploadedFiles: any = [];
     adrcsvid: any = "";
+    adrmodule: string = "";
+    accode: string = "";
+
 
     allload: any = {
         "wearhouse": false,
@@ -70,6 +77,7 @@ declare var $: any;
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService) {
+        this.module = "cust";
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -100,6 +108,11 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+    }
+
+    Getcode() {
+        this.addressBook.AddBook(this.code);
+        this.accode = this.code;
     }
 
     //attribute list Add Div
@@ -150,6 +163,8 @@ declare var $: any;
         $(".attr").focus();
     }
 
+
+
     //File Upload Start 
     onUploadStart(e) {
         this.actionButton.find(a => a.id === "save").enabled = false;
@@ -161,7 +176,6 @@ declare var $: any;
             this.docfile.push({ "id": e[i].id });
         }
         this.actionButton.find(a => a.id === "save").enabled = true;
-        console.log(this.docfile);
     }
 
     //Get Company And Warehouse Dropdown Bind
@@ -268,37 +282,45 @@ declare var $: any;
         this.days = 0;
         this.ope = "";
         this.addressBook.ClearArray();
+
     }
 
     //Edit Customer 
     EditCust(id) {
         var that = this;
-        that.CustAddServies.getcustomer({
-            "cmpid": 1,
-            "flag": "Edit",
-            "custid": id
-        }).subscribe(result => {
-            that.custid = result.data[0][0].autoid;
-            that.code = result.data[0][0].code;
-            that.Custname = result.data[0][0].custname;
-            //that.warehouselist = result.data[0][0].warehouseid;
-            that.keyvallist = result.data[0][0].keyval;
-            that.attrlist = result.data[0][0].attr;
-            if (result.data[0][0].ctrl.length > 0) {
-                that.Ctrllist = result.data[0][0].ctrl;
+        that.CustAddServies.getcustomer({ "cmpid": 1, "flag": "Edit", "custid": id }).subscribe(result => {
+            var _custdata = result.data[0][0]._custdata;
+            var _uploadedfile = result.data[0][0]._uploadedfile;
+            var _docfile = result.data[0][0]._docfile;
+
+            that.custid = _custdata[0].autoid;
+            that.code = _custdata[0].code;
+            that.Custname = _custdata[0].custname;
+            //that.warehouselist = _custdata[0].warehouseid;
+            that.keyvallist = _custdata[0].keyval;
+            that.attrlist = _custdata[0].attr;
+
+            if (_custdata[0].ctrl.length > 0) {
+                that.Ctrllist = _custdata[0].ctrl;
                 that.ctrlhide = false;
             }
             else {
                 that.ctrlhide = true;
             }
-            that.debit = result.data[0][0].debit;
-            that.credit = result.data[0][0].credit;
-            that.ope = result.data[0][0].op;
-            that.days = result.data[0][0].days;
-            that.remark = result.data[0][0].remark;
-            that.adrid = result.data[0][0].adrid;
 
-            for (let items of result.data[0][0].adr) {
+            that.debit = _custdata[0].debit;
+            that.credit = _custdata[0].credit;
+            that.ope = _custdata[0].op;
+            that.days = _custdata[0].days;
+            that.remark = _custdata[0].remark;
+            that.adrid = _custdata[0].adrid;
+
+            if (_uploadedfile != null) {
+                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+                that.docfile = _docfile == null ? [] : _docfile;
+            }
+
+            for (let items of _custdata[0].adr) {
                 that.adrcsvid += items.adrid + ',';
             }
             that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
@@ -306,7 +328,7 @@ declare var $: any;
 
             //Warehouse check edit mode
             if (that.warehouselist.length > 0) {
-                var wareedit = result.data[0][0].warehouseid;
+                var wareedit = _custdata[0].warehouseid;
                 for (var j = 0; j <= wareedit.length - 1; j++) {
                     var chk = that.warehouselist.find(a => a.value === wareedit[j].value);
                     chk.Warechk = true;
@@ -518,7 +540,7 @@ declare var $: any;
             ).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].funsave_customer.maxid == '-1') {
-                    this._msg.Show(messageType.info, "info", "Data already exists");
+                    this._msg.Show(messageType.info, "info", "Customer code already exists");
                     $(".code").focus();
                     return;
                 }
@@ -572,7 +594,6 @@ declare var $: any;
             "cmpid": 1,
             "createdby": "admin"
         }).subscribe(result => {
-            console.log("wearhouse");
             that.warehouselist = result.data[0];
         }, err => {
             console.log("Error");
