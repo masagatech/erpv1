@@ -18,19 +18,22 @@ declare var $: any;
 
     // local veriable 
     qty: number = 0;
+    docno:number=0;
     NewItemsName: any = "";
     NewItemsid: any = 0;
     itemsname: any = '';
     itemsid: any = 0;
     counter: number = 0;
     remark: any = "";
+    rem:any="";
     Duplicateflag: boolean;
     ItemsfilteredList: any = [];
     newAddRow: any = [];
-    wareid: number = 0;
+    fromwareid: number = 0;
     fromwarname: any = "";
     Towarname: any = "";
     Towarid: number = 0;
+    editadd: number = 0;
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
@@ -40,7 +43,7 @@ declare var $: any;
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
@@ -72,7 +75,7 @@ declare var $: any;
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "CatProdName", "search": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "CatProdName", "search": arg == 0 ? me.NewItemsName : me.itemsname }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -84,18 +87,17 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.itemsname = ui.item.label;
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
                         _me.ItemsSelected(me.Itemsid);
+                        me.editadd = 1;
                     } else {
                         me.NewItemsName = ui.item.label;
-                        me.Itemsid = ui.item.value;
-                        _me.ItemsSelected(me.Itemsid);
+                        me.NewItemsid = ui.item.value;
+                        _me.ItemsSelected(me.NewItemsid);
+                        me.editadd = 0;
                     }
-                    //   me.ItemsKey = ui.item.label;
-                    //  _me.ItemsSelected(me.ItemsID);
                 }
             });
         }, err => {
@@ -119,7 +121,7 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.wareid = ui.item.value;
+                    me.fromwareid = ui.item.value;
                     me.fromwarname = ui.item.label;
                 }
             });
@@ -157,37 +159,58 @@ declare var $: any;
 
     //Add New Row
     private NewRowAdd() {
-        if (this.itemsname == '' || this.itemsname == undefined) {
-            alert('Please Enter items Name');
-            return;
+        var that = this;
+        if (that.editadd == 1) {
+            if (that.itemsname == '' || that.itemsname == undefined) {
+                alert('Please Enter items Name');
+                return;
+            }
         }
-        if (this.qty == 0 || this.qty == undefined) {
+        else {
+            if (that.NewItemsName == '' || that.NewItemsName == undefined) {
+                alert('Please Enter items Name');
+                return;
+            }
+        }
+
+        if (that.qty == 0 || that.qty == undefined) {
             alert('Please Enter Quntity');
             return;
         }
-        this.Duplicateflag = true;
-        for (var i = 0; i < this.newAddRow.length; i++) {
-            if (this.newAddRow[i].ItemsName == this.itemsname) {
-                this.Duplicateflag = false;
+        that.Duplicateflag = true;
+        for (var i = 0; i < that.newAddRow.length; i++) {
+            if (that.newAddRow[i].ItemsName == that.itemsname) {
+                that.Duplicateflag = false;
                 break;
             }
         }
-        if (this.Duplicateflag == true) {
-            debugger;
-            this.newAddRow.push({
-                "autoid": 0,
-                'itemsname': this.itemsname,
-                "itemsid": this.itemsid,
-                'qty': this.qty,
-                'remark': this.remark,
-                'counter': this.counter
-            });
+        if (that.Duplicateflag == true) {
+            if (that.editadd == 1) {
+                that.newAddRow.push({
+                    "autoid": 0,
+                    'itemsname': that.itemsname,
+                    "itemsid": that.itemsid,
+                    'qty': that.qty,
+                    'remark': that.remark,
+                    'counter': that.counter
+                });
+            }
+            else {
+                that.newAddRow.push({
+                    "autoid": 0,
+                    'itemsname': that.NewItemsName,
+                    "itemsid": that.NewItemsid,
+                    'qty': that.qty,
+                    'remark': that.remark,
+                    'counter': that.counter
+                });
+            }
 
-            this.counter++;
-            this.itemsname = "";
-            this.NewItemsName = "";
-            this.qty = 0;
-            this.remark = "";
+            that.counter++;
+            that.itemsname = "";
+            that.NewItemsName = "";
+            that.qty = 0;
+            that.remark = "";
             $("#foot_custname").focus();
         }
         else {
@@ -210,30 +233,59 @@ declare var $: any;
             console.log("Wrong Delete Entry");
         }
         this.newAddRow.splice(index, 1);
+        $("#foot_custname").focus();
+    }
+
+    paramsjson() {
+        var that = this;
+        var param = {
+            "docno":that.docno,
+            "fromid": that.fromwareid,
+            "toid": that.Towarid,
+            "remark": that.rem,
+            "cmpid":1,
+            "fy":5,
+            "createdby":"admin",
+            "warehousedetails": that.newAddRow
+        }
+        console.log(param);
+        return param;
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+        var that = this;
+        //Back Button CLick 
         if (evt === "back") {
-            this._router.navigate(['warehouse/warestock/view']);
+            that._router.navigate(['warehouse/warestock/view']);
         }
+         //Save Button Click 
         if (evt === "save") {
-
-            if (this.fromwarname == "") {
+            if (that.fromwarname == "") {
                 alert("Please Enetr From Warehouse");
                 $(".from").focus();
                 return;
             }
-            if (this.Towarname == "") {
+            if (that.Towarname == "") {
                 alert("Please Enetr To Warehouse");
                 $(".to").focus();
                 return;
             }
-            if (this.fromwarname == this.Towarname) {
+            if (that.fromwarname == that.Towarname) {
                 alert("From And To Warehouse Same");
                 $(".to").focus();
                 return;
             }
+            that.wareServies.saveWarehouse(
+                that.paramsjson()
+            ).subscribe(result => {
+                console.log(result.data);
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //Completed
+            })
+
 
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {

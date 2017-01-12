@@ -148,6 +148,7 @@ declare var $: any;
 
     }
 
+    //Remove Attribute
     Removeattr(row) {
         var index = -1;
         for (var i = 0; i < this.attrlist.length; i++) {

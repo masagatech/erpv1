@@ -9,4 +9,7 @@ export class WarehouseAddService {
     getItemsAutoCompleted(req: any) {
         return this._dataserver.post("getdcitemsdetails", req);
     }
+    saveWarehouse(req: any) {
+        return this._dataserver.post("saveWarehouseTranf", req);
+    }
 }

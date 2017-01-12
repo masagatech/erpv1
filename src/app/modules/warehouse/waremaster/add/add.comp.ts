@@ -92,7 +92,7 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "back") {
-            this._router.navigate(['warehouse/waremaster/view']);
+            this._router.navigate(['warehouse/warehouse/view']);
         }
         if (evt === "save") {
             this.wareServies.save(
