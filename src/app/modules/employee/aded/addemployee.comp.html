@@ -1,15 +1,249 @@
 <div class="middlepan">
     <div class="panel panel-theme">
-        <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-                <h3 class="panel-title">Personal Details</h3>
-            </a>
-        </div>
-        <div id="Personal" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <div class="col-sm-8 col-md-6">
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-target="#personal" role="button" data-toggle="tab">Personal Details</a></li>
+                <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
+                <li><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
+                <li><a data-target="#jobprofile" role="button" data-toggle="tab">Job Profile</a></li>
+                <li><a data-target="#aboutus" role="button" data-toggle="tab">About Us</a></li>
+                <li><a data-target="#ctrlcenter" role="button" data-toggle="tab">Controlling Center</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="personal">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">User Name</label>
+                                <input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Date of Birth</label>
+                                        <input type="date" [(ngModel)]="dob" name="DateOfBirth" id="DateOfBirth" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Gender</label>
+                                        <select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
+                                            <option [value]="'0'">Select Gender</option>
+                                            <option *ngFor="let row of genderDT" [value]="row.key">	
+                                                {{row.val}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Marital Status</label>
+                                        <select [(ngModel)]="maritalstatus" class="form-control">
+                                            <option [value]="'0'">Select Marital Status</option>
+                                            <option *ngFor="let row of maritalstatusDT" [value]="row.key">
+                                                {{row.val}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Blood Group</label>
+                                        <select [(ngModel)]="bloodgroup" class="form-control">
+                                            <option [value]="'0'">Select Blood Group</option>
+                                            <option *ngFor="let row of bloodgroupDT" [value]="row.key">
+                                                {{row.val}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8 col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Family Background</label>
+                                <textarea [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Health Details</label>
+                                <textarea [(ngModel)]="healthdtls" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="uploadphoto">
                     <div class="form-group">
-                        <label class="control-label">User Name</label>
+                        <fileupload [module]="module" [multi]="false" [isRaw]="true" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="contact">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-6">
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Mobile No</label>
+                                        <input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Alternate Mobile No</label>
+                                        <input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Alternate Email ID</label>
+                                <input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Country</label>
+                                        <select [(ngModel)]="country" class="form-control">
+                                            <option [value]="'0'">Select Country</option>
+                                            <option *ngFor="let row of countryDT" [value]="row.key">
+                                                {{row.val}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">State</label>
+                                        <input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">City</label>
+                                        <input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Pin Code</label>
+                                        <input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8 col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Address Line 1</label>
+                                <textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Address Line 2</label>
+                                <textarea [(ngModel)]="addressline2" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="jobprofile">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-6">
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Company Name</label>
+                                        <input type="text" [(ngModel)]="companyname" class="form-control input-sm" size="20" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Company Email</label>
+                                        <input type="text" [(ngModel)]="companyemail" class="form-control input-sm" size="20" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Department</label>
+                                        <select [(ngModel)]="deptid" class="form-control">
+                                            <option [value]="'0'">Select Department</option>
+                                            <option *ngFor="let row of departmentDT" [value]="row.key">
+                                                {{row.val}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Designation</label>
+                                        <select [(ngModel)]="desigid" class="form-control">
+                                            <option [value]="'0'">Select Designation</option>
+                                            <option *ngFor="let row of designationDT" [value]="row.key">
+                                                {{row.val}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8 col-md-6">
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Joining Date</label>
+                                        <input type="date" [(ngModel)]="doj" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Notice Days</label>
+                                        <input type="number" [(ngModel)]="noticedays" class="form-control input-sm" size="20" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Salary</label>
+                                        <input type="text" [(ngModel)]="salary" class="form-control input-sm" size="20" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Salary Mode</label>
+                                        <select [(ngModel)]="salarymode" class="form-control">
+								<option [value]="'0'">Select Salary Mode</option>
+								<option *ngFor="let row of salarymodeDT" [value]="row.ID">
+									{{row.val}}
+								</option>
+							</select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="aboutus">
+                    <div class="form-group">
+                        <textarea [(ngModel)]="aboutus" class="form-control big-text-box hidden-text-box" cols="150" rows="5" height="300"></textarea>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="ctrlcenter">
+                    <div class="form-group">
+                        <label class="control-label">Secondary</label>
                         <input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
                     </div>
                     <div class="row">
@@ -31,239 +265,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Marital Status</label>
-                                <select [(ngModel)]="maritalstatus" class="form-control">
-								<option [value]="'0'">Select Marital Status</option>
-								<option *ngFor="let row of maritalstatusDT" [value]="row.key">
-									{{row.val}}
-								</option>
-							</select>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Blood Group</label>
-                                <select [(ngModel)]="bloodgroup" class="form-control">
-								<option [value]="'0'">Select Blood Group</option>
-								<option *ngFor="let row of bloodgroupDT" [value]="row.key">
-									{{row.val}}
-								</option>
-							</select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-8 col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Family Background</label>
-                        <textarea [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label">Health Details</label>
-                        <textarea [(ngModel)]="healthdtls" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#UploadPhoto">
-                <h3 class="panel-title">Upload Photo</h3>
-            </a>
-        </div>
-        <div id="UploadPhoto" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <div class="form-group">
-                    <fileupload [module]="module" [multi]="false" [isRaw]="true" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#Contact">
-                <h3 class="panel-title">Contact Details</h3>
-            </a>
-        </div>
-        <div id="Contact" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <div class="col-sm-8 col-md-6">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Mobile No</label>
-                                <input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Alternate Mobile No</label>
-                                <input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label">Alternate Email ID</label>
-                        <input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Country</label>
-                                <select [(ngModel)]="country" class="form-control">
-								<option [value]="'0'">Select Country</option>
-								<option *ngFor="let row of countryDT" [value]="row.key">
-									{{row.val}}
-								</option>
-							</select>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">State</label>
-                                <input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">City</label>
-                                <input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Pin Code</label>
-                                <input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-8 col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Address Line 1</label>
-                        <textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label">Address Line 2</label>
-                        <textarea [(ngModel)]="addressline2" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#JobProfile">
-                <h3 class="panel-title">Job Profile</h3>
-            </a>
-        </div>
-        <div id="JobProfile" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <div class="col-sm-8 col-md-6">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Company Name</label>
-                                <input type="text" [(ngModel)]="companyname" class="form-control input-sm" size="20" />
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Company Email</label>
-                                <input type="text" [(ngModel)]="companyemail" class="form-control input-sm" size="20" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Department</label>
-                                <select [(ngModel)]="deptid" class="form-control">
-								<option [value]="'0'">Select Department</option>
-								<option *ngFor="let row of departmentDT" [value]="row.key">
-									{{row.val}}
-								</option>
-							</select>
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Designation</label>
-                                <select [(ngModel)]="desigid" class="form-control">
-								<option [value]="'0'">Select Designation</option>
-								<option *ngFor="let row of designationDT" [value]="row.key">
-									{{row.val}}
-								</option>
-							</select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-8 col-md-6">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Joining Date</label>
-                                <input type="date" [(ngModel)]="doj" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Notice Days</label>
-                                <input type="number" [(ngModel)]="noticedays" class="form-control input-sm" size="20" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Salary</label>
-                                <input type="text" [(ngModel)]="salary" class="form-control input-sm" size="20" />
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Salary Mode</label>
-                                <select [(ngModel)]="salarymode" class="form-control">
-								<option [value]="'0'">Select Salary Mode</option>
-								<option *ngFor="let row of salarymodeDT" [value]="row.ID">
-									{{row.val}}
-								</option>
-							</select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <a data-toggle="collapse" data-parent="#accordion" href="#AboutUs">
-                <h3 class="panel-title">About Employee</h3>
-            </a>
-        </div>
-        <div id="AboutUs" class="panel-collapse collapse in">
-            <div class="panel-body">
-                <div class="form-group">
-                    <textarea [(ngModel)]="aboutus" class="form-control big-text-box hidden-text-box" cols="150" rows="5" height="300"></textarea>
                 </div>
             </div>
         </div>

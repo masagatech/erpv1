@@ -10,6 +10,7 @@ import { ActionBarModule } from '../../_shared/shared.module'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
+import { TabViewModule } from 'primeng/primeng';
 
 const routerConfig = [
   {
@@ -31,7 +32,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule],
+  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, TabViewModule],
   declarations: [
     ViewEmployee,
     EmployeeAddEdit,

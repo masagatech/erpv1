@@ -4,18 +4,22 @@ import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { EmpService } from '../../../_service/employee/emp-service' /* add reference for add employee */
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
+import { ActionAccess } from '../../../_service/actionaccess-service' /* add reference for action button */
 import { Router, ActivatedRoute } from '@angular/router';
+import { UserService } from '../../../_service/user/user-service';
+import { LoginUserModel } from '../../../_model/user_model';
 import { MessageService, messageType } from '../../../_service/messages/message-service';
 
 declare var $: any;
 
 @Component({
     templateUrl: 'addemployee.comp.html',
-    providers: [EmpService, CommonService]
+    providers: [EmpService, CommonService, ActionAccess]
 })
 
 export class EmployeeAddEdit implements OnInit, OnDestroy {
     title: any;
+    loginUser: LoginUserModel;
 
     empid: number = 0;
     uid: number = 0;
@@ -65,8 +69,10 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     salarymodeDT: any[];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
-        private _empservice: EmpService, private _commonservice: CommonService, private _msg: MessageService) {
+        private _empservice: EmpService, private _actaccsservice: ActionAccess, private _userService: UserService,
+        private _commonservice: CommonService, private _msg: MessageService) {
         this.module = "Employee";
+        this.loginUser = this._userService.getUser();
 
         this.fillDropDownList("Gender");
         this.fillDropDownList("MaritalStatus");
@@ -76,6 +82,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.fillDropDownList("Designation");
         this.fillDropDownList("SalaryMode");
     }
+
+    selecteduid: number = 0;
 
     getUserAuto(me: any) {
         var that = this;
@@ -94,6 +102,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 select: function (event, ui) {
                     me.uid = ui.item.value;
                     me.uname = ui.item.label;
+                    that.selecteduid = ui.item.value;
+
+                    console.log("uid : " + that.selecteduid);
                 }
             });
         }, err => {
@@ -186,7 +197,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "noticedays": this.noticedays,
             "doj": this.doj,
             "aboutus": this.aboutus,
-            "uidcode": "1:vivek"
+            "uidcode": this.loginUser.login
         }
 
         console.log(saveEmp);
@@ -249,20 +260,27 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        var that = this;
+
         this.title = "Add Employee";
         console.log('ngOnInit');
 
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        // this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        // this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        // this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        // this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
 
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        // this.setActionButtons.setActionButtons(this.actionButton);
+
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['empid'] !== undefined) {
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
+                this._actaccsservice.setActionButton('emp', ["edit", "delete", "view"], function (actionButton: any) {
+                    that.actionButton = actionButton;
+                    that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+                });
+                // this.actionButton.find(a => a.id === "save").hide = true;
+                // this.actionButton.find(a => a.id === "edit").hide = false;
 
                 this.empid = params['empid'];
                 this.getEmpDataById(this.empid);
@@ -272,8 +290,12 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
+                this._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
+                    that.actionButton = actionButton;
+                    that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+                });
+                // this.actionButton.find(a => a.id === "save").hide = false;
+                // this.actionButton.find(a => a.id === "edit").hide = true;
 
                 this.clearEmployeeFields();
 
@@ -285,8 +307,13 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveEmployeeData();
+        var that = this;
+
+        if (evt === "view") {
+            that._router.navigate(['employee/viewemployee']);
+        }
+        else if (evt === "save") {
+            that.saveEmployeeData();
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
@@ -294,8 +321,13 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
             $('#uname').attr('disabled', 'disabled');
 
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
+            that._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
+                that.actionButton = actionButton;
+                that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+            });
+
+            // this.actionButton.find(a => a.id === "save").hide = false;
+            // this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
         }
@@ -304,7 +336,11 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     ngOnDestroy() {
         console.log('ngOnDestroy');
         this.actionButton = [];
-        this.subscr_actionbarevt.unsubscribe();
+
+        if (this.subscr_actionbarevt !== undefined) {
+            this.subscr_actionbarevt.unsubscribe();
+        }
+
         this.subscribeParameters.unsubscribe();
     }
 }
