@@ -20,16 +20,15 @@ declare var $: any;
     itemsid: any = 0;
     itemcode: any = "";
     itemname: any = "";
-    SaleDesc: any = "";
-    PurDesc: any = "";
-    Cost: any = 0;
-    UoMId: any = 0;
-    ImgPath: any = "";
-    MRP: any = 0;
-    SaleDis1: any = 0;
-    PurDis2: any = 0;
-    CurID: any = 0;
-    ProdCodeTitle: any = "";
+    // SaleDesc: any = "";
+    // PurDesc: any = "";
+    // Cost: any = 0;
+    // ImgPath: any = "";
+    // MRP: any = 0;
+    // SaleDis1: any = 0;
+    // PurDis2: any = 0;
+    // CurID: any = 0;
+    // ProdCodeTitle: any = "";
     attrname: any = "";
     skucode: any = "";
     attrid: any = 0;
@@ -44,15 +43,28 @@ declare var $: any;
     suppid: any = 0;
     supplist: any = [];
     itemsdesc: any = "";
-
+    titlesale: any = "";
+    titlesaleid: any = 0;
+    titlepur: any = "";
+    titlepurid: any = 0;
     docfile: any = [];
     module: string = "";
     uploadedFiles: any = [];
+    shelflifelist: any = [];
+    warehouselist: any = [];
+    UoMlist: any = [];
+    UoM: any = 0;
+    shelf: any = 0;
+    Keyvallist: any = [];
+    keyattr: any = "";
+    keyattrid: any = 0;
+    keyval: any = "";
+    itemsremark: any = "";
     Duplicateflag: boolean = false;
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private itemsaddServies: ItemAddService,
-        private _autoservice: CommonService, private _routeParams: ActivatedRoute,
+        private _autoservice: CommonService, private _commonservice: CommonService, private _routeParams: ActivatedRoute,
         private _msg: MessageService) { //Inherit Service
     }
     //Add Save Edit Delete Button
@@ -64,6 +76,7 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $('.itemcode').removeAttr('disabled');
         $('.itemcode').focus();
+        this.getAllDropdown();
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -84,6 +97,22 @@ declare var $: any;
         });
     }
 
+    //Shelf Life Dropdown Fill
+    getAllDropdown() {
+        var that = this;
+        this.itemsaddServies.getdorpdown({ "cmpid": 1 }).subscribe(data => {
+            var dswarehaouse = data.data.filter(item => item.group === "warehouse");
+            that.warehouselist = dswarehaouse;
+            var dsshelflife = data.data.filter(item => item.group === "shelf life");
+            that.shelflifelist = dsshelflife;
+            var dsUoM = data.data.filter(item => item.group === "UoM");
+            that.UoMlist = dsUoM;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
+        })
+    }
 
     //File Upload Start 
     onUploadStart(e) {
@@ -101,7 +130,7 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
             $(".attr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -112,9 +141,146 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.attrid = ui.item.value;
                     me.attrname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
+    //Key Val Tab Click
+    KeyValTab() {
+        setTimeout(function() {
+            this.keyattr = "";
+            this.keyattrid = 0;
+            this.keyval = "";
+            $(".keyattr").focus();
+        }, 100)
+
+    }
+
+    //Key Data Attribute
+    getAutoCompleteKeyval(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.keyattr, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+            $(".keyattr").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function(event, ui) {
+                    me.keyattrid = ui.item.value;
+                    me.keyattr = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
+    KeyvalAdd() {
+        if (this.keyattrid > 0) {
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.Keyvallist.length; i++) {
+                if (this.Keyvallist[i].keyattr == this.keyattr && this.Keyvallist[i].keyval == this.keyval) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.Keyvallist.push({
+                    'keyattr': this.keyattr,
+                    'keyattrid': this.keyattrid,
+                    'keyval': this.keyval
+                });
+                this.keyattr = "";
+                $(".keyattr").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                $(".keyattr").focus();
+                return;
+            }
+
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            $(".keyattr").focus();
+            return;
+        }
+    }
+
+    KeyvalDelete(row) {
+        var index = -1;
+        for (var i = 0; i < this.Keyvallist.length; i++) {
+            if (this.Keyvallist[i].keyattr === row.keyattr) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.Keyvallist.splice(index, 1);
+        $(".keyattr").focus();
+    }
+
+
+    //Autocompleted Attribute Name
+    getAutoCompleteSale(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.titlesale, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+            $(".saleattr").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function(event, ui) {
+                    me.titlesaleid = ui.item.value;
+                    me.titlesale = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
+    //Autocompleted Attribute Name
+    getAutoCompletePurc(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.titlepur, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+            $(".purattr").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function(event, ui) {
+                    me.titlepurid = ui.item.value;
+                    me.titlepur = ui.item.label;
                 }
             });
         }, err => {
@@ -138,7 +304,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.suppid = ui.item.value;
                     me.suppname = ui.item.label;
                 }
@@ -184,7 +350,7 @@ declare var $: any;
 
     //Supplier Tab Click
     SuppTab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.suppname = "";
             $(".supp").focus();
         }, 100)
@@ -260,27 +426,35 @@ declare var $: any;
     SalesAdd() {
         debugger;
         var that = this;
-        if (this.sales == "") {
-            this._msg.Show(messageType.info, "info", "Please enter key");
+        if (this.titlesale == "") {
+            this._msg.Show(messageType.info, "info", "Please enter title");
+            $(".saleattr").focus()
+            return;
+        }
+        if (this.sales == "" && this.sales != '0') {
+            this._msg.Show(messageType.info, "info", "Please enter sales price");
             $(".sales").focus()
             return;
         }
         this.Duplicateflag = true;
         for (var i = 0; i < this.saleslist.length; i++) {
-            if (this.saleslist[i].sales == this.sales && this.saleslist[i].dis == this.dis) {
+            if (this.saleslist[i].sales == this.sales && this.saleslist[i].titlesale == this.titlesale) {
                 this.Duplicateflag = false;
                 break;
             }
         }
         if (this.Duplicateflag == true) {
             this.saleslist.push({
-                'sales': this.sales,
-                'dis': this.dis
+                'titlesale': this.titlesale,
+                'titlesaleid': this.titlesaleid,
+                'sales': this.sales
             });
+            this.titlesale = "";
+            this.titlesaleid = 0;
             this.sales = "";
             this.dis = "";
             //that.attrtable = false;
-            $(".sales").focus();
+            $(".saleattr").focus();
 
         }
         else {
@@ -290,11 +464,11 @@ declare var $: any;
         }
     }
 
-    //Delete Accounting Row
-    DeleteRow(row) {
+    //Delete Sales Row
+    SalesDeleteRow(row) {
         var index = -1;
         for (var i = 0; i < this.saleslist.length; i++) {
-            if (this.saleslist[i].sales === row.sales) {
+            if (this.saleslist[i].titlesale === row.titlesale) {
                 index = i;
                 break;
             }
@@ -303,7 +477,7 @@ declare var $: any;
             console.log("Wrong Delete Entry");
         }
         this.saleslist.splice(index, 1);
-        $(".key").focus();
+        $(".saleattr").focus();
 
     }
 
@@ -317,20 +491,21 @@ declare var $: any;
         }
         that.Duplicateflag = true;
         for (var i = 0; i < that.purchaselist.length; i++) {
-            if (that.purchaselist[i].purch == that.purch && that.purchaselist[i].purdis == that.purdis) {
+            if (that.purchaselist[i].titlepur == that.titlepur && that.purchaselist[i].purch == that.purch) {
                 that.Duplicateflag = false;
                 break;
             }
         }
         if (that.Duplicateflag == true) {
             that.purchaselist.push({
-                'purch': that.purch,
-                'purdis': that.purdis
+                'titlepur': that.titlepur,
+                'titlepurid': that.titlepurid,
+                'purch': that.purch
             });
+            that.titlepur = "";
+            that.titlepurid = 0;
             that.purch = "";
-            that.purdis = "";
-            //that.attrtable = false;
-            $(".purch").focus();
+            $(".purattr").focus();
 
         }
         else {
@@ -341,12 +516,12 @@ declare var $: any;
     }
 
     ItemsTab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.sales = "";
             this.dis = "";
             this.purch = "";
             this.purdis = "";
-            $(".sales").focus();
+            $(".saleattr").focus();
         }, 100);
     }
 
@@ -363,7 +538,7 @@ declare var $: any;
             console.log("Wrong Delete Entry");
         }
         this.purchaselist.splice(index, 1);
-        $(".key").focus();
+        $(".purattr").focus();
     }
 
 
@@ -412,6 +587,8 @@ declare var $: any;
         })
     }
 
+
+
     //Clear Controll
     private ClearControll() {
         this.itemsid = 0;
@@ -427,6 +604,75 @@ declare var $: any;
         this.skucode = "";
     }
 
+    //Create Json String in Attribute
+    private CreatejsonAttribute() {
+        var attrlist = [];
+        if (this.attrlist.length > 0) {
+            for (let item of this.attrlist) {
+                attrlist.push({ "value": item.value })
+            }
+            return attrlist;
+        }
+    }
+
+    //Create Json String in Supplier 
+    private CreatejsonSupplier() {
+        var Supplist = [];
+        if (this.supplist.length > 0) {
+            for (let item of this.supplist) {
+                Supplist.push({ "value": item.value })
+            }
+            return Supplist;
+        }
+    }
+
+    //Create Json String in Warehouse 
+    private CreatejsonWarehouse() {
+        var warelist = [];
+        if (this.warehouselist.length > 0) {
+            
+            for (let item of this.warehouselist) {
+                if (item.Warechk == true) {
+                warelist.push({ "value": item.id });
+                }
+            }
+            return warelist;
+        }
+    }
+
+    //Create Json String in Key Data
+    private Createjsonkeydata() {
+        var keylist = [];
+        if (this.Keyvallist.length > 0) {
+            for (let item of this.Keyvallist) {
+                keylist.push({ "keyattid": item.keyattrid, "keyattval": item.keyval })
+            }
+            return keylist;
+        }
+    }
+
+    //Create Json String in Sales Price
+    private CreatejsonSalePrice() {
+        var Salelist = [];
+        if (this.saleslist.length > 0) {
+            for (let item of this.saleslist) {
+                Salelist.push({ "titlesaleid": item.titlesaleid, "sales": item.sales })
+            }
+            return Salelist;
+        }
+    }
+
+    //Create Json String in Purchase Price
+    private CreatejsonPurchasePrice() {
+        var Purchlist = [];
+        if (this.purchaselist.length > 0) {
+            for (let item of this.purchaselist) {
+                Purchlist.push({ "titlepurid": item.titlepurid, "purch": item.purch })
+            }
+            return Purchlist;
+        }
+    }
+
     //Parametr With Json
     private ParamJson() {
         var Param = {
@@ -438,11 +684,15 @@ declare var $: any;
             "itemcode": this.itemcode,
             "itemname": this.itemname,
             "skucode": this.skucode,
-            "attr": this.attrlist,
-            "sales": this.saleslist,
-            "purc": this.purchaselist,
-            "supp": this.supplist,
-            "ware": [],
+            "uom": this.UoM,
+            "shelflife": this.shelf,
+            "itemremark": this.itemsremark,
+            "keydata": this.Createjsonkeydata(),
+            "attr": this.CreatejsonAttribute(),
+            "sales": this.CreatejsonSalePrice(),
+            "purc": this.CreatejsonPurchasePrice(),
+            "supp": this.CreatejsonSupplier(),
+            "ware": this.CreatejsonWarehouse(),
             "docfile": this.docfile
         }
         return Param;

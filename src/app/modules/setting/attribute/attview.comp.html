@@ -10,18 +10,25 @@
 						<tr>
 							<th>#</th>
 							<th>Attribute Name</th>
+							<th>Attribute Group</th>
 							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<td><span>#</span></td>
-							<td><span class="hide">{{attid}}</span><input type="text" class="form-control" id="attnam" [(ngModel)]="attName" /></td>
-							<td class="col-md-2"><button type="button" class="btn btn-theme btn-sm" text="Add" (click)="NewRowAdd()"><i class="fa fa-save"></i></button></td>
+							<td><span class="hide">{{attid}}</span><input type="text" class="form-control" tabindex="1" id="attnam" [(ngModel)]="attName" /></td>
+							<td><select [(ngModel)]="attrgrp" class="form-control" tabindex="2">
+							<option *ngFor="let row of attributegrouplist" [value]="row.id+':'+row.key">
+									{{row.key}}
+					    	</option>
+							</select></td>
+							<td class="col-md-2"><button type="button" class="btn btn-theme btn-sm" text="Add" tabindex="3" (click)="NewRowAdd()"><i class="fa fa-save"></i></button></td>
 						</tr>
 						<tr *ngFor="let item of addNewAttr let i=index">
 							<td><span>{{i+1}}</span><span class="hide">{{item.autoid}}</span></td>
 							<td (click)="editrow(item)"><span>{{item.atname}}</span></td>
+							<td>{{item.key}}</td>
 							<td>
 								<input type="checkbox" [(ngModel)]="item.val" name="checkdel" binary="true" (ngModelChange)="DeleteRow(item)" />
 							</td>
@@ -30,8 +37,5 @@
 				</table>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-12">
-		<addressbook></addressbook>
 	</div>
 </div>

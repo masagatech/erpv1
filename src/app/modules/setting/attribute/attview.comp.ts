@@ -4,6 +4,7 @@ import { ActionBtnProp } from '../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../_service/common/common-service'
 import { attributeService } from "../../../_service/attribute/attr-service";
+import { MessageService, messageType } from '../../../_service/messages/message-service';
 
 declare var $: any;
 @Component({
@@ -18,9 +19,13 @@ declare var $: any;
     attName: any = "";
     counter: any = 0;
     attid: any = 0;
+    attributegrouplist: any = [];
     val: any;
+    attrgrp:any=0;
+    key:any="";
 
-    constructor(private setActionButtons: SharedVariableService, private attributeServies: attributeService, private _autoservice: CommonService) { //Inherit Service dcmasterService
+    constructor(private setActionButtons: SharedVariableService, private attributeServies: attributeService,
+        private _autoservice: CommonService, private _commonservice: CommonService, private _msg: MessageService) { //Inherit Service dcmasterService
         this.counter = 0;
     }
     //Add Save Edit Delete Button
@@ -31,7 +36,19 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.getAttribute();
+        this.getattributegroup();
         $("#attnam").focus();
+    }
+
+    getattributegroup() {
+        var that = this;
+        this._commonservice.getMOM({ "group": "Attribute Group" }).subscribe(data => {
+            that.attributegrouplist = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
+        })
     }
 
     //Add Top Buttons Add Edit And Save
@@ -53,14 +70,17 @@ declare var $: any;
             "cmpid": 1,
             "fy": 5,
             "typ": "at",
-            "parent":0,
+            "parent": 0,
             "attid": this.attid,
             "attname": this.attName,
+            "attgroup":this.attrgrp.split(':')[0],
+            "attkey":this.attrgrp.split(':')[1],
             "createdby": "admin",
             "remark1": "",
             "remark2": "",
             "remark3": ""
         }
+        console.log(Param);
         return Param;
     }
 
@@ -77,14 +97,19 @@ declare var $: any;
         this.attributeServies.attsave(
             this.jsonparam()
         ).subscribe(result => {
+            if (this.attName == "") {
+                this._msg.Show(messageType.info, "info", "Please enter attribute name");
+                $("#attnam").focus();
+                return;
+            }
             var dataset = result.data;
             if (dataset[0].funsave_attribute.maxid == "-1") {
-                alert("Record already exists");
+                this._msg.Show(messageType.info, "info", "Duplicate attribute");
                 $("#attnam").focus();
                 return;
             }
             if (dataset[0].funsave_attribute.maxid > 0) {
-                alert("Data Save Successfully");
+                this._msg.Show(messageType.success, "success", "Data Save Successfully");
                 this.addNewAttr.push({
                     'atname': this.attName,
                     'isact': true,
@@ -92,6 +117,7 @@ declare var $: any;
                 });
                 this.counter++;
                 this.attName = "";
+                this.attrgrp="";
                 $(".attname").focus();
                 this.getAttribute();
             }
@@ -111,6 +137,7 @@ declare var $: any;
         if (row.val) {
             this.attid = row.autoid;
             this.attName = row.atname;
+            this.attrgrp = row.key;
             $("#attnam").focus();
         }
     }
