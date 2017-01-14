@@ -1,0 +1,106 @@
+<div class="middlepan">
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <h3 class="panel-title">Expense Details</h3>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Date</label>
+                    <input type="date" [(ngModel)]="docdate" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Expense</label>
+                    <input id="expname" type="text" [(ngModel)]="expname" class="expense form-control" (keyup)="getExpenseAuto(this)" />
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="form-control">
+                                <input type="checkbox" [(ngModel)]="iscmplevel" />
+                                <span>Company Level</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="form-control">
+                                <input type="checkbox" [(ngModel)]="isemplevel" />
+                                <span>Employee Level</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Narration</label>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Controlling Center</th>
+                            <th>Profit Center</th>
+                            <th>Cost Center</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of ctrlcentermapDT let i=index">
+                            <td>
+                                {{row.ctrlcentername}}
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" [(ngModel)]="row.isprofitcenter" />
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" [(ngModel)]="row.iscostcenter" />
+                            </td>
+                            <!--<td>
+                                <button type="button" class="btn btn-primary" (click)="NewRowAdd()">Add</button>
+                            </td>-->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="sidepan">
+    <!--widgit-->
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+
+    <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+        (onComplete)="onUploadComplete($event)"></fileupload>
+
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-heading">
+            <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+                <h3 class="panel-title">Any Other Details</h3>
+            </a>
+        </div>
+        <div id="Personal" class="panel-collapse collapse in">
+            <div class="panel-body"></div>
+        </div>
+    </div>
+</div>
