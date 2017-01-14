@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { JVService } from '../../../../_service/jv/jv-service'; /* add reference for view employee */
 import { CommonService } from '../../../../_service/common/common-service'; /* add reference for customer */
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
@@ -15,6 +17,7 @@ declare var $: any;
 
 export class AddJV implements OnInit, OnDestroy {
     viewCustomerDT: any[];
+    loginUser: LoginUserModel;
 
     jvmid: number = 0;
     docdate: any = "";
@@ -42,7 +45,9 @@ export class AddJV implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _jvservice: JVService, private _commonservice: CommonService) {
+        private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService) {
+        this.loginUser = this._userService.getUser();
+
         this.module = "JV";
         this.docdate = Date.now();
     }
@@ -137,7 +142,7 @@ export class AddJV implements OnInit, OnDestroy {
     getJVDataById(pjvmid: number) {
         var that = this;
 
-        that._jvservice.getJVDetails({ "flag": "edit", "cmpid": 2, "fyid": 7, "jvmid": pjvmid }).subscribe(data => {
+        that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid, "jvmid": pjvmid }).subscribe(data => {
             var _jvdata = data.data[0]._jvdata;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _docfile = data.data[0]._docfile;
@@ -148,7 +153,7 @@ export class AddJV implements OnInit, OnDestroy {
 
             that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
             that.docfile = _docfile == null ? [] : _docfile;
-            
+
             that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
@@ -191,13 +196,12 @@ export class AddJV implements OnInit, OnDestroy {
 
         var saveJV = {
             "jvmid": that.jvmid,
-            "fyid": "7",
-            "cmpid": "2",
+            "fyid": this.loginUser.fyid,
+            "cmpid": this.loginUser.cmpid,
             "docdate": that.docdate,
             "docfile": that.docfile,
             "narration": that.narration,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek",
+            "uidcode": this.loginUser.login,
             "jvdetails": that.jvRowData
         }
 

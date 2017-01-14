@@ -14,26 +14,6 @@
 					(onComplete)="onUploadComplete($event)"></fileupload>
 			</div>
 		</div>
-		<!--<div class="col-md-6">
-			<div class="row">
-				<div class="col-xs-6 col-sm-6 col-md-6">
-					<div class="form-group">
-						<label class="control-label">Doc Title</label>
-						<input type="text" [(ngModel)]="doctitle" class="form-control" />
-					</div>
-				</div>
-				<div class="col-xs-6 col-sm-6 col-md-6">
-					<div class="form-group">
-						<label class="control-label">Tag</label>
-						<select [(ngModel)]="tag" class="form-control">
-							<option *ngFor="let row of TagDT" [value]="row.key">	
-								{{row.val}}
-							</option>
-						</select>
-					</div>
-				</div>
-			</div>
-		</div>-->
 	</div>
 
 	<!--<div class="panel-body">
@@ -69,11 +49,6 @@
 							<input type="text" [(ngModel)]="newdoctitle" class="form-control" (keyup.enter)="NewRowAdd()" />
 						</td>
 						<td>
-							<select [(ngModel)]="newtag" name="Tag" id="Tag" class="form-control" (keyup.enter)="NewRowAdd()">
-								<option *ngFor="let row of TagDT" [value]="row.key">	
-									{{row.val}}
-								</option>
-							</select>
 						</td>
 						<td>
 

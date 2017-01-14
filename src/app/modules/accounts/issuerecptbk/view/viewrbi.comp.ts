@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { Router } from '@angular/router';
 import { RBService } from '../../../../_service/receiptbook/rb-service' /* add reference for receipt book */
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
@@ -14,19 +16,27 @@ import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 export class ViewRBI implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     datasource: any = [];
     receiptbook: any = [];
     totalRecords: number = 0;
     selectedRB1: any = [];
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _rbservice: RBService) {
-        
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private _userService: UserService, private _rbservice: RBService) {
+        this.loginUser = this._userService.getUser();
     }
 
     BindRBI(from: number, to: number) {
         var that = this;
-        that._rbservice.getAllRBI({ "flag":"grid", "fyid":"7", "from": from, "to": to }).subscribe(data => {
+        that._rbservice.getAllRBI({
+            "flag": "grid",
+            "cmpid": that.loginUser.cmpid,
+            "fyid": that.loginUser.fyid,
+            "from": from,
+            "to": to
+        }).subscribe(data => {
             that.totalRecords = data.data[1][0].recordstotal;
             that.receiptbook = data.data[0];
             console.log(data.data);

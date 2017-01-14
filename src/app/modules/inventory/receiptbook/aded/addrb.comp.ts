@@ -6,6 +6,8 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { RBService } from "../../../../_service/receiptbook/rb-service" /* add reference for receipt book */
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for validate series no */
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 declare var $: any;
 
@@ -17,6 +19,7 @@ declare var $: any;
 export class AddReceiptBook implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
@@ -42,7 +45,9 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     rbRowData: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _rbservice: RBService, private _commonservice: CommonService, private _message: MessageService) {
+        private _rbservice: RBService, private _commonservice: CommonService, private _message: MessageService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.module = "Receipt Book";
     }
 
@@ -75,8 +80,8 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                     that.rbRowData.push({
                         "counter": i,
                         "rbid": that.rbid,
-                        "cmpid": "2",
-                        "fyid": "7",
+                        "cmpid": that.loginUser.cmpid,
+                        "fyid": that.loginUser.fyid,
                         "docdate": that.docdate,
                         "seriesno": frmno++,
                         "noofpage": that.newnoofpage,
@@ -84,8 +89,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                         "narration": that.narration,
                         "detnarr": that.detnarr,
                         //"docfile": this.docfile,
-                        "createdby": "1:vivek",
-                        "updatedby": "1:vivek"
+                        "uidcode": that.loginUser.login
                     });
                 }
             }
@@ -173,7 +177,6 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        console.log("ngOnDestroy");
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
     }

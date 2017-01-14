@@ -6,6 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service' /* ad
 import { CompService } from '../../../../_service/company/comp-service' /* add reference for company */
 import { UserService } from '../../../../_service/user/user-service' /* add reference for user */
 import { FYService } from '../../../../_service/fy/fy-service' /* add reference for fy */
+import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LazyLoadEvent, DataTable, DataList, DataGrid, Panel, Dialog } from 'primeng/primeng';
 
@@ -23,6 +24,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
@@ -49,8 +51,9 @@ export class AddUserRights implements OnInit, OnDestroy {
     MenuActions: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _compservice: CompService, private _fyservice: FYService, private _userservice: UserService) {
-
+        private _commonservice: CommonService, private _compservice: CompService, private _fyservice: FYService,
+        private _userservice: UserService) {
+        this.loginUser = this._userservice.getUser();
     }
 
     getUserAuto(me: any) {
@@ -157,12 +160,9 @@ export class AddUserRights implements OnInit, OnDestroy {
         var GiveRights = [];
         var menuitem = null;
 
-        debugger;
-
         for (var i = 0; i <= this.selectedCompany.menudetails.length - 1; i++) {
             menuitem = null;
             menuitem = this.selectedCompany.menudetails[i];
-            console.log(menuitem);
 
             if (menuitem !== null) {
                 var actrights = "";
@@ -184,18 +184,14 @@ export class AddUserRights implements OnInit, OnDestroy {
         var that = this;
 
         var giverights = that.getUserRights();
-        console.log(giverights);
 
         var saveUR = {
             "uid": this.uid,
             "cmpid": this.selectedCompany.cmpid,
             "fyid": this.fyid,
             "giverights": giverights,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek"
+            "uidcode": this.loginUser.login
         }
-
-        console.log(saveUR);
 
         if (this.uid == "") {
             alert("Please Enter User");

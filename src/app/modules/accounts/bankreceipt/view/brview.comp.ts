@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { bankreceiptViewService } from "../../../../_service/bankreceipt/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
 import { Router } from '@angular/router';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 declare var $: any;
 
@@ -17,6 +19,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     //Veriable Local declare
 
@@ -30,7 +33,8 @@ export class bankreceiptview implements OnInit, OnDestroy {
 
     //constructor
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankreceiptViewService) { //Inherit Service dcmasterService
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankreceiptViewService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.getBankMasterDrop();
     }
 
@@ -66,8 +70,8 @@ export class bankreceiptview implements OnInit, OnDestroy {
                 this.BankServies.getBankRecieptView({
                     "flag": "Details",
                     "bankreid": row.id,
-                    "cmpid": 1,
-                    "fy": 5
+                    "cmpid": this.loginUser.cmpid,
+                    "fyid": this.loginUser.fyid
                 }).subscribe(data => {
                     row.Details = data.data;
                 }, err => {
@@ -98,8 +102,8 @@ export class bankreceiptview implements OnInit, OnDestroy {
         }
 
         this.BankServies.getBankRecieptView({
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "bankid": this.BankCode,
             "flag": "",
             "fromdate": $('#FromDate').datepicker('getDate'),

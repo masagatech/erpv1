@@ -4,7 +4,8 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { bankpaymentService } from "../../../../_service/bankpayment/aded/bankpayment-service";  //Service Add Refrence Bankpay-service.ts
-
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
@@ -18,6 +19,7 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     //Button 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     //Declare local Veriable
     BankPayId: any = 0;
@@ -44,7 +46,9 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private BankServies: bankpaymentService,
-        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router) {
+        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.module = "Bank Payment";
         this.getBankMasterDrop();
         this.getTypDrop();
@@ -82,7 +86,12 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     //Get Data With Row
 
     GetBankPayment(BankPayId) {
-        this.BankServies.getBankPaymentView({ "bankpayid": this.BankPayId, "cmpid": 1, "fyid": 5, "flag": "edit" }).subscribe(data => {
+        this.BankServies.getBankPaymentView({
+            "bankpayid": this.BankPayId,
+            "cmpid": this.loginUser.cmpid,
+            "fyid": this.loginUser.fyid,
+            "flag": "edit"
+        }).subscribe(data => {
             console.log(data.data);
 
             var _bankpayment = data.data[0]._bankpayment;
@@ -112,14 +121,14 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
 
     ParamJson() {
         var Param = {
-            "cmpid": 1,
-            "createdby": "Admin",
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "bankpayid": this.BankPayId,
             "refno": this.Refno,
             "acid": this.CustID,
             "bankid": this.Bankid,
             "issuedate": $('#Issuesdate').datepicker('getDate'),
+            "createdby": this.loginUser.login,
             "docfile": this.docfile,
             "typ": this.Type,
             "amount": this.Amount,

@@ -3,6 +3,8 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { UserService } from '../../../../_service/user/user-service' /* add reference for user */
+import { FYService } from '../../../../_service/fy/fy-service' /* add reference for fy */
+import { LoginUserModel } from '../../../../_model/user_model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,10 +15,12 @@ import { Router } from '@angular/router';
 export class ViewUserRights implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     viewUserDT: any[];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _userservice: UserService) {
+        this.loginUser = this._userservice.getUser();
         this.getUserRights();
     }
 
@@ -27,7 +31,12 @@ export class ViewUserRights implements OnInit, OnDestroy {
     }
 
     getUserRights() {
-        this._userservice.getUserRights({ "flag":"view", "uid":"1", "cmpid":"2", "fyid":"7" }).subscribe(data => {
+        this._userservice.getUserRights({
+            "flag": "view",
+            "uid": this.loginUser.uid,
+            "cmpid": this.loginUser.cmpid,
+            "fyid": this.loginUser.fyid
+        }).subscribe(data => {
             this.viewUserDT = data.data;
             console.log(this.viewUserDT);
         }, err => {

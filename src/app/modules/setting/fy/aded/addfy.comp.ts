@@ -6,6 +6,8 @@ import { FYService } from '../../../../_service/fy/fy-service' /* add reference 
 import { CompService } from '../../../../_service/company/comp-service' /* add reference for company */
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for FY */
 import { Router, ActivatedRoute } from '@angular/router';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 declare var $: any;
 
@@ -24,13 +26,16 @@ export class AddFY implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
     CompanyDetails: any = [];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
-        private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService, ) {
+        private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.getCompany();
     }
 
@@ -83,8 +88,7 @@ export class AddFY implements OnInit, OnDestroy {
             "fyid": this.fyid,
             "fromdt": this.fromdt,
             "todt": this.todt,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek"
+            "uidcode": this.loginUser.login
         }
 
         if (this.validSuccess) {
