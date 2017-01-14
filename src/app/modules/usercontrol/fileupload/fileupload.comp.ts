@@ -191,37 +191,51 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
         that.uploadedFiles = [];
         var file = event.files[0];
-        var fileext = file.name.split('.').pop();
 
-        that._commonservice.getMOM({ "flag": "fileicon", "type": fileext }).subscribe(data => {
-            var fileicon = data.data[0].fileicon;
-            var filetype = data.data[0].filetype;
+        var that = this;
+        var type, validmsg;
 
-            if (fileext == filetype) {
-                that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "icon": fileicon });
-            }
-            else {
-                alert("This " + fileext + " is not allowed");
-            }
+        if (that.module == "Employee") {
+            that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": "fa fa-file-photo-o" });
+        }
+        else {
+            type = file.name.split('.').pop();
 
-            var saveAttach = {
-                "files": that.uploadedFiles,
-                "module": that.module,
-                "cmpid": 2,
-                "uid": "1:vivek"
-            }
+            that._commonservice.getMOM({ "flag": "fileicon", "type": type }).subscribe(data => {
+                if (data.data.length === 0) {
+                    if (that.module == "Employee") {
+                        validmsg = "success";
+                    }
+                    else {
+                        validmsg = "failed";
+                    }
+                }
+                else {
+                    validmsg = "success";
+                }
 
-            if (that.isRaw) {
-                that.onComplete.emit(saveAttach);
-            }
-            else {
-                that.saveAttach(saveAttach);
-            }
-        }, err => {
-            console.log("Error");
-        }, () => {
-            console.log("Complete");
-        })
+                if (validmsg === "success") {
+                    that.uploadedFiles.push({ "name": file.name, "size": file.size, "path": file.name, "type": data.data[0].fileicon });
+
+                    var saveAttach = {
+                        "files": that.uploadedFiles,
+                        "module": that.module,
+                        "cmpid": 2,
+                        "uid": "1:vivek"
+                    }
+
+                    if (that.isRaw) {
+                        that.onComplete.emit(saveAttach);
+                    }
+                    else {
+                        that.saveAttach(saveAttach);
+                    }
+                }
+                else {
+                    alert(type + " file not allowed !!!!");
+                }
+            });
+        }
     }
 
     onUpload(event) {

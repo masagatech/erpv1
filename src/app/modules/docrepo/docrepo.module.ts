@@ -21,7 +21,7 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'view', component: ViewDR, canActivateChid: [AuthGuard], },
+                    { path: 'setting', component: ViewDR, canActivateChid: [AuthGuard], },
                     { path: 'add', component: AddDR, canActivateChid: [AuthGuard], },
                     { path: 'edit/:uid', component: AddDR, canActivateChid: [AuthGuard], },
                     { path: '', component: DRDashboardComp, canActivateChid: [AuthGuard], },
