@@ -20,16 +20,7 @@ declare var $: any;
     itemsid: any = 0;
     itemcode: any = "";
     itemname: any = "";
-    // SaleDesc: any = "";
-    // PurDesc: any = "";
-    // Cost: any = 0;
-    // ImgPath: any = "";
-    // MRP: any = 0;
-    // SaleDis1: any = 0;
-    // PurDis2: any = 0;
-    // CurID: any = 0;
-    // ProdCodeTitle: any = "";
-    attrname: any = "";
+    attname: any = "";
     skucode: any = "";
     attrid: any = 0;
     attrlist: any = [];
@@ -58,23 +49,30 @@ declare var $: any;
     Keyvallist: any = [];
     keyattr: any = "";
     keyattrid: any = 0;
-    keyval: any = "";
+    keyvalue: any = "";
     itemsremark: any = "";
     Duplicateflag: boolean = false;
     private subscribeParameters: any;
 
-    constructor(private setActionButtons: SharedVariableService, private itemsaddServies: ItemAddService,
+    allload: any = {
+        "wearhouse": false,
+        "otherdropdwn": false
+    }
+    _editid: number = 0;
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private itemsaddServies: ItemAddService,
         private _autoservice: CommonService, private _commonservice: CommonService, private _routeParams: ActivatedRoute,
         private _msg: MessageService) { //Inherit Service
     }
     //Add Save Edit Delete Button
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $('.itemcode').removeAttr('disabled');
+        this.module = "item";
         $('.itemcode').focus();
         this.getAllDropdown();
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -83,7 +81,7 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
                 this.itemsid = params['id'];
-                this.EditItems(this.itemsid);
+                this._editid = this.itemsid;
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -101,17 +99,31 @@ declare var $: any;
     getAllDropdown() {
         var that = this;
         this.itemsaddServies.getdorpdown({ "cmpid": 1 }).subscribe(data => {
-            var dswarehaouse = data.data.filter(item => item.group === "warehouse");
+            var dswarehaouse = data.data[0].filter(item => item.group === "warehouse");
             that.warehouselist = dswarehaouse;
-            var dsshelflife = data.data.filter(item => item.group === "shelf life");
+            var dsshelflife = data.data[0].filter(item => item.group === "shelf life");
             that.shelflifelist = dsshelflife;
-            var dsUoM = data.data.filter(item => item.group === "UoM");
+            var dsUoM = data.data[0].filter(item => item.group === "UoM");
             that.UoMlist = dsUoM;
+            if (data.data[1].length > 0) {
+                that.Keyvallist = data.data[1]
+            }
+            that.allload.otherdropdwn = true;
+            that.checkalllead();
         }, err => {
             console.log("Error");
         }, () => {
             console.log("Complete");
         })
+    }
+
+    checkalllead() {
+        if (this.allload.otherdropdwn) {
+            if (this._editid > 0) {
+                this.EditItems(this._editid);
+            }
+
+        }
     }
 
     //File Upload Start 
@@ -130,7 +142,7 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.attname, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
             $(".attr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -141,9 +153,9 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.attrid = ui.item.value;
-                    me.attrname = ui.item.label;
+                    me.attname = ui.item.label;
                 }
             });
         }, err => {
@@ -155,10 +167,10 @@ declare var $: any;
 
     //Key Val Tab Click
     KeyValTab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.keyattr = "";
             this.keyattrid = 0;
-            this.keyval = "";
+            this.keyvalue = "";
             $(".keyattr").focus();
         }, 100)
 
@@ -178,7 +190,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.keyattrid = ui.item.value;
                     me.keyattr = ui.item.label;
                 }
@@ -194,7 +206,7 @@ declare var $: any;
         if (this.keyattrid > 0) {
             this.Duplicateflag = true;
             for (var i = 0; i < this.Keyvallist.length; i++) {
-                if (this.Keyvallist[i].keyattr == this.keyattr && this.Keyvallist[i].keyval == this.keyval) {
+                if (this.Keyvallist[i].keyattr == this.keyattr && this.Keyvallist[i].keyvalue == this.keyvalue) {
                     this.Duplicateflag = false;
                     break;
                 }
@@ -203,9 +215,10 @@ declare var $: any;
                 this.Keyvallist.push({
                     'keyattr': this.keyattr,
                     'keyattrid': this.keyattrid,
-                    'keyval': this.keyval
+                    'keyvalue': this.keyvalue
                 });
                 this.keyattr = "";
+                this.keyvalue = "";
                 $(".keyattr").focus();
             }
             else {
@@ -252,7 +265,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.titlesaleid = ui.item.value;
                     me.titlesale = ui.item.label;
                 }
@@ -278,7 +291,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.titlepurid = ui.item.value;
                     me.titlepur = ui.item.label;
                 }
@@ -304,7 +317,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.suppid = ui.item.value;
                     me.suppname = ui.item.label;
                 }
@@ -329,7 +342,7 @@ declare var $: any;
             if (this.Duplicateflag == true) {
                 this.supplist.push({
                     'suppname': this.suppname,
-                    'value': this.suppid
+                    'suppid': this.suppid
                 });
                 this.suppname = "";
                 $(".supp").focus();
@@ -350,7 +363,7 @@ declare var $: any;
 
     //Supplier Tab Click
     SuppTab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.suppname = "";
             $(".supp").focus();
         }, 100)
@@ -378,17 +391,17 @@ declare var $: any;
         if (this.attrid > 0) {
             this.Duplicateflag = true;
             for (var i = 0; i < this.attrlist.length; i++) {
-                if (this.attrlist[i].attrname == this.attrname) {
+                if (this.attrlist[i].attname == this.attname) {
                     this.Duplicateflag = false;
                     break;
                 }
             }
             if (this.Duplicateflag == true) {
                 this.attrlist.push({
-                    'attrname': this.attrname,
-                    'value': this.attrid
+                    'attname': this.attname,
+                    'attrid': this.attrid
                 });
-                this.attrname = "";
+                this.attname = "";
                 $(".attr").focus();
             }
             else {
@@ -424,7 +437,6 @@ declare var $: any;
 
     //Add Accounting Row
     SalesAdd() {
-        debugger;
         var that = this;
         if (this.titlesale == "") {
             this._msg.Show(messageType.info, "info", "Please enter title");
@@ -516,7 +528,7 @@ declare var $: any;
     }
 
     ItemsTab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.sales = "";
             this.dis = "";
             this.purch = "";
@@ -557,27 +569,48 @@ declare var $: any;
     }
 
     //Edit Item
-    EditItems(ProdCode) {
+    EditItems(itemsid) {
         var that = this;
         this.itemsaddServies.EditItem(
             this.EditParamJson()
         ).subscribe(result => {
             var returndata = result.data;
             if (returndata.length > 0) {
+                var _custdata = returndata[0]._custdata;
+                var _uploadedfile = returndata[0]._uploadedfile;
+                var _docfile = returndata[0]._docfile;
+
                 this.itemcode = returndata[0].itemcode;
                 this.itemname = returndata[0].itemname;
-                this.MRP = returndata[0].mrp1;
-                this.SaleDis1 = returndata[0].saledis;
-                this.SaleDesc = returndata[0].saledesc;
-                this.Cost = returndata[0].itemscost;
-                this.PurDis2 = returndata[0].purdis;
-                this.PurDesc = returndata[0].purdesc;
-                that.ProdCodeTitle = "(" + returndata[0].itemcode + ")";
+                this.skucode = returndata[0].skucode;
+                this.UoM = returndata[0].uom;
+                this.shelf = returndata[0].shelflife;
+                this.itemsdesc = returndata[0].itemdesc;
+                this.itemsremark = returndata[0].itemremark;
+                this.attrlist = returndata[0]._attributejson;
+                this.Keyvallist = returndata[0]._keydatajson;
+                this.saleslist = returndata[0]._salesjson;
+                this.purchaselist = returndata[0]._purchasejson;
+                this.supplist = returndata[0]._supplierjson;
+
+                if (_uploadedfile != null) {
+                    that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+                    that.docfile = _docfile == null ? [] : _docfile;
+                }
+
+                //Warehouse check edit mode
+                if (that.warehouselist.length > 0) {
+                    // setTimeout(function () {
+                    var wareedit = returndata[0].warehouse;
+                    for (var j = 0; j <= wareedit.length - 1; j++) {
+                        var chk = that.warehouselist.find(a => a.id === wareedit[j].id);
+                        chk.Warechk = true;
+                    }
+                    // }, 100)
+                }
             }
             else {
-                alert('Record not found');
-                $(".Category").focus();
-                return;
+                //lentgh 0
             }
 
         }, err => {
@@ -587,21 +620,24 @@ declare var $: any;
         })
     }
 
-
-
     //Clear Controll
     private ClearControll() {
         this.itemsid = 0;
         this.itemcode = "";
         this.itemname = "";
-        this.MRP = "";
-        this.SaleDis1 = "";
-        this.SaleDesc = "";
-        this.Cost = "";
-        this.PurDis2 = "";
-        this.PurDesc = "";
+        this.skucode = "";
+        this.UoM = "";
+        this.shelf = "";
+        this.itemsremark = "";
         this.itemsdesc = "";
         this.skucode = "";
+        this.saleslist = [];
+        this.purchaselist = [];
+        this.attrlist = [];
+        this.Keyvallist = [];
+        this.supplist = [];
+        $('.itemcode').removeAttr('disabled');
+        $('.itemcode').focus();
     }
 
     //Create Json String in Attribute
@@ -609,7 +645,7 @@ declare var $: any;
         var attrlist = [];
         if (this.attrlist.length > 0) {
             for (let item of this.attrlist) {
-                attrlist.push({ "value": item.value })
+                attrlist.push({ "id": item.attrid })
             }
             return attrlist;
         }
@@ -620,7 +656,7 @@ declare var $: any;
         var Supplist = [];
         if (this.supplist.length > 0) {
             for (let item of this.supplist) {
-                Supplist.push({ "value": item.value })
+                Supplist.push({ "id": item.suppid })
             }
             return Supplist;
         }
@@ -630,10 +666,9 @@ declare var $: any;
     private CreatejsonWarehouse() {
         var warelist = [];
         if (this.warehouselist.length > 0) {
-            
             for (let item of this.warehouselist) {
                 if (item.Warechk == true) {
-                warelist.push({ "value": item.id });
+                    warelist.push({ "id": item.id });
                 }
             }
             return warelist;
@@ -645,7 +680,7 @@ declare var $: any;
         var keylist = [];
         if (this.Keyvallist.length > 0) {
             for (let item of this.Keyvallist) {
-                keylist.push({ "keyattid": item.keyattrid, "keyattval": item.keyval })
+                keylist.push({ "id": item.keyattrid, "val": item.keyvalue })
             }
             return keylist;
         }
@@ -656,7 +691,7 @@ declare var $: any;
         var Salelist = [];
         if (this.saleslist.length > 0) {
             for (let item of this.saleslist) {
-                Salelist.push({ "titlesaleid": item.titlesaleid, "sales": item.sales })
+                Salelist.push({ "id": item.titlesaleid, "val": item.sales })
             }
             return Salelist;
         }
@@ -667,7 +702,7 @@ declare var $: any;
         var Purchlist = [];
         if (this.purchaselist.length > 0) {
             for (let item of this.purchaselist) {
-                Purchlist.push({ "titlepurid": item.titlepurid, "purch": item.purch })
+                Purchlist.push({ "id": item.titlepurid, "val": item.purch })
             }
             return Purchlist;
         }
@@ -695,13 +730,16 @@ declare var $: any;
             "ware": this.CreatejsonWarehouse(),
             "docfile": this.docfile
         }
+        console.log(Param);
         return Param;
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+        if (evt == "back") {
+            this._router.navigate(['supplier/itemsmaster']);
+        }
         if (evt === "save") {
-
             if (this.itemcode == "") {
                 this._msg.Show(messageType.info, "info", "Please enter item code");
                 $(".itemcode").focus();
@@ -734,7 +772,7 @@ declare var $: any;
             }, err => {
                 console.log('Error');
             }, () => {
-                //Done Process
+                this.getAllDropdown();
             });
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {

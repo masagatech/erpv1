@@ -71,20 +71,24 @@
 		<div class="tab-content">
 			<!--Attribute-->
 			<div class="tab-pane active" id="attr">
-				<div class="col-xs-3">
+				<div class="col-md-3">
 					<div class='form-group'>
 						<label>Attribute</label>
-						<input type="text=" class="form-control attr" tabindex="8" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+						<input type="text=" class="form-control attr" tabindex="8" value="" [(ngModel)]="attname" (keyup.enter)="AttributeAdd()"
 							(keyup)="getAutoCompleteattr(this)" />
 					</div>
-					<div class="col-md-5" *ngFor="let row of attrlist">
+				</div>
+				<div class="col-md-10">
+					<div class="col-md-2" *ngFor="let row of attrlist">
 						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-							<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+							<span class="tag label label-info" style="font-size: 10px;">{{row.attname}} 
 							<span data-role="remove" (click)="Removeattr(row)"></span>
 							</span>
 						</div>
 					</div>
 				</div>
+
+
 			</div>
 			<!--Key Data-->
 			<div class="tab-pane" id="keydata">
@@ -105,7 +109,8 @@
 							<div class="col-md-3">
 								<div class='form-group'>
 									<label>Value</label>
-									<input type="text=" class="form-control keyval" tabindex="10" value="" [(ngModel)]="keyval" (keyup.enter)="KeyvalAdd()" />
+									<input type="text=" class="form-control keyvalue" tabindex="10" value="" [(ngModel)]="keyvalue" (keyup.enter)="KeyvalAdd()"
+									/>
 								</div>
 							</div>
 							<div class="col-md-1">
@@ -121,14 +126,15 @@
 								<tr>
 									<th class="col-sm-1">#</th>
 									<th class="col-sm-5">Attribute</th>
-									<th class="col-sm-3">Value</th>
+									<th class="col-sm-3"> Value</th>
+									<th class="col-sm-3">Action</th>
 								</tr>
 							</thead>
 							<tbody *ngFor="let row of Keyvallist let i=index">
 								<tr>
 									<td><span>{{i+1}}</span></td>
 									<td>{{row.keyattr}}</td>
-									<td>{{row.keyval}}</td>
+									<td><input type="text" class="form-control" [(ngModel)]="row.keyvalue"></td>
 									<td><button class="btn btn-theme btn-sm" (click)="KeyvalDelete(row)"><i class="fa fa-trash"></i></button></td>
 								</tr>
 							</tbody>
@@ -236,7 +242,7 @@
 			<!--Warehouse-->
 			<div class="tab-pane" id="ware">
 				<div class="col-md-3" *ngFor="let row of warehouselist">
-					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" id="M{{row.value}}" value="row.id"/>
+					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" value="row.id"/>
 							{{row.val}} 
 						</label>
 				</div>
@@ -249,7 +255,9 @@
 						<input type="text=" class="form-control supp" tabindex="4" value="" [(ngModel)]="suppname" (keyup.enter)="SupplierAdd()"
 							(keyup)="getAutoCompletesupp(this)" />
 					</div>
-					<div class="col-md-5" *ngFor="let row of supplist">
+				</div>
+				<div class="col-md-10">
+					<div class="col-md-2" *ngFor="let row of supplist">
 						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
 							<span class="tag label label-info" style="font-size: 10px;">{{row.suppname}} 
 							<span data-role="remove" (click)="Removesupp(row)"></span>
@@ -257,6 +265,7 @@
 						</div>
 					</div>
 				</div>
+
 			</div>
 			<!--Document-->
 			<div class="tab-pane" id="docup">
