@@ -35,6 +35,11 @@ declare var $: any;
     Towarname: any = "";
     Towarid: number = 0;
     editadd: number = 0;
+    rate: any = 0;
+    amt: any = 0;
+    ratelist: any = [];
+    ratelistnew: any = [];
+    newrate: any = 0;
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
@@ -71,17 +76,23 @@ declare var $: any;
     }
 
     // //Selected Items
-    ItemsSelected(val) {
+    ItemsSelected(val, flag) {
         if (val != "") {
-            this.wareServies.getItemsAutoCompleted({
+            this.wareServies.getwarehouseTransfer({
                 "cmpid": 1,
                 "fy": 5,
+                "flag": "salesdrop",
                 "itemsid": val,
                 "createdby": ""
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
-                this.qty = ItemsResult[0].qty;
-                this.ItemsfilteredList = [];
+                //this.qty = ItemsResult[0].qty;
+                if (flag == 1) {
+                    this.ratelist = ItemsResult[0].sales;
+                }
+                else {
+                    this.ratelistnew = ItemsResult[0].sales;
+                }
                 //}
             }, err => {
                 console.log("Error");
@@ -115,12 +126,12 @@ declare var $: any;
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
-                        _me.ItemsSelected(me.Itemsid);
+                        _me.ItemsSelected(me.Itemsid, 1);
                         me.editadd = 1;
                     } else {
                         me.NewItemsName = ui.item.label;
                         me.NewItemsid = ui.item.value;
-                        _me.ItemsSelected(me.NewItemsid);
+                        _me.ItemsSelected(me.NewItemsid, 0);
                         me.editadd = 0;
                     }
                 }
@@ -196,37 +207,51 @@ declare var $: any;
         else {
             if (that.NewItemsName == '' || that.NewItemsName == undefined) {
                 this._msg.Show(messageType.info, "info", "Please Enter items Name");
+                $(".ProdName").focus();
                 return;
             }
         }
 
+        if (this.fromwarname == this.Towarname) {
+            this._msg.Show(messageType.info, "info", "Warehouse from and to same");
+            $(".to").focus();
+            return;
+        }
+
         if (that.qty == 0 || that.qty == undefined) {
             this._msg.Show(messageType.info, "info", "Please Enter Quntity");
+            $(".qty").focus();
             return;
         }
         that.Duplicateflag = true;
         for (var i = 0; i < that.newAddRow.length; i++) {
-            if (that.newAddRow[i].itemsname == that.itemsname) {
+            if (that.newAddRow[i].itemsname == that.NewItemsName) {
                 that.Duplicateflag = false;
                 break;
             }
         }
         if (that.Duplicateflag == true) {
+            debugger;
             if (that.editadd == 1) {
                 that.newAddRow.push({
                     "autoid": 0,
                     'itemsname': that.itemsname,
                     "itemsid": that.itemsid,
                     'qty': that.qty,
+                    'rate': that.rate,
+                    'amt': that.amt,
                     'remark': that.remark,
                     'counter': that.counter
                 });
+                that.rate = "";
             }
             else {
                 that.newAddRow.push({
                     "autoid": 0,
                     'itemsname': that.NewItemsName,
                     "itemsid": that.NewItemsid,
+                    'newrate': that.newrate,
+                    'amt': that.amt,
                     'qty': that.qty,
                     'remark': that.remark,
                     'counter': that.counter
@@ -237,11 +262,13 @@ declare var $: any;
             that.itemsname = "";
             that.NewItemsName = "";
             that.qty = 0;
+            that.newrate = "";
+            that.amt = "";
             that.remark = "";
             $("#foot_custname").focus();
         }
         else {
-            alert('Duplicate Item');
+            this._msg.Show(messageType.info, "info", "Duplicate Items");
             return;
         }
 
@@ -332,7 +359,6 @@ declare var $: any;
                 return;
             }
             if (that.Towarname == "") {
-                alert("");
                 this._msg.Show(messageType.info, "info", "Please Enetr To Warehouse");
                 $(".to").focus();
                 return;

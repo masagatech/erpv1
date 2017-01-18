@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { WarehouseAddService } from "../../../../_service/warehouse/add/add-service";
+import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -21,9 +22,25 @@ declare var $: any;
     code: any = "";
     remark: any = "";
     wareid: any = 0;
+
+    //other module
+    adrbookid: any = [];
+    adrid: number = 0;
+    docfile: any = [];
+    module: string = "";
+    uploadedFiles: any = [];
+    adrcsvid: any = "";
+    adrmodule: string = "";
+    accode: string = "";
     private subscribeParameters: any;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private wareServies: WarehouseAddService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service
+    @ViewChild('addrbook')
+    addressBook: AddrbookComp;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private wareServies: WarehouseAddService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute) { //Inherit Service
+        this.module = "warehouse";
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -33,7 +50,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".warehouse").focus();
+        $(".code").focus();
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
@@ -57,12 +74,12 @@ declare var $: any;
     EditItem(wareid) {
         this.wareServies.getwarehouse({
             "cmpid": 1,
-            "wareid":wareid
+            "wareid": wareid
         }).subscribe(result => {
-            var dataset=result.data;
-            this.name=dataset[0][0].nam;
-            this.code=dataset[0][0].code;
-            this.remark=dataset[0][0].remark;
+            var dataset = result.data;
+            this.name = dataset[0][0].nam;
+            this.code = dataset[0][0].code;
+            this.remark = dataset[0][0].remark;
         }, err => {
             console.log("Error");
         }, () => {
@@ -70,10 +87,30 @@ declare var $: any;
         })
     }
 
+    //File Upload Start 
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    //File Upload Complete 
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.docfile.push({ "id": e[i].id });
+        }
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
+    Getcode() {
+        this.addressBook.AddBook(this.code);
+        this.accode = this.code;
+    }
+
     Clearcontroll() {
         this.name = "";
         this.code = "";
         this.remark = "";
+        this.adrbookid = [];
+        this.addressBook.ClearArray();
         $(".warehouse").focus();
     }
 
@@ -84,7 +121,9 @@ declare var $: any;
             "code": this.code,
             "remark": this.remark,
             "cmpid": 1,
-            "createdby": "admin"
+            "createdby": "admin",
+            "adrid": this.adrbookid,
+            "docfile": this.docfile
         }
         return param;
     }
@@ -99,7 +138,7 @@ declare var $: any;
                 this.paramterjson()
             ).subscribe(result => {
                 var dataset = result.data;
-                 if (dataset[0].funsave_warehouse.maxid == -1) {
+                if (dataset[0].funsave_warehouse.maxid == -1) {
                     alert("Warehouse already exists");
                     $(".warehouse").focus();
                     return;

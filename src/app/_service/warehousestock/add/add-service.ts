@@ -6,9 +6,6 @@ import { Router } from '@angular/router';
 export class WarehouseAddService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getItemsAutoCompleted(req: any) {
-        return this._dataserver.post("getdcitemsdetails", req);
-    }
     saveWarehouse(req: any) {
         return this._dataserver.post("saveWarehouseTranf", req);
     }
