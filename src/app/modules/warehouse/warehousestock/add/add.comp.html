@@ -32,7 +32,7 @@
 				<tbody>
 					<tr *ngFor="let item of newAddRow let i=index">
 						<td>
-							<span>{{i+1}}</span><span class="hide">{{item.DcDelid}}</span>
+							<span>{{i+1}}</span>
 							</td>
 						<td> 
 							<input type="text" class="form-control ProdName" autocomplete='off' value="" [(ngModel)]="item.itemsname" (keyup)="getAutoCompleteProd(item,1)"

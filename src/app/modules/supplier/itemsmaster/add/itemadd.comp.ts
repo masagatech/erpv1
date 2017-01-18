@@ -53,6 +53,7 @@ declare var $: any;
     itemsremark: any = "";
     Duplicateflag: boolean = false;
     private subscribeParameters: any;
+    barcode: any = "";
 
     allload: any = {
         "wearhouse": false,
@@ -153,7 +154,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.attrid = ui.item.value;
                     me.attname = ui.item.label;
                 }
@@ -161,13 +162,13 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            this.attrid = 0;
+            me.attrid = 0;
         })
     }
 
     //Key Val Tab Click
     KeyValTab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.keyattr = "";
             this.keyattrid = 0;
             this.keyvalue = "";
@@ -190,7 +191,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.keyattrid = ui.item.value;
                     me.keyattr = ui.item.label;
                 }
@@ -198,11 +199,19 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            this.attrid = 0;
+            // me.keyattrid = 0;
         })
     }
 
     KeyvalAdd() {
+        if ($(".keyattr").val() == "") {
+            this.keyattrid = 0;
+        }
+        if ($(".keyvalue").val() == "") {
+            this._msg.Show(messageType.info, "info", "Please enter value");
+            $(".keyvalue").focus();
+            return;
+        }
         if (this.keyattrid > 0) {
             this.Duplicateflag = true;
             for (var i = 0; i < this.Keyvallist.length; i++) {
@@ -265,15 +274,16 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.titlesaleid = ui.item.value;
                     me.titlesale = ui.item.label;
                 }
             });
         }, err => {
             console.log("Error");
+           
         }, () => {
-            this.attrid = 0;
+             //me.titlesaleid = 0;
         })
     }
 
@@ -291,7 +301,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.titlepurid = ui.item.value;
                     me.titlepur = ui.item.label;
                 }
@@ -299,7 +309,7 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            this.attrid = 0;
+            //this.titlepurid = 0;
         })
     }
 
@@ -317,7 +327,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.suppid = ui.item.value;
                     me.suppname = ui.item.label;
                 }
@@ -325,12 +335,15 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            this.attrid = 0;
+            this.suppid = 0;
         })
     }
 
     //Add New Supplier 
     SupplierAdd() {
+        if ($(".supp").val() == "") {
+            this.suppid = 0;
+        }
         if (this.suppid > 0) {
             this.Duplicateflag = true;
             for (var i = 0; i < this.supplist.length; i++) {
@@ -363,7 +376,7 @@ declare var $: any;
 
     //Supplier Tab Click
     SuppTab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.suppname = "";
             $(".supp").focus();
         }, 100)
@@ -388,6 +401,9 @@ declare var $: any;
 
     //attribute list Add Div
     AttributeAdd() {
+        if ($(".attr").val() == "") {
+            this.attrid = 0;
+        }
         if (this.attrid > 0) {
             this.Duplicateflag = true;
             for (var i = 0; i < this.attrlist.length; i++) {
@@ -443,34 +459,41 @@ declare var $: any;
             $(".saleattr").focus()
             return;
         }
-        if (this.sales == "" && this.sales != '0') {
+        if (this.sales == "") {
             this._msg.Show(messageType.info, "info", "Please enter sales price");
             $(".sales").focus()
             return;
         }
-        this.Duplicateflag = true;
-        for (var i = 0; i < this.saleslist.length; i++) {
-            if (this.saleslist[i].sales == this.sales && this.saleslist[i].titlesale == this.titlesale) {
-                this.Duplicateflag = false;
-                break;
+        if (this.titlesaleid > 0) {
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.saleslist.length; i++) {
+                if (this.saleslist[i].sales == this.sales && this.saleslist[i].titlesale == this.titlesale) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.saleslist.push({
+                    'titlesale': this.titlesale,
+                    'titlesaleid': this.titlesaleid,
+                    'sales': this.sales
+                });
+                this.titlesale = "";
+                this.titlesaleid = 0;
+                this.sales = "";
+                this.dis = "";
+                //that.attrtable = false;
+                $(".saleattr").focus();
+
+            }
+            else {
+                that._msg.Show(messageType.info, "info", "Duplicate value");
+                $(".sales").focus();
+                return;
             }
         }
-        if (this.Duplicateflag == true) {
-            this.saleslist.push({
-                'titlesale': this.titlesale,
-                'titlesaleid': this.titlesaleid,
-                'sales': this.sales
-            });
-            this.titlesale = "";
-            this.titlesaleid = 0;
-            this.sales = "";
-            this.dis = "";
-            //that.attrtable = false;
-            $(".saleattr").focus();
-
-        }
         else {
-            that._msg.Show(messageType.info, "info", "Duplicate key and value");
+            this._msg.Show(messageType.info, "info", "Please enter valied sales name");
             $(".sales").focus();
             return;
         }
@@ -496,39 +519,51 @@ declare var $: any;
     //Add Purchase Price
     PurchaseAdd() {
         var that = this;
+        if (that.titlepur == "") {
+            that._msg.Show(messageType.info, "info", "Please enter purchase name");
+            $(".purattr").focus()
+            return;
+        }
         if (that.purch == "") {
-            that._msg.Show(messageType.info, "info", "Please enter key");
+            that._msg.Show(messageType.info, "info", "Please enter value ");
             $(".purch").focus()
             return;
         }
-        that.Duplicateflag = true;
-        for (var i = 0; i < that.purchaselist.length; i++) {
-            if (that.purchaselist[i].titlepur == that.titlepur && that.purchaselist[i].purch == that.purch) {
-                that.Duplicateflag = false;
-                break;
+        if (this.titlepurid > 0) {
+            that.Duplicateflag = true;
+            for (var i = 0; i < that.purchaselist.length; i++) {
+                if (that.purchaselist[i].titlepur == that.titlepur && that.purchaselist[i].purch == that.purch) {
+                    that.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (that.Duplicateflag == true) {
+                that.purchaselist.push({
+                    'titlepur': that.titlepur,
+                    'titlepurid': that.titlepurid,
+                    'purch': that.purch
+                });
+                that.titlepur = "";
+                that.titlepurid = 0;
+                that.purch = "";
+                $(".purattr").focus();
+
+            }
+            else {
+                that._msg.Show(messageType.info, "info", "Duplicate value");
+                $(".purch").focus();
+                return;
             }
         }
-        if (that.Duplicateflag == true) {
-            that.purchaselist.push({
-                'titlepur': that.titlepur,
-                'titlepurid': that.titlepurid,
-                'purch': that.purch
-            });
-            that.titlepur = "";
-            that.titlepurid = 0;
-            that.purch = "";
-            $(".purattr").focus();
-
-        }
         else {
-            that._msg.Show(messageType.info, "info", "Duplicate key and value");
+            this._msg.Show(messageType.info, "info", "Please enter valied purchase name");
             $(".purch").focus();
             return;
         }
     }
 
     ItemsTab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.sales = "";
             this.dis = "";
             this.purch = "";
@@ -636,6 +671,7 @@ declare var $: any;
         this.attrlist = [];
         this.Keyvallist = [];
         this.supplist = [];
+        this.barcode = "";
         $('.itemcode').removeAttr('disabled');
         $('.itemcode').focus();
     }
@@ -680,7 +716,9 @@ declare var $: any;
         var keylist = [];
         if (this.Keyvallist.length > 0) {
             for (let item of this.Keyvallist) {
-                keylist.push({ "id": item.keyattrid, "val": item.keyvalue })
+                if (item.keyvalue != "") {
+                    keylist.push({ "id": item.keyattrid, "val": item.keyvalue })
+                }
             }
             return keylist;
         }
@@ -719,6 +757,7 @@ declare var $: any;
             "itemcode": this.itemcode,
             "itemname": this.itemname,
             "skucode": this.skucode,
+            "barcode": this.barcode,
             "uom": this.UoM,
             "shelflife": this.shelf,
             "itemremark": this.itemsremark,
@@ -750,6 +789,44 @@ declare var $: any;
                 $(".itemname").focus();
                 return;
             }
+            if (this.UoM == "") {
+                this._msg.Show(messageType.info, "info", "Please select unit of measurement");
+                $(".uom").focus();
+                return;
+            }
+            if (this.shelf == "") {
+                this._msg.Show(messageType.info, "info", "Please select shelf life");
+                $(".sheft").focus();
+                return;
+            }
+            if (this.saleslist.length == 0) {
+                this._msg.Show(messageType.info, "info", "Please enter sele price rate");
+                $(".sheft").focus();
+                return;
+            }
+            if (this.purchaselist.length == 0) {
+                this._msg.Show(messageType.info, "info", "Please enter purchase price rate");
+                $(".sheft").focus();
+                return;
+            }
+            if (this.warehouselist.length > 0) {
+                var wareflag = false;
+                for (let item of this.warehouselist) {
+                    if (item.Warechk == true) {
+                        wareflag = true;
+                    }
+                }
+                if (wareflag == false) {
+                    this._msg.Show(messageType.info, "info", "Please select warehouse");
+                    return;
+                }
+
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Please create warehouse master");
+                return;
+            }
+
             this.itemsaddServies.itemsMasterSave(
                 this.ParamJson()
             ).subscribe(details => {

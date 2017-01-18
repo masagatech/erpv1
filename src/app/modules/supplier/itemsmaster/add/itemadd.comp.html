@@ -8,7 +8,7 @@
 						<input type="text" class="form-control itemcode" tabindex="1" [(ngModel)]="itemcode">
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-4">
 					<div class='form-group'>
 						<label>Item Name</label>
 						<input type="text" class="form-control itemname" tabindex="2" [(ngModel)]="itemname">
@@ -25,40 +25,50 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>UoM</label>
-						<select [(ngModel)]="UoM" class="form-control" tabindex="4">
+						<select [(ngModel)]="UoM" class="form-control uom" tabindex="4">
 						<option *ngFor="let row of UoMlist" [value]="row.id">
 							{{row.val}}
 					    </option>
 					</select>
 					</div>
 				</div>
-				<div class="col-md-8">
+				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Shelf Life</label>
-						<select [(ngModel)]="shelf" class="form-control" tabindex="5">
+						<select [(ngModel)]="shelf" class="form-control sheft" tabindex="5">
 						<option *ngFor="let row of shelflifelist" [value]="row.id">
 							{{row.val}}
 					    </option>
 					</select>
 					</div>
 				</div>
-			</div>
-			<div class='col-md-10'>
-				<div class='col-md-5'>
+				<div class="col-md-4">
 					<div class='form-group'>
-						<label>Item Description</label>
-						<textarea class="form-control medium-text-box" tabindex="6" [(ngModel)]="itemsdesc"></textarea>
+						<label>Bar Code</label>
+						<input type="text=" class="form-control" tabindex="6" value="" [(ngModel)]="barcode" />
 					</div>
 				</div>
-				<div class='col-md-5'>
+			</div>
+			<div class='col-md-10'>
+				<div class='col-md-4'>
+					<div class='form-group'>
+						<label>Item Description</label>
+						<textarea class="form-control medium-text-box" tabindex="7" [(ngModel)]="itemsdesc"></textarea>
+					</div>
+				</div>
+				<div class='col-md-4'>
 					<div class='form-group'>
 						<label>Item Remark</label>
-						<textarea class="form-control medium-text-box" tabindex="7" [(ngModel)]="itemsremark"></textarea>
+						<textarea class="form-control medium-text-box" tabindex="8" [(ngModel)]="itemsremark"></textarea>
 					</div>
 				</div>
 			</div>
 
 		</div>
+	</div>
+</div>
+<div class="panel panel-theme">
+	<div class="panel-body">
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-target="#attr" role="button" data-toggle="tab">Attribute</a></li>
 			<li><a data-target="#keydata" role="button" (click)="KeyValTab()" data-toggle="tab">Key Data</a></li>
@@ -79,7 +89,7 @@
 					</div>
 				</div>
 				<div class="col-md-10">
-					<div class="col-md-2" *ngFor="let row of attrlist">
+					<div class="col-md-6" *ngFor="let row of attrlist">
 						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
 							<span class="tag label label-info" style="font-size: 10px;">{{row.attname}} 
 							<span data-role="remove" (click)="Removeattr(row)"></span>
@@ -94,10 +104,6 @@
 			<div class="tab-pane" id="keydata">
 				<div class="col-md-6">
 					<div class="panel panel-theme">
-						<div class="panel-heading">
-							<h3 class="panel-title">Key Data
-							</h3>
-						</div>
 						<div class="panel-body">
 							<div class="col-md-5">
 								<div class='form-group'>
@@ -257,7 +263,7 @@
 					</div>
 				</div>
 				<div class="col-md-10">
-					<div class="col-md-2" *ngFor="let row of supplist">
+					<div class="col-md-6" *ngFor="let row of supplist">
 						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
 							<span class="tag label label-info" style="font-size: 10px;">{{row.suppname}} 
 							<span data-role="remove" (click)="Removesupp(row)"></span>

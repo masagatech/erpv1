@@ -21,8 +21,8 @@ declare var $: any;
     attid: any = 0;
     attributegrouplist: any = [];
     val: any;
-    attrgrp:any=0;
-    key:any="";
+    attrgrp: any = 0;
+    key: any = "";
 
     constructor(private setActionButtons: SharedVariableService, private attributeServies: attributeService,
         private _autoservice: CommonService, private _commonservice: CommonService, private _msg: MessageService) { //Inherit Service dcmasterService
@@ -73,14 +73,13 @@ declare var $: any;
             "parent": 0,
             "attid": this.attid,
             "attname": this.attName,
-            "attgroup":this.attrgrp.split(':')[0],
-            "attkey":this.attrgrp.split(':')[1],
+            "attgroup": this.attrgrp.split(':')[0],
+            "attkey": this.attrgrp.split(':')[1],
             "createdby": "admin",
             "remark1": "",
             "remark2": "",
             "remark3": ""
         }
-        console.log(Param);
         return Param;
     }
 
@@ -94,14 +93,14 @@ declare var $: any;
     }
 
     private NewRowAdd() {
+        if ($("#attnam").val() == "") {
+            this._msg.Show(messageType.info, "info", "Please enter attribute name");
+            $("#attnam").focus();
+            return;
+        }
         this.attributeServies.attsave(
             this.jsonparam()
         ).subscribe(result => {
-            if (this.attName == "") {
-                this._msg.Show(messageType.info, "info", "Please enter attribute name");
-                $("#attnam").focus();
-                return;
-            }
             var dataset = result.data;
             if (dataset[0].funsave_attribute.maxid == "-1") {
                 this._msg.Show(messageType.info, "info", "Duplicate attribute");
@@ -117,7 +116,7 @@ declare var $: any;
                 });
                 this.counter++;
                 this.attName = "";
-                this.attrgrp="";
+                this.attrgrp = "";
                 $(".attname").focus();
                 this.getAttribute();
             }

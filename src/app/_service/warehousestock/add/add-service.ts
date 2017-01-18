@@ -12,4 +12,7 @@ export class WarehouseAddService {
     saveWarehouse(req: any) {
         return this._dataserver.post("saveWarehouseTranf", req);
     }
+    getwarehouseTransfer(req: any) {
+        return this._dataserver.post("getwarehouseTransfer", req);
+    }
 }
