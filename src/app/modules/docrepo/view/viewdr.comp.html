@@ -1,77 +1,39 @@
-<div class="col-md-12">
-	<div class="col-md-3">
-		<!--table table-striped table-bordered table-hover-->
-		<div class="input-group stylish-input-group">
-			<input type="text" class="form-control" placeholder="Search" [(ngModel)]="uname" (keyup)="getDRWiseUser()" />
-			<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-		</div>
+<div class="input-group stylish-input-group">
+	<input type="text" class="form-control" placeholder="Search" [(ngModel)]="EmpName" (keyup)="filterEmployeeData()" />
+	<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+</div>
 
-		<div class="list-group" style="height:80%; overflow-y: auto;">
-			<button *ngFor="let row of userDT" type="button" class="list-group-item" (click)="getUserWiseTag(row.uid)">{{row.fullname}}</button>
-		</div>
-	</div>
-	<div class="col-md-9">
-		<div class="row">
-			<div class="col-md-12">
-				<div *ngFor="let row of drTagDT" class="col-md-3">
-					<button class="list-group-item btn-5x textcenter" (click)="getTagWiseDR(row.uid, row.tag)">{{row.tag}} <br /> ({{row.countdoc}})</button>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<hr />
-		</div>
-		<div class="row" [style.display]="drViewDT.length == 0?'none':''">
-			<div class="col-md-12">
-				<div class="col-md-10">
-					<!--<li *ngFor="todo in todos">{{todo.name}} {{todo.completed}}</li>-->
-
-
-					<!--<button type="button" class="btn btn-primary btn-xs" (click)="orderby('date')">By Latest</button>
-					<button type="button" class="btn btn-primary btn-xs" (click)="orderby('size')">By Size</button>
-					<button type="button" class="btn btn-primary btn-xs" (click)="orderby('name')">By Name</button>-->
-				</div>
-				<div class="col-md-2" align="center">
-					<i ng-model="Grid" (click)="ShowHideDocs('Grid')" class="fa fa-th fa-2x"></i> &nbsp;
-					<i ng-model="List" (click)="ShowHideDocs('List')" class="fa fa-list fa-2x"></i>
-				</div>
-			</div>
-			<div class="col-md-12" *ngIf="IsVisibleGrid">
-				<p-dataGrid [value]="drViewDT" [paginator]="true" [rows]="10" selectionMode="single">
-					<header>
-						{{tag}}
-					</header>
-					<template let-row>
-						<div style="padding:3px" class="col-md-3">
-							<p-panel [header]="row.doctitle" [style]="{'text-align':'center'}">
-								<a role="button" title="{{row.tag}}">
-									<i class="{{row.filetype}} fa-4x"></i>
-									<br /> {{row.docfile}}
-								</a>
-							</p-panel>
-						</div>
-					</template>
-				</p-dataGrid>
-			</div>
-			<div class="col-md-12" *ngIf="IsVisibleList">
-				<p-dataList [value]="drViewDT" [paginator]="true" [rows]="10" selectionMode="single">
-					<header>
-						{{tag}}
-					</header>
-					<template let-row>
-						<div class="row" style="padding:3px">
-							<div class="col-md-3">
-								{{row.doctitle}}
-							</div>
-							<div class="col-md-9">
-								<a role="button" title="{{row.tag}}">
-									<i class="{{row.filetype}} fa-lg"></i> {{row.docfile}}
-								</a>
-							</div>
-						</div>
-					</template>
-				</p-dataList>
-			</div>
-		</div>
-	</div>
+<div class="table-responsive">
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th width="150px">Emp Name</th>
+				<th width="250px">Doc Title</th>
+				<th width="200px">Tag</th>
+				<th>Doc File</th>
+			</tr>
+		</thead>
+		<tbody *ngFor="let row of DocRepoDT">
+			<tr>
+				<td>
+					{{row.fullname}}
+				</td>
+				<td>
+					<input type="text" [(ngModel)]="row.doctitle" class="form-control">
+				</td>
+				<td>
+					<select [(ngModel)]="row.tag" class="form-control">
+						<option [value]="">Select Tag</option>
+						<option *ngFor="let row of TagDT" [value]="row.key">
+							{{row.val}}
+						</option>
+					</select>
+				</td>
+				<td>
+					{{row.docfile}}<br />
+					<b>Size : </b> {{formatSizeUnits(row.filesize)}}
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>

@@ -1,0 +1,31 @@
+<div class="table-responsive">
+    <p-dataTable #dt [value]="expenseVoucherData" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords"
+        (onLazyLoad)="loadExpenseVoucherGrid($event)" expandableRows="true">
+        <header>List of Expense Voucher</header>
+        <p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+        <p-column field="docno" header="Doc No" [style]="{'width':'80px','text-align':'right'}"></p-column>
+        <p-column field="period" header="Period"></p-column>
+        <p-column field="noofdocs" header="No Of Docs" [style]="{'width':'100px','text-align':'right'}"></p-column>
+        <p-column field="ctrlcentername" header="Control Center" [style]="{'width':'200px'}"></p-column>
+        <p-column field="empname" header="Expense For" [style]="{'width':'200px'}"></p-column>
+        <p-column styleClass="col-button" [style]="{'width':'100px','text-align':'left'}">
+            <template let-row="rowData" pTemplate type="body">
+                <button type="button" (click)="openExpVoucherDetails(row)" class="btn btn-theme btn-sm">
+                    <i class="fa fa-edit"></i>
+                </button>
+            </template>
+        </p-column>
+        <template let-rows>
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-8">
+                <p-dataTable #dt [value]="rows.eddetails" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
+                    <p-column field="expheadname" header="Expense Head" [style]="{'text-align':'left'}"></p-column>
+                    <p-column field="amount" header="Amount" [style]="{'width':'100px','text-align':'left'}"></p-column>
+                </p-dataTable>
+            </div>
+            <div class="col-md-3">
+            </div>
+        </template>
+    </p-dataTable>
+</div>

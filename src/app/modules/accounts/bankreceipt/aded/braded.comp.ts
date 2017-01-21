@@ -4,8 +4,10 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { bankReceiptService } from "../../../../_service/bankreceipt/aded/bankreceipt-service";  //Service Add Refrence Bankpay-service.ts
-
 import { Router, ActivatedRoute } from '@angular/router';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
+
 declare var $: any;
 
 @Component({
@@ -16,6 +18,7 @@ declare var $: any;
 export class bankreceiptaddedit implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     //Declare Local Veriable 
     private subscribeParameters: any;
@@ -42,8 +45,9 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
     //constructor Call Method 
 
-    constructor(private setActionButtons: SharedVariableService, private BankServies: bankReceiptService,
-        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router ) {
+    constructor(private setActionButtons: SharedVariableService, private BankServies: bankReceiptService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute, private _router: Router, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.module = "Bank Receipt";
         this.getBankMasterDrop();
         this.getTypDrop();
@@ -52,7 +56,10 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     //Get And Fill Edit Mode
 
     GetBankPayment(BankPayId) {
-        this.BankServies.getBankReceiptView({ "bankreid": this.BankRecpId, "cmpid": 1, "fyid": 5, "flag": "edit" }).subscribe(data => {
+        this.BankServies.getBankReceiptView({
+            "bankreid": this.BankRecpId, "cmpid": this.loginUser.cmpid,
+            "fyid": this.loginUser.fyid, "flag": "edit"
+        }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _docfile = data.data[0]._docfile;
@@ -105,18 +112,18 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
     ParamJson() {
         var ParamName = {
-            "cmpid": 1,
-            "createdby": "Admin",
-            "fyid": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fyid": this.loginUser.fyid,
             "refno": this.Refno,
             "bankreid": this.BankRecpId,
-            //"depdate": $('#DepDate').datepicker('getDate'),
+            "depdate": $('#DepDate').datepicker('getDate'),
             "bankid": this.BankName,
             "typ": this.TypeName,
             "acid": this.CustID,
             "cheqno": this.ChequeNo,
             "amount": this.Amount,
             "naration": this.Naration,
+            "createdby": this.loginUser.login,
             "docfile": this.docfile
         }
         return ParamName;
@@ -244,20 +251,20 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
         $(".bankname").focus();
 
-        // setTimeout(function () {
-        //     var date = new Date();
-        //     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        setTimeout(function () {
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-        //     //DepDate 
-        //     $("#DepDate").datepicker({
-        //         dateFormat: "dd-mm-yy",
-        //         //startDate: new Date(),        //Disable Past Date
-        //         autoclose: true,
-        //         setDate: new Date()
-        //     });
-        //     $("#DepDate").datepicker('setDate', today);
+            //DepDate 
+            $("#DepDate").datepicker({
+                dateFormat: "dd-mm-yy",
+                //startDate: new Date(),        //Disable Past Date
+                autoclose: true,
+                setDate: new Date()
+            });
+            $("#DepDate").datepicker('setDate', today);
 
-        // }, 0);
+        }, 0);
 
         //Table Row a Tag Click  
         this.subscribeParameters = this._routeParams.params.subscribe(params => {

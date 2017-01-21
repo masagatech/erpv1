@@ -13,5 +13,4 @@ export class ContrService {
     getCtrlcenter(req: any) {
         return this._dataserver.post("getCtrlcenter", req);
     }
-
 }

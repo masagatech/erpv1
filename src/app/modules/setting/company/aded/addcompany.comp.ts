@@ -6,6 +6,8 @@ import { CompService } from '../../../../_service/company/comp-service'; /* add 
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for master of master */
 import { Router, ActivatedRoute } from '@angular/router';
 import { FileUpload, Growl, Message } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 declare var $: any;
 
@@ -44,6 +46,7 @@ export class AddCompany implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
@@ -53,7 +56,9 @@ export class AddCompany implements OnInit, OnDestroy {
     countryDT: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _compservice: CompService, private _commonservice: CommonService) {
+        private _compservice: CompService, private _commonservice: CommonService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
+
         this.fillDropDownList("Industries");
         this.fillDropDownList("Designation");
         this.fillDropDownList("CompanyType");
@@ -152,8 +157,7 @@ export class AddCompany implements OnInit, OnDestroy {
             "state": this.state,
             "city": this.city,
             "pincode": this.pincode,
-            "createdby": "1",
-            "updatedby": "1"
+            "uidcode": this.loginUser.login
         }
 
         this._compservice.saveCompany(savecmp).subscribe(data => {

@@ -19,24 +19,42 @@ const routerConfig = [
       {
         path: '',
         children: [
-
-          //Ac Group Add And View 
           {
             path: 'acgroup', loadChildren: () => System.import('./acgroup').then((comp: any) => {
               return comp.default;
             }),
           },
+
           {
             path: 'customer', loadChildren: () => System.import('./customer').then((comp: any) => {
               return comp.default;
             }),
           },
+
           {
             path: 'vendor', loadChildren: () => System.import('./vendor').then((comp: any) => {
               return comp.default;
             }),
           },
-          
+
+          {
+            path: 'expensecontrolcentermap', loadChildren: () => System.import('./expensecontrolcentermap').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'expensevoucher', loadChildren: () => System.import('./expensevoucher').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'expensebudget', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
@@ -45,13 +63,12 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule ],
+  imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
   declarations: [
-    //Common Module,
-   // AddrbookComp,
     MasterComp,
     MasterDashboardComp,
   ],
+  
   providers: [AuthGuard]
 })
 

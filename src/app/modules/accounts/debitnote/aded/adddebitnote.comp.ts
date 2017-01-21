@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { DNService } from '../../../../_service/debitnote/dn-service' /* add reference for view employee */
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
@@ -41,11 +43,13 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _dnservice: DNService, private _commonservice: CommonService) {
+        private _dnservice: DNService, private _commonservice: CommonService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
     }
 
@@ -131,7 +135,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     getDNDataByID(pdnid: number) {
         var that = this;
 
-        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": "2", "fyid": "7", "dnid": pdnid }).subscribe(data => {
+        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid, "dnid": pdnid }).subscribe(data => {
             var _dndata = data.data[0]._dndata;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _docfile = data.data[0]._docfile;
@@ -142,10 +146,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
             that.dndate = _dndata[0].docdate;
             that.dramt = _dndata[0].dramt;
             that.narration = _dndata[0].narration;
-            
+
             that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
             that.docfile = _docfile == null ? [] : _docfile;
-            
+
             that.getDNDetailsByID(_dndata[0].docno);
         }, err => {
             console.log("Error");
@@ -190,8 +194,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
             jsondt = [{
                 "dnid": field.dnid == undefined ? 0 : field.dnid,
-                "fyid": "7",
-                "cmpid": "2",
+                "cmpid": this.loginUser.cmpid,
+                "fyid": this.loginUser.fyid,
                 "docdate": "" + that.dndate + "",
                 "acid": + field.acid,
                 "dramt": "0",
@@ -199,18 +203,15 @@ export class AddDebitNote implements OnInit, OnDestroy {
             }];
         }
 
-        console.log(jsondt);
-
         var saveDN = {
             "dnid": that.dnid,
-            "fyid": "7",
-            "cmpid": "2",
+            "cmpid": this.loginUser.cmpid,
+            "fyid": this.loginUser.fyid,
             "docdate": that.dndate,
             "acid": that.dnacid,
             "dramt": that.dramt,
             "narration": that.narration,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek",
+            "uidcode": this.loginUser.login,
             "docfile": that.docfile,
             "dndetails": jsondt
         }

@@ -3,52 +3,31 @@ import { SharedVariableService } from "../../../_service/sharedvariable-service"
 import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { DRService } from '../../../_service/docrepo/dr-service'; /* add reference for view document repository */
-import { EmpService } from '../../../_service/employee/emp-service'; /* add reference for view employee */
 import { CommonService } from '../../../_service/common/common-service'; /* add reference for view document repository */
-import { OrderByPipe } from '../../../_pipe/orderby.pipe';
-
 import { Router } from '@angular/router';
-
-declare var $: any;
 
 @Component({
     templateUrl: 'viewdr.comp.html',
-    providers: [DRService, EmpService, CommonService]
+    providers: [DRService, CommonService]
 })
 
 export class ViewDR implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    DocRepoDT: any = [];
+    TagDT: any = [];
 
-    sort: any;
-
-    uid: number = 0;
-    ucode: string = "";
-    uname: string = "";
-    tag: string = "";
-
-    IsVisibleGrid: any = true;
-    IsVisibleList: any = false;
-
-    userDT: any = [];
-    drTagDT: any = [];
-    drViewDT: any = [];
-
-    selecteduid: number = 0;
-
-    constructor(private _router: Router, private _drservice: DRService, private _commservice: CommonService, private _empservice: EmpService, private setActionButtons: SharedVariableService) {
-        var that = this;
-
-        that.getDRWiseUser();
-        that.getUserWiseTag(0);
+    constructor(private _drservice: DRService, private setActionButtons: SharedVariableService, private _router: Router,
+        private _commonservice: CommonService) {
+        this.getAllDocs();
+        this.getDocType();
     }
 
-    getDRWiseUser() {
+    getAllDocs() {
         var that = this;
 
-        that._drservice.getEmpDocRepo({ "flag": "drwiseuser", "search": that.uname }).subscribe(data => {
-            that.userDT = data.data;
-            debugger;
+        that._drservice.getEmpDocRepo({ "flag": "alldocs" }).subscribe(data => {
+            that.DocRepoDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -56,44 +35,63 @@ export class ViewDR implements OnInit, OnDestroy {
         })
     }
 
-    getUserWiseTag(puid) {
-        var that = this;
-
-        that._drservice.getEmpDocRepo({ "flag": "userwisedrtag", "uid": puid }).subscribe(data => {
-            that.drViewDT = [];
-            that.drTagDT = data.data;
-            that.selecteduid = puid;
+    getDocType() {
+        this._commonservice.getMOM({ "flag": "", "group": "DocType" }).subscribe(data => {
+            this.TagDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
-            // console.log("Complete");
+            console.log("Complete");
         })
     }
 
-    getTagWiseDR(puid, ptag) {
-        var that = this;
-
-        that._drservice.getEmpDocRepo({ "flag": "tagwisedr", "uid": puid, "tag": ptag }).subscribe(data => {
-            that.drViewDT = data.data;
-            that.tag = this.drViewDT[0].tag;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    ShowHideDocs(viewtype) {
-        var that = this;
-
-        if (viewtype == "Grid") {
-            that.IsVisibleGrid = true;
-            that.IsVisibleList = false;
+    formatSizeUnits(bytes) {
+        if (bytes >= 1073741824) {
+            bytes = (bytes / 1073741824).toFixed(2) + ' GB';
+        }
+        else if (bytes >= 1048576) {
+            bytes = (bytes / 1048576).toFixed(2) + ' MB';
+        }
+        else if (bytes >= 1024) {
+            bytes = (bytes / 1024).toFixed(2) + ' KB';
+        }
+        else if (bytes > 1) {
+            bytes = bytes + ' bytes';
+        }
+        else if (bytes == 1) {
+            bytes = bytes + ' byte';
         }
         else {
-            that.IsVisibleGrid = false;
-            that.IsVisibleList = true;
+            bytes = '0 byte';
         }
+
+        return bytes;
+    }
+
+    saveDRData() {
+        var that = this;
+
+        var saveDR = {
+            "empdocrepo": that.DocRepoDT
+        }
+
+        console.log(that.DocRepoDT);
+
+        that._drservice.saveEmpDocRepo(saveDR).subscribe(data => {
+            var dataResult = data.data;
+
+            if (dataResult[0].msgid != "-1") {
+                alert(dataResult[0].funsave_empdocrepo.msg);
+                that._router.navigate(['/docrepo/view']);
+            }
+            else {
+                alert("Error");
+            }
+        }, err => {
+            console.log(err);
+        }, () => {
+            // console.log("Complete");
+        });
     }
 
     actionBarEvt(evt) {
@@ -102,13 +100,8 @@ export class ViewDR implements OnInit, OnDestroy {
         if (evt === "add") {
             that._router.navigate(['/docrepo/add']);
         }
-        if (evt === "edit") {
-            if (that.selecteduid == 0) {
-                alert("Please select 1 User !!!!")
-            }
-            else {
-                that._router.navigate(['/docrepo/edit', that.selecteduid]);
-            }
+        else if (evt === "save") {
+            this.saveDRData();
         }
     }
 
@@ -116,7 +109,7 @@ export class ViewDR implements OnInit, OnDestroy {
         var that = this;
 
         that.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        that.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         that.setActionButtons.setActionButtons(this.actionButton);
         that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
     }
@@ -125,6 +118,5 @@ export class ViewDR implements OnInit, OnDestroy {
         var that = this;
 
         that.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
     }
 }

@@ -15,10 +15,8 @@ export class ViewMOM implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    datasource: any = [];
     mom: any = [];
     totalRecords: number = 0;
-    selectedMOM1: any = [];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _commonservice: CommonService) {
 

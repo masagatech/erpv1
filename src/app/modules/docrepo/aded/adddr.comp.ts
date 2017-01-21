@@ -38,13 +38,11 @@ export class AddDR implements OnInit, OnDestroy {
 
     private subscribeParameters: any;
 
-    TagDT: any = [];
     drRowData: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _drservice: DRService, private _commonservice: CommonService) {
         this.module = "DocRepo";
-        this.getDocType();
     }
 
     onUploadStart(e) {
@@ -57,6 +55,7 @@ export class AddDR implements OnInit, OnDestroy {
 
         for (var i = 0; i < e.length; i++) {
             that.empdocrepo.push({
+                "docid": 0,
                 "uid": that.uid,
                 "cmpid": 2,
                 "fyid": 7,
@@ -69,6 +68,8 @@ export class AddDR implements OnInit, OnDestroy {
                 "updatedby": "1:admin"
             });
         }
+
+        console.log(that.empdocrepo);
 
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
@@ -101,43 +102,6 @@ export class AddDR implements OnInit, OnDestroy {
         })
     }
 
-    getDocType() {
-        this._commonservice.getMOM({ "flag": "", "group": "DocType" }).subscribe(data => {
-            this.TagDT = data.data;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            console.log("Complete");
-        })
-    }
-
-    // Add Doc Repo
-
-    private NewRowAdd() {
-        if (this.newdoctitle == "" || this.newdoctitle == null) {
-            alert("Please Enter Doc Title");
-            return;
-        }
-
-        if (this.newtag == "" || this.newtag == null) {
-            alert("Please Select Tag");
-            return;
-        }
-
-        //Add New Row
-        this.drRowData.push({
-            'counter': this.counter,
-            'doctitle': this.newdoctitle,
-            'tag': this.newtag,
-            'docfile': this.newdocfile
-        });
-
-        this.counter++;
-        this.newdoctitle = "";
-        this.newtag = "";
-        this.newdocfile = "";
-    }
-
     // Get DR By DR ID
 
     getDRDataByID(puid: number) {
@@ -165,7 +129,7 @@ export class AddDR implements OnInit, OnDestroy {
 
             if (dataResult[0].msgid != "-1") {
                 alert(dataResult[0].funsave_empdocrepo.msg);
-                that._router.navigate(['/docrepo']);
+                that._router.navigate(['/docrepo/setting']);
             }
             else {
                 alert("Error");

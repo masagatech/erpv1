@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for customer */
 import { PDCService } from '../../../../_service/pdc/pdc-service' /* add reference for emp */
 import { Router, ActivatedRoute } from '@angular/router';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 declare var $: any;
 
@@ -15,6 +17,7 @@ declare var $: any;
 
 export class AddPDC implements OnInit, OnDestroy {
     title: string = "";
+    loginUser: LoginUserModel;
 
     pdcid: number = 0;
     acid: number = 0;
@@ -37,7 +40,9 @@ export class AddPDC implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _pdcservice: PDCService) {
+        private _commonservice: CommonService, private _userService: UserService, private _pdcservice: PDCService) {
+        this.loginUser = this._userService.getUser();
+        
         this.module = "PDC";
         this.getPDCType();
     }
@@ -99,8 +104,8 @@ export class AddPDC implements OnInit, OnDestroy {
 
         var savepdc = {
             "pdcid": that.pdcid,
-            "cmpid": "2",
-            "fyid": "7",
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fyid,
             "acid": that.acid,
             "amount": that.amount,
             "bankname": that.bankname,
@@ -109,8 +114,7 @@ export class AddPDC implements OnInit, OnDestroy {
             "pdctype": that.pdctype,
             "narration": that.narration,
             "docfile": that.docfile,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek"
+            "uidcode": that.loginUser.login
         }
 
         that._pdcservice.savePDCDetails(savepdc).subscribe(data => {

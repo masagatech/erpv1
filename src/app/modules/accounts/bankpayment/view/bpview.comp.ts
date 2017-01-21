@@ -3,6 +3,8 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { bankpaymentViewService } from "../../../../_service/bankpayment/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -16,6 +18,7 @@ export class bankpaymentview implements OnInit, OnDestroy {
     //Button 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     //Veriable Declare 
     BankPayId: any = 0;
@@ -26,7 +29,9 @@ export class bankpaymentview implements OnInit, OnDestroy {
     ToDate: any = "";
     tableLength: any;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankpaymentViewService) { //Inherit Service dcmasterService
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private BankServies: bankpaymentViewService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.getBankMasterDrop();
     }
 
@@ -106,8 +111,8 @@ export class bankpaymentview implements OnInit, OnDestroy {
                 this.BankServies.getBankPaymentView({
                     "flag": "Details",
                     "bankid": row.id,
-                    "cmpid": 1,
-                    "fy": 5
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fyid
                 }).subscribe(data => {
                     row.Details = data.data;
                 }, err => {
@@ -157,7 +162,7 @@ export class bankpaymentview implements OnInit, OnDestroy {
             $("#FromDate").datepicker('setDate', Fromtoday);
 
             //To Date
-            
+
             $("#ToDate").datepicker({
                 dateFormat: 'dd/mm/yy',
                 minDate: 0,

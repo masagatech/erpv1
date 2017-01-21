@@ -4,6 +4,8 @@ import { ActionBtnProp } from "../../../../_model/action_buttons";
 import { Subscription } from "rxjs/Subscription";
 import { Router, ActivatedRoute } from "@angular/router";
 import { RBService } from "../../../../_service/receiptbook/rb-service" /* add reference for receipt book */
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for validate series no */
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
@@ -17,6 +19,7 @@ declare var $: any;
 export class AddRBI implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
@@ -41,7 +44,10 @@ export class AddRBI implements OnInit, OnDestroy {
     uploadedFiles: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService) {
+        private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
+
         this.module = "Receipt Book Issued";
         this.getLatestSeries();
         this.setDefaultDate();
@@ -117,7 +123,12 @@ export class AddRBI implements OnInit, OnDestroy {
         var that = this;
         var nop = 0;
 
-        that._rbservice.getRBIDetails({ "flag": "id", "cmpid": "2", "fyid": "7", "irbid": pirbid }).subscribe(data => {
+        that._rbservice.getRBIDetails({
+            "flag": "id",
+            "cmpid": that.loginUser.cmpid,
+            "fyid": that.loginUser.fyid,
+            "irbid": pirbid
+        }).subscribe(data => {
             var _rbidata = data.data[0]._rbidata;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _docfile = data.data[0]._docfile;
@@ -212,8 +223,8 @@ export class AddRBI implements OnInit, OnDestroy {
 
         var saveRBI = {
             "irbid": this.irbid,
-            "cmpid": "2",
-            "fyid": "7",
+            "cmpid": that.loginUser.cmpid,
+            "fyid": that.loginUser.fyid,
             "docno": this.docno,
             "docdate": this.docdate,
             "empid": this.empid,
@@ -222,7 +233,7 @@ export class AddRBI implements OnInit, OnDestroy {
             "tono": this.tono,
             "narration": this.narration,
             "docfile": this.docfile,
-            "uidcode": "1:vivek"
+            "uidcode": that.loginUser.login
         }
 
         that._rbservice.saveRBIDetails(saveRBI).subscribe(data => {

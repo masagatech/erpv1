@@ -64,11 +64,13 @@ const routerConfig = [
               return comp.default;
             }),
           },
+
           {
             path: 'hierar', loadChildren: () => System.import('./hierarchical').then((comp: any) => {
               return comp.default;
             }),
           },
+
           {
             path: 'contrcenter', loadChildren: () => System.import('./contrcenter').then((comp: any) => {
               return comp.default;
