@@ -383,8 +383,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.dcServies.getdropdwn({                     //User getdcdropdown
                 "custid": val,
                 "cmpid": this.loginUser.cmpid,
-                "fy":this.loginUser.fyid,
-                "createdby":this.loginUser.login,
+                "fy": this.loginUser.fyid,
+                "createdby": this.loginUser.login,
                 "flag": '',
                 "flag1": ''
             }).subscribe(dropdetails => {
@@ -404,6 +404,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     // //Selected Items
     ItemsSelected(val) {
+        debugger;
         if (val != "") {
             this.dcServies.getItemsAutoCompleted({
                 "cmpid": this.loginUser.cmpid,
@@ -411,7 +412,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "itemsid": val,
                 "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
+                console.log(itemsdata.data);
                 var ItemsResult = itemsdata.data;
+
                 // if (this.newAddRow.length == 0) {
                 //     this.AddEdit = 'add'
                 // }
@@ -420,7 +423,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this.Dis = ItemsResult[0].dis;
                 this.Rate = ItemsResult[0].salerate;
                 this.Amount = ItemsResult[0].dcamt;
-                this.ItemsfilteredList = [];
+                //this.ItemsfilteredList = [];
                 //  }
                 // else {
                 //     for (var i = 0; i < this.newAddRow.length; i++) {
@@ -539,7 +542,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "DCNo": 0,
                 "DCDetelId": DcDelid,
                 "FY": this.loginUser.fyid,
-                "cmpid":this.loginUser.cmpid,
+                "cmpid": this.loginUser.cmpid,
                 "UserCode": this.loginUser.login,
                 "Flag": ""
             }).subscribe(data => {

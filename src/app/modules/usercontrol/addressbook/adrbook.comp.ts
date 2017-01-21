@@ -49,6 +49,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
     constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService,
         private _msg: MessageService, private _userService: UserService) {
         // this.getAddress();
+        this.loginUser = this._userService.getUser();
         this.filldropdown("Country");
         this.filldropdown("adrtyp");
     }

@@ -42,20 +42,24 @@
 		<br/>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
-				<addressbook #addrbook [adrbookid]="adrbookid" ngControl="adrid" [module]="module" [accode]="accode"></addressbook>
+				<div class="row">
+					<addressbook #addrbook [adrbookid]="adrbookid" ngControl="adrid" [module]="module" [accode]="accode"></addressbook>
+				</div>
 			</div>
 			<div class="tab-pane" id="attr">
-				<div class="col-md-3">
-					<div class='form-group'>
-						<label>Attribute</label>
-						<input type="text=" class="form-control attr" tabindex="4" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
-							(keyup)="getAutoCompleteattr(this)" />
-					</div>
-					<div class="col-md-5" *ngFor="let row of attrlist">
-						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-							<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+				<div class="row">
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Attribute</label>
+							<input type="text=" class="form-control attr" tabindex="4" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+								(keyup)="getAutoCompleteattr(this)" />
+						</div>
+						<div class="col-md-5" *ngFor="let row of attrlist">
+							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+								<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
 							<span data-role="remove" (click)="Removeattr(row)"></span>
-							</span>
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -149,8 +153,10 @@
 				</div>
 			</div>
 			<div class="tab-pane" id="docup">
-				<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-					(onComplete)="onUploadComplete($event)"></fileupload>
+				<div class="row">
+					<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+						(onComplete)="onUploadComplete($event)"></fileupload>
+				</div>
 			</div>
 		</div>
 	</div>

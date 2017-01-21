@@ -352,7 +352,7 @@ declare var $: any;
         if (that.Duplicateflag == true) {
             that.keyvallist.push({
                 'key': that.acinfival,
-                'keyid':that.acinfiid,
+                'keyid': that.acinfiid,
                 'value': that.value
             });
             that.key = "";
@@ -722,6 +722,10 @@ declare var $: any;
             if (this.Custname == "") {
                 this._msg.Show(messageType.info, "info", "Please enter customer name");
                 $(".firstname").focus();
+                return;
+            }
+            if (this.warehouselist.length == 0) {
+                this._msg.Show(messageType.info, "info", "Please enter warehouse");
                 return;
             }
             this.CustAddServies.saveCustomer(
