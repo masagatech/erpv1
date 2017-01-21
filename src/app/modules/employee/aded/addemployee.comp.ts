@@ -323,8 +323,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 var msg = dataResult[0].funsave_employee.msg;
                 this._msg.Show(messageType.error, "Error", msg);
             }
-
-            this.saveDynamicFields();
         }, err => {
             console.log(err);
         }, () => {
@@ -378,10 +376,10 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     addNewTabs() {
         this.tabListDT.push({ "fldcode": this.fldname, "fldname": this.fldname });
 
-        for (var i = 0; i < this.tabListDT.length; i++) {
-            $('<li><a href="#' + this.tabListDT[0].fldcode + '" data-toggle="tab">' + this.tabListDT[0].fldname + '</a></li>').appendTo('#tabs');
-            //$('<div class="tab-pane" id="' + that.tabListDT[i].fldcode + '"></div>').appendTo('.tab-content');
-        }
+        // for (var i = 0; i < this.tabListDT.length; i++) {
+        //     $('<li><a href="#' + this.tabListDT[0].fldcode + '" data-toggle="tab">' + this.tabListDT[0].fldname + '</a></li>').appendTo('#tabs');
+        //     //$('<div class="tab-pane" id="' + that.tabListDT[i].fldcode + '"></div>').appendTo('.tab-content');
+        // }
 
         $('#tabs a:last').tab('show');
         this.fldname = "";
@@ -406,7 +404,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         var saveDynFlds = {
             "autoid": 0,
             "fldname": that.fldname,
-            "fldval": that.keyValueList === null ? "" : that.keyValueList,
+            "fldvalue": that.keyValueList === null ? "" : that.keyValueList,
             "module": "Employee",
             "cmpid": that.loginUser.cmpid,
             "fyid": that.loginUser.fyid,
@@ -547,6 +545,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         }
         else if (evt === "save") {
             that.saveEmployeeData();
+            that.saveDynamicFields();
         } else if (evt === "edit") {
             $('button').removeAttr('disabled');
             $('input').removeAttr('disabled');

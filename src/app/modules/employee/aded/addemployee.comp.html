@@ -71,9 +71,9 @@
                 <li><a data-target="#jobprofile" role="button" data-toggle="tab">Job Profile</a></li>
                 <li><a data-target="#ctrlcenter" role="button" data-toggle="tab">Control Center</a></li>
                 <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
-                <!--<li *ngFor="let tab of tabListDT">
-                    <a data-target="#{{tab.fldcode}}" role="button" data-toggle="tab">{{tab.fldname}}</a>
-                </li>-->
+                <li *ngFor="let tab of tabListDT">
+                    <a href="#{{tab.fldcode}}" role="button" data-toggle="tab">{{tab.fldname}}</a>
+                </li>
                 <li><a data-target="#myModal" role="button" data-toggle="modal"><i class="fa fa-plus"></i></a></li>
                 <!--<li><a role="button" (click)="addnewtabs()"><i class="fa fa-plus"></i></a></li>-->
             </ul>
