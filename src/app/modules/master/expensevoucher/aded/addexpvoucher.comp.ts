@@ -136,10 +136,10 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         var that = this;
 
         if (that.expheadid === 0) {
-            that._message.Show(messageType.success, "Confirmed", "Please Select Expense Head");
+            that._message.Show(messageType.warn, "Warning", "Please Select Expense Head");
         }
         else if (that.amount === 0) {
-            that._message.Show(messageType.success, "Confirmed", "Please Enter Amount");
+            that._message.Show(messageType.warn, "Warning", "Please Enter Amount");
         }
         else {
             that.expenseheadDT.push({
@@ -188,11 +188,20 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
     saveExpenseVoucher() {
         var that = this;
 
-        if (that.expheadid === 0) {
-            that._message.Show(messageType.success, "Confirmed", "Please Select Expense Head");
+        if (that.period === "") {
+            that._message.Show(messageType.warn, "Warning", "Please Select Period");
         }
-        else if (that.amount === 0) {
-            that._message.Show(messageType.success, "Confirmed", "Please Enter Amount");
+        else if (that.noofdocs === 0) {
+            that._message.Show(messageType.warn, "Warning", "Please Enter No of Docs");
+        }
+        else if (that.ctrlcenterid === 0) {
+            that._message.Show(messageType.warn, "Warning", "Please Select Control Center");
+        }
+        else if (that.empid === 0) {
+            that._message.Show(messageType.warn, "Warning", "Please Select Expense For");
+        }
+        else if (that.expenseheadDT.length === 0) {
+            that._message.Show(messageType.warn, "Warning", "Please fill atleast 1 Expense Head and Amount");
         }
         else {
             that._expvoucherservice.saveExpenseVoucher({
@@ -262,9 +271,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._message.confirm("Are you sure that you want to save?", () => {
-                this.saveExpenseVoucher();
-            });
+            this.saveExpenseVoucher();
         }
     }
 
