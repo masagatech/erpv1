@@ -129,7 +129,7 @@ export class AddDR implements OnInit, OnDestroy {
 
             if (dataResult[0].msgid != "-1") {
                 alert(dataResult[0].funsave_empdocrepo.msg);
-                that._router.navigate(['/docrepo/view']);
+                that._router.navigate(['/docrepo/setting']);
             }
             else {
                 alert("Error");

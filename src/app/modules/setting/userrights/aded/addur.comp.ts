@@ -56,6 +56,28 @@ export class AddUserRights implements OnInit, OnDestroy {
         this.loginUser = this._userservice.getUser();
     }
 
+    ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['uid'] !== undefined) {
+                this.title = "Edit User Rights";
+
+                this.uid = params['uid'];
+                console.log(params['uid']);
+
+                //var row = this.CompanyDetails;
+                //this.getUserRightsById(params['uid']);
+            }
+            else {
+                this.title = "Add User Rights";
+            }
+        });
+    }
+
     getUserAuto(me: any) {
         var that = this;
 
@@ -182,7 +204,6 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     saveUserRights() {
         var that = this;
-
         var giverights = that.getUserRights();
 
         var saveUR = {
@@ -190,7 +211,7 @@ export class AddUserRights implements OnInit, OnDestroy {
             "cmpid": this.selectedCompany.cmpid,
             "fyid": this.fyid,
             "giverights": giverights,
-            "uidcode": this.loginUser.login
+            "uidcode": "1:admin" //this.loginUser.uid
         }
 
         if (this.uid == "") {
@@ -281,28 +302,6 @@ export class AddUserRights implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['uid'] !== undefined) {
-                this.title = "Edit User Rights";
-
-                this.uid = params['uid'];
-                console.log(params['uid']);
-
-                //var row = this.CompanyDetails;
-                //this.getUserRightsById(params['uid']);
-            }
-            else {
-                this.title = "Add User Rights";
-            }
-        });
     }
 
     actionBarEvt(evt) {

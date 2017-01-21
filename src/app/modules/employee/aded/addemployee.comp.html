@@ -1,83 +1,86 @@
 <div class="middlepan">
     <div class="panel panel-theme">
         <div class="panel-body">
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-target="#personal" role="button" data-toggle="tab">Personal Details</a></li>
-                <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
-                <li><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
-                <li><a data-target="#jobprofile" role="button" data-toggle="tab">Job Profile</a></li>
-                <li><a data-target="#aboutus" role="button" data-toggle="tab">About Us</a></li>
-                <li><a data-target="#ctrlcenter" role="button" data-toggle="tab">Controlling Center</a></li>
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane active" id="personal">
-                    <div class="row">
-                        <div class="col-sm-8 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">User Name</label>
-                                <input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Date of Birth</label>
-                                        <input type="date" [(ngModel)]="dob" name="DateOfBirth" id="DateOfBirth" class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Gender</label>
-                                        <select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
-                                            <option [value]="'0'">Select Gender</option>
-                                            <option *ngFor="let row of genderDT" [value]="row.key">	
-                                                {{row.val}}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Marital Status</label>
-                                        <select [(ngModel)]="maritalstatus" class="form-control">
-                                            <option [value]="'0'">Select Marital Status</option>
-                                            <option *ngFor="let row of maritalstatusDT" [value]="row.key">
-                                                {{row.val}}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Blood Group</label>
-                                        <select [(ngModel)]="bloodgroup" class="form-control">
-                                            <option [value]="'0'">Select Blood Group</option>
-                                            <option *ngFor="let row of bloodgroupDT" [value]="row.key">
-                                                {{row.val}}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="col-sm-8 col-md-6">
+                <div class="form-group">
+                    <label class="control-label">User Name</label>
+                    <input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Date of Birth</label>
+                            <input type="date" [(ngModel)]="dob" name="DateOfBirth" id="DateOfBirth" class="form-control" />
                         </div>
-                        <div class="col-sm-8 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Family Background</label>
-                                <textarea [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label">Health Details</label>
-                                <textarea [(ngModel)]="healthdtls" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                            </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Gender</label>
+                            <select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
+                                <option [value]="'0'">Select Gender</option>
+                                <option *ngFor="let row of genderDT" [value]="row.key">	
+                                    {{row.val}}
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Marital Status</label>
+                            <select [(ngModel)]="maritalstatus" class="form-control">
+                                <option [value]="'0'">Select Marital Status</option>
+                                <option *ngFor="let row of maritalstatusDT" [value]="row.key">
+                                    {{row.val}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Blood Group</label>
+                            <select [(ngModel)]="bloodgroup" class="form-control">
+                                <option [value]="'0'">Select Blood Group</option>
+                                <option *ngFor="let row of bloodgroupDT" [value]="row.key">
+                                    {{row.val}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8 col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Family Background</label>
+                    <textarea [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
 
-                <div class="tab-pane" id="uploadphoto">
+                <div class="form-group">
+                    <label class="control-label">Health Details</label>
+                    <textarea [(ngModel)]="healthdtls" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-theme">
+        <div class="panel-body" style="width:800px; overflow:auto;">
+            <ul class="nav nav-tabs" id="tabs">
+                <li class="active"><a data-target="#aboutus" role="button" data-toggle="tab">About Employee</a></li>
+                <li><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
+                <li><a data-target="#jobprofile" role="button" data-toggle="tab">Job Profile</a></li>
+                <li><a data-target="#ctrlcenter" role="button" data-toggle="tab">Control Center</a></li>
+                <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
+                <!--<li *ngFor="let tab of tabListDT">
+                    <a data-target="#{{tab.fldcode}}" role="button" data-toggle="tab">{{tab.fldname}}</a>
+                </li>-->
+                <li><a data-target="#myModal" role="button" data-toggle="modal"><i class="fa fa-plus"></i></a></li>
+                <!--<li><a role="button" (click)="addnewtabs()"><i class="fa fa-plus"></i></a></li>-->
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="aboutus">
                     <div class="form-group">
-                        <fileupload [module]="module" [multi]="false" [isRaw]="true" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
+                        <textarea [(ngModel)]="aboutus" class="form-control big-text-box hidden-text-box" cols="150" rows="5" height="300"></textarea>
                     </div>
                 </div>
 
@@ -235,41 +238,128 @@
                     </div>
                 </div>
 
-                <div class="tab-pane" id="aboutus">
-                    <div class="form-group">
-                        <textarea [(ngModel)]="aboutus" class="form-control big-text-box hidden-text-box" cols="150" rows="5" height="300"></textarea>
-                    </div>
-                </div>
-
                 <div class="tab-pane" id="ctrlcenter">
-                    <div class="form-group">
-                        <label class="control-label">Secondary</label>
-                        <input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
-                    </div>
                     <div class="row">
-                        <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Date of Birth</label>
-                                <input type="date" [(ngModel)]="dob" name="DateOfBirth" id="DateOfBirth" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="col-xs-6 col-sm-6 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Gender</label>
-                                <select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
-                                    <option [value]="'0'">Select Gender</option>
-                                    <option *ngFor="let row of genderDT" [value]="row.key">	
+                                <label class="control-label">Primary</label>
+                                <select [(ngModel)]="pctrlcenterid" name="Primary" id="Primary" class="form-control">
+                                    <option [value]="'0'">Select Control Center</option>
+                                    <option *ngFor="let row of ctrlcenterDT" [value]="row.key">
                                         {{row.val}}
                                     </option>
                                 </select>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-10 col-sm-10 col-md-11">
+                                    <div class="form-group">
+                                        <label class="control-label">Secondary</label>
+                                        <input id="ctrlcentername" type="text" [(ngModel)]="sctrlcentername" class="ctrlcentername form-control" (keyup)="getCtrlCenterAuto(this)"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-1">
+                                    <div class="form-group">
+                                        <label class="control-label">&nbsp;</label>
+                                        <button class="btn btn-theme btn-sm fa fa-plus" type="button" ng-reflect-title="Add" tabindex="7" (click)="addNewCtrlCenter()"
+                                            title="Add"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" *ngIf="ctrlcenterList.length">
+                                    <table class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th width="20px">#</th>
+                                                <th>Ctrl Center</th>
+                                                <th width="20px">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody *ngFor="let row of ctrlcenterList let i=index">
+                                            <tr>
+                                                <td width="20px"><span>{{i+1}}</span></td>
+                                                <td>{{row.ctrlcentername}}</td>
+                                                <td width="20px"><button class="btn btn-theme btn-sm" (click)="deleteCtrlCenter(row)"><i class="fa fa-trash"></i></button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="uploadphoto">
+                    <div class="form-group">
+                        <!--<fileupload [module]="module" [multi]="false" [isRaw]="true" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+                            (onComplete)="onUploadComplete($event)"></fileupload>-->
+                        abc
+                    </div>
+                </div>
+
+                <div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
+                    <div class="panel-body">
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label>Key</label>
+                                <input type="text" [(ngModel)]="key" (keyup.enter)="AddNewKeyVal()" class="form-control key">
+                            </div>
+                        </div>
+                        <div class="col-xs-7">
+                            <div class="form-group">
+                                <label>Value</label>
+                                <input type="text" [(ngModel)]="value" (keyup.enter)="AddNewKeyVal()" (keyup.tab)="AddNewKeyVal()" class="form-control val">
+                            </div>
+                        </div>
+                        <div class="col-xs-1">
+                            <div class="form-group">
+                                <label></label>
+                                <button class="btn btn-theme btn-sm fa fa-plus" type="button" (click)="AddNewKeyVal()"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="keyValueList.length">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-1">#</th>
+                                    <th class="col-sm-4">Key</th>
+                                    <th class="col-sm-6">Value</th>
+                                    <th class="col-sm-1"></th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let row of keyValueList let i=index">
+                                <tr>
+                                    <td><span>{{i+1}}</span></td>
+                                    <td>{{row.key}}</td>
+                                    <td>{{row.value}}</td>
+                                    <td><button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!--<div class="container">
+        <h1>Bootstrap Dynamic Tabs</h1>
+        <div class="well">
+            <a role="button" (click)="addnewtabs()" id="btnAdd"><i class="icon-plus-sign-alt"></i> Add Tab</a>
+            <br><br>
+            <ul class="nav nav-tabs" id="tabs">
+                <li class="active"><a data-target="#tab1" role="button" data-toggle="tab">Tab 1</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab1">Hello tab #1 content...</div>
+            </div>
+        </div>
+        <a href="http://www.bootply.com/61679">Edit on Bootply</a>..
+    </div>
+</div>-->
 <div class="sidepan">
     <!--widgit-->
     <div class="panel panel-theme">
@@ -310,6 +400,27 @@
         </div>
         <div id="Personal" class="panel-collapse collapse in">
             <div class="panel-body"></div>
+        </div>
+    </div>
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Tabs</h4>
+            </div>
+            <div class="panel-body">
+                <div class='form-group'>
+                    <label>Tab Name</label>
+                    <input type="text" class="form-control" tabindex="1" [(ngModel)]="fldname">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-theme btn-sm" (click)="saveDynamicFields(0)" tabindex="16">
+                   <i class="fa fa-save"></i> Save</button>
+            </div>
         </div>
     </div>
 </div>
