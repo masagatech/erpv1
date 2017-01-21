@@ -5,7 +5,7 @@ import { AddExpenseVocuherComp } from './aded/addexpvoucher.comp';
 import { ViewExpenseVoucherComp } from './view/viewexpvoucher.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module'
-import { FilterByPipe } from '../../../_pipe/filterby.pipe';
+//import { FilterByPipe } from '../../../_pipe/filterby.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -47,8 +47,7 @@ const routerConfig = [
     declarations: [
         AddExpenseVocuherComp,
         ViewExpenseVoucherComp,
-        ExpenseVoucherComp,
-        FilterByPipe
+        ExpenseVoucherComp
     ],
     providers: [AuthGuard]
 })

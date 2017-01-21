@@ -4,8 +4,7 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { AddExpenseBudgetComp } from './aded/addexpbudget.comp';
 //import { ViewExpenseBudgetComp } from './view/viewexpbudget.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-import { ActionBarModule } from '../../../_shared/shared.module'
-import { FilterByPipe } from '../../../_pipe/filterby.pipe';
+import { ActionBarModule } from '../../../_shared/shared.module';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -47,8 +46,7 @@ const routerConfig = [
     declarations: [
         AddExpenseBudgetComp,
         //ViewExpenseBudgetComp,
-        ExpenseBudgetComp,
-        FilterByPipe
+        ExpenseBudgetComp
     ],
     providers: [AuthGuard]
 })
