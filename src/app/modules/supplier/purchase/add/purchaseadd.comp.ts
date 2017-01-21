@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { PurchaseaddService } from "../../../../_service/suppurchase/add/purchaseadd-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -23,8 +25,8 @@ declare var $: any;
     CustNam: any = '';
     ItemsName: any = '';
     Itemsid: any = 0;
-    NewItemsName: any='';
-    NewItemsid: any=0;
+    NewItemsName: any = '';
+    NewItemsid: any = 0;
     AccountID: any = 0;
     AccountName: any = '';
     SupplierName: any = '';
@@ -44,8 +46,14 @@ declare var $: any;
     Directinvoice: any = 0;
     private subscribeParameters: any;
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
     //, private _autoservice:AutoService
-    constructor(private setActionButtons: SharedVariableService, private PurchaseServies: PurchaseaddService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
+    constructor(private setActionButtons: SharedVariableService, private PurchaseServies: PurchaseaddService,
+        private _autoservice: CommonService, private _routeParams: ActivatedRoute,
+        private _userService: UserService) {
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -94,10 +102,10 @@ declare var $: any;
     //Edit Param
     EditParamJson(PurOrid) {
         var Param = {
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "PurOrId": PurOrid,
-            "createdby": "",
+            "createdby": this.loginUser.login,
             "SupplierId": 0,
             "FilterType": "Edit",
             "flag": "",
@@ -166,8 +174,8 @@ declare var $: any;
     ParamJson() {
         var Param = {
             "purorid": this.PurOrId,
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "invno": this.InvNostr,
             "docdate": $('#docdate').datepicker('getDate'),
             "refno": this.OtherRef,
@@ -178,7 +186,7 @@ declare var $: any;
             "remark": this.Remark,
             "jsondata": this.newAddRow,
             "Status": "Status",
-            "createdby": "admin",
+            "createdby": this.loginUser.login,
             "remark1": "Remark1",
             "remark2": "Remark2",
             "remark3": "Remark3"
@@ -271,7 +279,7 @@ declare var $: any;
         if (this.Duplicateflag == true) {
             this.newAddRow.push({
                 'ItemsName': this.ItemsName,
-                'Itemsid':this.Itemsid,
+                'Itemsid': this.Itemsid,
                 'Qty': this.Qty,
                 'Rate': this.Rate,
                 'Dis': this.Dis == "" ? "0" : this.Dis,
@@ -303,7 +311,13 @@ declare var $: any;
     getAutoCompleteAccount(me: any) {
         var _me = this;
         var that = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": that.AccountName }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "customer",
+            "search": that.AccountName,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".AccountName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -328,7 +342,13 @@ declare var $: any;
 
     getAutoCompleteSupplier(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "supplier", "search": that.SupplierName }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "supplier",
+            "search": that.SupplierName,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".SupplierName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -354,8 +374,9 @@ declare var $: any;
     ItemsSelected(Itemsid) {
         this.PurchaseServies.getitemsDetails({
             "itemsid": Itemsid,
-            "cmpid": 1,
-            "fy": 5
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             var returndata = result.data;
             this.Itemsid = Itemsid;
@@ -374,7 +395,13 @@ declare var $: any;
     getAutoCompleteProd(me: any, arg: number) {
         var _me = me;
         var that = this;
-        this._autoservice.getAutoData({ "type": "product", "search": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "product",
+            "search": arg == 0 ? me.NewItemsName : me.ItemsName,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -386,7 +413,7 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                   // me.ItemsName = ui.item.label;
+                    // me.ItemsName = ui.item.label;
                     if (arg === 1) {
                         me.ItemsName = ui.item.label;
                         me.Itemsid = ui.item.value;

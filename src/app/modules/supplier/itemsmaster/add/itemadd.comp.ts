@@ -5,13 +5,15 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { ItemAddService } from "../../../../_service/itemmaster/add/itemadd-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'itemadd.comp.html',
-    providers: [ItemAddService, CommonService]                         //Provides Add Service
+    providers: [ItemAddService, CommonService]
     //,AutoService
 }) export class itemadd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
@@ -55,6 +57,10 @@ declare var $: any;
     private subscribeParameters: any;
     barcode: any = "";
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
     allload: any = {
         "wearhouse": false,
         "otherdropdwn": false
@@ -62,7 +68,7 @@ declare var $: any;
     _editid: number = 0;
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private itemsaddServies: ItemAddService,
         private _autoservice: CommonService, private _commonservice: CommonService, private _routeParams: ActivatedRoute,
-        private _msg: MessageService) { //Inherit Service
+        private _msg: MessageService, private _userService: UserService) { //Inherit Service
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -99,7 +105,7 @@ declare var $: any;
     //Shelf Life Dropdown Fill
     getAllDropdown() {
         var that = this;
-        this.itemsaddServies.getdorpdown({ "cmpid": 1 }).subscribe(data => {
+        this.itemsaddServies.getdorpdown({ "cmpid": this.loginUser.cmpid }).subscribe(data => {
             var dswarehaouse = data.data[0].filter(item => item.group === "warehouse");
             that.warehouselist = dswarehaouse;
             var dsshelflife = data.data[0].filter(item => item.group === "shelf life");
@@ -143,7 +149,14 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.attname, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.attname,
+            "filter": "Item Attributes",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".attr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -154,7 +167,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.attrid = ui.item.value;
                     me.attname = ui.item.label;
                 }
@@ -168,7 +181,7 @@ declare var $: any;
 
     //Key Val Tab Click
     KeyValTab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.keyattr = "";
             this.keyattrid = 0;
             this.keyvalue = "";
@@ -180,7 +193,14 @@ declare var $: any;
     //Key Data Attribute
     getAutoCompleteKeyval(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.keyattr, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.keyattr,
+            "filter": "Item Attributes",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".keyattr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -191,7 +211,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.keyattrid = ui.item.value;
                     me.keyattr = ui.item.label;
                 }
@@ -263,7 +283,14 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompleteSale(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.titlesale, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.titlesale,
+            "filter": "Item Attributes",
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.login,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".saleattr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -274,23 +301,30 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.titlesaleid = ui.item.value;
                     me.titlesale = ui.item.label;
                 }
             });
         }, err => {
             console.log("Error");
-           
+
         }, () => {
-             //me.titlesaleid = 0;
+            //me.titlesaleid = 0;
         })
     }
 
     //Autocompleted Attribute Name
     getAutoCompletePurc(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.titlepur, "filter": "Item Attributes", "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.titlepur,
+            "filter": "Item Attributes",
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.login,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".purattr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -301,7 +335,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.titlepurid = ui.item.value;
                     me.titlepur = ui.item.label;
                 }
@@ -316,7 +350,13 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompletesupp(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "supplier", "search": that.suppname, "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "supplier",
+            "search": that.suppname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.login,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".supp").autocomplete({
                 source: data.data,
                 width: 300,
@@ -327,7 +367,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.suppid = ui.item.value;
                     me.suppname = ui.item.label;
                 }
@@ -376,7 +416,7 @@ declare var $: any;
 
     //Supplier Tab Click
     SuppTab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.suppname = "";
             $(".supp").focus();
         }, 100)
@@ -563,7 +603,7 @@ declare var $: any;
     }
 
     ItemsTab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.sales = "";
             this.dis = "";
             this.purch = "";
@@ -592,10 +632,10 @@ declare var $: any;
     //Edit Paramter
     EditParamJson() {
         var Param = {
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "itemsid": this.itemsid,
-            "createdby": "",
+            "createdby": this.loginUser.login,
             "flag": "Edit",
             "fromdate": null,
             "todate": null
@@ -750,9 +790,9 @@ declare var $: any;
     private ParamJson() {
         var Param = {
             "itemsid": this.itemsid,
-            "cmpid": 1,
-            "fy": 5,
-            "createdby": "admin",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login,
             "itemdesc": this.itemsdesc,
             "itemcode": this.itemcode,
             "itemname": this.itemname,
@@ -769,7 +809,6 @@ declare var $: any;
             "ware": this.CreatejsonWarehouse(),
             "docfile": this.docfile
         }
-        console.log(Param);
         return Param;
     }
 

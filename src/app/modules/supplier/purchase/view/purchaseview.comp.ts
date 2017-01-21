@@ -3,7 +3,9 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { PurchaseviewService } from "../../../../_service/suppurchase/view/purchaseview-service";
-import { CommonService } from '../../../../_service/common/common-service'
+import { CommonService } from '../../../../_service/common/common-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -27,7 +29,13 @@ export class purchaseview implements OnInit, OnDestroy {
     SupplierName: any = "";
     SupplierID: any = "";
     TableHide: any;
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _autoservice: CommonService, private PurchaseServies: PurchaseviewService) { //Inherit Service dcmasterService
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+    private _autoservice: CommonService, private PurchaseServies: PurchaseviewService,
+    private _userService: UserService) {
     }
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
@@ -80,7 +88,8 @@ export class purchaseview implements OnInit, OnDestroy {
 
     //Supplier Change Event Bind Supplier
     getAutoCompleteSupplier(me: any) {
-        this._autoservice.getAutoData({ "Type": "supplier", "Key": this.SupplierName }).subscribe(data => {
+        this._autoservice.getAutoData({ 
+            "type": "supplier", "key": this.SupplierName }).subscribe(data => {
             $(".SupplierName").autocomplete({
                 source: JSON.parse(data.data),
                 width: 300,

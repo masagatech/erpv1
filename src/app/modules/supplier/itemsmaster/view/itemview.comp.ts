@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { ItemViewService } from "../../../../_service/itemmaster/view/itemview-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -22,10 +24,14 @@ declare var $: any;
     ToDate: any = "";
     ItemDetails: any = [];
     TableHide: boolean = true;
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
-    //, private _autoservice:AutoService
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private itemViewServies: ItemViewService, private _autoservice: CommonService) { //Inherit Service dcmasterService
-        //this.getPendingDocNo();
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+     private itemViewServies: ItemViewService, private _autoservice: CommonService,
+     private _userService: UserService) { //Inherit Service dcmasterService
+
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -136,8 +142,8 @@ declare var $: any;
                 this.itemViewServies.getItemsMaster({
                     "flag": "Details",
                     "itemsid": row.itemsid,
-                    "cmpid": 1,
-                    "fy": 5
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fyid
                 }).subscribe(data => {
                     var dataset = data.data;
                     row.attribute = dataset[0]._attributejson;

@@ -7,12 +7,14 @@ import { Router } from '@angular/router';
 
 declare var $: any;
 
+
 @Component({
   selector: '<app-head></app-head>',
   templateUrl: 'header.comp.html'
 })
-
 export class UserControlHeadComp implements OnInit {
+  //$('.dropdown-submenu > a').submenupicker();
+
   menuhead: any;
   parentMenus: any;
   subMenu: any;
@@ -23,17 +25,27 @@ export class UserControlHeadComp implements OnInit {
     //get login user details 
     this.loginUser = this._userService.getUser();
 
+    // if (this.loginUser == null) {
+    //   return;
+    // }
+
     if (this.loginUser == null) {
       this._userService.setUsers(
-        JSON.parse('{"status":1,"errcode":null,"errmsg":null,"uid":1,"fyid":7,"cmpid":2,"ucode":"vivek","lastlogindt":"vivek@gmail.com","rname":null,"rid":null,"fullname":"Vivek Pandey","_sessiondetails":{"sessionid":813}}'));
+        JSON.parse('{"status":1,"errcode":null,"errmsg":null,"uid":2,"fyid":7,"cmpid":3,"ucode":"zaid","lastlogindt":"zaid@gmail.com","rname":null,"rid":null,"fullname":"Zaid Ansari","_sessiondetails":{"sessionid":813}}'));
       this.loginUser = this._userService.getUser();
     }
 
     //set user name 
     this.loginUserName = this.loginUser.fullname;
 
+    //get menues according to loggedin user
+
+    // this.loginUser.uid
+
     this._userService.getMenuHead({ "flag": "", "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(data => {
       var data1 = data.data;
+      console.log(data1);
+
       this.subMenu = data1[2];
       this.parentMenus = data1[1];
       this.menuhead = data1[0];

@@ -30,6 +30,11 @@ const routerConfig =
                                 return comp.default;
                             }),
                         },
+                        {
+                            path:'openingbal', loadChildren: () => System.import('./openingbal').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
                         { path: '', component: WarehouseDashboardComp, canActivateChid: [AuthGuard], },
                     ]
                 }

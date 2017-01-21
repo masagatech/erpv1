@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { VendorviewService } from "../../../../_service/vendor/view/view-service";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 declare var $: any;
@@ -18,8 +20,14 @@ declare var $: any;
     vendorlist: any = [];
     totalRecords: number = 0;
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private venViewServies: VendorviewService, private _autoservice: CommonService) {
+        private venViewServies: VendorviewService, private _autoservice: CommonService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -34,9 +42,10 @@ declare var $: any;
     getVendor(from: number, to: number) {
         var that = this;
         that.venViewServies.getvendor({
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
             "from": from,
-            "to": to
+            "to": to,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             console.log(result);
             that.totalRecords = result.data[1][0].recordstotal;

@@ -2,16 +2,18 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
+import { CommonService } from '../../../../_service/common/common-service'
 import { acgroupadd } from "../../../../_service/acgroup/add/add-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'add.comp.html',
-    providers: [acgroupadd, CommonService]                         //Provides Add Service
-    //,AutoService
+    providers: [acgroupadd, CommonService]
+
 }) export class acadd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -26,14 +28,21 @@ declare var $: any;
     category: any = "";
     remark: any = "";
     appfrom: any = 0;
-    chkall:boolean;
+    chkall: boolean;
     financiallist: any = [];
     private subscribeParameters: any;
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
     //, private _autoservice:AutoService
-    constructor(private setActionButtons: SharedVariableService, private acgroupServies: acgroupadd, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service
+    constructor(private setActionButtons: SharedVariableService, private acgroupServies: acgroupadd,
+        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         //applicable From
         this.getApplicableFrom();
+
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -82,7 +91,8 @@ declare var $: any;
     //Applicable From Bind 
     getApplicableFrom() {
         this.acgroupServies.acApplicableFrom({
-            "flag": ""
+            "flag": "",
+            "createdby":this.loginUser.login
         }).subscribe(data => {
             this.financiallist = data.data;
         }, err => {
@@ -95,7 +105,12 @@ declare var $: any;
     //Auto Completed Nature
     getAutoCompleteNature(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "nature", "search": that.neturname, "CmpCode": "Mtech", "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({ 
+                "type": "nature", 
+                "search": that.neturname, 
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fyid,
+                "createdby":this.loginUser.login }).subscribe(data => {
             $(".neturofgr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -119,23 +134,24 @@ declare var $: any;
         })
     }
 
+    //Edit Account Group
     Editgroup(groupid) {
         this.acgroupServies.acGroupView({
             "flag": "",
             "groupid": groupid,
             "neturid": 0,
-            "cmpid": 1,
-            "fy": 5
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby":this.loginUser.login
         }).subscribe(data => {
             var dataset = data.data;
             this.groupcode = dataset[0].groupcode;
             this.groupName = dataset[0].groupname;
             this.neturname = dataset[0].val;
             this.neturid = dataset[0].natureofg;
-            this.appfrom=dataset[0].appfromedit;
-            if(this.appfrom==0)
-            {
-                this.chkall=true;
+            this.appfrom = dataset[0].appfromedit;
+            if (this.appfrom == 0) {
+                this.chkall = true;
             }
             this.remark = dataset[0].remark;
             //$(".groupcode").focus();
@@ -146,46 +162,44 @@ declare var $: any;
         })
     }
 
+    //Clear All Control
     ClearControll() {
         this.groupcode = "";
         this.groupName = "";
         this.neturname = "";
         this.neturid = 0;
         this.remark = "";
-        this.appfrom="";
-        this.chkall=false;
+        this.appfrom = "";
+        this.chkall = false;
         $(".groupcode").removeAttr('disabled', 'disabled');
         $(".groupcode").focus();
     }
 
-    checkall()
-    {
-        if(this.chkall==undefined)
-        {
-           this.chkall=true; 
+    //Check All 
+    checkall() {
+        if (this.chkall == undefined) {
+            this.chkall = true;
         }
 
-        if(this.chkall==true)
-        {
-            this.appfrom="";
+        if (this.chkall == true) {
+            this.appfrom = "";
         }
     }
 
     //Return Json Param
     JsonParam() {
-        if(this.chkall==true)
-        {
-            this.appfrom=0;
+        if (this.chkall == true) {
+            this.appfrom = 0;
         }
         var Param = {
             "groupid": this.groupid,
             "groupcode": this.groupcode,
             "groupname": this.groupName,
             "parentgr": this.parentgr == "" ? 0 : this.parentgr,
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "applyfrom": this.appfrom,
-            "useridcode": "admin",
+            "createdby": this.loginUser.login,
             "neturid": this.neturid,
             "remark": this.remark,
             "remark1": "remark1",

@@ -5,11 +5,14 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../_service/common/common-service'
 import { attributeService } from "../../../_service/attribute/attr-service";
 import { MessageService, messageType } from '../../../_service/messages/message-service';
+import { UserService } from '../../../_service/user/user-service';
+import { LoginUserModel } from '../../../_model/user_model';
+
 
 declare var $: any;
 @Component({
     templateUrl: 'attview.comp.html',
-    providers: [attributeService, CommonService]                         //Provides Add Service dcmaster-service.ts
+    providers: [attributeService, CommonService]
     //,AutoService
 }) export class attrview implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
@@ -23,10 +26,15 @@ declare var $: any;
     val: any;
     attrgrp: any = 0;
     key: any = "";
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
     constructor(private setActionButtons: SharedVariableService, private attributeServies: attributeService,
-        private _autoservice: CommonService, private _commonservice: CommonService, private _msg: MessageService) { //Inherit Service dcmasterService
+        private _autoservice: CommonService, private _commonservice: CommonService, private _msg: MessageService,
+        private _userService: UserService) {
         this.counter = 0;
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -67,15 +75,15 @@ declare var $: any;
     jsonparam() {
         var Param = {
             "flag": "at",
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "typ": "at",
             "parent": 0,
             "attid": this.attid,
             "attname": this.attName,
             "attgroup": this.attrgrp.split(':')[0],
             "attkey": this.attrgrp.split(':')[1],
-            "createdby": "admin",
+            "createdby": this.loginUser.login,
             "remark1": "",
             "remark2": "",
             "remark3": ""
@@ -85,7 +93,9 @@ declare var $: any;
 
     getAttribute() {
         this.attributeServies.attget({
-            "cmpid": 1
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login,
+            "fy": this.loginUser.login
         }).subscribe(result => {
             this.addNewAttr = result.data;
 
@@ -143,22 +153,14 @@ declare var $: any;
 
     DeleteRow(row) {
         this.attributeServies.attsave({
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "flag": "del",
-            "createdby": "admin",
+            "createdby": this.loginUser.login,
             "isact": row.val,
             "attid": row.autoid
         }).subscribe(result => {
             var dataset = result.data;
-            // if (dataset[0].funsave_attribute.maxid > 0) {
-            //     alert("Data Delete Successfully");
-            // }
-            // else {
-            //     console.log("Error");
-            //     $("#attnam").focus();
-            //     return;
-            // }
         })
     }
 

@@ -6,6 +6,8 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { CustomerAddService } from "../../../../_service/customer/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -68,6 +70,10 @@ declare var $: any;
     adrmodule: string = "";
     accode: string = "";
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
 
 
     allload: any = {
@@ -82,10 +88,12 @@ declare var $: any;
 
     private subscribeParameters: any;
 
+    //Add Servies Refrence
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService) {
+        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "cust";
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -118,11 +126,13 @@ declare var $: any;
         });
     }
 
+    //Get Code Blur Event
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
     }
 
+    //Discount Tab Click Event
     discount() {
         this.disattrname = "";
         this.fromval = "";
@@ -134,9 +144,17 @@ declare var $: any;
 
     }
 
+    //Attribute Auto Extender
     getAutoCompletedisattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.disattrname, "cmpid": 1, "FY": 5, "filter": "Item Attributes" }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.disattrname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "filter": "Item Attributes",
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".disattr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -159,6 +177,7 @@ declare var $: any;
         })
     }
 
+    //Add Attribute Items
     AddNewdisattr() {
         if (this.disattrid > 0) {
             this.Duplicateflag = true;
@@ -281,8 +300,8 @@ declare var $: any;
     getcustomerdrop() {
         var _this = this;
         this.CustAddServies.getCustomerdrop({
-            "cmpid": 1,
-            "createdby": "admin"
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             _this.warehouselist = result.data[0];
             _this.debitlist = result.data[1];
@@ -297,6 +316,7 @@ declare var $: any;
         })
     }
 
+    //First Time Load 
     checkalllead() {
 
         if (this.allload.otherdropdwn) {
@@ -389,7 +409,12 @@ declare var $: any;
     //Edit Customer 
     EditCust(id) {
         var that = this;
-        that.CustAddServies.getcustomer({ "cmpid": 1, "flag": "Edit", "custid": id }).subscribe(result => {
+        that.CustAddServies.getcustomer({
+            "cmpid": this.loginUser.cmpid,
+            "flag": "Edit",
+            "custid": id,
+            "createdby": this.loginUser.login
+        }).subscribe(result => {
             var _custdata = result.data[0][0]._custdata;
             var _uploadedfile = result.data[0][0]._uploadedfile;
             var _docfile = result.data[0][0]._docfile;
@@ -483,7 +508,14 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "cmpid": 1, "FY": 5, "filter": "Item Attributes" }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.attrname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "filter": "Item Attributes",
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".attr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -509,7 +541,13 @@ declare var $: any;
     //Autocompleted Control Center
     getAutoCompleteCtrl(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "ctrl", "search": that.ctrlname, "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "ctrl",
+            "search": that.ctrlname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".ctrl").autocomplete({
                 source: data.data,
                 width: 300,
@@ -548,7 +586,7 @@ declare var $: any;
         }
         this.CustAddServies.getctrldetail({
             "id": this.ctrlid,
-            "cmpid": 1
+            "cmpid": this.loginUser.cmpid
         }).subscribe(result => {
             if (result.data.length > 0) {
                 this.Duplicateflag = true;
@@ -624,10 +662,10 @@ declare var $: any;
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
             "op": this.ope == "" ? 0 : this.ope,
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
             "remark": this.remark,
             "ctrl": this.Ctrljson(),
-            "createdby": "admin",
+            "createdby": this.loginUser.login,
             "adrid": this.adrbookid
         }
         console.log(param);
@@ -703,11 +741,12 @@ declare var $: any;
         }, 100);
     }
 
+    //Warehose Tab Click Bind
     warehouseBind() {
         var that = this;
         that.CustAddServies.getCustomerdrop({
-            "cmpid": 1,
-            "createdby": "admin"
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             that.warehouselist = result.data[0];
         }, err => {

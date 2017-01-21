@@ -6,6 +6,8 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { VendorAddService } from "../../../../_service/vendor/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -48,7 +50,11 @@ declare var $: any;
     docfile: any = [];
     module: string = "";
     uploadedFiles: any = [];
-    accode:string="";
+    accode: string = "";
+
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
     allload: any = {
         "wearhouse": false,
@@ -64,8 +70,9 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private vendorAddServies: VendorAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService) {
+        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "vend";
+         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -97,7 +104,8 @@ declare var $: any;
         });
     }
 
-     Getcode() {
+    //On Blur Event Cust Code
+    Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
     }
@@ -135,6 +143,7 @@ declare var $: any;
 
     }
 
+    //Remove Attribute
     Removeattr(row) {
         var index = -1;
         for (var i = 0; i < this.attrlist.length; i++) {
@@ -154,8 +163,8 @@ declare var $: any;
     getcustomerdrop() {
         var that = this;
         that.vendorAddServies.getVendordrop({
-            "cmpid": 1,
-            "createdby": "admin"
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             that.debitlist = result.data[1];
             that.creditlist = result.data[1];
@@ -169,6 +178,7 @@ declare var $: any;
         })
     }
 
+    //Firs Time Load 
     checkalllead() {
         if (this.allload.otherdropdwn) {
             if (this._editid > 0) {
@@ -266,9 +276,10 @@ declare var $: any;
     EditVen(id) {
         var that = this;
         this.vendorAddServies.getvendor({
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
             "flag": "Edit",
-            "venid": id
+            "venid": id,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             debugger;
             var _venddata = result.data[0][0]._venddata;
@@ -306,7 +317,13 @@ declare var $: any;
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.attrname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".attr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -329,16 +346,6 @@ declare var $: any;
         })
     }
 
-    // attributeid() {
-    //     var attrilist = [];
-    //     for (let items of this.attrlist) {
-    //         attrilist.push({ "attrid": items.value, "attname": items.label })
-    //     }
-    //     console.log(attrilist)
-    //     return attrilist;
-    // }
-
-
     //Paramter Wth Json
     paramterjson() {
         var param = {
@@ -352,9 +359,9 @@ declare var $: any;
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
             "op": this.ope == "" ? 0 : this.ope,
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
             "remark": this.remark,
-            "createdby": "admin",
+            "createdby": this.loginUser.login,
             "adr": this.adrbookid
         }
         return param;
@@ -411,12 +418,15 @@ declare var $: any;
         }
     }
 
+    //Attribute Tab Click 
     Attr() {
         setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
         }, 100);
     }
+
+    //Account Info Tab Click Event
     Acinfo() {
         setTimeout(function () {
             $(".key").val("");

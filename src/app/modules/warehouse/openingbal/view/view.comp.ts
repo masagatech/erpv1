@@ -3,81 +3,75 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { CustomerViewService } from "../../../../_service/customer/view/view-service";
-import { LazyLoadEvent, DataTable } from 'primeng/primeng';
-import { UserService } from '../../../../_service/user/user-service';
-import { LoginUserModel } from '../../../../_model/user_model';
+import { WarViewOpbal } from "../../../../_service/wareopeningbal/view/view-service";
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+
 declare var $: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [CustomerViewService, CommonService]
-    //,AutoService
-}) export class CustView implements OnInit, OnDestroy {
+    providers: [WarViewOpbal, CommonService]
+
+}) export class WareopebalView implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-    customerlist: any = [];
-    totalRecords: number = 0;
 
-    //user details
-    loginUser: LoginUserModel;
-    loginUserName: string;
+    // local veriable 
+    Openinglist: any = [];
+
+
+    private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-    private CustViewServies: CustomerViewService, private _autoservice: CommonService,private _userService: UserService) {
-        this.loginUser = this._userService.getUser();
+        private wareServies: WarViewOpbal, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
     }
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        this.getopeningBal();
     }
 
-    //Get Customer Details
-    getcustomer(from: number, to: number) {
-        var that = this;
-        that.CustViewServies.getcustomer({
-            "cmpid": this.loginUser.cmpid ,
-            "from": from,
-            "to": to,
-            "createdby":this.loginUser.login
+    getopeningBal() {
+        this.wareServies.getopeningstock({
+            "flag": "",
+            "cmpid": 1,
+            "fy": 5
         }).subscribe(result => {
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.customerlist = result.data[0];
+            this.Openinglist = result.data;
         }, err => {
             console.log("Error");
         }, () => {
-            'Final'
+            //console.log("Done");
         });
     }
 
-    //Pagination Grid View 
-    loadRBIGrid(event: LazyLoadEvent) {
-        this.getcustomer(event.first, (event.first + event.rows));
-    }
-
-    //Edit Customer 
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['master/customer/edit', row.autoid]);
-        }
+    EditItem(row: any = []) {
+        console.log(row);
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+        var that = this;
         if (evt === "add") {
-            this._router.navigate(['/master/customer/add']);
+            this._router.navigate(['warehouse/openingbal/add']);
         }
+        //Save Button Click 
         if (evt === "save") {
-            //Save CLick Event
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
-            // alert("edit called");
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
