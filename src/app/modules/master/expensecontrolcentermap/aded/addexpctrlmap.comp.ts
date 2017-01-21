@@ -6,6 +6,8 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for master of master */
 import { ECMService } from "../../../../_service/expensecontrolcentermap/ecm-service" /* add reference for master of master */
 import { MessageService, messageType } from "../../../../_service/messages/message-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 declare var $: any;
 
@@ -17,6 +19,7 @@ declare var $: any;
 export class AddExpenseComp implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
@@ -48,17 +51,18 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     uploadedFiles: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _ecmservice: ECMService, private _message: MessageService) {
+        private _commonservice: CommonService, private _ecmservice: ECMService, private _message: MessageService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.module = "Expense Control Center Mapping";
         this.getCtrlCenter();
     }
 
-    // File Upload
+    // Expense Head Auto
 
     getExpenseAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "expense", "cmpid": 1, "fyid": 5, "search": that.expname }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "expense", "cmpid": 2, "fyid": 5, "search": that.expname }).subscribe(data => {
             $(".expense").autocomplete({
                 source: data.data,
                 width: 300,
@@ -127,48 +131,74 @@ export class AddExpenseComp implements OnInit, OnDestroy {
 
     // save expense
 
+    getCCMapping() {
+        var ccMapDT = [];
+        var ccitem = null;
+        var chkispc: boolean = false;
+        var chkiscc: boolean = false;
+
+        for (var i = 0; i <= this.ctrlcentermapDT.length - 1; i++) {
+            ccitem = null;
+            ccitem = this.ctrlcentermapDT[i];
+
+            if (ccitem !== null) {
+                $("#pc" + ccitem.ctrlcenterid).find("input[type=checkbox]").each(function () {
+                    chkispc = (this.checked ? true : false);
+                });
+
+                $("#cc" + ccitem.ctrlcenterid).find("input[type=checkbox]").each(function () {
+                    chkiscc = (this.checked ? true : false);
+                });
+
+                ccMapDT.push({ "ccid": ccitem.ctrlcenterid, "ispc": chkispc, "iscc": chkiscc });
+            }
+        }
+
+        return ccMapDT;
+    }
+
     saveExpenseCtrlMap() {
         var that = this;
-        var ccmapDT = [];
 
-        for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
-            var chkispc = that.ctrlcentermapDT[i].isprofitcenter;
-            var chkiscc = that.ctrlcentermapDT[i].iscostcenter;
-
-            if ((chkispc === true) || (chkiscc === true)) {
-                ccmapDT.push({ "ccid": that.ctrlcentermapDT[i].ctrlcenterid, "ispc": chkispc, "iscc": chkiscc });
-            }
+        if (that.docdate === "") {
+            that._message.Show(messageType.warn, "Warning", "Please Enter Doc Date");
         }
-
-        var saveExpense = {
-            "autoid": that.autoid,
-            "cmpid": 2,
-            "fyid": 7,
-            "docdate": that.docdate,
-            "expid": that.expid,
-            "iscmplevel": that.iscmplevel,
-            "isemplevel": that.isemplevel,
-            "ctrlcentermap": ccmapDT,
-            "narration": that.narration,
-            "createdby": "1:admin",
-            "docfile": that.docfile
+        else if (that.expid === 0) {
+            that._message.Show(messageType.warn, "Warning", "Please Select Expense");
         }
+        else {
+            this._message.confirm("Are you sure that you want to save?", () => {
+                var saveExpense = {
+                    "autoid": that.autoid,
+                    "cmpid": that.loginUser.cmpid,
+                    "fyid": that.loginUser.fyid,
+                    "docdate": that.docdate,
+                    "expid": that.expid,
+                    "iscmplevel": that.iscmplevel,
+                    "isemplevel": that.isemplevel,
+                    "ctrlcentermap": that.getCCMapping(),
+                    "narration": that.narration,
+                    "createdby": "1:admin",
+                    "docfile": that.docfile
+                }
 
-        that._ecmservice.saveExpenseCtrlMap(saveExpense).subscribe(data => {
-            var dataResult = data.data;
+                that._ecmservice.saveExpenseCtrlMap(saveExpense).subscribe(data => {
+                    var dataResult = data.data;
 
-            if (dataResult[0].funsave_expensectrlmap.msgid != "-1") {
-                that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensectrlmap.msg.toString());
-                that._router.navigate(["/master/expensecontrolcentermap"]);
-            }
-            else {
-                that._message.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg.toString());
-            }
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
+                    if (dataResult[0].funsave_expensectrlmap.msgid != "-1") {
+                        that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensectrlmap.msg.toString());
+                        that._router.navigate(["/master/expensecontrolcentermap"]);
+                    }
+                    else {
+                        that._message.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg.toString());
+                    }
+                }, err => {
+                    console.log(err);
+                }, () => {
+                    // console.log("Complete");
+                });
+            });
+        }
     }
 
     // add expense details
@@ -176,7 +206,10 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     getCtrlCenter() {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "ctrl", "cmpid": 1, "fy": 5, "search": "" }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "ctrl", "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fyid, "search": ""
+        }).subscribe(data => {
             that.ctrlcenterDT = data.data;
 
             for (var i = 0; i < that.ctrlcenterDT.length; i++) {
@@ -197,7 +230,10 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     getExpenseCtrlMap(expid: number) {
         var that = this;
 
-        this._ecmservice.getExpenseCtrlMap({ "flag": "id", "cmpid": "2", "fyid": "7", "expid": expid }).subscribe(data => {
+        this._ecmservice.getExpenseCtrlMap({
+            "flag": "id", "cmpid": that.loginUser.cmpid,
+            "fyid": that.loginUser.fyid, "expid": expid
+        }).subscribe(data => {
             var dataresult = data.data;
 
             var _ecmdata = dataresult[0]._ecmdata;
@@ -254,9 +290,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._message.confirm("Are you sure that you want to save?", () => {
-                this.saveExpenseCtrlMap();
-            });
+            this.saveExpenseCtrlMap();
         }
     }
 

@@ -67,12 +67,12 @@
                                 {{row.ctrlcentername}}
                             </td>
                             <td class="text-center">
-                                <label class="allpc">
+                                <label class="allpc" id="pc{{row.ctrlcenterid}}">
                                     <input type="checkbox" [(ngModel)]="row.isprofitcenter" />
                                 </label>
                             </td>
                             <td class="text-center">
-                                <label class="allcc">
+                                <label class="allcc" id="cc{{row.ctrlcenterid}}">
                                     <input type="checkbox" [(ngModel)]="row.iscostcenter" />
                                 </label>
                             </td>
