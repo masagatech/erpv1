@@ -49,6 +49,12 @@ const routerConfig = [
             }),
           },
 
+          {
+            path: 'expensebudget', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
