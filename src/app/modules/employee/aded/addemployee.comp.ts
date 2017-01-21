@@ -375,20 +375,17 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    addnewtabs() {
-        var i = 0;
-        var nextTab = $('#tabs li').length + 1;
+    addNewTabs() {
+        this.tabListDT.push({ "fldcode": this.fldname, "fldname": this.fldname });
 
-        // $('<li><a href="#tab' + nextTab + '" data-toggle="tab">' +
-        //     '<input type="text" [(ngModel)]="tab' + nextTab + '" class="form-control input-sm" size="20" />' +
-        // '</a></li>').appendTo('#tabs');
-        //$('<div class="tab-pane" id="tab' + nextTab + '">tab' + nextTab + ' content</div>').appendTo('.tab-content');
-
-        $('<li><a href="#tab' + nextTab + '" data-toggle="tab">' +
-            '<input type="text" [(ngModel)]="fldname" class="form-control input-sm" (keyup.tab)=saveDynamicFields() (keyup.enter)="saveDynamicFields()" size="20" />' +
-            '</a></li>').appendTo('#tabs');
+        for (var i = 0; i < this.tabListDT.length; i++) {
+            $('<li><a href="#' + this.tabListDT[0].fldcode + '" data-toggle="tab">' + this.tabListDT[0].fldname + '</a></li>').appendTo('#tabs');
+            //$('<div class="tab-pane" id="' + that.tabListDT[i].fldcode + '"></div>').appendTo('.tab-content');
+        }
 
         $('#tabs a:last').tab('show');
+        this.fldname = "";
+        $('#myModal').modal('hide');
     }
 
     getDynamicFields() {
@@ -396,13 +393,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
         that._dynfldserive.getDynamicFields({ "module": "Employee", "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid }).subscribe(data => {
             that.tabListDT = data.data;
-
-            for (var i = 0; i < that.tabListDT.length; i++) {
-                $('<li><a href="#' + that.tabListDT[i].fldcode + '" data-toggle="tab">' + that.tabListDT[i].fldname + '</a></li>').appendTo('#tabs');
-                //$('<div class="tab-pane" id="' + that.tabListDT[i].fldcode + '"></div>').appendTo('.tab-content');
-            }
-
-            $('#tabs a:first').tab('show');
         }, err => {
             console.log(err);
         }, () => {
@@ -429,7 +419,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             if (dataResult[0].funsave_dynamicfields.msgid != "-1") {
                 var msg = dataResult[0].funsave_dynamicfields.msg;
                 that._msg.Show(messageType.success, "Success", msg);
-                $('#myModal').modal('hide');
             }
             else {
                 var msg = dataResult[0].funsave_dynamicfields.msg;
