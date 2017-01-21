@@ -23,8 +23,8 @@ import { Subscription } from 'rxjs/Subscription';
 
 export class AppComponent {
   angularclassLogo = 'assets/img/angularclass-avatar.png';
-  name = 'Angular 2 Webpack Starter';
-  url = 'https://twitter.com/AngularClass';
+  name = 'ERP V1.0';
+  url = '';
   subscription: Subscription;
   messagestack: Message[] = [];
 
