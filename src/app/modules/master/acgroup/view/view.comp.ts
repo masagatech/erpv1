@@ -30,6 +30,7 @@ declare var $: any;
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private acgroupServies: acgroupview, private _autoservice: CommonService,
         private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {

@@ -69,6 +69,8 @@ declare var $: any;
     adrcsvid: any = "";
     adrmodule: string = "";
     accode: string = "";
+    acinfiid: any = 0;
+    acinfival: any = "";
 
     //user details
     loginUser: LoginUserModel;
@@ -330,7 +332,7 @@ declare var $: any;
     //Add Accounting Row
     AddNewKyeval() {
         var that = this;
-        if (that.key == "") {
+        if (that.acinfiid == 0) {
             that._msg.Show(messageType.info, "info", "Please enter key");
             $(".key").focus()
             return;
@@ -349,7 +351,8 @@ declare var $: any;
         }
         if (that.Duplicateflag == true) {
             that.keyvallist.push({
-                'key': that.key,
+                'key': that.acinfival,
+                'keyid':that.acinfiid,
                 'value': that.value
             });
             that.key = "";
@@ -570,6 +573,39 @@ declare var $: any;
         })
     }
 
+    //Autocompleted Control Center
+    getAutoCompletekey(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.acinfival,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "filter": "Account Attribute",
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".key").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.acinfiid = ui.item.value;
+                    me.acinfival = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     Ctrl() {
         setTimeout(function () {
             $(".ctrl").val("");
@@ -748,7 +784,13 @@ declare var $: any;
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login
         }).subscribe(result => {
-            that.warehouselist = result.data[0];
+            if (result.data[0].length > 0) {
+                that.warehouselist = result.data[0];
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "No warehouse found");
+            }
+
         }, err => {
             console.log("Error");
         }, () => {

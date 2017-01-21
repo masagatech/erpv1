@@ -20,18 +20,25 @@
 				</div>
 			</div>
 		</div>
+	</div>
+</div>
+<div class="panel panel-theme">
+	<div class="panel-body">
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-target="#adr" role="button" data-toggle="tab">Contact Details</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
 		</ul>
-		<br/>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
-				<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
+				<div class="row">
+					<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
+				</div>
 			</div>
 			<div class="tab-pane" id="docup">
-				<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-					(onComplete)="onUploadComplete($event)"></fileupload>
+				<div class="row">
+					<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+						(onComplete)="onUploadComplete($event)"></fileupload>
+				</div>
 			</div>
 		</div>
 	</div>
