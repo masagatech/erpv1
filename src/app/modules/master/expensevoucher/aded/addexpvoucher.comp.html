@@ -4,31 +4,9 @@
             <h3 class="panel-title">Expense Voucher</h3>
         </div>
         <div class="panel-body">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="row">
-                    <div class="col-xs-6 col-sm-4 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">Controlling Center</label>
-                            <select [(ngModel)]="ctrlcenter" class="form-control">
-                                <option [value]="''">Select Controlling Center</option>
-                                <option *ngFor="let row of ctrlcenterDT" [value]="row.key">
-                                    {{row.val}}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-4 col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">Employee Name</label>
-                            <select [(ngModel)]="employee" class="form-control">
-                                <option [value]="''">Select Employee Name</option>
-                                <option *ngFor="let row of employeeDT" [value]="row.key">
-                                    {{row.val}}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-4 col-md-4">
+                    <div class="col-xs-6 col-sm-8 col-md-8">
                         <div class="form-group">
                             <label class="control-label">Period</label>
                             <select [(ngModel)]="period" class="form-control">
@@ -38,92 +16,128 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-3 col-md-3">
-                        <div class="form-group">
-                            <label class="control-label">Expense Head</label>
-                            <select [(ngModel)]="exphead" class="form-control">
-                                <option [value]="''">Select Expense Head</option>
-                                <option *ngFor="let row of expheadDT" [value]="row.key">
-                                    {{row.val}}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-3 col-md-2">
-                        <div class="form-group">
-                            <label class="control-label">Amount</label>
-                            <input type="number" [(ngModel)]="amount" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-3 col-md-2">
+                    <div class="col-xs-6 col-sm-8 col-md-4">
                         <div class="form-group">
                             <label class="control-label">No of Docs.</label>
                             <input type="number" [(ngModel)]="noofdocs" class="form-control" />
                         </div>
                     </div>
-                    <div class="col-xs-6 col-sm-3 col-md-5">
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
-                            <label class="control-label">Narration</label>
-                            <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                            <label class="control-label">Control Center</label>
+                            <select id="ccid" name="ccid" [(ngModel)]="ctrlcenterid" class="form-control" (ngModelChange)="fillEmployeeDDL();">
+                                <option [value]="0">Select Control Center</option>
+                                <option *ngFor="let row of ctrlcenterDT" [value]="row.ctrlcenterid">
+                                    {{row.ctrlcentername}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Expense For</label>
+                            <select id="empid" name="empid" [(ngModel)]="empid" class="form-control" (ngModelChange)="fillExpenseHeadDDL();">
+                                <option [value]="0">Select Expense For</option>
+                                <option *ngFor="let row of employeeDT" [value]="row.empid">
+                                    {{row.empname}}
+                                </option>
+                                <option [value]="-1">Cost Center Expense</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-8">
-                    </div>
-                    <div class="col-md-4" *ngIf="isadd_edit">
-                        <button type="button" class="btn btn-theme btn-sm" (click)="addExpenseVoucher()">Add</button>
-                    </div>
-                    <div class="col-md-4" *ngIf="!isadd_edit">
-                        <button type="button" class="btn btn-theme btn-sm" (click)="updateExpenseVoucher()">Update</button>
-                        <button type="button" class="btn btn-theme btn-sm" (click)="clearExpenseVoucher()">Cancel</button>
-                    </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Narration</label>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
                 </div>
             </div>
         </div>
-        <div class="panel-body" *ngIf="expensevoucherDT.length">
-            <div class="col-md-12">
+        <div class="panel-body">
+            <div class="col-md-8">
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th></th>
-                            <th>Controlling Center</th>
-                            <th>Emp Name</th>
+                            <th width="10px"></th>
                             <th>Expense Head</th>
-                            <th>Amount</th>
-                            <th>No Of Docs</th>
-                            <th></th>
+                            <th width="120px">Amount</th>
+                            <th width="20px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of expensevoucherDT let i=index">
-                            <td>{{i + 1}}</td>
+                        <tr *ngFor="let row of expenseheadDT let i=index">
+                            <td width="10px">{{i + 1}}</td>
                             <td>
-                                {{row.ctrlcentername}}
+                                <select [(ngModel)]="row.expheadid" class="form-control">
+                                    <option [value]="''">Select Expense Head</option>
+                                    <option *ngFor="let row of expheadDT" [value]="row.expheadid">
+                                        {{row.expheadname}}
+                                    </option>
+                                </select>
                             </td>
-                            <td>
-                                {{row.empname}}
+                            <td width="120px">
+                                <input type="number" [(ngModel)]="row.amount" class="form-control" />
                             </td>
-                            <td>
-                                {{row.expheadname}}
-                            </td>
-                            <td>
-                                {{row.amount}}
-                            </td>
-                            <td>
-                                {{row.noofdocs}}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-theme btn-sm fa fa-edit" (click)="editExpenseVoucher(row)"></button>
+                            <td width="20px">
                                 <button type="button" class="btn btn-theme btn-sm fa fa-trash" (click)="deleteExpenseVoucher(row)"></button>
                             </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td width="10px">#</td>
+                            <td>
+                                <select [(ngModel)]="expheadid" class="form-control">
+                                    <option [value]="0">Select Expense Head</option>
+                                    <option *ngFor="let row of expheadDT" [value]="row.expheadid">
+                                        {{row.expheadname}}
+                                    </option>
+                                </select>
+                            </td>
+                            <td width="120px">
+                                <input type="number" [(ngModel)]="amount" class="form-control" />
+                            </td>
+                            <td width="20px">
+                                <button type="button" class="btn btn-theme btn-sm fa fa-plus" (click)="addExpenseVoucher()"></button>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
+        <!--<div class="col-md-8">
+            <div class="row">
+                <div class="col-xs-6 col-sm-3 col-md-3">
+                    <div class="form-group">
+                        <label class="control-label">Expense Head</label>
+
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3 col-md-2">
+                    <div class="form-group">
+                        <label class="control-label">Amount</label>
+                        
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3 col-md-5">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                </div>
+                <div class="col-md-4" *ngIf="isadd_edit">
+                    <button type="button" class="btn btn-theme btn-sm" (click)="addExpenseVoucher()">Add</button>
+                </div>
+                <div class="col-md-4" *ngIf="!isadd_edit">
+                    <button type="button" class="btn btn-theme btn-sm" (click)="updateExpenseVoucher()">Update</button>
+                    <button type="button" class="btn btn-theme btn-sm" (click)="clearExpenseVoucher()">Cancel</button>
+                </div>
+            </div>
+        </div>-->
     </div>
 </div>
 <div class="sidepan">
@@ -139,8 +153,8 @@
         </div>
     </div>
 
-    <!--<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-        (onComplete)="onUploadComplete($event)"></fileupload>-->
+    <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+        (onComplete)="onUploadComplete($event)"></fileupload>
 
     <div class="panel panel-theme">
         <div class="panel-heading">

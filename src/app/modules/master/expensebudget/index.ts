@@ -1,8 +1,8 @@
 import { NgModule, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
-import { AddExpenseVocuherComp } from './aded/addexpvoucher.comp';
-import { ViewExpenseVoucherComp } from './view/viewexpvoucher.comp';
+import { AddExpenseBudgetComp } from './aded/addexpbudget.comp';
+//import { ViewExpenseBudgetComp } from './view/viewexpbudget.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module'
 import { FilterByPipe } from '../../../_pipe/filterby.pipe';
@@ -15,7 +15,7 @@ import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
     template: '<router-outlet></router-outlet>'
 })
 
-export class ExpenseVoucherComp implements OnInit {
+export class ExpenseBudgetComp implements OnInit {
     constructor() {
     }
 
@@ -26,15 +26,15 @@ export class ExpenseVoucherComp implements OnInit {
 const routerConfig = [
     {
         path: '',
-        component: ExpenseVoucherComp,
+        component: ExpenseBudgetComp,
         canActivate: [AuthGuard],
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddExpenseVocuherComp, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:docno', component: AddExpenseVocuherComp, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewExpenseVoucherComp, canActivateChid: [AuthGuard], },
+                    { path: '', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:docno', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], },
+                    //{ path: '', component: ViewExpenseBudgetComp, canActivateChid: [AuthGuard], },
                 ]
             }
         ]
@@ -45,9 +45,9 @@ const routerConfig = [
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
         DataTableModule],
     declarations: [
-        AddExpenseVocuherComp,
-        ViewExpenseVoucherComp,
-        ExpenseVoucherComp,
+        AddExpenseBudgetComp,
+        //ViewExpenseBudgetComp,
+        ExpenseBudgetComp,
         FilterByPipe
     ],
     providers: [AuthGuard]

@@ -39,6 +39,10 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     ctrlcentermapDT: any = [];
     ctrlcenterDT: any = [];
 
+    isselectall: boolean = false;
+    isselectpc: boolean = false;
+    isselectcc: boolean = false;
+
     module: string = "";
     docfile: any = [];
     uploadedFiles: any = [];
@@ -55,7 +59,6 @@ export class AddExpenseComp implements OnInit, OnDestroy {
         var that = this;
 
         that._commonservice.getAutoData({ "type": "expense", "cmpid": 1, "fyid": 5, "search": that.expname }).subscribe(data => {
-            //debugger;
             $(".expense").autocomplete({
                 source: data.data,
                 width: 300,
@@ -69,6 +72,8 @@ export class AddExpenseComp implements OnInit, OnDestroy {
                 select: function (event, ui) {
                     me.expid = ui.item.value;
                     me.expname = ui.item.label;
+
+                    that.getExpenseCtrlMap(me.expid);
                 }
             });
 
@@ -91,12 +96,49 @@ export class AddExpenseComp implements OnInit, OnDestroy {
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
+    selectAllCheckbox() {
+        if (this.isselectall === true) {
+            $(".allpc input[type=checkbox]").prop('checked', false);
+            $(".allcc input[type=checkbox]").prop('checked', false);
+        }
+        else {
+            $(".allpc input[type=checkbox]").prop('checked', true);
+            $(".allcc input[type=checkbox]").prop('checked', true);
+        }
+    }
+
+    selectAllPC() {
+        if (this.isselectpc === true) {
+            $(".allpc input[type=checkbox]").prop('checked', false);
+        }
+        else {
+            $(".allpc input[type=checkbox]").prop('checked', true);
+        }
+    }
+
+    selectAllCC() {
+        if (this.isselectcc === true) {
+            $(".allcc input[type=checkbox]").prop('checked', false);
+        }
+        else {
+            $(".allcc input[type=checkbox]").prop('checked', true);
+        }
+    }
+
     // save expense
 
     saveExpenseCtrlMap() {
         var that = this;
+        var ccmapDT = [];
 
-        console.log("expid : " + that.expid);
+        for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
+            var chkispc = that.ctrlcentermapDT[i].isprofitcenter;
+            var chkiscc = that.ctrlcentermapDT[i].iscostcenter;
+
+            if ((chkispc === true) || (chkiscc === true)) {
+                ccmapDT.push({ "ccid": that.ctrlcentermapDT[i].ctrlcenterid, "ispc": chkispc, "iscc": chkiscc });
+            }
+        }
 
         var saveExpense = {
             "autoid": that.autoid,
@@ -106,7 +148,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
             "expid": that.expid,
             "iscmplevel": that.iscmplevel,
             "isemplevel": that.isemplevel,
-            "ctrlcentermap": that.ctrlcentermapDT,
+            "ctrlcentermap": ccmapDT,
             "narration": that.narration,
             "createdby": "1:admin",
             "docfile": that.docfile
@@ -120,7 +162,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
                 that._router.navigate(["/master/expensecontrolcentermap"]);
             }
             else {
-                alert("Error");
+                that._message.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg.toString());
             }
         }, err => {
             console.log(err);
@@ -152,10 +194,10 @@ export class AddExpenseComp implements OnInit, OnDestroy {
         })
     }
 
-    getExpenseCtrlMap(pautoid: number) {
+    getExpenseCtrlMap(expid: number) {
         var that = this;
 
-        this._ecmservice.getExpenseCtrlMap({ "flag": "id", "cmpid":"2", "fyid":"7", "autoid": pautoid }).subscribe(data => {
+        this._ecmservice.getExpenseCtrlMap({ "flag": "id", "cmpid": "2", "fyid": "7", "expid": expid }).subscribe(data => {
             var dataresult = data.data;
 
             var _ecmdata = dataresult[0]._ecmdata;
@@ -169,7 +211,19 @@ export class AddExpenseComp implements OnInit, OnDestroy {
             that.isemplevel = _ecmdata[0].isemplevel;
             that.narration = _ecmdata[0].narration;
 
-            that.ctrlcentermapDT = _ecmdata[0].ctrlcentermap;
+            var existsccid, newccid;
+
+            for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
+                for (var j = 0; j < _ecmdata[0].ctrlcentermap.length; j++) {
+                    existsccid = that.ctrlcentermapDT[i].ctrlcenterid;
+                    newccid = _ecmdata[0].ctrlcentermap[j].ccid;
+
+                    if (existsccid === newccid) {
+                        that.ctrlcentermapDT[i].isprofitcenter = _ecmdata[0].ctrlcentermap[j].ispc;
+                        that.ctrlcentermapDT[i].iscostcenter = _ecmdata[0].ctrlcentermap[j].iscc;
+                    }
+                }
+            }
 
             that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
             that.docfile = _docfile == null ? [] : _docfile;
@@ -188,12 +242,12 @@ export class AddExpenseComp implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params["id"] !== undefined) {
-                this.title = "Expesne : Edit";
-                this.autoid = params["id"];
-                this.getExpenseCtrlMap(this.autoid);
+                this.title = "Expesne Control Mapping : Edit";
+                this.expid = params["id"];
+                this.getExpenseCtrlMap(this.expid);
             }
             else {
-                this.title = "Expesne : Add";
+                this.title = "Expesne Control Mapping : Add";
             }
         });
     }

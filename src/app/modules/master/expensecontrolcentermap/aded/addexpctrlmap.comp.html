@@ -36,14 +36,29 @@
                     <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Controlling Center</th>
-                            <th>Profit Center</th>
-                            <th>Cost Center</th>
+                            <th>
+                                <label>
+                                    <input type="checkbox" [(ngModel)]="isselectall" (change)="selectAllCheckbox()" />
+                                    <span>Control Center</span>
+                                </label>
+                            </th>
+                            <th>
+                                <label class="allpc">
+                                    <input type="checkbox" [(ngModel)]="isselectpc" (change)="selectAllPC()" />
+                                    <span>Profit Center</span>
+                                </label>
+                            </th>
+                            <th>
+                                <label class="allcc">
+                                    <input type="checkbox" [(ngModel)]="isselectcc" (change)="selectAllCC()" />
+                                    <span>Cost Center</span>
+                                </label>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,10 +67,14 @@
                                 {{row.ctrlcentername}}
                             </td>
                             <td class="text-center">
-                                <input type="checkbox" [(ngModel)]="row.isprofitcenter" />
+                                <label class="allpc">
+                                    <input type="checkbox" [(ngModel)]="row.isprofitcenter" />
+                                </label>
                             </td>
                             <td class="text-center">
-                                <input type="checkbox" [(ngModel)]="row.iscostcenter" />
+                                <label class="allcc">
+                                    <input type="checkbox" [(ngModel)]="row.iscostcenter" />
+                                </label>
                             </td>
                             <!--<td>
                                 <button type="button" class="btn btn-primary" (click)="NewRowAdd()">Add</button>
