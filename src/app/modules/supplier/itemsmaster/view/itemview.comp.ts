@@ -128,10 +128,11 @@ declare var $: any;
 
     //More Button Click
     expandDetails(row) {
-        row.Details=[];
+        row.attribute=[];
+        row.saleprice=[];
         if (row.issh == 0) {
             row.issh = 1;
-            if (row.Details.length === 0) {
+            if (row.attribute.length === 0) {
                 this.itemViewServies.getItemsMaster({
                     "flag": "Details",
                     "itemsid": row.itemsid,
@@ -139,7 +140,8 @@ declare var $: any;
                     "fy": 5
                 }).subscribe(data => {
                     var dataset = data.data;
-                    row.Details = dataset;
+                    row.attribute = dataset[0]._attributejson;
+                    row.saleprice = dataset[0]._salesjson;
                 }, err => {
                     console.log("Error");
                 }, () => {

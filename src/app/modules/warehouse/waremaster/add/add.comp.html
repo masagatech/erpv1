@@ -1,21 +1,37 @@
 <div class="panel panel-theme">
 	<div class="panel-body">
-		<div class='col-md-6'>
-			<div class='form-group'>
-				<label>Warehouse Name</label>
-				<input type="text" class="form-control warehouse" tabindex="1" [(ngModel)]="name">
+		<div class="row">
+			<div class='col-md-2'>
+				<div class='form-group'>
+					<label>Code</label>
+					<input type="text" class="form-control code" maxlength="15" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
+				</div>
+			</div>
+			<div class='col-md-6'>
+				<div class='form-group'>
+					<label>Warehouse Name</label>
+					<input type="text" class="form-control warehouse" tabindex="2" [(ngModel)]="name">
+				</div>
+			</div>
+			<div class='col-md-8'>
+				<div class='form-group'>
+					<label>Remark</label>
+					<input type="text" class="form-control" tabindex="3" [(ngModel)]="remark">
+				</div>
 			</div>
 		</div>
-		<div class='col-md-2'>
-			<div class='form-group'>
-				<label>Code</label>
-				<input type="text" class="form-control" maxlength="15" tabindex="2" [(ngModel)]="code">
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#adr" role="button" data-toggle="tab">Contact Details</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
+		</ul>
+		<br/>
+		<div class="tab-content">
+			<div class="tab-pane active" id="adr">
+				<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
 			</div>
-		</div>
-		<div class='col-md-8'>
-			<div class='form-group'>
-				<label>Remark</label>
-				<input type="text" class="form-control" tabindex="3" [(ngModel)]="remark">
+			<div class="tab-pane" id="docup">
+				<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+					(onComplete)="onUploadComplete($event)"></fileupload>
 			</div>
 		</div>
 	</div>

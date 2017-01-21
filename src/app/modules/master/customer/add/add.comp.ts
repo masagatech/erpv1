@@ -50,6 +50,13 @@ declare var $: any;
     ctrlhide: boolean = true;
     profflag: boolean = true;
     constflag: boolean = true;
+    disattrlist: any = [];
+    disattrname: any = "";
+    disattrid: any = 0;
+    fromval: any = 0;
+    toval: any = 0;
+    dis: any = 0;
+
 
     //Other Module Declare
     adrbookid: any = [];
@@ -60,6 +67,7 @@ declare var $: any;
     adrcsvid: any = "";
     adrmodule: string = "";
     accode: string = "";
+
 
 
     allload: any = {
@@ -113,6 +121,96 @@ declare var $: any;
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+    }
+
+    discount() {
+        this.disattrname = "";
+        this.fromval = "";
+        this.toval = "";
+        this.dis = "";
+        setTimeout(function () {
+            $(".disattr").focus();
+        }, 100);
+
+    }
+
+    getAutoCompletedisattr(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.disattrname, "cmpid": 1, "FY": 5, "filter": "Item Attributes" }).subscribe(data => {
+            $(".disattr").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.disattrid = ui.item.value;
+                    me.disattrname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
+    AddNewdisattr() {
+        if (this.disattrid > 0) {
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.disattrlist.length; i++) {
+                if (this.disattrlist[i].disattrname == this.disattrname) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.disattrlist.push({
+                    'disattrname': this.disattrname,
+                    'id': this.disattrid,
+                    'fromval': this.fromval,
+                    'toval': this.toval,
+                    'dis': this.dis
+                });
+                this.disattrname = "";
+                this.fromval = "";
+                this.disattrid = 0;
+                this.toval = "";
+                this.dis = "";
+                $(".disattr").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                $(".disattr").focus();
+                return;
+            }
+
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            $(".disattr").focus();
+            return;
+        }
+    }
+
+    //Remove Attribute
+    disRemoveattr(row) {
+        var index = -1;
+        for (var i = 0; i < this.disattrlist.length; i++) {
+            if (this.disattrlist[i].disattrname === row.disattrname) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.disattrlist.splice(index, 1);
+        $(".attr").focus();
     }
 
     //attribute list Add Div
@@ -278,6 +376,8 @@ declare var $: any;
         this.warehouselist = [];
         this.keyvallist = [];
         this.adrbookid = [];
+        this.attrlist = [];
+        this.disattrlist = [];
         this.debit = 0;
         this.credit = 0;
         this.days = 0;
@@ -367,10 +467,23 @@ declare var $: any;
         return Ctrllistdet;
     }
 
+    //Create a Json in controll
+    discountjson() {
+        var dislist = [];
+        for (let item of this.disattrlist) {
+            dislist.push({
+                "id": item.id, "from": item.fromval,
+                "to": item.toval, "dis": item.dis
+            });
+        }
+        console.log(dislist);
+        return dislist;
+    }
+
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "cmpid": 1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "attribute", "search": that.attrname, "cmpid": 1, "FY": 5, "filter": "Item Attributes" }).subscribe(data => {
             $(".attr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -504,6 +617,7 @@ declare var $: any;
             "custname": this.Custname,
             "warehouse": this.warehousejson(),
             "keyval": this.keyvallist,
+            "dis": this.discountjson(),
             "attr": this.attrlist,
             "docfile": this.docfile,
             "days": this.days == "" ? 0 : this.days,

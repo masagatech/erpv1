@@ -15,5 +15,10 @@ export class ItemAddService {
     {
         return this._dataserver.post("getItemsMaster",req);
     }
+
+    getdorpdown(req:any)
+    {
+        return this._dataserver.post("getdoprodwn",req);
+    }
     
 }

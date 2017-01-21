@@ -17,15 +17,14 @@ declare var $: any;
     subscr_actionbarevt: Subscription;
 
     // local veriable 
-    name: any = "";
-    code: any = "";
-    remark: any = "";
     wareid: any = 0;
+    warename: any = "";
+    warehousedetails: any = [];
     private subscribeParameters: any;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, 
-    private wareServies: WarehouseViewService, private _autoservice: CommonService, 
-    private _routeParams: ActivatedRoute) { //Inherit Service
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private wareServies: WarehouseViewService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute) { //Inherit Service
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -37,11 +36,79 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    // EditItem(row) {
-    //     if (!row.islocked) {
-    //         this._router.navigate(['/warehouse/warehousestock/edit', row.id]);
-    //     }
-    // }
+    //get button click event
+    getWarehouse() {
+        this.wareServies.getwarehouseTransfer({
+            "cmpid": 1,
+            "fy": 5
+        }).subscribe(result => {
+            console.log(result.data);
+            this.warehousedetails = result.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    expandDetails(row)
+    {
+        //  row.attribute=[];
+        // row.saleprice=[];
+        // if (row.issh == 0) {
+        //     row.issh = 1;
+        //     if (row.attribute.length === 0) {
+        //         this.itemViewServies.getItemsMaster({
+        //             "flag": "Details",
+        //             "itemsid": row.itemsid,
+        //             "cmpid": 1,
+        //             "fy": 5
+        //         }).subscribe(data => {
+        //             var dataset = data.data;
+        //             row.attribute = dataset[0]._attributejson;
+        //             row.saleprice = dataset[0]._salesjson;
+        //         }, err => {
+        //             console.log("Error");
+        //         }, () => {
+        //             // console.log("Complete");
+        //         })
+        //     }
+        // } else {
+        //     row.issh = 0;
+        // }
+    }
+
+    //From Warehouse
+    getwarehouse(me: any) {
+        var _me = this;
+        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.warename }).subscribe(data => {
+            $(".ware").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.wareid = ui.item.value;
+                    me.warename = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    EditItem(row) {
+        if (!row.islocked) {
+            this._router.navigate(['/warehouse/warestock/edit', row.docno]);
+        }
+    }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {

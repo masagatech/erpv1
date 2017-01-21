@@ -6,4 +6,8 @@ import { Router } from '@angular/router';
 export class WarehouseViewService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
+    getwarehouseTransfer(req: any) {
+        return this._dataserver.post("getwarehouseTransfer", req);
+    }
+
 }

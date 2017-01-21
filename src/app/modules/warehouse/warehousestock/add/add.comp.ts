@@ -4,6 +4,7 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { WarehouseAddService } from "../../../../_service/warehousestock/add/add-service";
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -18,14 +19,14 @@ declare var $: any;
 
     // local veriable 
     qty: number = 0;
-    docno:number=0;
+    docno: number = 0;
     NewItemsName: any = "";
     NewItemsid: any = 0;
     itemsname: any = '';
     itemsid: any = 0;
     counter: number = 0;
     remark: any = "";
-    rem:any="";
+    rem: any = "";
     Duplicateflag: boolean;
     ItemsfilteredList: any = [];
     newAddRow: any = [];
@@ -34,11 +35,16 @@ declare var $: any;
     Towarname: any = "";
     Towarid: number = 0;
     editadd: number = 0;
+    rate: any = 0;
+    amt: any = 0;
+    ratelist: any = [];
+    ratelistnew: any = [];
+    newrate: any = 0;
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private wareServies: WarehouseAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -49,20 +55,44 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".from").focus();
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.docno = params['id'];
+                this.editMode(this.docno);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+
+            }
+            else {
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+        });
     }
 
     // //Selected Items
-    ItemsSelected(val) {
+    ItemsSelected(val, flag) {
         if (val != "") {
-            this.wareServies.getItemsAutoCompleted({
+            this.wareServies.getwarehouseTransfer({
                 "cmpid": 1,
                 "fy": 5,
+                "flag": "salesdrop",
                 "itemsid": val,
                 "createdby": ""
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
-                this.qty = ItemsResult[0].qty;
-                this.ItemsfilteredList = [];
+                //this.qty = ItemsResult[0].qty;
+                if (flag == 1) {
+                    this.ratelist = ItemsResult[0].sales;
+                }
+                else {
+                    this.ratelistnew = ItemsResult[0].sales;
+                }
                 //}
             }, err => {
                 console.log("Error");
@@ -75,7 +105,13 @@ declare var $: any;
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "CatProdName", "search": arg == 0 ? me.NewItemsName : me.itemsname }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "warehouseTrasnfer",
+            "search": arg == 0 ? me.NewItemsName : me.itemsname,
+            "cmpid": 1,
+            "fy": 5,
+            "warehouse": this.fromwareid
+        }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -90,12 +126,12 @@ declare var $: any;
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
-                        _me.ItemsSelected(me.Itemsid);
+                        _me.ItemsSelected(me.Itemsid, 1);
                         me.editadd = 1;
                     } else {
                         me.NewItemsName = ui.item.label;
                         me.NewItemsid = ui.item.value;
-                        _me.ItemsSelected(me.NewItemsid);
+                        _me.ItemsSelected(me.NewItemsid, 0);
                         me.editadd = 0;
                     }
                 }
@@ -107,9 +143,10 @@ declare var $: any;
         })
     }
 
+    //From Warehouse
     getAutoCompleteWareFrom(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": _me.fromwarname }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.fromwarname }).subscribe(data => {
             $(".from").autocomplete({
                 source: data.data,
                 width: 300,
@@ -132,9 +169,10 @@ declare var $: any;
         })
     }
 
+    //To Warehouse
     getAutoCompleteWareTO(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": _me.Towarname }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.Towarname }).subscribe(data => {
             $(".to").autocomplete({
                 source: data.data,
                 width: 300,
@@ -162,44 +200,58 @@ declare var $: any;
         var that = this;
         if (that.editadd == 1) {
             if (that.itemsname == '' || that.itemsname == undefined) {
-                alert('Please Enter items Name');
+                this._msg.Show(messageType.info, "info", "Please Enter items Name");
                 return;
             }
         }
         else {
             if (that.NewItemsName == '' || that.NewItemsName == undefined) {
-                alert('Please Enter items Name');
+                this._msg.Show(messageType.info, "info", "Please Enter items Name");
+                $(".ProdName").focus();
                 return;
             }
         }
 
+        if (this.fromwarname == this.Towarname) {
+            this._msg.Show(messageType.info, "info", "Warehouse from and to same");
+            $(".to").focus();
+            return;
+        }
+
         if (that.qty == 0 || that.qty == undefined) {
-            alert('Please Enter Quntity');
+            this._msg.Show(messageType.info, "info", "Please Enter Quntity");
+            $(".qty").focus();
             return;
         }
         that.Duplicateflag = true;
         for (var i = 0; i < that.newAddRow.length; i++) {
-            if (that.newAddRow[i].ItemsName == that.itemsname) {
+            if (that.newAddRow[i].itemsname == that.NewItemsName) {
                 that.Duplicateflag = false;
                 break;
             }
         }
         if (that.Duplicateflag == true) {
+            debugger;
             if (that.editadd == 1) {
                 that.newAddRow.push({
                     "autoid": 0,
                     'itemsname': that.itemsname,
                     "itemsid": that.itemsid,
                     'qty': that.qty,
+                    'rate': that.rate,
+                    'amt': that.amt,
                     'remark': that.remark,
                     'counter': that.counter
                 });
+                that.rate = "";
             }
             else {
                 that.newAddRow.push({
                     "autoid": 0,
                     'itemsname': that.NewItemsName,
                     "itemsid": that.NewItemsid,
+                    'newrate': that.newrate,
+                    'amt': that.amt,
                     'qty': that.qty,
                     'remark': that.remark,
                     'counter': that.counter
@@ -210,11 +262,13 @@ declare var $: any;
             that.itemsname = "";
             that.NewItemsName = "";
             that.qty = 0;
+            that.newrate = "";
+            that.amt = "";
             that.remark = "";
             $("#foot_custname").focus();
         }
         else {
-            alert('Duplicate Item');
+            this._msg.Show(messageType.info, "info", "Duplicate Items");
             return;
         }
 
@@ -236,20 +290,58 @@ declare var $: any;
         $("#foot_custname").focus();
     }
 
+    editMode(docno) {
+        this.wareServies.getwarehouseTransfer({
+            "flag": "edit",
+            "cmpid": 1,
+            "fy": 5,
+            "docno": docno
+        }).subscribe(result => {
+            this.fromwarname = result.data[0].fromware;
+            this.fromwareid = result.data[0].fromid;
+            this.Towarname = result.data[0].toware;
+            this.Towarid = result.data[0].toid;
+            this.rem = result.data[0].remark;
+            this.newAddRow = result.data[0].details;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    createItemsjson() {
+        var itemjson = [];
+        if (this.newAddRow.length > 0) {
+            for (let item of this.newAddRow) {
+                itemjson.push({ "id": item.itemsid, "val": item.qty })
+            }
+        }
+        return itemjson;
+    }
+
     paramsjson() {
         var that = this;
         var param = {
-            "docno":that.docno,
+            "docno": that.docno,
             "fromid": that.fromwareid,
             "toid": that.Towarid,
             "remark": that.rem,
-            "cmpid":1,
-            "fy":5,
-            "createdby":"admin",
-            "warehousedetails": that.newAddRow
+            "cmpid": 1,
+            "fy": 5,
+            "createdby": "admin",
+            "warehousedetails": this.createItemsjson()
         }
-        console.log(param);
         return param;
+    }
+
+    ClearControl() {
+        this.fromwarname = "";
+        this.fromwareid = 0;
+        this.Towarname = "";
+        this.Towarid = 0;
+        this.newAddRow = [];
+        this.rem = "";
     }
 
     //Add Top Buttons Add Edit And Save
@@ -259,27 +351,27 @@ declare var $: any;
         if (evt === "back") {
             that._router.navigate(['warehouse/warestock/view']);
         }
-         //Save Button Click 
+        //Save Button Click 
         if (evt === "save") {
             if (that.fromwarname == "") {
-                alert("Please Enetr From Warehouse");
+                this._msg.Show(messageType.info, "info", "Please Enetr From Warehouse");
                 $(".from").focus();
                 return;
             }
             if (that.Towarname == "") {
-                alert("Please Enetr To Warehouse");
-                $(".to").focus();
-                return;
-            }
-            if (that.fromwarname == that.Towarname) {
-                alert("From And To Warehouse Same");
+                this._msg.Show(messageType.info, "info", "Please Enetr To Warehouse");
                 $(".to").focus();
                 return;
             }
             that.wareServies.saveWarehouse(
                 that.paramsjson()
             ).subscribe(result => {
-                console.log(result.data);
+                if (result.data[0].funsave_warehousetransfer.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg);
+                    $(".from").focus();
+                    this.ClearControl();
+                    return;
+                }
             }, err => {
                 console.log("Error");
             }, () => {
@@ -289,6 +381,13 @@ declare var $: any;
 
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").hide = false;
+            $(".from").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
