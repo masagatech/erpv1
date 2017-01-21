@@ -69,6 +69,7 @@ declare var $: any;
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private itemsaddServies: ItemAddService,
         private _autoservice: CommonService, private _commonservice: CommonService, private _routeParams: ActivatedRoute,
         private _msg: MessageService, private _userService: UserService) { //Inherit Service
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {

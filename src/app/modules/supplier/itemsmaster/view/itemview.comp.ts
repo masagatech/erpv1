@@ -6,6 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { ItemViewService } from "../../../../_service/itemmaster/view/itemview-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router } from '@angular/router';
 
@@ -29,9 +30,9 @@ declare var $: any;
     loginUserName: string;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-     private itemViewServies: ItemViewService, private _autoservice: CommonService,
-     private _userService: UserService) { //Inherit Service dcmasterService
-
+        private itemViewServies: ItemViewService, private _autoservice: CommonService,
+        private _userService: UserService,private _msg: MessageService) { //Inherit Service dcmasterService
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -68,10 +69,10 @@ declare var $: any;
     }
 
     getAutoCompleteProductName(me: any) {
-        var that=this;
+        var that = this;
         this._autoservice.getAutoData({ "type": "CatProdName", "search": that.itemsName, "cmpid": 1, "FY": 5 }).subscribe(data => {
             $(".items").autocomplete({
-                source:data.data,
+                source: data.data,
                 width: 300,
                 max: 20,
                 delay: 100,
@@ -99,10 +100,11 @@ declare var $: any;
         this.FromDate = $("#FromDate").val();
         this.ToDate = $("#ToDate").val();
         this.itemViewServies.getItemsMaster({
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby":this.loginUser.login,
             "flag": "",
-            "itemsid":this.itemsid,
+            "itemsid": this.itemsid,
             "fromdate": this.FromDate,
             "todate": this.ToDate
         }).subscribe(details => {
@@ -114,7 +116,7 @@ declare var $: any;
             else {
                 this.ItemDetails = [];
                 this.TableHide = true;
-                alert("Record not found");
+                  this._msg.Show(messageType.info, "info", "Record not found");
                 $(".Items").focus();
             }
 
@@ -134,8 +136,8 @@ declare var $: any;
 
     //More Button Click
     expandDetails(row) {
-        row.attribute=[];
-        row.saleprice=[];
+        row.attribute = [];
+        row.saleprice = [];
         if (row.issh == 0) {
             row.issh = 1;
             if (row.attribute.length === 0) {

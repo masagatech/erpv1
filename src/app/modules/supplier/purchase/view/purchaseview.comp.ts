@@ -34,8 +34,9 @@ export class purchaseview implements OnInit, OnDestroy {
     loginUserName: string;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-    private _autoservice: CommonService, private PurchaseServies: PurchaseviewService,
-    private _userService: UserService) {
+        private _autoservice: CommonService, private PurchaseServies: PurchaseviewService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
@@ -88,8 +89,9 @@ export class purchaseview implements OnInit, OnDestroy {
 
     //Supplier Change Event Bind Supplier
     getAutoCompleteSupplier(me: any) {
-        this._autoservice.getAutoData({ 
-            "type": "supplier", "key": this.SupplierName }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "supplier", "key": this.SupplierName
+        }).subscribe(data => {
             $(".SupplierName").autocomplete({
                 source: JSON.parse(data.data),
                 width: 300,
@@ -114,20 +116,19 @@ export class purchaseview implements OnInit, OnDestroy {
 
     //More Button Click Event
     GetSupplierDetails() {
-        if($(".SupplierName").val()=="")
-        {
-            this.SupplierID=0;
+        if ($(".SupplierName").val() == "") {
+            this.SupplierID = 0;
         }
-        this.FromDate=$("#FromDate").val();
-        this.ToDate=$("#ToDate").val();
+        this.FromDate = $("#FromDate").val();
+        this.ToDate = $("#ToDate").val();
         this.PurchaseServies.getSupplierDetails({
             "CmpCode": "MTech",
             "FY": 5,
             "FilterType": "",
             "PurOrId": 0,
             "CreatedBy": "",
-            "FromDate":this.FromDate,
-            "ToDate":this.ToDate,
+            "FromDate": this.FromDate,
+            "ToDate": this.ToDate,
             "SupplierId": this.SupplierID == "" ? 0 : this.SupplierID,
             "flag": "",
             "flag1": ""
@@ -137,9 +138,8 @@ export class purchaseview implements OnInit, OnDestroy {
                 this.PODetails = dataset.Table;
                 this.TableHide = false;
             }
-            else
-            {
-                this.PODetails=[];
+            else {
+                this.PODetails = [];
                 this.TableHide = true;
                 alert("Record not found");
                 $(".SupplierName").focus();

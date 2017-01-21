@@ -54,6 +54,7 @@ declare var $: any;
     constructor(private setActionButtons: SharedVariableService, private PurchaseServies: PurchaseaddService,
         private _autoservice: CommonService, private _routeParams: ActivatedRoute,
         private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {

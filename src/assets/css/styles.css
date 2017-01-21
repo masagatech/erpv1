@@ -1119,3 +1119,12 @@ html select[disabled] {
 .bootstrap-tagsinput .tag [data-role="remove"]:hover:active {
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
+
+
+.ui-growl-item{
+    color: #fff!important;
+}
+
+.ui-growl.ui-widget {
+    z-index: 1065!important;
+}

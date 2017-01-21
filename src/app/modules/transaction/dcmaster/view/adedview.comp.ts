@@ -4,6 +4,8 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'; /* add reference for view employee */
 import { dcviewService } from "../../../../_service/dcmaster/view/dcview-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -25,8 +27,15 @@ export class dcview implements OnInit, OnDestroy {
     FromData: any;
     ToData: any;
     tableLength: any;
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private dcviewServies: dcviewService, private _autoservice: CommonService) { //Inherit Service dcmasterService
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private dcviewServies: dcviewService, private _autoservice: CommonService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -77,8 +86,8 @@ export class dcview implements OnInit, OnDestroy {
         this.FromData = $('#FromDate').datepicker('getDate');
         this.ToData = $('#ToDate').datepicker('getDate');
         this.dcviewServies.getDcmasterView({                     //User getdcdropdown
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
             "createdby": "Admin",
             "acid": this.CustID,
             "FromDoc": 0,
@@ -120,8 +129,9 @@ export class dcview implements OnInit, OnDestroy {
                 this.dcviewServies.getDcmasterView({
                     "flag": "Details",
                     "doc": row.dcno,
-                    "cmpid": 1,
-                    "fy": 5
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fyid,
+                    "createdby": this.loginUser.login
                 }).subscribe(data => {
                     row.Details = data.data[0];
                 }, err => {

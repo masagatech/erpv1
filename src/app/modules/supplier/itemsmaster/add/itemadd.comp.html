@@ -77,15 +77,16 @@
 			<li><a data-target="#supp" role="button" (click)="SuppTab()" data-toggle="tab">Supplier</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
 		</ul>
-		<br/>
 		<div class="tab-content">
 			<!--Attribute-->
 			<div class="tab-pane active" id="attr">
-				<div class="col-md-3">
-					<div class='form-group'>
-						<label>Attribute</label>
-						<input type="text=" class="form-control attr" tabindex="8" value="" [(ngModel)]="attname" (keyup.enter)="AttributeAdd()"
-							(keyup)="getAutoCompleteattr(this)" />
+				<div class="row">
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Attribute</label>
+							<input type="text=" class="form-control attr" tabindex="8" value="" [(ngModel)]="attname" (keyup.enter)="AttributeAdd()"
+								(keyup)="getAutoCompleteattr(this)" />
+						</div>
 					</div>
 				</div>
 				<div class="col-md-10">
@@ -102,49 +103,51 @@
 			</div>
 			<!--Key Data-->
 			<div class="tab-pane" id="keydata">
-				<div class="col-md-6">
-					<div class="panel panel-theme">
-						<div class="panel-body">
-							<div class="col-md-5">
-								<div class='form-group'>
-									<label>Attribute</label>
-									<input type="text=" class="form-control keyattr" tabindex="9" value="" [(ngModel)]="keyattr" (keyup)="getAutoCompleteKeyval(this)"
-									/>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="panel panel-theme">
+							<div class="panel-body">
+								<div class="col-md-5">
+									<div class='form-group'>
+										<label>Attribute</label>
+										<input type="text=" class="form-control keyattr" tabindex="9" value="" [(ngModel)]="keyattr" (keyup)="getAutoCompleteKeyval(this)"
+										/>
+									</div>
 								</div>
-							</div>
-							<div class="col-md-3">
-								<div class='form-group'>
-									<label>Value</label>
-									<input type="text=" class="form-control keyvalue" tabindex="10" value="" [(ngModel)]="keyvalue" (keyup.enter)="KeyvalAdd()"
-									/>
+								<div class="col-md-3">
+									<div class='form-group'>
+										<label>Value</label>
+										<input type="text=" class="form-control keyvalue" tabindex="10" value="" [(ngModel)]="keyvalue" (keyup.enter)="KeyvalAdd()"
+										/>
+									</div>
 								</div>
-							</div>
-							<div class="col-md-1">
-								<div class='form-group'>
-									<label></label>
-									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="11" (click)="KeyvalAdd()" title="Add">
+								<div class="col-md-1">
+									<div class='form-group'>
+										<label></label>
+										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="11" (click)="KeyvalAdd()" title="Add">
 									<i class="fa fa-plus"></i></button>
+									</div>
 								</div>
 							</div>
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th class="col-sm-1">#</th>
+										<th class="col-sm-5">Attribute</th>
+										<th class="col-sm-3"> Value</th>
+										<th class="col-sm-3">Action</th>
+									</tr>
+								</thead>
+								<tbody *ngFor="let row of Keyvallist let i=index">
+									<tr>
+										<td><span>{{i+1}}</span></td>
+										<td>{{row.keyattr}}</td>
+										<td><input type="text" class="form-control" [(ngModel)]="row.keyvalue"></td>
+										<td><button class="btn btn-theme btn-sm" (click)="KeyvalDelete(row)"><i class="fa fa-trash"></i></button></td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
-						<table class="table table-striped table-bordered">
-							<thead>
-								<tr>
-									<th class="col-sm-1">#</th>
-									<th class="col-sm-5">Attribute</th>
-									<th class="col-sm-3"> Value</th>
-									<th class="col-sm-3">Action</th>
-								</tr>
-							</thead>
-							<tbody *ngFor="let row of Keyvallist let i=index">
-								<tr>
-									<td><span>{{i+1}}</span></td>
-									<td>{{row.keyattr}}</td>
-									<td><input type="text" class="form-control" [(ngModel)]="row.keyvalue"></td>
-									<td><button class="btn btn-theme btn-sm" (click)="KeyvalDelete(row)"><i class="fa fa-trash"></i></button></td>
-								</tr>
-							</tbody>
-						</table>
 					</div>
 				</div>
 			</div>
@@ -247,36 +250,41 @@
 			</div>
 			<!--Warehouse-->
 			<div class="tab-pane" id="ware">
-				<div class="col-md-3" *ngFor="let row of warehouselist">
-					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" value="row.id"/>
+				<div class="row">
+					<div class="col-md-3" *ngFor="let row of warehouselist">
+						<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" value="row.id"/>
 							{{row.val}} 
 						</label>
+					</div>
 				</div>
 			</div>
 			<!--Supplier -->
 			<div class="tab-pane" id="supp">
-				<div class="col-md-3">
-					<div class='form-group'>
-						<label>Supplier</label>
-						<input type="text=" class="form-control supp" tabindex="4" value="" [(ngModel)]="suppname" (keyup.enter)="SupplierAdd()"
-							(keyup)="getAutoCompletesupp(this)" />
+				<div class="row">
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Supplier</label>
+							<input type="text=" class="form-control supp" tabindex="4" value="" [(ngModel)]="suppname" (keyup.enter)="SupplierAdd()"
+								(keyup)="getAutoCompletesupp(this)" />
+						</div>
 					</div>
-				</div>
-				<div class="col-md-10">
-					<div class="col-md-6" *ngFor="let row of supplist">
-						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-							<span class="tag label label-info" style="font-size: 10px;">{{row.suppname}} 
+					<div class="col-md-10">
+						<div class="col-md-6" *ngFor="let row of supplist">
+							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+								<span class="tag label label-info" style="font-size: 10px;">{{row.suppname}} 
 							<span data-role="remove" (click)="Removesupp(row)"></span>
-							</span>
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
 			<!--Document-->
 			<div class="tab-pane" id="docup">
-				<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-					(onComplete)="onUploadComplete($event)"></fileupload>
+				<div class="row">
+					<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+						(onComplete)="onUploadComplete($event)"></fileupload>
+				</div>
 			</div>
 		</div>
 	</div>

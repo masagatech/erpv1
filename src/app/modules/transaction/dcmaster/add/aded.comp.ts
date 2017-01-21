@@ -2,15 +2,17 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
-import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";  //Service Add Refrence dcmaster-service.ts
+import { CommonService } from '../../../../_service/common/common-service'
+import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'aded.comp.html',
-    providers: [dcmasterService, CommonService]                         //Provides Add Service dcmaster-service.ts
+    providers: [dcmasterService, CommonService]
     //,AutoService
 })
 
@@ -69,13 +71,20 @@ export class dcADDEdit implements OnInit, OnDestroy {
     AddEdit: any = '';
     footer: any;
     private subscribeParameters: any;
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
 
     //, private _autoservice:AutoService
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private dcServies: dcmasterService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service dcmasterService
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private dcServies: dcmasterService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute, private _userService: UserService) {
         this.newAddRow = [];
         this.counter = 0;
         this.totalQty = 0;
         this.totalAmt = 0;
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -162,9 +171,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
             "traspo": this.Traspoter,
             "billingadr": this.BillAdr,
             "shippadr": this.shippAdr,
-            "fy": 5,
-            "cmpid": 1,
-            "createdby": "admin",
+            "fy": this.loginUser.fyid,
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login,
             "remark": this.Remark,
             "directinvoice": this.DirectInvoice,
             "dcdetails": this.newAddRow,
@@ -257,8 +266,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.dcServies.getDcmasterView({
             "flag": "edit",
             "doc": Docno,
-            "cmpid": 1,
-            "fy": 5
+            "cmpid": this.loginUser.fyid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
         }).subscribe(data => {
             var dataset = data.data;
             var CustomerMaster = dataset[0];
@@ -294,7 +304,13 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Auto Completed Customer Name
     getAutoComplete(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": _me.CustName }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "customer",
+            "search": _me.CustName,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".Custcode").autocomplete({
                 source: data.data,
                 width: 300,
@@ -321,7 +337,13 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "CatProdName", "search": arg == 0 ? me.NewItemsName : me.ItemsName }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "CatProdName",
+            "search": arg == 0 ? me.NewItemsName : me.ItemsName,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,
                 width: 300,
@@ -360,7 +382,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.custKey = val;
             this.dcServies.getdropdwn({                     //User getdcdropdown
                 "custid": val,
-                "cmpid": 1,
+                "cmpid": this.loginUser.cmpid,
+                "fy":this.loginUser.fyid,
+                "createdby":this.loginUser.login,
                 "flag": '',
                 "flag1": ''
             }).subscribe(dropdetails => {
@@ -382,10 +406,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
     ItemsSelected(val) {
         if (val != "") {
             this.dcServies.getItemsAutoCompleted({
-                "cmpid": 1,
-                "fy": 5,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fyid,
                 "itemsid": val,
-                "createdby": ""
+                "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
                 // if (this.newAddRow.length == 0) {
@@ -514,9 +538,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.dcServies.deleteDcMaster({
                 "DCNo": 0,
                 "DCDetelId": DcDelid,
-                "CmpCode": "Mtech",
-                "FY": 5,
-                "UserCode": "Admin",
+                "FY": this.loginUser.fyid,
+                "cmpid":this.loginUser.cmpid,
+                "UserCode": this.loginUser.login,
                 "Flag": ""
             }).subscribe(data => {
                 var dataset = JSON.parse(data.data);
