@@ -33,9 +33,12 @@ export class ViewUserRights implements OnInit, OnDestroy {
     getUserRights() {
         this._userservice.getUserRights({
             "flag": "view",
-            "uid": this.loginUser.uid,
-            "cmpid": this.loginUser.cmpid,
-            "fyid": this.loginUser.fyid
+            "uid": 1,
+            "cmpid": 2,
+            "fyid": 7
+            // "uid": this.loginUser.uid,
+            // "cmpid": this.loginUser.cmpid,
+            // "fyid": this.loginUser.fyid
         }).subscribe(data => {
             this.viewUserDT = data.data;
             console.log(this.viewUserDT);
