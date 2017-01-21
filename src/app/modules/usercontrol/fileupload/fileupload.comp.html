@@ -26,7 +26,7 @@
     <div id="Docs" class="panel-collapse collapse in">
         <div class="panel-body">
             <p-growl [value]="msgs"></p-growl>
-            <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3002/upload" (onUpload)="onUpload($event)"
+            <p-fileUpload #fuimg name="fileUploaded" url="http://localhost:3005/upload" (onUpload)="onUpload($event)"
                 accept="{{filetype}}" maxFileSize="{{filesize}}" auto="auto">
                 <template pTemplate type="content">
                     <div *ngIf="uploadedFiles.length">

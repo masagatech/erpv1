@@ -52,7 +52,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     Dis: any = 0;
     Rate: any = 0;
     Amount: any = 0;
-    Qty: any = 0;
+    qty: any = 0;
     Total: any = 0;
     DisTotal: any = 0;
     counter: any;
@@ -61,8 +61,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
     totalAmt: any = 0;
     CustID: any = 0;
     CustName: any = '';
-    ItemsName: any = '';
-    Itemsid: any = 0;
+    itemsname: any = '';
+    itemsid: any = 0;
     ProdSelectedCode: any = '';
     NewItemsName: any = "";
     NewItemsid: any = 0;
@@ -255,28 +255,29 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     GetEditData(Docno) {
         this.dcServies.getDcmasterView({
-            "FilterType": "Edit",
-            "DCNo": Docno,
-            "CmpCode": "Mtech",
-            "FY": 5
+            "flag": "edit",
+            "doc": Docno,
+            "cmpid": 1,
+            "fy": 5
         }).subscribe(data => {
             var dataset = data.data;
-            var CustomerMaster = dataset.Table;
+            var CustomerMaster = dataset[0];
+
             if (CustomerMaster.length > 0) {
-                this.CustName = CustomerMaster[0].CustName;
-                this.CustomerSelected(this.CustName.split(':')[0])
-                this.docdate = CustomerMaster[0].DCDate;
-                this.delDate = CustomerMaster[0].DeliveryDate;
-                this.Salesmandrop = CustomerMaster[0].Saleman;
-                this.OtherSalesid = CustomerMaster[0].OtherSaleman;
-                this.Traspoter = CustomerMaster[0].Trans;
-                this.Token = CustomerMaster[0].Tokenno;
-                this.BillAdr = CustomerMaster[0].BillingAdr;
-                this.shippAdr = CustomerMaster[0].ShippingAdr;
-                this.Remark1 = CustomerMaster[0].Reamrk1;
-                this.Remark2 = CustomerMaster[0].Reamrk2;
-                var TitleDetails = dataset.Table1;
-                this.newAddRow = TitleDetails;
+                this.CustomerSelected(CustomerMaster[0].acid);
+                this.CustName = CustomerMaster[0].acname;
+                this.CustID = CustomerMaster[0].acid;
+                this.docdate = CustomerMaster[0].dcdate;
+                this.delDate = CustomerMaster[0].deldate;
+                this.Token = CustomerMaster[0].refno;
+                this.BillAdr = CustomerMaster[0].billadr;
+                this.shippAdr = CustomerMaster[0].shippadr;
+                this.Remark = CustomerMaster[0].remark;
+                this.Remark2 = CustomerMaster[0].remark1;
+                this.Salesmandrop = CustomerMaster[0].salesid;
+                this.OtherSalesid = CustomerMaster[0].othersalid;
+                this.Traspoter = CustomerMaster[0].transid;
+                this.newAddRow = dataset[1];
             }
             else {
                 console.log('Error');
@@ -332,10 +333,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.ItemsName = ui.item.label;
+                    me.itemsname = ui.item.label;
                     if (arg === 1) {
-                        me.ItemsName = ui.item.label;
-                        me.Itemsid = ui.item.value;
+                        me.itemsname = ui.item.label;
+                        me.itemsid = ui.item.value;
                         _me.ItemsSelected(me.Itemsid);
                     } else {
                         me.NewItemsName = ui.item.label;
@@ -391,7 +392,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 //     this.AddEdit = 'add'
                 // }
                 // if (this.AddEdit === 'add') {
-                this.Qty = 1;
+                this.qty = 1;
                 this.Dis = ItemsResult[0].dis;
                 this.Rate = ItemsResult[0].salerate;
                 this.Amount = ItemsResult[0].dcamt;
@@ -419,11 +420,11 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Add New Row
     private NewRowAdd() {
-        if (this.ItemsName == '' || this.ItemsName == undefined) {
+        if (this.itemsname == '' || this.itemsname == undefined) {
             alert('Please Enter items Name');
             return;
         }
-        if (this.Qty == '' || this.Qty == undefined) {
+        if (this.qty == '' || this.qty == undefined) {
             alert('Please Enter Quntity');
             return;
         }
@@ -433,7 +434,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         }
         this.Duplicateflag = true;
         for (var i = 0; i < this.newAddRow.length; i++) {
-            if (this.newAddRow[i].ItemsName == this.ItemsName) {
+            if (this.newAddRow[i].ItemsName == this.itemsname) {
                 this.Duplicateflag = false;
                 break;
             }
@@ -441,19 +442,20 @@ export class dcADDEdit implements OnInit, OnDestroy {
         if (this.Duplicateflag == true) {
             debugger;
             this.newAddRow.push({
-                'ItemsName': this.ItemsName,
-                "itemsid": this.Itemsid,
-                'Qty': this.Qty,
-                'Rate': this.Rate,
-                'Dis': this.Dis == "" ? "0" : this.Dis,
-                'Amount': this.Amount,
+                "autoid": 0,
+                'itemsname': this.itemsname,
+                "itemsid": this.itemsid,
+                'qty': this.qty,
+                'rate': this.Rate,
+                'dis': this.Dis == "" ? "0" : this.Dis,
+                'amount': this.Amount,
                 'counter': this.counter
             });
 
             this.counter++;
-            this.ItemsName = "";
+            this.itemsname = "";
             this.NewItemsName = "";
-            this.Qty = "";
+            this.qty = "";
             this.Rate = "";
             this.Dis = "";
             this.Amount = "";
@@ -468,7 +470,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Quntity Calculation
     private ConfirmQty(Qty) {
-        this.Total = this.Qty * this.Rate;
+        this.Total = this.qty * this.Rate;
         this.DisTotal = this.Total * this.Dis / 100;
         this.Amount = Math.round(this.Total - this.DisTotal);
     }
@@ -490,7 +492,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         var total = 0;
         if (this.newAddRow.length > 0) {
             for (var i = 0; i < this.newAddRow.length; i++) {
-                total += parseInt(this.newAddRow[i].Qty);
+                total += parseInt(this.newAddRow[i].qty);
             }
         }
         return total;
@@ -500,7 +502,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         var totalamt = 0;
         if (this.newAddRow.length > 0) {
             for (var i = 0; i < this.newAddRow.length; i++) {
-                totalamt += parseInt(this.newAddRow[i].Amount);
+                totalamt += parseInt(this.newAddRow[i].amount);
             }
         }
         return totalamt;

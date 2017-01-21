@@ -2,24 +2,27 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { CommonService } from '../../../../_service/common/common-service'
-import { VendorviewService } from "../../../../_service/vendor/view/view-service";
+import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
+import { WarehouseViewService } from "../../../../_service/warehouse/view/view-service";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+
 declare var $: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [VendorviewService, CommonService]
+    providers: [WarehouseViewService, CommonService]
     //,AutoService
-}) export class VenView implements OnInit, OnDestroy {
+}) export class WarehouseView implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-    vendorlist: any = [];
-    totalRecords: number = 0;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private venViewServies: VendorviewService, private _autoservice: CommonService) {
+    // local veriable 
+    Warehaouselist: any = [];
+    totalRecords: number = 0;
+    private subscribeParameters: any;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private warehouseServies: WarehouseViewService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -31,17 +34,19 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    getVendor(from: number, to: number) {
+
+    getWarehouse(from: number, to: number) {
         var that = this;
-        that.venViewServies.getvendor({
+        that.warehouseServies.getwarehouse({
             "cmpid": 1,
             "from": from,
-            "to": to
+            "to": to,
+            "wareid": 0
         }).subscribe(result => {
-            console.log(result);
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.vendorlist = result.data[0];
-
+            var dataset = result.data;
+            that.totalRecords = dataset[1][0].recordstotal;
+            //total row
+            that.Warehaouselist = dataset[0];
         }, err => {
             console.log("Error");
         }, () => {
@@ -50,31 +55,27 @@ declare var $: any;
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getVendor(event.first, (event.first + event.rows));
+        this.getWarehouse(event.first, (event.first + event.rows));
     }
 
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['master/vendor/edit', row.autoid]);
-        }
-    }
+    // EditItem(row) {
+    //     if (!row.islocked) {
+    //         this._router.navigate(['/warehouse/warehousemaster/edit', row.id]);
+    //     }
+    // }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/master/vendor/add']);
+            this._router.navigate(['warehouse/warehouse/add']);
         }
         if (evt === "save") {
-            //Save CLick Event
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
-            // alert("edit called");
-            this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
         }
     }
-
 
     ngOnDestroy() {
         this.actionButton = [];

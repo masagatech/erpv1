@@ -1,64 +1,189 @@
 <div class="panel panel-theme">
 	<div class="panel-body">
 		<div class="row">
-			<div class='form-row col-md-10'>
-				<div class="col-xs-4">
+			<div class='col-md-10'>
+				<!--<div class="col-md-4">
 					<label>Category</label>
-					<input type="text=" class="form-control Category" tabindex="1" value="" [(ngModel)]="Catname" (keyup)="getAutoCompleteCategory(this)"
-					/>
-				</div>
-				<div class="col-xs-2">
+					<input type="text=" class="form-control Category" tabindex="1" value="" [(ngModel)]="Catname" />
+				</div>-->
+				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Item Code</label>
-						<input type="text" class="form-control ProdCode" tabindex="2" [(ngModel)]="itemcode">
+						<input type="text" class="form-control itemcode" tabindex="1" [(ngModel)]="itemcode">
 					</div>
 				</div>
-				<div class="col-xs-4">
+				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Item Name</label>
-						<input type="text" class="form-control" tabindex="3" [(ngModel)]="itemname">
+						<input type="text" class="form-control itemname" tabindex="2" [(ngModel)]="itemname">
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class='form-group'>
+						<label>SKU Code</label>
+						<input type="text=" class="form-control Category" tabindex="3" value="" [(ngModel)]="skucode" />
+					</div>
+				</div>
+				<div class='col-md-10'>
+					<div class='form-group'>
+						<label>Item Description</label>
+						<textarea class="form-control medium-text-box" tabindex="4" [(ngModel)]="itemsdesc"></textarea>
 					</div>
 				</div>
 			</div>
-			<div class='form-row col-md-10'>
-				<div class="col-xs-2">
+		</div>
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#attr" role="button" data-toggle="tab">Attribute</a></li>
+			<li><a data-target="#itmpric" role="button" (click)="ItemsTab()" data-toggle="tab">Item Price</a></li>
+			<li><a data-target="#ware" role="button" data-toggle="tab">Warehouse</a></li>
+			<li><a data-target="#supp" role="button" (click)="SuppTab()" data-toggle="tab">Supplier</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
+		</ul>
+		<br/>
+		<div class="tab-content">
+			<!--Attribute-->
+			<div class="tab-pane active" id="attr">
+				<div class="col-xs-3">
 					<div class='form-group'>
-						<label>Sale Price/rate</label>
-						<input type="text" class="form-control" tabindex="4" [(ngModel)]="MRP">
+						<label>Attribute</label>
+						<input type="text=" class="form-control attr" tabindex="4" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+							(keyup)="getAutoCompleteattr(this)" />
 					</div>
-				</div>
-				<div class="col-xs-2">
-					<div class='form-group'>
-						<label>Discount</label>
-						<input type="text" class="form-control" tabindex="5" [(ngModel)]="SaleDis1">
-					</div>
-				</div>
-				<div class="col-xs-6">
-					<div class='form-group'>
-						<label>Description</label>
-						<input type="text" class="form-control" tabindex="6" [(ngModel)]="SaleDesc">
+					<div class="col-md-5" *ngFor="let row of attrlist">
+						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+							<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+							<span data-role="remove" (click)="Removeattr(row)"></span>
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class='form-row col-md-10'>
-				<div class="col-xs-2">
-					<div class='form-group'>
-						<label>Purchase Cost/rate</label>
-						<input type="text" class="form-control" tabindex="7" [(ngModel)]="Cost">
+			<!--Items Price-->
+			<div class="tab-pane" id="itmpric">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="panel panel-theme">
+							<div class="panel-heading">
+								<h3 class="panel-title">Sales Price
+								</h3>
+							</div>
+							<div class="panel-body">
+								<div class="col-xs-4">
+									<div class='form-group'>
+										<label>Sales Price/rate</label>
+										<input type="text" class="form-control sales" tabindex="5" [(ngModel)]="sales">
+									</div>
+								</div>
+								<div class="col-xs-5">
+									<div class='form-group'>
+										<label>Discount</label>
+										<input type="text" class="form-control dis" (keyup.enter)="SalesAdd()" tabindex="6" [(ngModel)]="dis">
+									</div>
+								</div>
+								<div class="col-xs-1">
+									<div class='form-group'>
+										<label></label>
+										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="7" (click)="SalesAdd()" title="Add">
+										<i ng-reflect-class-name="fa fa-plus" class="fa fa-plus"></i></button>
+									</div>
+								</div>
+							</div>
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th class="col-sm-1">#</th>
+										<th class="col-sm-3">Sales Price/rate</th>
+										<th class="col-sm-8">Discount</th>
+									</tr>
+								</thead>
+								<tbody *ngFor="let row of saleslist let i=index">
+									<tr>
+										<td><span>{{i+1}}</span></td>
+										<td>{{row.sales}}</td>
+										<td>{{row.dis}}</td>
+										<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="panel panel-theme">
+							<div class="panel-heading">
+								<h3 class="panel-title">Purchase Price
+								</h3>
+							</div>
+							<div class="panel-body">
+								<div class="col-xs-4">
+									<div class='form-group'>
+										<label>Purchase Cost/rate</label>
+										<input type="text" class="form-control purch" tabindex="8" [(ngModel)]="purch">
+									</div>
+								</div>
+								<div class="col-xs-5">
+									<div class='form-group'>
+										<label>Discount</label>
+										<input type="text" class="form-control purdis" (keyup.enter)="PurchaseAdd()" tabindex="9" [(ngModel)]="purdis">
+									</div>
+								</div>
+								<div class="col-xs-1">
+									<div class='form-group'>
+										<label></label>
+										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="10" (click)="PurchaseAdd()" title="Add">
+										<i ng-reflect-class-name="fa fa-plus" class="fa fa-plus"></i></button>
+									</div>
+								</div>
+							</div>
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th class="col-sm-1">#</th>
+										<th class="col-sm-4">Purchase Cost/rate</th>
+										<th class="col-sm-7">Discount</th>
+									</tr>
+								</thead>
+								<tbody *ngFor="let row of purchaselist let i=index">
+									<tr>
+										<td><span>{{i+1}}</span></td>
+										<td>{{row.purch}}</td>
+										<td>{{row.purdis}}</td>
+										<td><button class="btn btn-theme btn-sm" (click)="PurDeleteRow(row)"><i class="fa fa-trash"></i></button></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
-				<div class="col-xs-2">
+			</div>
+			<!--Warehouse-->
+			<div class="tab-pane" id="ware">
+				<!--<div class="col-md-3" *ngFor="let row of warehouselist">
+					<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" id="M{{row.value}}" value="row.value"/>
+							{{row.label}} 
+						</label>
+				</div>-->
+			</div>
+			<!--Supplier -->
+			<div class="tab-pane" id="supp">
+				<div class="col-xs-3">
 					<div class='form-group'>
-						<label>Discount</label>
-						<input type="text" class="form-control" tabindex="8" [(ngModel)]="PurDis2">
+						<label>Supplier</label>
+						<input type="text=" class="form-control supp" tabindex="4" value="" [(ngModel)]="suppname" (keyup.enter)="SupplierAdd()"
+							(keyup)="getAutoCompletesupp(this)" />
+					</div>
+					<div class="col-md-5" *ngFor="let row of supplist">
+						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+							<span class="tag label label-info" style="font-size: 10px;">{{row.suppname}} 
+							<span data-role="remove" (click)="Removesupp(row)"></span>
+							</span>
+						</div>
 					</div>
 				</div>
-				<div class="col-xs-6">
-					<div class='form-group'>
-						<label>Description</label>
-						<input type="text" class="form-control" tabindex="9" [(ngModel)]="PurDesc">
-					</div>
-				</div>
+			</div>
+			<!--Document-->
+			<div class="tab-pane" id="docup">
+				<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+					(onComplete)="onUploadComplete($event)"></fileupload>
 			</div>
 		</div>
 	</div>

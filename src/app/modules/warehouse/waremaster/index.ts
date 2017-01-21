@@ -2,19 +2,19 @@ import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-//import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
 
-import { CustAdd } from './add/add.comp';                
-import { CustView } from './view/view.comp';             
+import { WarehouseAdd } from './add/add.comp';                
+import { WarehouseView } from './view/view.comp';             
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
 })
-export class CustomerComp {
+export class WarehouseComp {
     constructor() {
     }
 }
@@ -22,16 +22,16 @@ export class CustomerComp {
 const routerConfig = [
     {
         path: '',
-        component: CustomerComp,
+        component: WarehouseComp,
         canActivate: [AuthGuard],
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: CustAdd, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: CustAdd, canActivateChid: [AuthGuard], },
-                    { path: 'view', component: CustView, canActivateChid: [AuthGuard], },
-                    { path: '', component: CustView, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: WarehouseAdd, canActivateChid: [AuthGuard], },
+                    { path: 'edit/:id', component: WarehouseAdd, canActivateChid: [AuthGuard], },
+                    { path: 'view', component: WarehouseView, canActivateChid: [AuthGuard], },
+                    { path: '', component: WarehouseView, canActivateChid: [AuthGuard], },
                 ]
             }
         ]
@@ -41,13 +41,12 @@ const routerConfig = [
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,DataTableModule],
     declarations: [
-        CustAdd,
-        CustView,
-        //AddrbookComp,
-        CustomerComp
+        WarehouseAdd,
+        WarehouseView,
+        WarehouseComp
     ],
     providers: [AuthGuard]
 })
 
-export default class CustomerModule {
+export default class WarehouseModule {
 }

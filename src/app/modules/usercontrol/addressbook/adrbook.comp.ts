@@ -16,6 +16,8 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     @Input() adrbookid: any = [];
     @Input() adrid: number = 0;
+    @Input() module: string = "";
+    @Input() accode: string = "";
     mod: string = "";
     adr1: any = "";
     mob: any = 0;
@@ -61,14 +63,24 @@ export class AddrbookComp implements OnInit, OnDestroy {
         })
     }
 
-    AddBook() {
+    AddBook(code) {
         var that = this;
-        console.log(that.addrbooklist);
-        that.ClearControll();
-        that.adrid = 0;
-        setTimeout(function () {
-            $(".firstnam").focus();
-        }, 500);
+        if (code != "") {
+            that.ClearControll();
+            that.adrid = 0;
+            setTimeout(function() {
+                $(".firstnam").focus();
+            }, 500);
+        }
+        else {
+            alert("Please Enter Code");
+            return;
+        }
+
+    }
+
+    public getTestComp() {
+        alert(1);
     }
 
     public getAddress(_adrid: string) {
@@ -97,7 +109,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
                             "isprimary": dataset[0].isprimary
                         });
                     }
-
                 }
                 else {
                     for (let items of dataset) {
@@ -113,7 +124,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
                             "isprimary": items.isprimary
                         });
                     }
-
                 }
                 for (var i = 0; i <= _this.addrbooklist.length - 1; i++) {
                     _this.adrbookid.push({ "adrid": _this.addrbooklist[i].id });
@@ -146,6 +156,10 @@ export class AddrbookComp implements OnInit, OnDestroy {
         that.mod = "";
     }
 
+    public ClearArray() {
+        this.addrbooklist = [];
+    }
+
     EditAdr(row) {
         var _this = this;
         this._adrbookservice.getAdrBook({
@@ -171,7 +185,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.chkprimary = dataset[0].isprimary;
             _this.landmark = dataset[0].landmark;
             _this.chkpri = dataset[0].isprimary;
-            setTimeout(function () {
+            setTimeout(function() {
                 $(".firstnam").focus();
             }, 500);
         }, err => {
@@ -185,6 +199,9 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     Parameter() {
         var that = this;
+        if (this.addrbooklist.length > 0) {
+
+        }
         var Param = {
             "adrid": that.adrid,
             "firstnam": that.firstnam,
@@ -203,7 +220,8 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "adrtype": that.adrtype == "" ? 0 : that.adrtype,
             "landmrk": that.landmark,
             "chkprimary": that.chkprimary,
-            "module": "attr",
+            "module": that.module,
+            "accode": that.accode,
             "entity": 1,
             "createdby": "admin",
             "remark": that.remark,
@@ -211,6 +229,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
+        console.log(Param);
         return Param;
     }
 
@@ -253,6 +272,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
                 $('#myModal').modal('hide');
                 that.getAddress(adridmaxid);
                 var vid = that.addrbooklist.filter(item => item.id);
+                debugger;
                 for (let items of vid) {
                     if (items.id == that.adrid) {
                         items.firstnam = that.firstnam + " " + that.lastnam;
@@ -262,6 +282,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
                         items.pin = that.pin;
                         items.email = that.email;
                         items.mob = that.mob;
+                        items.isprimary = that.chkprimary;
                         break;
                     }
                 }
@@ -276,7 +297,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        setTimeout(function () {
+        setTimeout(function() {
 
         }, 1);
     }

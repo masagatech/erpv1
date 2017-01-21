@@ -76,13 +76,6 @@ const routerConfig = [
               return comp.default;
             }),
           },
-
-          {
-            path: 'warehouse', loadChildren: () => System.import('./warehouse').then((comp: any) => {
-              return comp.default;
-            }),
-          },
-
           { path: '', component: SettingDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }

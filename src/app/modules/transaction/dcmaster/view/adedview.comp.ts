@@ -89,8 +89,8 @@ export class dcview implements OnInit, OnDestroy {
             "ToDate": this.ToData
         }).subscribe(result => {
             var dataset = result.data;
-            if (dataset.length > 0) {
-                this.DcDetails = dataset;
+            if (dataset[0].length > 0) {
+                this.DcDetails = dataset[0];
                 this.tableLength = false;
             }
             else {
@@ -98,7 +98,6 @@ export class dcview implements OnInit, OnDestroy {
                 this.tableLength = true;
                 $(".Custcode").focus();
             }
-
         }, err => {
             console.log('Error');
         }, () => {
@@ -124,7 +123,7 @@ export class dcview implements OnInit, OnDestroy {
                     "cmpid": 1,
                     "fy": 5
                 }).subscribe(data => {
-                    row.Details = data.data;
+                    row.Details = data.data[0];
                 }, err => {
                     console.log("Error");
                 }, () => {
