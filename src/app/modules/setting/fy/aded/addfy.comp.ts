@@ -82,8 +82,6 @@ export class AddFY implements OnInit, OnDestroy {
         console.log(this.validSuccess);
         var companyitem = null;
 
-        debugger;
-
         var saveFY = {
             "fyid": this.fyid,
             "fromdt": this.fromdt,

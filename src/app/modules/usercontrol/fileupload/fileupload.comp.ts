@@ -8,7 +8,7 @@ declare var $: any;
 @Component({
     selector: '<fileupload></fileupload>',
     templateUrl: 'fileupload.comp.html',
-    providers: [AttachService]
+    providers: [AttachService, CommonService]
 })
 
 export class FileUploadComponent implements OnInit, OnDestroy {
@@ -29,30 +29,46 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     filesize: string = "";
     maxfilesize: string = "";
 
+    @Input() uploadedFiles: any = [];
+    fileTypeDT: any = [];
+
+    // Pre Render
+
     constructor(private _attachservice: AttachService, private _commonservice: CommonService) {
-        this.getHeaderTitle();
-        this.getFileVal("filetype");
-        this.getFileVal("filesize");
         this.getFileType();
         this.getFileSize();
     }
 
-    @Input() uploadedFiles: any = [];
-    fileTypeDT: any = [];
+    // Page Load
+
+    ngOnInit() {
+        setTimeout(function () {
+            $(".ui-fileupload").find('button:first').removeAttr('class').addClass('ui-fileupload-choose btn btn-theme btn-xs');
+            $(".ui-fileupload").find('button:not(:first)').hide();
+        }, 0);
+
+        this.fileupload.multiple = this.multi;
+
+        this.getFileVal("filetype");
+        this.getFileVal("filesize");
+        this.getHeaderTitle();
+    }
+
+    // Get Header Title
 
     getHeaderTitle() {
-        var that = this;
-
-        if (that.module == "Employee") {
-            that.headertitle = "Upload Photo";
+        if (this.module == "Employee") {
+            this.headertitle = "Upload Photo";
         }
-        else if (that.module == "DocRepo") {
-            that.headertitle = "Upload Docs";
+        else if (this.module == "DocRepo") {
+            this.headertitle = "Upload Docs";
         }
         else {
-            that.headertitle = "Supporting Docs";
+            this.headertitle = "Supporting Docs";
         }
     }
+
+    // Get File Type
 
     getFileType() {
         var that = this;
@@ -62,13 +78,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         });
     }
 
-    getFileSize() {
-        var that = this;
-
-        that._commonservice.getMOM({ "flag": "filesize" }).subscribe(data => {
-            that.maxfilesize = that.formatSizeUnits(data.data[0].filesize);
-        });
-    }
+    // Get File Size
 
     formatSizeUnits(bytes) {
         if (bytes >= 1073741824) {
@@ -91,6 +101,14 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         }
 
         return bytes;
+    }
+
+    getFileSize() {
+        var that = this;
+
+        that._commonservice.getMOM({ "flag": "filesize" }).subscribe(data => {
+            that.maxfilesize = that.formatSizeUnits(data.data[0].filesize);
+        });
     }
 
     getFileVal(flag) {
@@ -118,6 +136,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     removeFileUpload() {
         this.uploadedFiles.splice(0, 1);
     }
+
+    // Save Attach File
 
     saveAttach(saveAttach: any) {
         var that = this;
@@ -247,15 +267,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         else {
             that.saveSingleUploadedFile(event);
         }
-    }
-
-    ngOnInit() {
-        setTimeout(function () {
-            $(".ui-fileupload").find('button:first').removeAttr('class').addClass('ui-fileupload-choose btn btn-theme btn-xs');
-            $(".ui-fileupload").find('button:not(:first)').hide();
-        }, 0);
-
-        this.fileupload.multiple = this.multi;
     }
 
     ngOnDestroy() {
