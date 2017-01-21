@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { WarehouseAddService } from "../../../../_service/warehouse/add/add-service";
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -39,7 +40,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private wareServies: WarehouseAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
         this.module = "warehouse";
     }
     //Add Save Edit Delete Button
@@ -111,7 +112,7 @@ declare var $: any;
         this.remark = "";
         this.adrbookid = [];
         this.addressBook.ClearArray();
-        $(".warehouse").focus();
+        $(".code").focus();
     }
 
     paramterjson() {
@@ -134,24 +135,32 @@ declare var $: any;
             this._router.navigate(['warehouse/warehouse/view']);
         }
         if (evt === "save") {
-            this.wareServies.save(
-                this.paramterjson()
-            ).subscribe(result => {
-                var dataset = result.data;
-                if (dataset[0].funsave_warehouse.maxid == -1) {
-                    alert("Warehouse already exists");
-                    $(".warehouse").focus();
-                    return;
-                }
-                if (dataset[0].funsave_warehouse.maxid > 0) {
-                    alert("Data Save Successfully");
-                    this.Clearcontroll();
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            });
+            if (this.adrbookid.length > 0) {
+                this.wareServies.save(
+                    this.paramterjson()
+                ).subscribe(result => {
+                    var dataset = result.data;
+                    if (dataset[0].funsave_warehouse.maxid == -1) {
+                        this._msg.Show(messageType.info, "info", "Warehouse already exists");
+                        $(".code").focus();
+                        return;
+                    }
+                    if (dataset[0].funsave_warehouse.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", "Data Save Successfully");
+                        this.Clearcontroll();
+                    }
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    // console.log("Complete");
+                });
+            }
+            else
+            {
+                 this._msg.Show(messageType.info, "into", "Please enter warehouse address");
+                 return;
+            }
+
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');

@@ -69,7 +69,7 @@
 							<input type="text" class="form-control textalign qty" value="" tabindex="5"  [(ngModel)]="qty" (keyup.enter)="NewRowAdd()" />
 						</td>
 						<td class="col-md-1">
-							<select [(ngModel)]="newrate" class="form-control"  tabindex="6" >
+							<select [(ngModel)]="item.newrate" class="form-control"  tabindex="6" >
 						<option *ngFor="let row of ratelistnew" [value]="row.id">
 							{{row.val}}
 					    </option>

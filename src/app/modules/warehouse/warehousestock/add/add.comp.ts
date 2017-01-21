@@ -83,16 +83,23 @@ declare var $: any;
                 "fy": 5,
                 "flag": "salesdrop",
                 "itemsid": val,
+                "warehouse": this.fromwareid,
                 "createdby": ""
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
-                //this.qty = ItemsResult[0].qty;
+                this.amt = ItemsResult[0].amt;
+                this.remark = ItemsResult[0].itemremark;
+                this.qty = ItemsResult[0].qty;
+                //this.ratelistnew=ItemsResult[0].rate;
                 if (flag == 1) {
-                    this.ratelist = ItemsResult[0].sales;
+                    //this.ratelist = ItemsResult[0].sales;
+                    this.ratelistnew = ItemsResult[0]._ratejosn;
                 }
                 else {
-                    this.ratelistnew = ItemsResult[0].sales;
+                    //this.ratelistnew = ItemsResult[0].sales;
+                    this.ratelistnew = ItemsResult[0]._ratejosn;
                 }
+                this.newrate = ItemsResult[0].rate;
                 //}
             }, err => {
                 console.log("Error");
@@ -231,7 +238,6 @@ declare var $: any;
             }
         }
         if (that.Duplicateflag == true) {
-            debugger;
             if (that.editadd == 1) {
                 that.newAddRow.push({
                     "autoid": 0,
@@ -243,14 +249,13 @@ declare var $: any;
                     'remark': that.remark,
                     'counter': that.counter
                 });
-                that.rate = "";
             }
             else {
                 that.newAddRow.push({
                     "autoid": 0,
                     'itemsname': that.NewItemsName,
                     "itemsid": that.NewItemsid,
-                    'newrate': that.newrate,
+                    'rate': that.newrate,
                     'amt': that.amt,
                     'qty': that.qty,
                     'remark': that.remark,

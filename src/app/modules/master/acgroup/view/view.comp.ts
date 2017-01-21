@@ -2,15 +2,17 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
+import { CommonService } from '../../../../_service/common/common-service'
 import { acgroupview } from "../../../../_service/acgroup/view/view-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [acgroupview, CommonService]                         //Provides Add Service
+    providers: [acgroupview, CommonService]
     //,AutoService
 }) export class acview implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
@@ -21,8 +23,13 @@ declare var $: any;
     GroupName: any = "";
     Groupcode: any = 0;
     acgrouplist: any = [];
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private acgroupServies: acgroupview, private _autoservice: CommonService) { //Inherit Service
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private acgroupServies: acgroupview, private _autoservice: CommonService,
+        private _userService: UserService) {
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -36,19 +43,14 @@ declare var $: any;
         this.getAccountGroupView();
     }
 
-    //Get Button CLick Event
-    GetAccountGroup() {
-        
-    }
-
     //Json Param
     jsonPram() {
         var Param = {
             "groupid": 0,
             "groupcode": "0",
-            "cmpid": 1,
-            "FY": 5,
-            "CreatedBy": "admin",
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "CreatedBy": this.loginUser.login,
             "flag": "all"
         }
         return Param;
@@ -89,8 +91,9 @@ declare var $: any;
                     "groupid": 0,
                     "fromdate": "",
                     "todate": "",
-                    "cmpid": 1,
-                    "fy": 5
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fyid,
+                    "createdBy": this.loginUser.login
                 }).subscribe(data => {
                     var dataset = data.data;
                     row.Details = dataset;
@@ -114,7 +117,13 @@ declare var $: any;
 
     //Auto Completed Nature
     getAutoCompleteGroupName(me: any) {
-        this._autoservice.getAutoData({ "type": "nature", "search": this.GroupName, "CmpCode":1, "FY": 5 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "nature",
+            "search": this.GroupName,
+            "CmpCode": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdBy": this.loginUser.login
+        }).subscribe(data => {
             $(".GroupName").autocomplete({
                 source: data.data,
                 width: 300,

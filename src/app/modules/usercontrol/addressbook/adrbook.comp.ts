@@ -2,6 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, ViewChild } 
 import { AdrBookService } from '../../../_service/addressbook/adrbook-service' //Add Address Book service
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
 import { MessageService, messageType } from '../../../_service/messages/message-service';
+import { UserService } from '../../../_service/user/user-service';
+import { LoginUserModel } from '../../../_model/user_model';
 
 declare var $: any;
 
@@ -40,8 +42,12 @@ export class AddrbookComp implements OnInit, OnDestroy {
     chkprimary: boolean = false;
     chkpri: boolean = false;
     editmodeflag: boolean = false;
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
-    constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService, private _msg: MessageService) {
+    constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService,
+        private _msg: MessageService, private _userService: UserService) {
         // this.getAddress();
         this.filldropdown("Country");
         this.filldropdown("adrtyp");
@@ -68,24 +74,26 @@ export class AddrbookComp implements OnInit, OnDestroy {
         if (code != "") {
             that.ClearControll();
             that.adrid = 0;
-            setTimeout(function() {
+            setTimeout(function () {
                 $(".firstnam").focus();
             }, 500);
         }
         else {
-            alert("Please Enter Code");
+            this._msg.Show(messageType.info, "info", "Please enter the code");
             return;
         }
 
     }
 
-    public getTestComp() {
-        alert(1);
-    }
-
     public getAddress(_adrid: string) {
         var _this = this;
-        this._adrbookservice.getAdrBook({ "cmpid": 1, "flag": "", "adrid": _adrid }).subscribe(result => {
+        this._adrbookservice.getAdrBook({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login,
+            "flag": "",
+            "adrid": _adrid
+        }).subscribe(result => {
             var dataset = result.data;
             //_this.addrbooklist = dataset;
             if (dataset.length > 0) {
@@ -163,7 +171,9 @@ export class AddrbookComp implements OnInit, OnDestroy {
     EditAdr(row) {
         var _this = this;
         this._adrbookservice.getAdrBook({
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login,
             "adrid": row.id,
             "flag": "edit"
         }).subscribe(result => {
@@ -185,7 +195,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             _this.chkprimary = dataset[0].isprimary;
             _this.landmark = dataset[0].landmark;
             _this.chkpri = dataset[0].isprimary;
-            setTimeout(function() {
+            setTimeout(function () {
                 $(".firstnam").focus();
             }, 500);
         }, err => {
@@ -211,7 +221,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "mob": that.mob == "" ? 0 : that.mob,
             "pin": that.pin,
             "altmob": that.altmob,
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
             "city": that.city,
             "state": that.state,
             "email": that.email,
@@ -229,7 +239,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
-        console.log(Param);
         return Param;
     }
 
@@ -255,7 +264,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             return;
         }
         if (this.country == 0) {
-            alert("Please select conutry");
             this._msg.Show(messageType.info, "info", "Please select conutry");
             $(".country").focus();
             return;
@@ -297,7 +305,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        setTimeout(function() {
+        setTimeout(function () {
 
         }, 1);
     }

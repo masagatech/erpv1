@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { CustomerViewService } from "../../../../_service/customer/view/view-service";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 declare var $: any;
@@ -18,7 +20,13 @@ declare var $: any;
     customerlist: any = [];
     totalRecords: number = 0;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private CustViewServies: CustomerViewService, private _autoservice: CommonService) {
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+    private CustViewServies: CustomerViewService, private _autoservice: CommonService,private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -30,12 +38,14 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
+    //Get Customer Details
     getcustomer(from: number, to: number) {
         var that = this;
         that.CustViewServies.getcustomer({
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid ,
             "from": from,
-            "to": to
+            "to": to,
+            "createdby":this.loginUser.login
         }).subscribe(result => {
             that.totalRecords = result.data[1][0].recordstotal;
             that.customerlist = result.data[0];
@@ -46,10 +56,12 @@ declare var $: any;
         });
     }
 
+    //Pagination Grid View 
     loadRBIGrid(event: LazyLoadEvent) {
         this.getcustomer(event.first, (event.first + event.rows));
     }
 
+    //Edit Customer 
     EditItem(row) {
         if (!row.islocked) {
             this._router.navigate(['master/customer/edit', row.autoid]);
