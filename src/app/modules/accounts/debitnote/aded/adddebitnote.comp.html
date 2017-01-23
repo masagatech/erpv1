@@ -14,7 +14,12 @@
 						</div>
 						<div class="form-group">
 							<label class="control-label">Doc Date</label>
-							<input type="date" [(ngModel)]="dndate" class="form-control">
+							<div class="controls">
+								<div class="input-group" tabindex="2">
+									<input id="date-picker-3" type="text" class="date-picker form-control dndate" [(ngModel)]="dndate" />
+									<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+								</div>
+							</div>
 						</div>
 						<div class="form-group">
 							<label class="control-label">Debit Amount</label>

@@ -10,16 +10,20 @@
 					<div class="col-md-3">
 						<div class="form-group">
 							<label class="control-label">JV Date</label>
-							<input type="date" [(ngModel)]="docdate" class="form-control">
+							<!--<input type="date" [(ngModel)]="docdate" class="form-control">-->
+							<div class="controls">
+								<div class="input-group" tabindex="2">
+									<input id="date-picker-3" type="text" class="date-picker form-control docdate" [(ngModel)]="docdate" />
+									<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-9">
 						<div class="form-group">
 							<label class="control-label">Narration</label>
 							<textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
 						</div>
-					</div>
-					<div class="col-md-3">
 					</div>
 				</div>
 			</div>
@@ -33,7 +37,6 @@
 						<th>Account</th>
 						<th>Debit</th>
 						<th>Credit</th>
-						<th>Narration</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -50,9 +53,6 @@
 						<td class="textalign">
 							<input type="text" [(ngModel)]="row.cramt" class="form-control" (keyup)="setDrAmt(row, 1)" />
 						</td>
-						<td class="textalign">
-							<input type="text" [(ngModel)]="row.detnarr" class="form-control" />
-						</td>
 					</tr>
 				</tbody>
 				<tfoot>
@@ -65,10 +65,7 @@
 							<input type="text" [(ngModel)]="newdramt" class="form-control" (keyup)="setCrAmt(this, 0)" (keyup.enter)="NewRowAdd()" />
 						</td>
 						<td>
-							<input type="text" [(ngModel)]="newcramt" class="form-control" (keyup)="setDrAmt(this, 0)" (keyup.enter)="NewRowAdd()" /></td>
-						<td>
-							<input type="text" [(ngModel)]="newdetnarr" class="form-control" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"
-							/>
+							<input type="text" [(ngModel)]="newcramt" class="form-control" (keyup)="setDrAmt(this, 0)" (keyup.enter)="NewRowAdd()" />
 						</td>
 					</tr>
 				</tfoot>

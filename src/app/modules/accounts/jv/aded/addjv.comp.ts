@@ -49,7 +49,6 @@ export class AddJV implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
 
         this.module = "JV";
-        this.docdate = Date.now();
     }
 
     // add jv details
@@ -61,8 +60,7 @@ export class AddJV implements OnInit, OnDestroy {
             'acid': this.newacid,
             'acname': this.newacname,
             'dramt': this.newdramt,
-            'cramt': this.newcramt,
-            'detnarr': this.newdetnarr
+            'cramt': this.newcramt
         });
 
         this.counter++;
@@ -71,7 +69,6 @@ export class AddJV implements OnInit, OnDestroy {
         this.newacname = "";
         this.newdramt = "";
         this.newcramt = "";
-        this.newdetnarr = "";
     }
 
     // account details
@@ -260,6 +257,21 @@ export class AddJV implements OnInit, OnDestroy {
                 $('textarea').removeAttr('disabled');
             }
         });
+
+        setTimeout(function () {
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+
+            // Doc Date 
+
+            $(".docdate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $(".docdate").datepicker('setDate', today);
+        }, 0);
     }
 
     actionBarEvt(evt) {
