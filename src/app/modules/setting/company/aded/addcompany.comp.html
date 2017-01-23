@@ -1,200 +1,251 @@
-<h3>
-	{{title}}
-</h3>
-
-<div class="col-md-8">
+<div class="col-md-9">
 	<div class="panel panel-theme">
 		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">General Details</h3>
-			</a>
+			<h3 class="panel-title">General Details</h3>
 		</div>
-		<div id="Personal" class="panel-collapse collapse in">
-			<div class="panel-body">
-				<div class="col-md-12">
-					<div class="row">
-						<div class="col-xs-4 col-sm-4 col-md-4">
-							<div class="form-group">
-								<label class="control-label">Code</label>
-								<input type="text" [(ngModel)]="cmpcode" class="form-control input-sm" size="20">
-							</div>
-						</div>
-						<div class="col-xs-8 col-sm-8 col-md-8">
-							<div class="form-group">
-								<label class="control-label">Name</label>
-								<input type="text" [(ngModel)]="cmpname" class="form-control input-sm" size="20">
-							</div>
+		<div class="panel-body">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 col-md-4">
+						<div class="form-group">
+							<label class="control-label">Code</label>
+							<input type="text" [(ngModel)]="cmpcode" class="form-control input-sm" size="20">
 						</div>
 					</div>
+					<div class="col-xs-8 col-sm-8 col-md-8">
+						<div class="form-group">
+							<label class="control-label">Name</label>
+							<input type="text" [(ngModel)]="cmpname" class="form-control input-sm" size="20">
+						</div>
+					</div>
+				</div>
 
-					<div class="row">
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Industries</label>
-								<select [(ngModel)]="industries" class="form-control">
+				<div class="row">
+					<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="form-group">
+							<label class="control-label">Industries</label>
+							<select [(ngModel)]="industries" class="form-control">
 									<option *ngFor="let row of industriesDT" [value]="row.key">
 										{{row.val}}
 									</option>
 								</select>
-							</div>
 						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Type Of Organisation</label>
-								<select [(ngModel)]="cmptype" class="form-control">
+					</div>
+					<div class="col-xs-6 col-sm-6 col-md-6">
+						<div class="form-group">
+							<label class="control-label">Type Of Organisation</label>
+							<select [(ngModel)]="cmptype" class="form-control">
 									<option *ngFor="let row of cmptypeDT" [value]="row.key">
 										{{row.val}}
 									</option>
 								</select>
-							</div>
 						</div>
 					</div>
+				</div>
 
-					<div class="form-group">
-						<label class="control-label">Description</label>
-						<textarea [(ngModel)]="cmpdesc" class="form-control small-text-box" cols="150" rows="5"></textarea>
-					</div>
-
-					<div class="form-group">
-						<label class="control-label">Logo</label>
-
-						<p-fileUpload name="cmplogo[]" url="http://localhost:3002/upload" (onUpload)="onUpload($event)" accept="image/*"
-							maxFileSize="1000000">
-							<template pTemplate type="content">
-								<ul *ngIf="uploadedFiles.length">
-									<li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
-								</ul>
-							</template>
-						</p-fileUpload>
-					</div>
-
-					<!--<div class="row">
-						<div class="col-xs-8 col-sm-8 col-md-8">
-							<div class="form-group">
-								<label class="control-label">Logo</label>
-								<input type="file" class="form-control input-sm" (change)="fileChangeEvent($event)" />
-							</div>
-						</div>
-						<div class="col-xs-4 col-sm-4 col-md-4">
-							<img class="imgFilePath" src="" width="100" height="100" />
-						</div>
-					</div>-->
+				<div class="form-group">
+					<label class="control-label">Description</label>
+					<textarea [(ngModel)]="cmpdesc" class="form-control small-text-box" cols="150" rows="5"></textarea>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Contact">
-				<h3 class="panel-title">Contact Details</h3>
-			</a>
-		</div>
-		<div id="Contact" class="panel-collapse collapse in">
-			<div class="panel-body">
-				<div class="col-md-12">
+		<div class="panel-body" style="width:800px; overflow:auto;">
+			<ul class="nav nav-tabs" id="tabs">
+				<li class="active"><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
+				<li><a data-target="#remarks" role="button" data-toggle="tab">Remarks</a></li>
+				<li *ngFor="let tab of tabListDT">
+					<a href="#{{tab.fldcode}}" role="button" data-toggle="tab">{{tab.fldname}}</a>
+				</li>
+				<li><a data-target="#myModal" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="contact">
 					<div class="row">
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Contact Person</label>
-								<input type="text" [(ngModel)]="contactperson" class="form-control input-sm" size="20">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Contact Person</label>
+										<input type="text" [(ngModel)]="contactperson" class="form-control input-sm" size="20">
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Designation</label>
+										<select [(ngModel)]="desigid" class="form-control">
+											<option *ngFor="let row of desigDT" [value]="row.key">
+												{{row.val}}
+											</option>
+										</select>
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Designation</label>
-								<select [(ngModel)]="desigid" class="form-control">
-									<option *ngFor="let row of desigDT" [value]="row.key">
-										{{row.val}}
-									</option>
-								</select>
-							</div>
-						</div>
-					</div>
 
-					<div class="row">
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Mobile No</label>
-								<input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
+							<div class="row">
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Mobile No</label>
+										<input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Alt Mobile No</label>
+										<input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Alt Mobile No</label>
-								<input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
-							</div>
-						</div>
-					</div>
 
-					<div class="row">
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Email ID</label>
-								<input type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20">
+							<div class="row">
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Email ID</label>
+										<input type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20">
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Alt Email ID</label>
+										<input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Alt Email ID</label>
-								<input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
-							</div>
-						</div>
-					</div>
 
-					<div class="form-group">
-						<label class="control-label">Address</label>
-						<textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
-					</div>
+							<div class="form-group">
+								<label class="control-label">Address</label>
+								<textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
+							</div>
 
-					<div class="row">
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Country</label>
-								<select [(ngModel)]="country" class="form-control">
-									<option *ngFor="let row of countryDT" [value]="row.key">
-										{{row.val}}
-									</option>
-								</select>
+							<div class="row">
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Country</label>
+										<select [(ngModel)]="country" class="form-control">
+											<option *ngFor="let row of countryDT" [value]="row.key">
+												{{row.val}}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">State</label>
+										<input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
+									</div>
+								</div>
 							</div>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">State</label>
-								<input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
-							</div>
-						</div>
-					</div>
 
-					<div class="row">
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">City</label>
-								<input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
-							</div>
-						</div>
-						<div class="col-xs-6 col-sm-6 col-md-6">
-							<div class="form-group">
-								<label class="control-label">Pin Code</label>
-								<input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
+							<div class="row">
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">City</label>
+										<input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-6 col-md-6">
+									<div class="form-group">
+										<label class="control-label">Pin Code</label>
+										<input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
+				<div class="tab-pane" id="remarks">
+					<div class="form-group">
+						<textarea [(ngModel)]="remarks" class="form-control small-text-box" cols="150" rows="5"></textarea>
+					</div>
+				</div>
 
-	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Remarks">
-				<h3 class="panel-title">Remarks</h3>
-			</a>
-		</div>
-		<div id="Remarks" class="panel-collapse collapse in">
-			<div class="form-group">
-				<textarea [(ngModel)]="remarks" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                <div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <div class="form-group">
+                                    <label>Key</label>
+                                    <input type="text" [(ngModel)]="tab.key" class="key form-control" (keyup)="getKeyAuto(tab)">
+                                </div>
+                            </div>
+                            <div class="col-xs-5">
+                                <div class="form-group">
+                                    <label>Value</label>
+                                    <input type="text" [(ngModel)]="tab.value" class="val form-control" (keydown.enter)="AddNewKeyVal(tab)" (keydown.tab)="AddNewKeyVal(tab)">
+                                </div>
+                            </div>
+                            <div class="col-xs-2" *ngIf="!tab.isedit">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button class="btn btn-theme btn-sm fa fa-plus" type="button" (click)="AddNewKeyVal(tab)"></button>
+                                </div>
+                            </div>
+                            <div class="col-xs-2" *ngIf="tab.isedit">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="UpdateKeyVal(tab)"></button>
+                                    <button class="btn btn-danger btn-sm fa fa-remove" type="button" (click)="ClearKeyVal(tab)"></button>
+                                </div>
+                            </div>
+                            <div class="col-xs-2">
+                                <button data-target="#myModal" data-toggle="modal" class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>
+                                <button class="btn btn-theme btn-sm fa fa-trash" type="button" (click)="DeleteTabs(tab)"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="tab.keyvaluedt.length">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-1">#</th>
+                                    <th class="col-sm-3">Key</th>
+                                    <th class="col-sm-5">Value</th>
+                                    <th class="col-sm-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let row of tab.keyvaluedt let i=index">
+                                <tr>
+                                    <td><span>{{i+1}}</span></td>
+                                    <td>{{row.key}}</td>
+                                    <td>{{row.value}}</td>
+                                    <td>
+                                        <button class="btn btn-theme btn-sm" (click)="EditKeyVal(tab, row)">
+                                            <i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-theme btn-sm" (click)="DeleteKeyVal(tab, row)">
+                                            <i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 			</div>
 		</div>
 	</div>
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Tabs</h4>
+            </div>
+            <div class="panel-body">
+                <div class='form-group'>
+                    <label>Tab Name</label>
+                    <input type="text" class="form-control tabname" tabindex="1" [(ngModel)]="fldname">
+                </div>
+            </div>
+            <div class="modal-footer" *ngIf="!isedittab">
+                <button type="button" class="btn btn-theme btn-sm" (click)="addNewTabs()" tabindex="16">
+                   <i class="fa fa-plus"></i> Add</button>
+            </div>
+            <div class="modal-footer" *ngIf="isedittab">
+                <button class="btn btn-theme btn-sm" (click)="UpdateTabs()"><i class="fa fa-edit"></i></button>
+            </div>
+        </div>
+    </div>
 </div>
