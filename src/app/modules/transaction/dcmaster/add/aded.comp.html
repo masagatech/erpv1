@@ -142,7 +142,7 @@
 						<td class="col-md-1"><input type="text" class="form-control textalign" value="" [(ngModel)]="Rate" /></td>
 						<td class="col-md-1"><input type="text" class="form-control textalign" value="" [(ngModel)]="Dis" (keyup)="ConfirmQty(Dis)" /></td>
 						<td class="col-md-2"><input type="text" class="form-control textalign" value="" [(ngModel)]="Amount" (keydown.enter)="NewRowAdd()" /></td>
-						<td class="col-md-2"><button type="button" class="btn btn-primary" text="Add" (click)="NewRowAdd()">Add</button></td>
+						<td class="col-md-2"><button type="button" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
 					</tr>
 				</tbody>
 				<tfoot>
@@ -162,7 +162,6 @@
 
 				</tfoot>
 			</table>
-			<button type="button" class="btn btn-primary" (click)=NewRowAdd()>Add</button>
 		</div>
 	</div>
 </div>

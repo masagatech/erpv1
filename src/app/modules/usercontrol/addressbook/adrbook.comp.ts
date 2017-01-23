@@ -96,8 +96,8 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "adrid": _adrid
         }).subscribe(result => {
             var dataset = result.data;
-            //_this.addrbooklist = dataset;
             if (dataset.length > 0) {
+                _this.addrbooklist = dataset;
                 var vid = _this.addrbooklist.filter(item => item.id);
                 if (_this.addrbooklist.length > 0) {
                     for (let items of vid) {
@@ -277,7 +277,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             if (dataset[0].funsave_addressbook.maxid > 0) {
                 var adridmaxid = dataset[0].funsave_addressbook.maxid;
                 that._msg.Show(messageType.success, "success", "Data save successfully");
-
                 $('#myModal').modal('hide');
                 that.getAddress(adridmaxid);
                 var vid = that.addrbooklist.filter(item => item.id);

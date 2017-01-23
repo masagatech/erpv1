@@ -1,4 +1,4 @@
-<div class="table-responsive" *ngIf="vendorlist.length">
+<div class="table-responsive">
     <p-dataTable #dt [value]="vendorlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
         [(selection)]="selectedRB1" expandableRows="true">
         <p-column field="code" header="Code" [style]="{'width':'50px','text-align':'left'}">

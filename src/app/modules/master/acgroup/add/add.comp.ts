@@ -6,6 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { acgroupadd } from "../../../../_service/acgroup/add/add-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -37,8 +38,9 @@ declare var $: any;
     loginUserName: string;
 
     //, private _autoservice:AutoService
-    constructor(private setActionButtons: SharedVariableService, private acgroupServies: acgroupadd,
-        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _userService: UserService) {
+    constructor(private _router: Router,private setActionButtons: SharedVariableService, private acgroupServies: acgroupadd,
+        private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _userService: UserService,
+        private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         //applicable From
         this.getApplicableFrom();
@@ -46,6 +48,7 @@ declare var $: any;
     }
     //Add Save Edit Delete Button
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -92,7 +95,7 @@ declare var $: any;
     getApplicableFrom() {
         this.acgroupServies.acApplicableFrom({
             "flag": "",
-            "createdby":this.loginUser.login
+            "createdby": this.loginUser.login
         }).subscribe(data => {
             this.financiallist = data.data;
         }, err => {
@@ -105,12 +108,13 @@ declare var $: any;
     //Auto Completed Nature
     getAutoCompleteNature(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ 
-                "type": "nature", 
-                "search": that.neturname, 
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.fyid,
-                "createdby":this.loginUser.login }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "nature",
+            "search": that.neturname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".neturofgr").autocomplete({
                 source: data.data,
                 width: 300,
@@ -142,7 +146,7 @@ declare var $: any;
             "neturid": 0,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fyid,
-            "createdby":this.loginUser.login
+            "createdby": this.loginUser.login
         }).subscribe(data => {
             var dataset = data.data;
             this.groupcode = dataset[0].groupcode;
@@ -213,20 +217,23 @@ declare var $: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+         if (evt === "back") {
+            this._router.navigate(['master/acgroup/acview']);
+        }
         if (evt === "save") {
             if (this.groupcode == "") {
-                alert("Please enter group code");
+                this._msg.Show(messageType.info, "info", "Please enter group code");
                 $(".groupcode").focus();
                 return;
 
             }
             else if (this.groupcode == "") {
-                alert("Please enter group name");
+                this._msg.Show(messageType.info, "info", "Please enter group name");
                 $(".groupName").focus();
                 return;
             }
             else if (this.neturid == 0) {
-                alert("Please select nature of group");
+                this._msg.Show(messageType.info, "info", "Please select nature of group");
                 $(".neturofgr").focus();
                 return;
             }
@@ -235,12 +242,12 @@ declare var $: any;
             ).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].funsave_acgroup.maxid === "exists") {
-                    alert(dataset[0].funsave_acgroup.msg);
+                    this._msg.Show(messageType.info, "info", dataset[0].funsave_acgroup.msg);
                     this.ClearControll();
                     return;
                 }
                 if (dataset[0].funsave_acgroup.maxid > 0) {
-                    alert(dataset[0].funsave_acgroup.msg);
+                    this._msg.Show(messageType.success, "success", dataset[0].funsave_acgroup.msg);
                     this.ClearControll();
                     return;
                 }

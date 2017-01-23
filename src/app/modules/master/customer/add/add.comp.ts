@@ -58,6 +58,13 @@ declare var $: any;
     fromval: any = 0;
     toval: any = 0;
     dis: any = 0;
+    parentcodename: any = "";
+    parentid: any = 0;
+    parentname: any = "";
+    itemsname: any = "";
+    itemsid: any = 0;
+    itemsdis: any = 0;
+    itemslist: any = [];
 
 
     //Other Module Declare
@@ -71,6 +78,9 @@ declare var $: any;
     accode: string = "";
     acinfiid: any = 0;
     acinfival: any = "";
+    salesmanlist: any = [];
+    salename: any = "";
+    salesid: any = 0;
 
     //user details
     loginUser: LoginUserModel;
@@ -179,14 +189,252 @@ declare var $: any;
         })
     }
 
+    getparentname(pid: number) {
+        this.CustAddServies.getcustomer({
+            "cmpid": this.loginUser.cmpid,
+            "flag": "parentname",
+            "parentid": pid,
+            "createdby": this.loginUser.login
+        }).subscribe(result => {
+            this.parentname = "";
+            this.parentname = result.data[0][0].custname;
+        }, err => {
+            console.log("error");
+        }, () => {
+            //Complete
+        })
+    }
+
+    getAutoCompleteItems(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "product",
+            "search": that.itemsname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".itemsname").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.itemsid = ui.item.value;
+                    me.itemsname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
+    //Add Attribute Items
+    Additems() {
+        if (this.itemsid > 0) {
+            if ($(".itemdis").val() == "") {
+                this._msg.Show(messageType.info, "info", "Please Enter Items Discount");
+                $(".itemdis").focus();
+                return;
+            }
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.itemslist.length; i++) {
+                if (this.itemslist[i].itemsname == this.itemsname && this.itemslist[i].itemsdis == this.itemsdis) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.itemslist.push({
+                    'itemsname': this.itemsname,
+                    'itemsdis': this.itemsdis,
+                    'itemsid': this.itemsid
+                });
+                this.itemsname = "";
+                this.itemsdis = "";
+                this.itemsid = 0;
+                $(".itemsname").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Items");
+                $(".itemsname").focus();
+                return;
+            }
+
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valid items name");
+            $(".itemsname").focus();
+            return;
+        }
+
+
+    }
+
+    getAutoCompleteSales(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "product",
+            "search": that.salename,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".sales").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.saleid = ui.item.value;
+                    me.salename = ui.item.label;
+                    me.SalemanAdd(me.saleid);
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+        })
+    }
+
+    saletab() {
+        setTimeout(function () {
+            this.salename = "";
+            $(".sales").focus();
+        }, 0);
+    }
+
+    SalemanAdd(salesid: number) {
+        if (salesid > 0) {
+            this.Duplicateflag = true;
+            if (this.salesmanlist.length > 0) {
+                for (var i = 0; i < this.salesmanlist.length; i++) {
+                    if (this.salesmanlist[i].salename == this.salename) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
+                }
+            }
+
+            if (this.Duplicateflag == true) {
+                this.salesmanlist.push({
+                    'salename': this.salename,
+                    'value': salesid
+                });
+                this.salename = "";
+                salesid = 0;
+                $(".sales").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Salesman");
+                $(".sales").focus();
+                return;
+            }
+
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            $(".sales").focus();
+            return;
+        }
+    }
+
+    RemoveSale(row: any = []) {
+        var index = -1;
+        for (var i = 0; i < this.salesmanlist.length; i++) {
+            if (this.salesmanlist[i].value === row.value) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.salesmanlist.splice(index, 1);
+        $(".sales").focus();
+    }
+
+    itemdis() {
+        setTimeout(function () {
+            this.itemsname = "";
+            this.itemsdis = "";
+            this.itemsid = 0;
+            $(".itemsname").focus();
+        }, 0);
+    }
+
+    itemsRemove(row: any = []) {
+        var index = -1;
+        for (var i = 0; i < this.itemslist.length; i++) {
+            if (this.itemslist[i].itemsname === row.itemsname) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.itemslist.splice(index, 1);
+        $(".itemsname").focus();
+    }
+
+    //Attribute Auto Extender
+    getAutoCompleteParentCode(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "custcode",
+            "search": that.parentcodename,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".parentcode").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.parentid = ui.item.value;
+                    me.parentcodename = ui.item.label;
+                    me.getparentname(me.parentid);
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
     //Add Attribute Items
     AddNewdisattr() {
         if (this.disattrid > 0) {
             this.Duplicateflag = true;
-            for (var i = 0; i < this.disattrlist.length; i++) {
-                if (this.disattrlist[i].disattrname == this.disattrname) {
-                    this.Duplicateflag = false;
-                    break;
+            if (this.disattrlist.length > 0) {
+                for (var i = 0; i < this.disattrlist.length; i++) {
+                    if (this.disattrlist[i].disattrname == this.disattrname &&
+                        this.disattrlist[i].fromval == this.fromval && this.disattrlist[i].toval == this.toval
+                        && this.disattrlist[i].dis == this.dis) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
                 }
             }
             if (this.Duplicateflag == true) {
@@ -212,7 +460,7 @@ declare var $: any;
 
         }
         else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            this._msg.Show(messageType.info, "info", "Please enter valid attribute name");
             $(".disattr").focus();
             return;
         }
@@ -238,10 +486,12 @@ declare var $: any;
     AttributeAdd() {
         if (this.attrid > 0) {
             this.Duplicateflag = true;
-            for (var i = 0; i < this.attrlist.length; i++) {
-                if (this.attrlist[i].attrname == this.attrname) {
-                    this.Duplicateflag = false;
-                    break;
+            if (this.attrlist.length > 0) {
+                for (var i = 0; i < this.attrlist.length; i++) {
+                    if (this.attrlist[i].attrname == this.attrname) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
                 }
             }
             if (this.Duplicateflag == true) {
@@ -282,8 +532,6 @@ declare var $: any;
         this.attrlist.splice(index, 1);
         $(".attr").focus();
     }
-
-
 
     //File Upload Start 
     onUploadStart(e) {
@@ -343,10 +591,12 @@ declare var $: any;
             return;
         }
         that.Duplicateflag = true;
-        for (var i = 0; i < that.keyvallist.length; i++) {
-            if (that.keyvallist[i].key == that.key && that.keyvallist[i].value == that.value) {
-                that.Duplicateflag = false;
-                break;
+        if (that.keyvallist.length > 0) {
+            for (var i = 0; i < that.keyvallist.length; i++) {
+                if (that.keyvallist[i].key == that.key && that.keyvallist[i].value == that.value) {
+                    that.Duplicateflag = false;
+                    break;
+                }
             }
         }
         if (that.Duplicateflag == true) {
@@ -610,16 +860,16 @@ declare var $: any;
         setTimeout(function () {
             $(".ctrl").val("");
             $(".ctrl").focus();
-        }, 100)
+        }, 0)
     }
 
     //Add New Controll Center
     AddNewCtrl() {
-        if (this.ctrlname == "") {
-            this._msg.Show(messageType.info, "info", "Please enter control name");
-            $(".ctrl").focus()
-            return;
-        }
+        // if (this.ctrlname == "") {
+        //     this._msg.Show(messageType.info, "info", "Please enter control name");
+        //     $(".ctrl").focus()
+        //     return;
+        // }
         this.CustAddServies.getctrldetail({
             "id": this.ctrlid,
             "cmpid": this.loginUser.cmpid
@@ -702,7 +952,8 @@ declare var $: any;
             "remark": this.remark,
             "ctrl": this.Ctrljson(),
             "createdby": this.loginUser.login,
-            "adrid": this.adrbookid
+            "adrid": this.adrbookid,
+            "parentid": this.parentid == "" ? 0 : this.parentid
         }
         console.log(param);
         return param;
@@ -769,7 +1020,7 @@ declare var $: any;
         setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
-        }, 100);
+        }, 0);
     }
 
     //Account Info Tab Click Event
@@ -778,7 +1029,7 @@ declare var $: any;
             $(".key").val("");
             $(".val").val("");
             $(".key").focus();
-        }, 100);
+        }, 0);
     }
 
     //Warehose Tab Click Bind

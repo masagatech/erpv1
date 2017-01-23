@@ -88,18 +88,16 @@
 								(keyup)="getAutoCompleteattr(this)" />
 						</div>
 					</div>
-				</div>
-				<div class="col-md-10">
-					<div class="col-md-6" *ngFor="let row of attrlist">
-						<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-							<span class="tag label label-info" style="font-size: 10px;">{{row.attname}} 
+					<div class="col-md-10">
+						<div class="col-md-6" *ngFor="let row of attrlist">
+							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+								<span class="tag label label-info" style="font-size: 10px;">{{row.attname}} 
 							<span data-role="remove" (click)="Removeattr(row)"></span>
-							</span>
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
-
-
 			</div>
 			<!--Key Data-->
 			<div class="tab-pane" id="keydata">

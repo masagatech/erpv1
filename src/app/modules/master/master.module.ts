@@ -54,6 +54,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'transpoter', loadChildren: () => System.import('./transpoter').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]
@@ -68,7 +73,7 @@ const routerConfig = [
     MasterComp,
     MasterDashboardComp,
   ],
-  
+
   providers: [AuthGuard]
 })
 
