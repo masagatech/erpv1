@@ -247,6 +247,7 @@ declare var $: any;
                 }
                 if (dataset[0].funsave_acgroup.maxid > 0) {
                     this._msg.Show(messageType.success, "success", dataset[0].funsave_acgroup.msg);
+                     $(".code").removeAttr('disabled', 'disabled');
                     this.ClearControll();
                     return;
                 }

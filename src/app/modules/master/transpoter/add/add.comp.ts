@@ -59,6 +59,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        $(".code").removeAttr('disabled', 'disabled');
         $(".code").focus();
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
@@ -123,6 +124,8 @@ declare var $: any;
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
+            debugger;
+            that.adrcsvid="";
             if (_Transdata[0].adr.length > 0) {
                 for (let items of _Transdata[0].adr) {
                     that.adrcsvid += items.adrid + ',';
@@ -138,9 +141,10 @@ declare var $: any;
 
     paramterjson() {
         var param = {
+            "transid":this.transid,
             "code": this.accode,
             "transname": this.transname,
-            "descp": this.desc,
+            "desc": this.desc,
             "adr": this.adrbookid,
             "docfile": this.docfile,
             "fy": this.loginUser.fyid,
@@ -180,6 +184,7 @@ declare var $: any;
                 else if (result.data[0].funsave_transpoter.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data Save Successfully");
                     this.clearcontrol();
+                    $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
                     return;
                 }
@@ -191,15 +196,16 @@ declare var $: any;
 
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
-            // $('input').removeAttr('disabled');
-            // $('select').removeAttr('disabled');
-            // $('textarea').removeAttr('disabled');
-            // this.actionButton.find(a => a.id === "save").hide = false;
-            // this.actionButton.find(a => a.id === "save").hide = false;
-            // this.actionButton.find(a => a.id === "save").hide = false;
-            // this.actionButton.find(a => a.id === "edit").hide = true;
-            // $(".code").focus();
-            // this.actionButton.find(a => a.id === "save").hide = false;
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+            $(".code").attr('disabled', 'disabled');
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+            $(".tranname").focus();
+            this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
         }

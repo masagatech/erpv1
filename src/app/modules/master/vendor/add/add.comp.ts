@@ -395,6 +395,7 @@ declare var $: any;
                 }
                 if (dataset[0].funsave_vendor.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data save successfully");
+                    $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
                     this.ClearControll();
                 }

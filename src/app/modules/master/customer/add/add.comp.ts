@@ -65,6 +65,7 @@ declare var $: any;
     itemsid: any = 0;
     itemsdis: any = 0;
     itemslist: any = [];
+    counter: number = 0;
 
 
     //Other Module Declare
@@ -81,6 +82,9 @@ declare var $: any;
     salesmanlist: any = [];
     salename: any = "";
     salesid: any = 0;
+    transname: any = "";
+    transid: any = 0;
+    translist: any = [];
 
     //user details
     loginUser: LoginUserModel;
@@ -190,6 +194,38 @@ declare var $: any;
         })
     }
 
+    //Attribute Auto Extender
+    getAutoCompletetrans(me: any) {
+        var that = this;
+        that._autoservice.getAutoData({
+            "type": "transpoter",
+            "search": that.transname,
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fyid,
+            "createdby": that.loginUser.login
+        }).subscribe(data => {
+            $(".transname").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.transid = ui.item.value;
+                    me.transname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            //Complete
+        })
+    }
+
     getparentname(pid: number) {
         this.CustAddServies.getcustomer({
             "cmpid": this.loginUser.cmpid,
@@ -237,6 +273,67 @@ declare var $: any;
         })
     }
 
+    //attribute list Add Div
+    TranspoterAdd() {
+        if (this.transid > 0) {
+            this.Duplicateflag = true;
+            if (this.translist.length > 0) {
+                for (var i = 0; i < this.translist.length; i++) {
+                    if (this.translist[i].transname == this.transname) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.translist.push({
+                    'transname': this.transname,
+                    'value': this.transid
+                });
+                this.transname = "";
+                $(".trans").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate transpoter");
+                $(".trans").focus();
+                return;
+            }
+
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied transpoter name");
+            $(".trans").focus();
+            return;
+        }
+
+    }
+
+    transtab() {
+        setTimeout(function () {
+            this.transid = 0;
+            this.transname = "";
+            $(".transname").focus();
+        }, 0);
+
+    }
+
+    //Remove Attribute
+    RemoveTranspoter(row) {
+        var index = -1;
+        for (var i = 0; i < this.translist.length; i++) {
+            if (this.translist[i].value === row.value) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.translist.splice(index, 1);
+        $(".trans").focus();
+    }
+
+
     //Add Attribute Items
     Additems() {
         if (this.itemsid > 0) {
@@ -256,8 +353,10 @@ declare var $: any;
                 this.itemslist.push({
                     'itemsname': this.itemsname,
                     'itemsdis': this.itemsdis,
-                    'itemsid': this.itemsid
+                    'itemsid': this.itemsid,
+                    'counter': this.counter
                 });
+                this.counter++;
                 this.itemsname = "";
                 this.itemsdis = "";
                 this.itemsid = 0;
@@ -379,7 +478,7 @@ declare var $: any;
     itemsRemove(row: any = []) {
         var index = -1;
         for (var i = 0; i < this.itemslist.length; i++) {
-            if (this.itemslist[i].itemsname === row.itemsname) {
+            if (this.itemslist[i].counter === row.counter) {
                 index = i;
                 break;
             }
@@ -426,15 +525,21 @@ declare var $: any;
 
     //Add Attribute Items
     AddNewdisattr() {
+        if (this.fromval > this.toval) {
+            this._msg.Show(messageType.info, "info", "Wrong entry From greater than to");
+            $(".fromval").focus();
+            return;
+        }
         if (this.disattrid > 0) {
             this.Duplicateflag = true;
             if (this.disattrlist.length > 0) {
                 for (var i = 0; i < this.disattrlist.length; i++) {
                     if (this.disattrlist[i].disattrname == this.disattrname &&
-                        this.disattrlist[i].fromval == this.fromval && this.disattrlist[i].toval == this.toval
-                        && this.disattrlist[i].dis == this.dis) {
+                        parseInt(this.disattrlist[i].toval) < parseInt(this.fromval)) {
+                        this.Duplicateflag = true;
+                    }
+                    else {
                         this.Duplicateflag = false;
-                        break;
                     }
                 }
             }
@@ -444,8 +549,11 @@ declare var $: any;
                     'id': this.disattrid,
                     'fromval': this.fromval,
                     'toval': this.toval,
-                    'dis': this.dis
+                    'discou': this.dis,
+                    'counter': this.counter
                 });
+                this.counter++;
+                console.log(this.counter);
                 this.disattrname = "";
                 this.fromval = "";
                 this.disattrid = 0;
@@ -471,7 +579,7 @@ declare var $: any;
     disRemoveattr(row) {
         var index = -1;
         for (var i = 0; i < this.disattrlist.length; i++) {
-            if (this.disattrlist[i].disattrname === row.disattrname) {
+            if (this.disattrlist[i].counter === row.counter) {
                 index = i;
                 break;
             }
@@ -619,6 +727,17 @@ declare var $: any;
         }
     }
 
+    createkeydatajson() {
+        var keydata = [];
+        for (let items of this.keyvallist) {
+            keydata.push({
+                "id": items.keyid,
+                "val": items.value
+            });
+        }
+        return keydata;
+    }
+
     //Delete Accounting Row
     DeleteRow(row) {
         var index = -1;
@@ -652,10 +771,15 @@ declare var $: any;
         this.adrbookid = [];
         this.attrlist = [];
         this.disattrlist = [];
+        this.itemslist = [];
+        this.translist = [];
         this.debit = 0;
         this.credit = 0;
         this.days = 0;
         this.ope = "";
+        this.parentname = "";
+        this.parentid = 0;
+        this.parentcodename = "";
         this.addressBook.ClearArray();
 
     }
@@ -669,15 +793,21 @@ declare var $: any;
             "custid": id,
             "createdby": this.loginUser.login
         }).subscribe(result => {
-            var _custdata = result.data[0][0]._custdata;
-            var _uploadedfile = result.data[0][0]._uploadedfile;
-            var _docfile = result.data[0][0]._docfile;
+              var resultdata=result.data[0][0]
+            var _custdata = resultdata._custdata;
+            var _uploadedfile = resultdata._uploadedfile;
+            var _docfile = resultdata._docfile;
+          
 
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].code;
-            that.Custname = _custdata[0].custname;
-            that.keyvallist = _custdata[0].keyval;
-            that.attrlist = _custdata[0].attr;
+            that.Custname =  _custdata[0].custname;
+            that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
+            that.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
+            that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
+            that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
+            that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
+            that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
 
             if (_custdata[0].ctrl.length > 0) {
                 that.Ctrllist = _custdata[0].ctrl;
@@ -693,6 +823,9 @@ declare var $: any;
             that.days = _custdata[0].days;
             that.remark = _custdata[0].remark;
             that.adrid = _custdata[0].adrid;
+            that.parentid = _custdata[0].pid;
+            that.parentname = _custdata[0].pcode;
+            that.parentcodename = _custdata[0].pname;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
@@ -738,24 +871,48 @@ declare var $: any;
         var Ctrllistdet = [];
         for (let ctrid of this.Ctrllist) {
             Ctrllistdet.push({
-                "ctrlname": ctrid.ctrlname, "proftcode": ctrid.proftcode,
-                "costcode": ctrid.costcode, "profflag": ctrid.profflag, "constflag": ctrid.constflag
+                "id": ctrid.autoid,
+                "pcode": ctrid.proftcode,
+                "ccode": ctrid.costcode
             });
         }
         return Ctrllistdet;
     }
 
-    //Create a Json in controll
+    //Create a Json in discount
     discountjson() {
         var dislist = [];
         for (let item of this.disattrlist) {
             dislist.push({
-                "id": item.id, "from": item.fromval,
-                "to": item.toval, "dis": item.dis
+                "id": item.id, "froms": item.fromval,
+                "tos": item.toval, "discou": item.dis
             });
         }
         console.log(dislist);
         return dislist;
+    }
+
+    //Create a Json in items discount
+    itemsdiscountjson() {
+        var itemdislist = [];
+        for (let item of this.itemslist) {
+            itemdislist.push({
+                "id": item.itemsid, "val": item.itemsdis
+            });
+        }
+        return itemdislist;
+
+    }
+
+    //Create a Json in items transpoter
+    transpoterjson() {
+        var translist = [];
+        for (let item of this.translist) {
+            translist.push({
+                "id": item.value
+            });
+        }
+        return translist;
     }
 
     //Autocompleted Attribute Name
@@ -863,17 +1020,23 @@ declare var $: any;
         }, 0)
     }
 
+    createattrjson() {
+        var attrid = [];
+        if (this.attrlist.length > 0) {
+            for (let items of this.attrlist) {
+                attrid.push({ "id": items.value });
+            }
+            return attrid;
+        }
+    }
+
     //Add New Controll Center
     AddNewCtrl() {
-        // if (this.ctrlname == "") {
-        //     this._msg.Show(messageType.info, "info", "Please enter control name");
-        //     $(".ctrl").focus()
-        //     return;
-        // }
         this.CustAddServies.getctrldetail({
             "id": this.ctrlid,
             "cmpid": this.loginUser.cmpid
         }).subscribe(result => {
+            console.log(result.data);
             if (result.data.length > 0) {
                 this.Duplicateflag = true;
                 for (var i = 0; i < this.Ctrllist.length; i++) {
@@ -887,9 +1050,9 @@ declare var $: any;
                         "ctrlname": result.data[0].ctrlname,
                         "proftcode": result.data[0].proftcode,
                         "costcode": result.data[0].costcode,
-                        "profflag": this.profflag,
-                        "constflag": this.constflag
+                        "id": result.data[0].autoid,
                     });
+                    console.log(this.Ctrllist);
                     this.ctrlhide = false;
                     this.ctrlid = 0;
                     this.ctrlname = "";
@@ -940,10 +1103,13 @@ declare var $: any;
             "code": this.code,
             "custname": this.Custname,
             "warehouse": this.warehousejson(),
-            "keyval": this.keyvallist,
+            "keyval": this.createkeydatajson(),
             "dis": this.discountjson(),
-            "attr": this.attrlist,
+            "attr": this.createattrjson(),
             "docfile": this.docfile,
+            "itemsdis": this.itemsdiscountjson(),
+            "trans": this.transpoterjson(),
+            "sales": [],
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
@@ -991,6 +1157,7 @@ declare var $: any;
                 if (dataset[0].funsave_customer.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data save successfully");
                     this.ClearControll();
+                    $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
                 }
             }, err => {

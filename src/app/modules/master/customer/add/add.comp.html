@@ -57,7 +57,7 @@
 			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab">Attribute</a></li>
 			<li><a data-target="#itemdis" role="button" (click)="itemdis()" data-toggle="tab">Item Discount</a></li>
 			<li><a data-target="#dis" role="button" (click)="discount()" data-toggle="tab">Discount</a></li>
-			<li><a data-target="#trans" role="button" data-toggle="tab">Transpoter</a></li>
+			<li><a data-target="#trans" role="button" (click)="transtab()" data-toggle="tab">Transpoter</a></li>
 			<li><a data-target="#sales" role="button" (click)="saletab()" data-toggle="tab">Salesman</a></li>
 			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab">Warehouse</a></li>
 			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab">Control Center</a></li>
@@ -152,19 +152,19 @@
 								<div class="col-md-2">
 									<div class='form-group'>
 										<label>From</label>
-										<input type="text" class="form-control val text-right" tabindex="6" [(ngModel)]="fromval">
+										<input type="text" class="form-control fromval text-right" tabindex="6" [(ngModel)]="fromval">
 									</div>
 								</div>
 								<div class="col-md-2">
 									<div class='form-group'>
 										<label>To</label>
-										<input type="text" class="form-control val text-right" tabindex="6" [(ngModel)]="toval">
+										<input type="text" class="form-control toval text-right" tabindex="6" [(ngModel)]="toval">
 									</div>
 								</div>
 								<div class="col-md-2">
 									<div class='form-group'>
 										<label>Discount (%)</label>
-										<input type="text" class="form-control val text-right" tabindex="6" (keyup.enter)="AddNewdisattr()" [(ngModel)]="dis">
+										<input type="text" class="form-control disval text-right" tabindex="6" (keyup.enter)="AddNewdisattr()" [(ngModel)]="dis">
 									</div>
 								</div>
 								<div class="col-md-1">
@@ -192,7 +192,7 @@
 										<td>{{row.disattrname}}</td>
 										<td>{{row.fromval}}</td>
 										<td>{{row.toval}}</td>
-										<td>{{row.dis}}</td>
+										<td>{{row.discou}}</td>
 										<td><button class="btn btn-theme btn-sm" (click)="disRemoveattr(row)"><i class="fa fa-trash"></i></button></td>
 									</tr>
 								</tbody>
@@ -223,7 +223,22 @@
 			</div>
 			<div class="tab-pane" id="trans">
 				<div class="row">
-					Transpoter
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Transpoter</label>
+							<input type="text=" class="form-control transname" tabindex="6" value="" [(ngModel)]="transname" (keyup.enter)="TranspoterAdd()"
+								(keyup)="getAutoCompletetrans(this)" />
+						</div>
+					</div>
+					<div class="col-md-10">
+						<div class="col-md-6" *ngFor="let row of translist">
+							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+								<span class="tag label label-info" style="font-size: 10px;">{{row.transname}} 
+							<span data-role="remove" (click)="RemoveTranspoter(row)"></span>
+								</span>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="tab-pane" id="ware">

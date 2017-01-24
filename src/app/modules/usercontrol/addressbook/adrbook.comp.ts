@@ -81,6 +81,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         }
         else {
             this._msg.Show(messageType.info, "info", "Please enter the code");
+            $('#myModal').modal('hide');
             return;
         }
 
