@@ -115,6 +115,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        $(".code").removeAttr('disabled', 'disabled');
         $(".code").focus();
         this.getcustomerdrop();
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -675,7 +676,6 @@ declare var $: any;
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].code;
             that.Custname = _custdata[0].custname;
-            //that.warehouselist = _custdata[0].warehouseid;
             that.keyvallist = _custdata[0].keyval;
             that.attrlist = _custdata[0].attr;
 
@@ -1003,11 +1003,12 @@ declare var $: any;
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
+            $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-            $(".code").focus();
+            $(".firstname").focus();
             this.issh = 0;
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {

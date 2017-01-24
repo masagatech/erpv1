@@ -96,12 +96,13 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "adrid": _adrid
         }).subscribe(result => {
             var dataset = result.data;
+            debugger;
             if (dataset.length > 0) {
                 _this.addrbooklist = dataset;
                 var vid = _this.addrbooklist.filter(item => item.id);
                 if (_this.addrbooklist.length > 0) {
                     for (let items of vid) {
-                        if (items.id === _adrid) {
+                        if (items.id == _adrid) {
                             _this.editmodeflag = true;
                         }
                     }
