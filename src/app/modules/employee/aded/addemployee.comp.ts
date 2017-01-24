@@ -4,7 +4,7 @@ import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { EmpService } from '../../../_service/employee/emp-service' /* add reference for add employee */
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
-import { DynamicFieldsService } from '../../../_service/dynamicfields/dynfields-service' /* add reference for master of master */
+import { DynamicFieldsService } from '../../../_service/dynamicfields/dynfields-service' /* add reference for dynamic fields */
 import { ActionAccess } from '../../../_service/actionaccess-service' /* add reference for action button */
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../_service/user/user-service';
@@ -75,16 +75,20 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     salarymodeDT: any[];
     ctrlcenterDT: any[];
 
-    ctrlcenterList: any = [];
-    tabListDT: any = [];
-
     DuplicateCtrlCenter: boolean = false;
 
+    ctrlcenterList: any = [];
+    tabListDT: any = [];
+    selectedtab: any = [];
+    isedittab: boolean = false;
+
     fldname: string = "";
-    key: any = "";
-    value: any = "";
+    keyid: number = 0;
+    key: string = "";
+    value: string = "";
     DuplicateFlag: boolean = false;
-    keyValueList: any = [];
+
+    // Page Pre Render
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _empservice: EmpService, private _actaccsservice: ActionAccess, private _userService: UserService,
@@ -100,9 +104,108 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.fillDropDownList("Designation");
         this.fillDropDownList("SalaryMode");
         this.fillCtrlCenterDDL();
-
-        this.getDynamicFields();
     }
+
+    // Page Load
+
+    ngOnInit() {
+        var that = this;
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['empid'] !== undefined) {
+                this.title = "Add Employee";
+
+                // this._actaccsservice.setActionButton('emp', ["edit", "delete", "view"], function (actionButton: any) {
+                //     that.actionButton = actionButton;
+                //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+                // });
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.empid = params['empid'];
+                this.getEmpDataById(this.empid);
+
+                $('button').attr('disabled', 'disabled');
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+            }
+            else {
+                this.title = "Edit Employee";
+
+                // this._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
+                //     that.actionButton = actionButton;
+                //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+                // });
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                this.clearEmployeeFields();
+
+                $('button').removeAttr('disabled');
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+
+                setTimeout(function () {
+                    var date = new Date();
+                    var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+
+                    // Doc Date 
+
+                    $(".dob").datepicker({
+                        dateFormat: "dd/mm/yy",
+                        autoclose: true,
+                        setDate: new Date()
+                    });
+
+                    $(".dob").datepicker('setDate', today);
+                }, 0);
+            }
+        });
+    }
+
+    // add, edit, delete button
+
+    actionBarEvt(evt) {
+        var that = this;
+
+        if (evt === "view") {
+            that._router.navigate(['employee/viewemployee']);
+        }
+        else if (evt === "save") {
+            that.saveEmployeeData();
+        } else if (evt === "edit") {
+            $('button').removeAttr('disabled');
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+
+            $('#uname').attr('disabled', 'disabled');
+
+            // that._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
+            //     that.actionButton = actionButton;
+            //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+            // });
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
+    // Get Employee Auto Complete
 
     getUserAuto(me: any) {
         var that = this;
@@ -129,6 +232,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             // console.log("Complete");
         })
     }
+
+    // Fill Gender, MaritalStatus, BloodGroup, Country, Department, Designation, SalaryMode Drop Down
 
     fillDropDownList(group) {
         this._commonservice.getMOM({ "group": group }).subscribe(data => {
@@ -169,6 +274,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         })
     }
 
+    // Get Control Center Drop Down
+
     fillCtrlCenterDDL() {
         this._commonservice.getAutoData({ "type": "ctrlddl" }).subscribe(data => {
             this.ctrlcenterDT = data.data;
@@ -178,6 +285,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             console.log("Complete");
         })
     }
+
+    // Get Control Center Auto Complete
 
     getCtrlCenterAuto(me: any) {
         var that = this;
@@ -205,7 +314,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    //Add New Controll Center
+    //Add Control Center
+
     addNewCtrlCenter() {
         var that = this;
 
@@ -249,6 +359,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.ctrlcenterList.splice(this.ctrlcenterList.indexOf(row), 1);
     }
 
+    //Reset Employee Fields
+
     clearEmployeeFields() {
         $('input').attr('value', '');
         $('select').attr('value', '');
@@ -263,6 +375,187 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     //     this.attachfile = e.files[0].path;
     //     this.actionButton.find(a => a.id === "save").enabled = true;
     // }
+
+    // Add Dynamic Tab
+
+    openTabPopup() {
+        setTimeout(function () {
+            $(".tabname").focus();
+        }, 500);
+    }
+
+    addNewTabs() {
+        var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
+        this.tabListDT.push({ "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "keyvaluedt": [] });
+        this.fldname = "";
+        $('#myModal').modal('hide');
+        this.isedittab = false;
+    }
+
+    EditTabs(tab) {
+        this.selectedtab = tab;
+        this.fldname = tab.fldname;
+        this.isedittab = true;
+    }
+
+    UpdateTabs() {
+        var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
+        this.selectedtab.key = fldcode;
+        this.selectedtab.fldname = this.fldname;
+        $('#myModal').modal('hide');
+        this.isedittab = false;
+        this.fldname = "";
+    }
+
+    ClearTabs() {
+        this.fldname = "";
+        this.isedittab = false;
+    }
+
+    DeleteTabs(tab, row) {
+        tab.keyvaluedt.splice(tab.keyvaluedt.indexOf(row), 1);
+        $(".key").focus();
+    }
+
+    // Add Key and Value for Dynamic Tab
+
+    getKeyAuto(tab) {
+        var that = this;
+
+        that._commonservice.getAutoData({ "type": "attribute", "search": tab.key, "filter": "Employee Attribute" }).subscribe(data => {
+            $(".key").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    tab.keyid = ui.item.value;
+                    tab.key = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    AddNewKeyVal(tab) {
+        var that = this;
+
+        if (tab.key === "") {
+            that._msg.Show(messageType.info, "info", "Please enter key");
+            $(".key").focus();
+        }
+        else if (tab.value === "") {
+            that._msg.Show(messageType.info, "info", "Please enter value");
+            $(".val").focus();
+        }
+        else {
+            that.DuplicateFlag = true;
+
+            for (var i = 0; i < tab.keyvaluedt.length; i++) {
+                if (tab.keyvaluedt[i].key === tab.key && tab.keyvaluedt[i].value === tab.value) {
+                    that.DuplicateFlag = false;
+                }
+            }
+
+            if (that.DuplicateFlag === true) {
+                tab.keyvaluedt.push({
+                    'key': tab.key,
+                    'value': tab.value
+                });
+
+                tab.key = "";
+                tab.value = "";
+                $(".key").focus();
+            }
+            else {
+                that._msg.Show(messageType.info, "info", "Duplicate key and value");
+                $(".key").focus();
+                return;
+            }
+        }
+
+        tab.isedit = false;
+    }
+
+    EditKeyVal(tab, row) {
+        tab.selectedrow = row;
+        tab.key = row.key;
+        tab.value = row.value;
+        tab.isedit = true;
+    }
+
+    UpdateKeyVal(tab) {
+        tab.selectedrow.key = tab.key;
+        tab.selectedrow.value = tab.value;
+        tab.isedit = false;
+        this.ClearKeyVal(tab);
+    }
+
+    ClearKeyVal(tab) {
+        tab.key = "";
+        tab.value = "";
+        tab.isedit = false;
+    }
+
+    DeleteKeyVal(tab, row) {
+        tab.keyvaluedt.splice(tab.keyvaluedt.indexOf(row), 1);
+        $(".key").focus();
+    }
+
+    // Save Dynamic Fields
+
+    saveDynamicFields(parentid) {
+        var that = this;
+
+        for (var i = 0; i < that.tabListDT.length; i++) {
+            var saveDynFlds = {
+                "autoid": that.tabListDT[i].autoid,
+                "fldcode": that.tabListDT[i].fldcode,
+                "fldname": that.tabListDT[i].fldname,
+                "fldvalue": that.tabListDT[i].keyvaluedt === null ? "" : that.tabListDT[i].keyvaluedt,
+                "module": "Employee",
+                "parentid": parentid,
+                "cmpid": that.loginUser.cmpid,
+                "fyid": that.loginUser.fyid,
+                "uidcode": that.loginUser.login
+            }
+
+            that._dynfldserive.saveDynamicFields(saveDynFlds).subscribe(data => {
+                var dataResult = data.data;
+            }, err => {
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            });
+        }
+    }
+
+    // Get Dynamic Fields
+
+    getDynamicFields(pempid: number) {
+        var that = this;
+
+        that._dynfldserive.getDynamicFields({
+            "module": "Employee", "parentid": pempid,
+            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
+        }).subscribe(data => {
+            that.tabListDT = data.data;
+        }, err => {
+            console.log(err);
+        }, () => {
+            // console.log("Complete");
+        });
+    }
+
+    // Save Employee
 
     saveEmployeeData() {
         var primarycc: any = [];
@@ -313,8 +606,12 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
         this._empservice.saveEmployee(saveEmp).subscribe(data => {
             var dataResult = data.data;
-            if (dataResult[0].funsave_employee.doc != "-1") {
+
+            if (dataResult[0].funsave_employee.msgid != "-1") {
                 var msg = dataResult[0].funsave_employee.msg;
+                var parentid = dataResult[0].funsave_employee.keyid;
+
+                this.saveDynamicFields(parentid);
                 this._msg.Show(messageType.success, "Success", msg);
 
                 this._router.navigate(['/employee/viewemployee']);
@@ -329,6 +626,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             // console.log("Complete");
         });
     }
+
+    // Get Employee
 
     getEmpDataById(pempid: number) {
         this._empservice.getEmployee({ "flag": "id", "empid": pempid }).subscribe(data => {
@@ -365,7 +664,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             this.noticedays = EmpDetails[0].noticedays;
             this.doj = EmpDetails[0].doj;
             this.pctrlcenterid = EmpDetails[0].pctrlid;
-            this.ctrlcenterList = SecondayCC; //EmpDetails[0].ctrlcenter === null ? [] : EmpDetails[0].ctrlcenterdt;
+            this.ctrlcenterList = SecondayCC;
+
+            this.getDynamicFields(pempid);
         }, err => {
             console.log("Error");
         }, () => {
@@ -373,201 +674,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    addNewTabs() {
-        this.tabListDT.push({ "fldcode": this.fldname, "fldname": this.fldname });
-
-        // for (var i = 0; i < this.tabListDT.length; i++) {
-        //     $('<li><a href="#' + this.tabListDT[0].fldcode + '" data-toggle="tab">' + this.tabListDT[0].fldname + '</a></li>').appendTo('#tabs');
-        //     //$('<div class="tab-pane" id="' + that.tabListDT[i].fldcode + '"></div>').appendTo('.tab-content');
-        // }
-
-        $('#tabs a:last').tab('show');
-        this.fldname = "";
-        $('#myModal').modal('hide');
-    }
-
-    getDynamicFields() {
-        var that = this;
-
-        that._dynfldserive.getDynamicFields({ "module": "Employee", "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid }).subscribe(data => {
-            that.tabListDT = data.data;
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
-    }
-
-    saveDynamicFields() {
-        var that = this;
-
-        var saveDynFlds = {
-            "autoid": 0,
-            "fldname": that.fldname,
-            "fldvalue": that.keyValueList === null ? "" : that.keyValueList,
-            "module": "Employee",
-            "cmpid": that.loginUser.cmpid,
-            "fyid": that.loginUser.fyid,
-            "uidcode": that.loginUser.login
-        }
-
-        that._dynfldserive.saveDynamicFields(saveDynFlds).subscribe(data => {
-            var dataResult = data.data;
-
-            if (dataResult[0].funsave_dynamicfields.msgid != "-1") {
-                var msg = dataResult[0].funsave_dynamicfields.msg;
-                that._msg.Show(messageType.success, "Success", msg);
-            }
-            else {
-                var msg = dataResult[0].funsave_dynamicfields.msg;
-                that._msg.Show(messageType.error, "Error", msg);
-            }
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
-    }
-
-    DeleteKeyVal(row) {
-        var index = -1;
-        for (var i = 0; i < this.keyValueList.length; i++) {
-            if (this.keyValueList[i].key === row.key) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-
-        this.keyValueList.splice(index, 1);
-        $(".key").focus();
-    }
-
-    AddNewKeyVal() {
-        var that = this;
-
-        if (that.key == "") {
-            that._msg.Show(messageType.info, "info", "Please enter key");
-            $(".key").focus()
-            return;
-        }
-        if (that.value == "") {
-            that._msg.Show(messageType.info, "info", "Please enter value");
-            $(".val").focus()
-            return;
-        }
-
-        that.DuplicateFlag = true;
-
-        for (var i = 0; i < that.keyValueList.length; i++) {
-            if (that.keyValueList[i].key == that.key && that.keyValueList[i].value == that.value) {
-                that.DuplicateFlag = false;
-                break;
-            }
-        }
-
-        if (that.DuplicateFlag == true) {
-            that.keyValueList.push({
-                'key': that.key,
-                'value': that.value
-            });
-
-            that.key = "";
-            that.value = "";
-            $(".key").focus();
-        }
-        else {
-            that._msg.Show(messageType.info, "info", "Duplicate key and value");
-            $(".key").focus();
-            return;
-        }
-    }
-
-    ngOnInit() {
-        var that = this;
-
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['empid'] !== undefined) {
-                this.title = "Add Employee";
-
-                // this._actaccsservice.setActionButton('emp', ["edit", "delete", "view"], function (actionButton: any) {
-                //     that.actionButton = actionButton;
-                //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-                // });
-
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.empid = params['empid'];
-                this.getEmpDataById(this.empid);
-
-                $('button').attr('disabled', 'disabled');
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Edit Employee";
-
-                // this._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
-                //     that.actionButton = actionButton;
-                //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-                // });
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                this.clearEmployeeFields();
-
-                $('button').removeAttr('disabled');
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-            }
-        });
-    }
-
-    actionBarEvt(evt) {
-        var that = this;
-
-        if (evt === "view") {
-            that._router.navigate(['employee/viewemployee']);
-        }
-        else if (evt === "save") {
-            that.saveEmployeeData();
-            that.saveDynamicFields();
-        } else if (evt === "edit") {
-            $('button').removeAttr('disabled');
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-
-            $('#uname').attr('disabled', 'disabled');
-
-            // that._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
-            //     that.actionButton = actionButton;
-            //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-            // });
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
     ngOnDestroy() {
-        console.log('ngOnDestroy');
         this.actionButton = [];
 
         if (this.subscr_actionbarevt !== undefined) {

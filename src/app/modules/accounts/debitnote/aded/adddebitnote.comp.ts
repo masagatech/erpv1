@@ -241,8 +241,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log('ngOnInit');
-
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -273,6 +271,21 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 $('textarea').removeAttr('disabled');
             }
         });
+
+        setTimeout(function () {
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+
+            // Doc Date 
+
+            $(".dndate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $(".dndate").datepicker('setDate', today);
+        }, 0);
     }
 
     actionBarEvt(evt) {

@@ -193,6 +193,21 @@ export class AddPDC implements OnInit, OnDestroy {
                 $('textarea').removeAttr('disabled');
             }
         });
+
+        setTimeout(function () {
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+
+            // Doc Date 
+
+            $(".chequedate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $(".chequedate").datepicker('setDate', today);
+        }, 0);
     }
 
     actionBarEvt(evt) {

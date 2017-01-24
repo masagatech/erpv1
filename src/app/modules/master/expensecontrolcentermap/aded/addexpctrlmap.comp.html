@@ -4,11 +4,24 @@
             <h3 class="panel-title">Expense Details</h3>
         </div>
         <div class="panel-body">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label class="control-label">Date</label>
-                    <input type="date" [(ngModel)]="docdate" class="form-control" />
+                    <div class="controls">
+                        <div class="input-group" tabindex="2">
+                            <input id="date-picker-3" type="text" class="date-picker form-control docdate" [(ngModel)]="docdate" />
+                            <label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label class="control-label">Narration</label>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="col-md-6">
                 <div class="form-group">
                     <label class="control-label">Expense</label>
                     <input id="expname" type="text" [(ngModel)]="expname" class="expense form-control" (keyup)="getExpenseAuto(this)" />
@@ -30,10 +43,6 @@
                             </label>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Narration</label>
-                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
                 </div>
             </div>
 

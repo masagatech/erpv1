@@ -166,6 +166,21 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                 this.title = "Receipt Book : Add";
             }
         });
+
+        setTimeout(function () {
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+
+            // Doc Date 
+
+            $(".docdate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $(".docdate").datepicker('setDate', today);
+        }, 0);
     }
 
     actionBarEvt(evt) {

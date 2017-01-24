@@ -283,7 +283,7 @@ export class AddUser implements OnInit, OnDestroy {
 
                 that.uid = params['uid'];
 
-                setTimeout(function () { that.getUserDataById(that.uid); }, 0);
+                that.getUserDataById(that.uid);
 
                 $('input').attr('disabled', 'disabled');
                 that.iscpwd = 'N';
