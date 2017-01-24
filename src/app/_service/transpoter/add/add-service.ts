@@ -10,4 +10,8 @@ export class TranspoterAddService {
         return this._dataserver.post("saveTranspoter", req);
     }
 
+    getTranspoter(req: any) {
+        return this._dataserver.post("getTranspoter", req);
+    }
+
 }

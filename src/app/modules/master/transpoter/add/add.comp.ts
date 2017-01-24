@@ -98,38 +98,41 @@ declare var $: any;
         this.accode = this.code;
     }
 
-    //Edit Customer 
-    // EditVen(id) {
-    //     var that = this;
-    //     this.vendorAddServies.getvendor({
-    //         "cmpid": this.loginUser.cmpid,
-    //         "flag": "Edit",
-    //         "venid": id,
-    //         "createdby": this.loginUser.login
-    //     }).subscribe(result => {
-    //         debugger;
-    //         var _venddata = result.data[0][0]._venddata;
-    //         var _uploadedfile = result.data[0][0]._uploadedfile;
-    //         var _docfile = result.data[0][0]._docfile;
+    //Edit Transpoter 
+    EditVen(id) {
+        var that = this;
+        that.transpoter_service.getTranspoter({
+            "cmpid": that.loginUser.cmpid,
+            "flag": "Edit",
+            "transid": id,
+            "fy": that.loginUser.fyid,
+            "createdby": that.loginUser.login
+        }).subscribe(result => {
+            var _Transdata = result.data[0][0]._transdata;
+            var _uploadedfile = result.data[0][0]._uploadedfile;
+            var _docfile = result.data[0][0]._docfile;
 
+            that.code = _Transdata[0].code;
+            that.transname = _Transdata[0].transname;
+            that.desc = _Transdata[0].descp;
+            that.remark = _Transdata[0].remark;
 
-
-    //         if (_uploadedfile != null) {
-    //             that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-    //             that.docfile = _docfile == null ? [] : _docfile;
-    //         }
-
-    //         for (let items of _venddata[0].adr) {
-    //             that.adrcsvid += items.adrid + ',';
-    //         }
-    //         that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
-
-    //     }, err => {
-    //         console.log("error");
-    //     }, () => {
-    //         console.log("Done");
-    //     })
-    // }
+            if (_uploadedfile != null) {
+                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+                that.docfile = _docfile == null ? [] : _docfile;
+            }
+            if (_Transdata[0].adr.length > 0) {
+                for (let items of _Transdata[0].adr) {
+                    that.adrcsvid += items.adrid + ',';
+                }
+                that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+            }
+        }, err => {
+            console.log("error");
+        }, () => {
+            console.log("Done");
+        })
+    }
 
     paramterjson() {
         var param = {
