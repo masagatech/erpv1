@@ -29,11 +29,7 @@ export class UserControlHeadComp implements OnInit {
     //   return;
     // }
 
-    if (this.loginUser == null) {
-      this._userService.setUsers(
-        JSON.parse('{"status":1,"errcode":null,"errmsg":null,"uid":2,"fyid":7,"cmpid":3,"ucode":"zaid","lastlogindt":"zaid@gmail.com","rname":null,"rid":null,"fullname":"Zaid Ansari","_sessiondetails":{"sessionid":813}}'));
-      this.loginUser = this._userService.getUser();
-    }
+  
 
     //set user name 
     this.loginUserName = this.loginUser.fullname;
