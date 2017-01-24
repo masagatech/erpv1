@@ -54,9 +54,8 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        $(".groupcode").focus();
         $(".groupcode").removeAttr('disabled', 'disabled');
+         $(".groupcode").focus();
         setTimeout(function () {
             var date = new Date();
             var CurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());

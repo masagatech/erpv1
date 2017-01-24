@@ -82,6 +82,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        $(".code").removeAttr('disabled', 'disabled');
         $(".code").focus();
         this.getcustomerdrop();
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -407,11 +408,12 @@ declare var $: any;
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
+            $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-            $(".code").focus();
+            $(".vendor").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
