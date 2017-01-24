@@ -38,16 +38,26 @@ export class AuthenticationService {
 
   }
 
-  login(user: UserReq) {
+  login(user:UserReq) {
     var otherdetails = this.getClientInfo();
     let loginRes: any = this._dataserver.post("getLogin", {
       "email": user.email,
       "pwd": user.pwd,
       "otherdetails": otherdetails
     })
-    console.log(loginRes);
+    //console.log(loginRes);
     return loginRes;
   }
+
+  
+  loginsession(details: any) {
+    var otherdetails = this.getClientInfo();
+    details.otherdetails = otherdetails;
+    let loginRes: any = this._dataserver.post("getLogin",details)
+    //console.log(loginRes);
+    return loginRes;
+  }
+
 
 
   private getClientInfo() {
@@ -238,12 +248,23 @@ export class AuthenticationService {
     // )
   }
 
-  public checkCredentials(): boolean {
-    // if (localStorage.getItem("user") === null) {
+  public checkCredentials(): any {
+    var sessionid = Cookie.get('_session_');
+    var usr: LoginUserModel = this._userService.getUser();
 
-    //   this._router.navigate(['login']);
+    if (usr !== null) //check user is locally present in memory
+    {
+      return { "status": true };
+    } else {
+      if (sessionid !== null && sessionid !== undefined) {
+        return { "status": false, "takefrmdb": true, "sessionid": sessionid };
 
-    // }
-    return true;
+      } else {
+
+        return { "status": false, "takefrmdb": false };
+      }
+    }
   }
+
+
 }
