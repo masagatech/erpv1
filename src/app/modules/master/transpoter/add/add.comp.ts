@@ -34,6 +34,7 @@ declare var $: any;
     module: string = "";
     uploadedFiles: any = [];
     accode: string = "";
+    transid:number=0;
 
     //user details
     loginUser: LoginUserModel;
@@ -64,8 +65,8 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                //this.venid = params['id'];
-                //  this.EditVen(this.venid);
+                this.transid = params['id'];
+                 this.EditTranspoter(this.transid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -99,7 +100,7 @@ declare var $: any;
     }
 
     //Edit Transpoter 
-    EditVen(id) {
+    EditTranspoter(id) {
         var that = this;
         that.transpoter_service.getTranspoter({
             "cmpid": that.loginUser.cmpid,
@@ -108,6 +109,7 @@ declare var $: any;
             "fy": that.loginUser.fyid,
             "createdby": that.loginUser.login
         }).subscribe(result => {
+            console.log(result.data);
             var _Transdata = result.data[0][0]._transdata;
             var _uploadedfile = result.data[0][0]._uploadedfile;
             var _docfile = result.data[0][0]._docfile;
