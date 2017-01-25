@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { WarehouseAddService } from "../../../../_service/warehousestock/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -40,11 +42,16 @@ declare var $: any;
     ratelist: any = [];
     ratelistnew: any = [];
     newrate: any = 0;
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private wareServies: WarehouseAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService,
+        private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -79,12 +86,12 @@ declare var $: any;
     ItemsSelected(val, flag) {
         if (val != "") {
             this.wareServies.getwarehouseTransfer({
-                "cmpid": 1,
-                "fy": 5,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fyid,
                 "flag": "salesdrop",
                 "itemsid": val,
                 "warehouse": this.fromwareid,
-                "createdby": ""
+                "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
                 this.amt = ItemsResult[0].amt;
@@ -115,9 +122,10 @@ declare var $: any;
         this._autoservice.getAutoData({
             "type": "warehouseTrasnfer",
             "search": arg == 0 ? me.NewItemsName : me.itemsname,
-            "cmpid": 1,
-            "fy": 5,
-            "warehouse": this.fromwareid
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "warehouse": this.fromwareid,
+            "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,
@@ -153,7 +161,12 @@ declare var $: any;
     //From Warehouse
     getAutoCompleteWareFrom(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.fromwarname }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "warehouse",
+            "search": _me.fromwarname,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid
+        }).subscribe(data => {
             $(".from").autocomplete({
                 source: data.data,
                 width: 300,
@@ -179,7 +192,12 @@ declare var $: any;
     //To Warehouse
     getAutoCompleteWareTO(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.Towarname }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "warehouse",
+            "search": _me.Towarname,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid
+        }).subscribe(data => {
             $(".to").autocomplete({
                 source: data.data,
                 width: 300,
@@ -298,8 +316,9 @@ declare var $: any;
     editMode(docno) {
         this.wareServies.getwarehouseTransfer({
             "flag": "edit",
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login,
             "docno": docno
         }).subscribe(result => {
             this.fromwarname = result.data[0].fromware;
@@ -332,9 +351,9 @@ declare var $: any;
             "fromid": that.fromwareid,
             "toid": that.Towarid,
             "remark": that.rem,
-            "cmpid": 1,
-            "fy": 5,
-            "createdby": "admin",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login,
             "warehousedetails": this.createItemsjson()
         }
         return param;

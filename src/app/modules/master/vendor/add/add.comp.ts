@@ -72,7 +72,7 @@ declare var $: any;
         private vendorAddServies: VendorAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "vend";
-         this.loginUser = this._userService.getUser();
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -302,7 +302,7 @@ declare var $: any;
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
-
+            that.adrcsvid = "";
             for (let items of _venddata[0].adr) {
                 that.adrcsvid += items.adrid + ',';
             }

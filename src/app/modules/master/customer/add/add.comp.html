@@ -4,7 +4,7 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
+					<input type="text" class="form-control code" tabindex="1" [(ngModel)]="code">
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -25,7 +25,7 @@
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Parent Name</label>
-					<input type="text" class="form-control parentname" readonly="true" [(ngModel)]="parentname">
+					<input type="text" class="form-control parentname" tabindex="4" readonly="true" [(ngModel)]="parentname">
 				</div>
 			</div>
 		</div>
@@ -33,7 +33,7 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Credit Days</label>
-					<select [(ngModel)]="days" class="form-control" tabindex="4">
+					<select [(ngModel)]="days" class="form-control" tabindex="5">
 						<option [value]="'0'">0</option>
 						<option *ngFor="let row of dayslist" [value]="row.value">
 							{{row.label}}
@@ -44,7 +44,7 @@
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Remark</label>
-					<input type="text" class="form-control" tabindex="5" [(ngModel)]="remark">
+					<input type="text" class="form-control" tabindex="6" [(ngModel)]="remark">
 				</div>
 			</div>
 		</div>
@@ -53,18 +53,18 @@
 <div class="panel panel-theme">
 	<div class="panel-body">
 		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#adr" role="button" data-toggle="tab">Contact Details</a></li>
-			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab">Attribute</a></li>
-			<li><a data-target="#itemdis" role="button" (click)="itemdis()" data-toggle="tab">Item Discount</a></li>
-			<li><a data-target="#dis" role="button" (click)="discount()" data-toggle="tab">Discount</a></li>
-			<li><a data-target="#trans" role="button" (click)="transtab()" data-toggle="tab">Transpoter</a></li>
-			<li><a data-target="#sales" role="button" (click)="saletab()" data-toggle="tab">Salesman</a></li>
-			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab">Warehouse</a></li>
-			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab">Control Center</a></li>
-			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab">Accounting Info</a></li>
-			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
+			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contacts</a></li>
+			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
+			<li><a data-target="#itemdis" role="button" (click)="itemdis()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Item Discount</a></li>
+			<li><a data-target="#dis" role="button" (click)="discount()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>
+			<li><a data-target="#trans" role="button" (click)="transtab()" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
+			<li><a data-target="#sales" role="button" (click)="saletab()" data-toggle="tab"><i class="fa fa-user-secret" aria-hidden="true"></i> Salesman</a></li>
+			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
+			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab"><i class="fa fa-cc" aria-hidden="true"></i> Control Center</a></li>
+			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
-		<div class="tab-content">
+		<div class="tab-content" style="">
 			<div class="tab-pane active" id="adr">
 				<div class="row">
 					<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
@@ -75,7 +75,7 @@
 					<div class="col-md-3">
 						<div class='form-group'>
 							<label>Attribute</label>
-							<input type="text=" class="form-control attr" tabindex="6" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+							<input type="text=" class="form-control attr" tabindex="7" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
 								(keyup)="getAutoCompleteattr(this)" />
 						</div>
 					</div>
@@ -98,20 +98,20 @@
 								<div class="col-md-5">
 									<div class='form-group'>
 										<label>Items Name</label>
-										<input type="text" class="form-control itemsname" tabindex="4" value="" [(ngModel)]="itemsname" (keyup)="getAutoCompleteItems(this)"
+										<input type="text" class="form-control itemsname" tabindex="8" value="" [(ngModel)]="itemsname" (keyup)="getAutoCompleteItems(this)"
 										/>
 									</div>
 								</div>
 								<div class="col-md-3">
 									<div class='form-group'>
 										<label>Discount (%)</label>
-										<input type="text" class="form-control text-right itemdis" (keyup.enter)="Additems()" tabindex="6" [(ngModel)]="itemsdis">
+										<input type="text" class="form-control text-right itemdis" (keyup.enter)="Additems()" tabindex="9" [(ngModel)]="itemsdis">
 									</div>
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
 										<label></label>
-										<button class="btn btn-theme btn-sm fa fa-plus" type="button" tabindex="7" (click)="Additems()" title="Add"></button>
+										<button class="btn btn-theme btn-sm fa fa-plus" type="button" tabindex="10" (click)="Additems()" title="Add"></button>
 									</div>
 								</div>
 							</div>
@@ -145,32 +145,32 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Attribute</label>
-										<input type="text" class="form-control disattr" tabindex="4" value="" [(ngModel)]="disattrname" (keyup)="getAutoCompletedisattr(this)"
+										<input type="text" class="form-control disattr" tabindex="11" value="" [(ngModel)]="disattrname" (keyup)="getAutoCompletedisattr(this)"
 										/>
 									</div>
 								</div>
 								<div class="col-md-2">
 									<div class='form-group'>
 										<label>From</label>
-										<input type="text" class="form-control fromval text-right" tabindex="6" [(ngModel)]="fromval">
+										<input type="text" class="form-control fromval text-right" tabindex="12" [(ngModel)]="fromval">
 									</div>
 								</div>
 								<div class="col-md-2">
 									<div class='form-group'>
 										<label>To</label>
-										<input type="text" class="form-control toval text-right" tabindex="6" [(ngModel)]="toval">
+										<input type="text" class="form-control toval text-right" tabindex="13" [(ngModel)]="toval">
 									</div>
 								</div>
 								<div class="col-md-2">
 									<div class='form-group'>
 										<label>Discount (%)</label>
-										<input type="text" class="form-control disval text-right" tabindex="6" (keyup.enter)="AddNewdisattr()" [(ngModel)]="dis">
+										<input type="text" class="form-control disval text-right" tabindex="14" (keyup.enter)="AddNewdisattr()" [(ngModel)]="dis">
 									</div>
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
 										<label></label>
-										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="7" (click)="AddNewdisattr()" title="Add">
+										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="15" (click)="AddNewdisattr()" title="Add">
 										<i ng-reflect-class-name="fa fa-plus" class="fa fa-plus"></i></button>
 									</div>
 								</div>
@@ -206,7 +206,7 @@
 					<div class="col-md-3">
 						<div class='form-group'>
 							<label>Salesman</label>
-							<input type="text=" class="form-control sales" tabindex="6" value="" [(ngModel)]="salename" (keyup.enter)="SalemanAdd()"
+							<input type="text=" class="form-control sales" tabindex="16" value="" [(ngModel)]="salename" (keyup.enter)="SalemanAdd()"
 								(keyup)="getAutoCompleteSales(this)" />
 						</div>
 					</div>
@@ -226,7 +226,7 @@
 					<div class="col-md-3">
 						<div class='form-group'>
 							<label>Transpoter</label>
-							<input type="text=" class="form-control transname" tabindex="6" value="" [(ngModel)]="transname" (keyup.enter)="TranspoterAdd()"
+							<input type="text=" class="form-control transname" tabindex="17" value="" [(ngModel)]="transname" (keyup.enter)="TranspoterAdd()"
 								(keyup)="getAutoCompletetrans(this)" />
 						</div>
 					</div>
@@ -262,14 +262,14 @@
 						<div class="col-md-6">
 							<div class='form-group'>
 								<label>Control Name</label>
-								<input type="text=" class="form-control ctrl" tabindex="5" value="" [(ngModel)]="ctrlname" (keyup.enter)="AddNewCtrl()" (keyup)="getAutoCompleteCtrl(this)"
+								<input type="text=" class="form-control ctrl" tabindex="18" value="" [(ngModel)]="ctrlname" (keyup.enter)="AddNewCtrl()" (keyup)="getAutoCompleteCtrl(this)"
 								/>
 							</div>
 						</div>
 						<div class="col-md-1">
 							<div class='form-group'>
 								<label></label>
-								<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="7" (click)="AddNewCtrl()" title="Add">
+								<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="19" (click)="AddNewCtrl()" title="Add">
 							<i ng-reflect-class-name="fa fa-plus" class="fa fa-plus"></i></button>
 							</div>
 						</div>
@@ -289,6 +289,7 @@
 									<td>{{row.ctrlname}}</td>
 									<td><input type="checkbox" [(ngModel)]="row.profflag" />{{row.proftcode}}</td>
 									<td><input type="checkbox" [(ngModel)]="row.constflag" />{{row.costcode}}</td>
+									
 									<td><button class="btn btn-theme btn-sm" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button></td>
 								</tr>
 							</tbody>
@@ -304,20 +305,20 @@
 								<div class="col-md-3">
 									<div class='form-group'>
 										<label>Key</label>
-										<input type="text" class="form-control key" tabindex="5" value="" [(ngModel)]="acinfival" (keyup)="getAutoCompletekey(this)"
+										<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfival" (keyup)="getAutoCompletekey(this)"
 										/>
 									</div>
 								</div>
 								<div class="col-md-5">
 									<div class='form-group'>
 										<label>Value</label>
-										<input type="text" class="form-control val" (keyup.enter)="AddNewKyeval()" tabindex="6" [(ngModel)]="value">
+										<input type="text" class="form-control val" (keyup.enter)="AddNewKyeval()" tabindex="21" [(ngModel)]="value">
 									</div>
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
 										<label></label>
-										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="7" (click)="AddNewKyeval()" title="Add">
+										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="AddNewKyeval()" title="Add">
 										<i ng-reflect-class-name="fa fa-plus" class="fa fa-plus"></i></button>
 									</div>
 								</div>
@@ -348,7 +349,7 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Debit</label>
-										<select [(ngModel)]="debit" class="form-control" tabindex="8">
+										<select [(ngModel)]="debit" class="form-control" tabindex="23">
 										<option [value]="'0'">Select Debit</option>
 										<option *ngFor="let row of debitlist" [value]="row.value">
 											{{row.label}}
@@ -359,7 +360,7 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Credit</label>
-										<select [(ngModel)]="credit" class="form-control" tabindex="9">
+										<select [(ngModel)]="credit" class="form-control" tabindex="24">
 										<option [value]="'0'">Select Credit</option>
 										<option *ngFor="let row of creditlist" [value]="row.value">
 											{{row.label}}
@@ -370,7 +371,7 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Opening Balance</label>
-										<input type="text" class="form-control text-right" tabindex="10" [(ngModel)]="ope">
+										<input type="text" class="form-control text-right" tabindex="25" [(ngModel)]="ope">
 									</div>
 								</div>
 							</div>

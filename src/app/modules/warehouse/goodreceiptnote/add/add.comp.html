@@ -1,0 +1,97 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-10">
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Customer</label>
+					<input type="text" class="form-control cust" tabindex="1" [(ngModel)]="custname" (keyup)="getAutoCompleteCust(this)" />
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class='form-group'>
+					<label>Del Date</label>
+					<div class="controls">
+						<div class="input-group">
+							<input type="text" name="date" id="gooddate" tabindex="2" class="date-picker form-control" [(ngModel)]="gooddate" />
+							<label for="date" class="input-group-addon btn">
+							<span class="glyphicon glyphicon-calendar"></span>
+						</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>Bill</label>
+					<input type="text" class="form-control bill" tabindex="3" [(ngModel)]="bill" />
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Supplier</label>
+					<input type="text" class="form-control type" tabindex="4" [(ngModel)]="type" />
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class='form-group'>
+					<label>Transpoter</label>
+					<input type="text" class="form-control trans" tabindex="5" [(ngModel)]="tranname" (keyup)="getAutoCompleteTrans(this)" />
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>Type</label>
+					<select [(ngModel)]="days" class="form-control" tabindex="6">
+						<option *ngFor="let row of typlist" [value]="row.value">
+							{{row.label}}
+					    </option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-10">
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th class="col-md-2">Items Name</th>
+						<th class="col-md-2">Qty</th>
+						<th class="col-md-2">Rate</th>
+						<th class="col-md-2">Amount</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let item of itemslist let i=index">
+						<td>{{i+1}}</td>
+						<td><input type="text" class="form-control ProdName" [(ngModel)]="item.itemname" (keyup)="getAutoCompleteProd(item,1)"
+							/></td>
+						<td><input type="text" class="form-control textalign" [(ngModel)]="item.rate" /></td>
+						<td><input type="text" class="form-control textalign" [(ngModel)]="item.qty" /></td>
+						<td><input type="text" class="form-control textalign amt" value="" [(ngModel)]="item.amt" /></td>
+						<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(item)"><i class="fa fa-trash"></i></button></td>
+					</tr>
+					<tr>
+						<td>#</td>
+						<td class="col-md-3">
+							<input type="text" id="foot_custname" class="form-control ProdName" tabindex="7" autocomplete='off' value="" [(ngModel)]="NewItemsName"
+								(keyup)="getAutoCompleteProd(this,0)" />
+						</td>
+						<td class="col-md-1">
+							<input type="text" class="form-control textalign" value="" name="qty" tabindex="8" [(ngModel)]="qty" />
+						</td>
+						<td class="col-md-1">
+							<input type="text" class="form-control textalign rate" value="" tabindex="9" [(ngModel)]="rate" (click)="AddNewRow()" />
+						</td>
+						<td class="col-md-1">
+							<input type="text" class="form-control textalign amt" value="" tabindex="10" [(ngModel)]="amt" />
+						</td>
+						<td class="col-md-2">
+							<button type="button" class="btn btn-theme btn-sm" tabindex="11" title="Add" (click)="AddNewRow()"><i class="fa fa-plus"></i></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

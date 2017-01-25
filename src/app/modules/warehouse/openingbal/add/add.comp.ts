@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { WarAddOpbal } from "../../../../_service/wareopeningbal/add/add-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,11 +26,17 @@ declare var $: any;
     remark: any = "";
     opedate: any = "";
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private opeingServies: WarAddOpbal, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService
+        , private _userService: UserService) { //Inherit Service
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -78,11 +86,11 @@ declare var $: any;
         this.Openinglist = [];
         if (val != 0) {
             this.opeingServies.getopeningstock({
-                "cmpid": 1,
-                "fy": 5,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fyid,
                 "flag": "wardetails",
                 "wareid": val,
-                "createdby": ""
+                "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
                 console.log(ItemsResult);
@@ -99,7 +107,7 @@ declare var $: any;
 
     getAutoCompleteWare(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.warehousename }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.warehousename, "cmpid": _me.loginUser.cmpid }).subscribe(data => {
             $(".ware").autocomplete({
                 source: data.data,
                 width: 300,
@@ -130,8 +138,9 @@ declare var $: any;
     }
 
     tablejson() {
+        var that = this;
         var opestock = [];
-        for (let item of this.Openinglist) {
+        for (let item of that.Openinglist) {
             if (item.qty != "") {
                 opestock.push({
                     "autoid": item.autoid,
@@ -140,12 +149,12 @@ declare var $: any;
                     "qty": item.qty,
                     "amt": item.amt,
                     "rem": item.remark,
-                    "wareid": this.warehouseid,
+                    "wareid": that.warehouseid,
                     "opedate": $('#opedate').datepicker('getDate'),
-                    "remark": this.remark,
-                    "fy": 5,
-                    "cmpid": 1,
-                    "createdby": "admin"
+                    "remark": that.remark,
+                    "fy": that.loginUser.fyid,
+                    "cmpid": that.loginUser.cmpid,
+                    "createdby": that.loginUser.login
                 })
             }
 

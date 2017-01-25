@@ -155,7 +155,7 @@ declare var $: any;
         this.fromval = "";
         this.toval = "";
         this.dis = "";
-        setTimeout(function () {
+        setTimeout(function() {
             $(".disattr").focus();
         }, 100);
 
@@ -182,7 +182,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.disattrid = ui.item.value;
                     me.disattrname = ui.item.label;
                 }
@@ -214,7 +214,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.transid = ui.item.value;
                     me.transname = ui.item.label;
                 }
@@ -261,7 +261,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.itemsid = ui.item.value;
                     me.itemsname = ui.item.label;
                 }
@@ -309,7 +309,7 @@ declare var $: any;
     }
 
     transtab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.transid = 0;
             this.transname = "";
             $(".transname").focus();
@@ -381,7 +381,7 @@ declare var $: any;
     getAutoCompleteSales(me: any) {
         var that = this;
         this._autoservice.getAutoData({
-            "type": "product",
+            "type": "salesman",
             "search": that.salename,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fyid,
@@ -397,7 +397,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.saleid = ui.item.value;
                     me.salename = ui.item.label;
                     me.SalemanAdd(me.saleid);
@@ -410,7 +410,7 @@ declare var $: any;
     }
 
     saletab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.salename = "";
             $(".sales").focus();
         }, 0);
@@ -467,7 +467,7 @@ declare var $: any;
     }
 
     itemdis() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.itemsname = "";
             this.itemsdis = "";
             this.itemsid = 0;
@@ -510,7 +510,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.parentid = ui.item.value;
                     me.parentcodename = ui.item.label;
                     me.getparentname(me.parentid);
@@ -773,6 +773,7 @@ declare var $: any;
         this.disattrlist = [];
         this.itemslist = [];
         this.translist = [];
+        this.Ctrllist = [];
         this.debit = 0;
         this.credit = 0;
         this.days = 0;
@@ -793,29 +794,23 @@ declare var $: any;
             "custid": id,
             "createdby": this.loginUser.login
         }).subscribe(result => {
-              var resultdata=result.data[0][0]
+            var resultdata = result.data[0][0]
             var _custdata = resultdata._custdata;
             var _uploadedfile = resultdata._uploadedfile;
             var _docfile = resultdata._docfile;
-          
+
 
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].code;
-            that.Custname =  _custdata[0].custname;
+            that.Custname = _custdata[0].custname;
             that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
             that.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
             that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
             that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
             that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
             that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
+            that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
 
-            if (_custdata[0].ctrl.length > 0) {
-                that.Ctrllist = _custdata[0].ctrl;
-                that.ctrlhide = false;
-            }
-            else {
-                that.ctrlhide = true;
-            }
 
             that.debit = _custdata[0].debit;
             that.credit = _custdata[0].credit;
@@ -831,7 +826,7 @@ declare var $: any;
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
-
+            that.adrcsvid = "";
             for (let items of _custdata[0].adr) {
                 that.adrcsvid += items.adrid + ',';
             }
@@ -871,9 +866,9 @@ declare var $: any;
         var Ctrllistdet = [];
         for (let ctrid of this.Ctrllist) {
             Ctrllistdet.push({
-                "id": ctrid.autoid,
-                "pcode": ctrid.proftcode,
-                "ccode": ctrid.costcode
+                "id": ctrid.id,
+                "profchk": ctrid.profflag,
+                "conschk": ctrid.constflag
             });
         }
         return Ctrllistdet;
@@ -936,7 +931,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.attrid = ui.item.value;
                     me.attrname = ui.item.label;
                 }
@@ -968,7 +963,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.ctrlid = ui.item.value;
                     me.ctrlname = ui.item.label;
                 }
@@ -1001,7 +996,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.acinfiid = ui.item.value;
                     me.acinfival = ui.item.label;
                 }
@@ -1014,7 +1009,7 @@ declare var $: any;
     }
 
     Ctrl() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".ctrl").val("");
             $(".ctrl").focus();
         }, 0)
@@ -1050,7 +1045,9 @@ declare var $: any;
                         "ctrlname": result.data[0].ctrlname,
                         "proftcode": result.data[0].proftcode,
                         "costcode": result.data[0].costcode,
-                        "id": result.data[0].autoid,
+                        "profflag": this.profflag,
+                        "constflag": this.constflag,
+                        "id": result.data[0].autoid
                     });
                     console.log(this.Ctrllist);
                     this.ctrlhide = false;
@@ -1185,7 +1182,7 @@ declare var $: any;
 
     //Attribute Tab Click Event
     Attr() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".attr").val("");
             $(".attr").focus();
         }, 0);
@@ -1193,7 +1190,7 @@ declare var $: any;
 
     //Account Info Tab Click Event
     Acinfo() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".key").val("");
             $(".val").val("");
             $(".key").focus();

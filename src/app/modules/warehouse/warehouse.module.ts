@@ -35,6 +35,11 @@ const routerConfig =
                                 return comp.default;
                             }),
                         },
+                        {
+                            path:'goodreceipt', loadChildren: () => System.import('./goodreceiptnote').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
                         { path: '', component: WarehouseDashboardComp, canActivateChid: [AuthGuard], },
                     ]
                 }

@@ -6,6 +6,8 @@ import { CommonService } from '../../../../_service/common/common-service' /* ad
 import { WarehouseAddService } from "../../../../_service/warehouse/add/add-service";
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -35,13 +37,19 @@ declare var $: any;
     accode: string = "";
     private subscribeParameters: any;
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
+
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private wareServies: WarehouseAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) { //Inherit Service
         this.module = "warehouse";
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -73,14 +81,31 @@ declare var $: any;
     }
 
     EditItem(wareid) {
-        this.wareServies.getwarehouse({
-            "cmpid": 1,
-            "wareid": wareid
+        var that = this;
+        that.wareServies.getwarehouse({
+            "cmpid": that.loginUser.cmpid,
+            "wareid": wareid,
+            "flag":"Edit"
         }).subscribe(result => {
             var dataset = result.data;
-            this.name = dataset[0][0].nam;
-            this.code = dataset[0][0].code;
-            this.remark = dataset[0][0].remark;
+            debugger;
+            var _uploadedfile = dataset[0][0]._uploadedfile;
+            var _docfile = dataset[0][0]._docfile;
+
+            that.name = dataset[0][0].nam;
+            that.code = dataset[0][0].code;
+            that.remark = dataset[0][0].remark;
+
+            if (_uploadedfile != null) {
+                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+                that.docfile = _docfile == null ? [] : _docfile;
+            }
+            that.adrcsvid="";
+            for (let items of dataset[0][0].adr) {
+                that.adrcsvid += items.adrid + ',';
+            }
+            that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+
         }, err => {
             console.log("Error");
         }, () => {
@@ -121,8 +146,8 @@ declare var $: any;
             "name": this.name,
             "code": this.code,
             "remark": this.remark,
-            "cmpid": 1,
-            "createdby": "admin",
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login,
             "adrid": this.adrbookid,
             "docfile": this.docfile
         }
@@ -155,10 +180,9 @@ declare var $: any;
                     // console.log("Complete");
                 });
             }
-            else
-            {
-                 this._msg.Show(messageType.info, "into", "Please enter warehouse address");
-                 return;
+            else {
+                this._msg.Show(messageType.info, "into", "Please enter warehouse address");
+                return;
             }
 
             this.actionButton.find(a => a.id === "save").hide = false;

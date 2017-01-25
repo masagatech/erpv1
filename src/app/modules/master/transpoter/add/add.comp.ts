@@ -12,6 +12,9 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
+
+
 @Component({
     templateUrl: 'add.comp.html',
     providers: [TranspoterAddService, CommonService]
@@ -34,7 +37,7 @@ declare var $: any;
     module: string = "";
     uploadedFiles: any = [];
     accode: string = "";
-    transid:number=0;
+    transid: number = 0;
 
     //user details
     loginUser: LoginUserModel;
@@ -67,7 +70,7 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
                 this.transid = params['id'];
-                 this.EditTranspoter(this.transid);
+                this.EditTranspoter(this.transid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -79,6 +82,10 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
     }
 
     //File Upload Start 
@@ -125,7 +132,7 @@ declare var $: any;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
             debugger;
-            that.adrcsvid="";
+            that.adrcsvid = "";
             if (_Transdata[0].adr.length > 0) {
                 for (let items of _Transdata[0].adr) {
                     that.adrcsvid += items.adrid + ',';
@@ -141,7 +148,7 @@ declare var $: any;
 
     paramterjson() {
         var param = {
-            "transid":this.transid,
+            "transid": this.transid,
             "code": this.accode,
             "transname": this.transname,
             "desc": this.desc,
@@ -172,6 +179,13 @@ declare var $: any;
             this._router.navigate(['master/transpoter/view']);
         }
         if (evt === "save") {
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+
             this.transpoter_service.saveTranspoter(
                 this.paramterjson()
             ).subscribe(result => {
@@ -215,4 +229,7 @@ declare var $: any;
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
     }
+
+
+
 }

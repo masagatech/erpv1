@@ -73,7 +73,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
     AddBook(code) {
         var that = this;
         if (code != "") {
-            that.ClearControll();
             that.adrid = 0;
             setTimeout(function () {
                 $(".firstnam").focus();
@@ -97,7 +96,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "adrid": _adrid
         }).subscribe(result => {
             var dataset = result.data;
-            debugger;
             if (dataset.length > 0) {
                 _this.addrbooklist = dataset;
                 var vid = _this.addrbooklist.filter(item => item.id);
@@ -276,13 +274,17 @@ export class AddrbookComp implements OnInit, OnDestroy {
             that.Parameter()
         ).subscribe(result => {
             var dataset = result.data;
+            if (dataset[0].funsave_addressbook.maxid == -1) {
+                that._msg.Show(messageType.info, "info", dataset[0].funsave_addressbook.msg);
+                $(".firstnam").focus();
+                return;
+            }
             if (dataset[0].funsave_addressbook.maxid > 0) {
                 var adridmaxid = dataset[0].funsave_addressbook.maxid;
                 that._msg.Show(messageType.success, "success", "Data save successfully");
                 $('#myModal').modal('hide');
                 that.getAddress(adridmaxid);
                 var vid = that.addrbooklist.filter(item => item.id);
-                debugger;
                 for (let items of vid) {
                     if (items.id == that.adrid) {
                         items.firstnam = that.firstnam + " " + that.lastnam;

@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { WarehouseViewService } from "../../../../_service/warehouse/view/view-service";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -22,7 +24,14 @@ declare var $: any;
     totalRecords: number = 0;
     private subscribeParameters: any;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private warehouseServies: WarehouseViewService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) { //Inherit Service
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private warehouseServies: WarehouseViewService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute, private _userService: UserService) { //Inherit Service
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -38,10 +47,10 @@ declare var $: any;
     getWarehouse(from: number, to: number) {
         var that = this;
         that.warehouseServies.getwarehouse({
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
             "from": from,
             "to": to,
-            "wareid": 0
+            "flag":""
         }).subscribe(result => {
             var dataset = result.data;
             that.totalRecords = dataset[1][0].recordstotal;
@@ -58,11 +67,11 @@ declare var $: any;
         this.getWarehouse(event.first, (event.first + event.rows));
     }
 
-    // EditItem(row) {
-    //     if (!row.islocked) {
-    //         this._router.navigate(['/warehouse/warehousemaster/edit', row.id]);
-    //     }
-    // }
+    EditItem(row) {
+        if (!row.islocked) {
+            this._router.navigate(['/warehouse/warehouse/edit', row.id]);
+        }
+    }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
