@@ -1128,3 +1128,7 @@ html select[disabled] {
 .ui-growl.ui-widget {
     z-index: 1065!important;
 }
+
+.tab-content{
+    min-height:200px;
+}

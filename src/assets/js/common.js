@@ -1,3 +1,5 @@
+var commonfun ={};
+
 function findJSON(obj, key, val, brek) {
     var objects = [];
     for (var i in obj) {
@@ -14,4 +16,27 @@ function findJSON(obj, key, val, brek) {
         }
     }
     return objects;
+}
+
+
+
+commonfun.addrequire = function addrequire() {
+    $("[validate='']").each(function () {
+        $(this).siblings("label").remove("span").append("<span class='require'>*</span>");
+
+    });
+}
+
+commonfun.validate = function validate() {
+    var valisValid = true;
+    var result = [];
+    var msglist = "";
+    $("[validate='']").each(function () {
+        if ($(this).val().trim() === "") {
+            valisValid = false;
+            msglist += $(this).siblings("label").text() + "  "
+            result.push({ "input": $(this), "lable": $(this).siblings("label").text() });
+        }
+    });
+    return { "status": valisValid, "data": result, "msglist":  msglist  };
 }

@@ -91,6 +91,8 @@
                 loadjscssfile('/assets/js/jquery.datatable.js', 'js', function() {
                     loadjscssfile('/assets/js/submenu.js', 'js', function() {
                           loadjscssfile('/assets/js/jquery-ui.js', 'js', function() { 
+                               loadjscssfile('/assets/js/common.js', 'js', function() { 
+                            });
                      });
                    });
                 });
@@ -101,6 +103,8 @@
 	<% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
 		<script src="/webpack-dev-server.js"></script>
 		<% } %>
+
+      
 </body>
 
 </html>
