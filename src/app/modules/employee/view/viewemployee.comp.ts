@@ -3,6 +3,8 @@ import { SharedVariableService } from "../../../_service/sharedvariable-service"
 import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { EmpService } from '../../../_service/employee/emp-service' /* add reference for view employee */
+import { UserService } from '../../../_service/user/user-service';
+import { LoginUserModel } from '../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -12,6 +14,8 @@ import { Router } from '@angular/router';
 })
 
 export class ViewEmployee implements OnInit, OnDestroy {
+    loginUser: LoginUserModel;
+
     type: string = "";
     value: string = "";
     name: string = "";
@@ -29,7 +33,9 @@ export class ViewEmployee implements OnInit, OnDestroy {
         this.getEmployeeData();
     }
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService,
+        private _userservice: UserService) {
+        this.loginUser = this._userservice.getUser();
         this.getEmployeeData();
     }
 
@@ -50,7 +56,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
     }
 
     getEmployeeData() {
-        this._empservice.getEmployee({ "flag": "all" }).subscribe(data => {
+        this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(data => {
             this.viewEmployeeDT = data.data;
         }, err => {
             console.log("Error");
