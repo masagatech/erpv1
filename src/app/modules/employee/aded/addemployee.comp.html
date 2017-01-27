@@ -1,13 +1,13 @@
 <div class="middlepan">
     <div class="panel panel-theme">
         <div class="panel-body">
-            <div class="col-sm-8 col-md-6">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label class="control-label">User Name</label>
-                    <input id="uname" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
+                    <input id="uname" validate="" type="text" [(ngModel)]="uname" class="username form-control" (keyup)="getUserAuto(this)" />
                 </div>
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Date of Birth</label>
                             <div class="controls">
@@ -18,11 +18,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Gender</label>
-                            <select [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
-                                <option [value]="'0'">Select Gender</option>
+                            <select validate="" [(ngModel)]="gender" name="Gender" id="Gender" class="form-control">
+                                <option [value]="''">Select Gender</option>
                                 <option *ngFor="let row of genderDT" [value]="row.key">	
                                     {{row.val}}
                                 </option>
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Marital Status</label>
                             <select [(ngModel)]="maritalstatus" class="form-control">
@@ -42,7 +42,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Blood Group</label>
                             <select [(ngModel)]="bloodgroup" class="form-control">
@@ -55,10 +55,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-8 col-md-6">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label class="control-label">Family Background</label>
-                    <textarea [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                    <textarea validate="" [(ngModel)]="familybg" class="form-control small-text-box" cols="150" rows="5"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -69,7 +69,7 @@
         </div>
     </div>
     <div class="panel panel-theme">
-        <div class="panel-body" style="width:800px; overflow:auto;">
+        <div class="panel-body">
             <ul class="nav nav-tabs" id="tabs">
                 <li class="active"><a data-target="#aboutus" role="button" data-toggle="tab">About Employee</a></li>
                 <li><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
@@ -77,9 +77,12 @@
                 <li><a data-target="#ctrlcenter" role="button" data-toggle="tab">Control Center</a></li>
                 <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
                 <li *ngFor="let tab of tabListDT">
-                    <a href="#{{tab.fldcode}}" role="button" data-toggle="tab">{{tab.fldname}}</a>
+                    <a href="#{{tab.fldcode}}" role="button" data-toggle="tab">
+                        <button data-target="#dynTabModel" data-toggle="modal" class="btn btn-simple btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>                        &nbsp;{{tab.fldname}}&nbsp;
+                        <button class="btn btn-simple btn-sm fa fa-remove" type="button" (click)="DeleteTabs(tab)"></button>
+                    </a>
                 </li>
-                <li><a data-target="#myModal" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a></li>
+                <li><a data-target="#dynTabModel" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="aboutus">
@@ -90,87 +93,21 @@
 
                 <div class="tab-pane" id="contact">
                     <div class="row">
-                        <div class="col-sm-8 col-md-6">
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Mobile No</label>
-                                        <input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Alternate Mobile No</label>
-                                        <input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label">Alternate Email ID</label>
-                                <input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Country</label>
-                                        <select [(ngModel)]="country" class="form-control">
-                                            <option [value]="'0'">Select Country</option>
-                                            <option *ngFor="let row of countryDT" [value]="row.key">
-                                                {{row.val}}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">State</label>
-                                        <input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">City</label>
-                                        <input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
-                                    <div class="form-group">
-                                        <label class="control-label">Pin Code</label>
-                                        <input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-8 col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Address Line 1</label>
-                                <textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label">Address Line 2</label>
-                                <textarea [(ngModel)]="addressline2" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                            </div>
-                        </div>
+                        <addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
                     </div>
                 </div>
 
                 <div class="tab-pane" id="jobprofile">
                     <div class="row">
-                        <div class="col-sm-8 col-md-6">
+                        <div class="col-md-6">
                             <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Company Name</label>
                                         <input type="text" [(ngModel)]="companyname" class="form-control input-sm" size="20" />
                                     </div>
                                 </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Company Email</label>
                                         <input type="text" [(ngModel)]="companyemail" class="form-control input-sm" size="20" />
@@ -179,7 +116,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Department</label>
                                         <select [(ngModel)]="deptid" class="form-control">
@@ -190,7 +127,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Designation</label>
                                         <select [(ngModel)]="desigid" class="form-control">
@@ -203,15 +140,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-8 col-md-6">
+                        <div class="col-md-6">
                             <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Joining Date</label>
                                         <input type="date" [(ngModel)]="doj" class="form-control" />
                                     </div>
                                 </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Notice Days</label>
                                         <input type="number" [(ngModel)]="noticedays" class="form-control input-sm" size="20" />
@@ -220,21 +157,21 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Salary</label>
                                         <input type="text" [(ngModel)]="salary" class="form-control input-sm" size="20" />
                                     </div>
                                 </div>
-                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Salary Mode</label>
                                         <select [(ngModel)]="salarymode" class="form-control">
-								<option [value]="'0'">Select Salary Mode</option>
-								<option *ngFor="let row of salarymodeDT" [value]="row.ID">
-									{{row.val}}
-								</option>
-							</select>
+                                            <option [value]="'0'">Select Salary Mode</option>
+                                            <option *ngFor="let row of salarymodeDT" [value]="row.ID">
+                                                {{row.val}}
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -255,14 +192,14 @@
                                 </select>
                             </div>
                             <div class="row">
-                                <div class="col-xs-10 col-sm-10 col-md-11">
+                                <div class="col-xs-10 col-md-11">
                                     <div class="form-group">
                                         <label class="control-label">Secondary</label>
                                         <input id="ctrlcentername" type="text" [(ngModel)]="sctrlcentername" class="ctrlcentername form-control" (keyup)="getCtrlCenterAuto(this)"
                                         />
                                     </div>
                                 </div>
-                                <div class="col-xs-2 col-sm-2 col-md-1">
+                                <div class="col-xs-2 col-md-1">
                                     <div class="form-group">
                                         <label class="control-label">&nbsp;</label>
                                         <button class="btn btn-theme btn-sm fa fa-plus" type="button" ng-reflect-title="Add" tabindex="7" (click)="addNewCtrlCenter()"
@@ -306,62 +243,62 @@
 
                 <div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
                     <div class="panel-body">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <div class="form-group">
-                                    <label>Key</label>
-                                    <input type="text" [(ngModel)]="tab.key" class="key form-control" (keyup)="getKeyAuto(tab)">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Key</label>
+                                        <input type="text" [(ngModel)]="tab.key" class="key form-control" (keyup)="getKeyAuto(tab)">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-5">
-                                <div class="form-group">
-                                    <label>Value</label>
-                                    <input type="text" [(ngModel)]="tab.value" class="val form-control" (keydown.enter)="AddNewKeyVal(tab)" (keydown.tab)="AddNewKeyVal(tab)">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Value</label>
+                                        <input type="text" [(ngModel)]="tab.value" class="val form-control" (keydown.enter)="AddNewKeyVal(tab)" (keydown.tab)="AddNewKeyVal(tab)">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-2" *ngIf="!tab.isedit">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button class="btn btn-theme btn-sm fa fa-plus" type="button" (click)="AddNewKeyVal(tab)"></button>
+                                <div class="col-md-2" *ngIf="!tab.isedit">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button class="btn btn-theme btn-sm fa fa-plus" type="button" (click)="AddNewKeyVal(tab)"></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-2" *ngIf="tab.isedit">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="UpdateKeyVal(tab)"></button>
-                                    <button class="btn btn-danger btn-sm fa fa-remove" type="button" (click)="ClearKeyVal(tab)"></button>
+                                <div class="col-md-2" *ngIf="tab.isedit">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="UpdateKeyVal(tab)"></button>
+                                        <button class="btn btn-danger btn-sm fa fa-remove" type="button" (click)="ClearKeyVal(tab)"></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-2">
-                                <button data-target="#myModal" data-toggle="modal" class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>
-                                <button class="btn btn-theme btn-sm fa fa-trash" type="button" (click)="DeleteTabs(tab)"></button>
                             </div>
                         </div>
-                    </div>
-                    <div *ngIf="tab.keyvaluedt.length">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th class="col-sm-1">#</th>
-                                    <th class="col-sm-3">Key</th>
-                                    <th class="col-sm-5">Value</th>
-                                    <th class="col-sm-3"></th>
-                                </tr>
-                            </thead>
-                            <tbody *ngFor="let row of tab.keyvaluedt let i=index">
-                                <tr>
-                                    <td><span>{{i+1}}</span></td>
-                                    <td>{{row.key}}</td>
-                                    <td>{{row.value}}</td>
-                                    <td>
-                                        <button class="btn btn-theme btn-sm" (click)="EditKeyVal(tab, row)">
-                                            <i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-theme btn-sm" (click)="DeleteKeyVal(tab, row)">
-                                            <i class="fa fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="col-md-12">
+                            <div *ngIf="tab.keyvaluedt.length">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-sm-1">#</th>
+                                            <th class="col-sm-3">Key</th>
+                                            <th class="col-sm-5">Value</th>
+                                            <th class="col-sm-3"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody *ngFor="let row of tab.keyvaluedt let i=index">
+                                        <tr>
+                                            <td><span>{{i+1}}</span></td>
+                                            <td>{{row.key}}</td>
+                                            <td>{{row.value}}</td>
+                                            <td>
+                                                <button class="btn btn-theme btn-sm" (click)="EditKeyVal(tab, row)">
+                                                    <i class="fa fa-edit"></i></button>
+                                                <button class="btn btn-theme btn-sm" (click)="DeleteKeyVal(tab, row)">
+                                                    <i class="fa fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -412,7 +349,7 @@
     </div>
 </div>
 
-<div id="myModal" class="modal fade" role="dialog">
+<div id="dynTabModel" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -435,3 +372,71 @@
         </div>
     </div>
 </div>
+
+<!--<div class="col-md-6">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Mobile No</label>
+                <input type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Alternate Mobile No</label>
+                <input type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Alternate Email ID</label>
+        <input type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Country</label>
+                <select [(ngModel)]="country" class="form-control">
+                    <option [value]="'0'">Select Country</option>
+                    <option *ngFor="let row of countryDT" [value]="row.key">
+                        {{row.val}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">State</label>
+                <input type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">City</label>
+                <input type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Pin Code</label>
+                <input type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="form-group">
+        <label class="control-label">Address Line 1</label>
+        <textarea [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Address Line 2</label>
+        <textarea [(ngModel)]="addressline2" class="form-control small-text-box" cols="150" rows="5"></textarea>
+    </div>
+</div>-->
