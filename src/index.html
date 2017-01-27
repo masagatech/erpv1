@@ -2,33 +2,36 @@
 <html 🆖>
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=1024">
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=1024">
 
-	<title>
-		<%= htmlWebpackPlugin.options.title %>
-	</title>
+    <title>
+        <%= htmlWebpackPlugin.options.title %>
+    </title>
 
-	<meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
 
-	<% if (webpackConfig.htmlElements.headTags) { %>
-		<!-- Configured Head Tags  -->
-		<%= webpackConfig.htmlElements.headTags %>
-			<% } %>
+    <% if (webpackConfig.htmlElements.headTags) { %>
+        <!-- Configured Head Tags  -->
+        <%= webpackConfig.htmlElements.headTags %>
+            <% } %>
 
-				<!-- base url -->
-				<base href="<%= htmlWebpackPlugin.options.metadata.baseUrl %>">
+                <!-- base url -->
+                <base href="<%= htmlWebpackPlugin.options.metadata.baseUrl %>">
 
 </head>
 
 <body>
-	<div class="container-full">
-		<app>
-			Loading...
-		</app>
-	</div>
-	<script>
+    <div class="container-full">
+        <app>
+            Loading...
+        </app>
+    </div>
+    <script>
         function loadjscssfile(filename, filetype, callback) {
             if (filetype == "js") { //if filename is a external JavaScript file
                 var fileref = document.createElement('script');
@@ -86,25 +89,23 @@
             });
         });
 
-        loadjscssfile('/assets/js/jquery.min.js', 'js', function() {
-            loadjscssfile('/assets/js/bootstrap.min.js', 'js', function() {
-                loadjscssfile('/assets/js/jquery.datatable.js', 'js', function() {
+        //loadjscssfile('/assets/js/jquery.min.js', 'js', function() {
+            //loadjscssfile('/assets/js/bootstrap.min.js', 'js', function() {
+                //loadjscssfile('/assets/js/jquery.datatable.js', 'js', function() {
                     loadjscssfile('/assets/js/submenu.js', 'js', function() {
-                          loadjscssfile('/assets/js/jquery-ui.js', 'js', function() { 
-                               loadjscssfile('/assets/js/common.js', 'js', function() { 
-                            });
-                     });
+                        loadjscssfile('/assets/js/jquery-ui.js', 'js', function() {
+                              loadjscssfile('/assets/js/common.js', 'js', function() {                                  
+                              });
+                        });
                    });
-                });
-            });
-        });
+                //});
+            //});
+        //});
     </script>
 
-	<% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
-		<script src="/webpack-dev-server.js"></script>
-		<% } %>
-
-      
+    <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
+        <script src="/webpack-dev-server.js"></script>
+        <% } %>
 </body>
 
 </html>
