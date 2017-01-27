@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { JVService } from '../../../../_service/jv/jv-service' /* add reference for view employee */
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -20,16 +21,21 @@ export class ViewJV implements OnInit, OnDestroy {
 
     viewJVDT: any[] = [];
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _jvservice: JVService, private _userService: UserService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _jvservice: JVService,
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getJVDetails();
     }
 
     getJVDetails() {
-        this._jvservice.getJVDetails({ "flag": "docrange", "fromdocno": "1", "todocno": "100", "cmpid":  this.loginUser.cmpid, "fyid":  this.loginUser.fyid }).subscribe(data => {
+        this._jvservice.getJVDetails({
+            "flag": "docrange", "fromdocno": "1", "todocno": "100",
+            "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid
+        }).subscribe(data => {
             this.viewJVDT = data.data;
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -42,7 +48,8 @@ export class ViewJV implements OnInit, OnDestroy {
                 this._jvservice.getJVDetails({ "flag": "details", "jvmid": row.jvmid }).subscribe(data => {
                     row.details = data.data;
                 }, err => {
-                    console.log("Error");
+                    this._msg.Show(messageType.error, "Error", err);
+                    console.log(err);
                 }, () => {
                     // console.log("Complete");
                 })
@@ -77,6 +84,9 @@ export class ViewJV implements OnInit, OnDestroy {
     openJVDetails(row) {
         if (!row.islocked) {
             this._router.navigate(['/accounts/jv/edit', row.jvmid]);
+        }
+        else {
+            this._msg.Show(messageType.info, "Info", "This JV is Locked");
         }
     }
 

@@ -6,13 +6,15 @@ import { JVService } from '../../../../_service/jv/jv-service'; /* add reference
 import { CommonService } from '../../../../_service/common/common-service'; /* add reference for customer */
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { ValidationService } from '../../../../_service/validation/valid-service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 
 @Component({
     templateUrl: 'addjv.comp.html',
-    providers: [JVService, CommonService]
+    providers: [JVService, CommonService, ValidationService]
 })
 
 export class AddJV implements OnInit, OnDestroy {
@@ -45,10 +47,97 @@ export class AddJV implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService) {
+        private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
+        private _validmsg: ValidationService) {
         this.loginUser = this._userService.getUser();
-
         this.module = "JV";
+    }
+
+    ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.title = "Edit Journal Voucher";
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.jvmid = params['id'];
+                this.getJVDataById(this.jvmid);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+            }
+            else {
+                this.title = "Add Journal Voucher";
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+            }
+        });
+
+        setTimeout(function() {
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
+
+            // Doc Date 
+
+            $(".docdate").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $(".docdate").datepicker('setDate', today);
+        }, 0);
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveJVData();
+        } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
+    isvaliddate() {
+        var that = this;
+            debugger;
+
+        that._validmsg.checkDateValidate({
+            "dispnm": "JV", "auditdt": that.docdate,
+            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var validmsg = dataResult[0].funcheck_datevalidate.msg;
+
+            if (validmsg === "failed") {
+                that._msg.Show(messageType.success, "Success", "Not Allowed");
+                that.docdate = "";
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     // add jv details
@@ -87,7 +176,7 @@ export class AddJV implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     if (arg === 1) {
                         me.acname = ui.item.label;
                         me.acid = ui.item.value;
@@ -207,13 +296,14 @@ export class AddJV implements OnInit, OnDestroy {
             console.log(dataResult);
 
             if (dataResult[0].funsave_jv.msgid != "-1") {
-                alert(dataResult[0].funsave_jv.msg);
+                this._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
                 that._router.navigate(['/accounts/jv']);
             }
             else {
-                alert("Error");
+                this._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
             }
         }, err => {
+            this._msg.Show(messageType.error, "Error", err);
             console.log(err);
         }, () => {
             // console.log("Complete");
@@ -222,71 +312,6 @@ export class AddJV implements OnInit, OnDestroy {
 
     removeFileUpload() {
         this.uploadedFiles.splice(0, 1);
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.title = "Edit Journal Voucher";
-
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.jvmid = params['id'];
-                this.getJVDataById(this.jvmid);
-
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Add Journal Voucher";
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-            }
-        });
-
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            // Doc Date 
-
-            $(".docdate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".docdate").datepicker('setDate', today);
-        }, 0);
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveJVData();
-        } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
     }
 
     ngOnDestroy() {
