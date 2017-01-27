@@ -50,7 +50,7 @@ declare var $: any;
 
     getattributegroup() {
         var that = this;
-        this._commonservice.getMOM({ "group": "Attribute Group" }).subscribe(data => {
+        this._commonservice.getMOM({ "group": "attrgrp" }).subscribe(data => {
             that.attributegrouplist = data.data;
         }, err => {
             console.log("Error");

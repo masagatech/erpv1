@@ -74,6 +74,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         var that = this;
         if (code != "") {
             that.adrid = 0;
+            that.ClearControll();
             setTimeout(function () {
                 $(".firstnam").focus();
             }, 500);
@@ -95,9 +96,10 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "flag": "",
             "adrid": _adrid
         }).subscribe(result => {
+            debugger;
             var dataset = result.data;
             if (dataset.length > 0) {
-                _this.addrbooklist = dataset;
+                //_this.addrbooklist = dataset;
                 var vid = _this.addrbooklist.filter(item => item.id);
                 if (_this.addrbooklist.length > 0) {
                     for (let items of vid) {
