@@ -7,10 +7,10 @@ export class ALSService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
     getAuditLockSetting(req: any) {
-        return this._dataserver.post("GetAuditLockSetting", req)
+        return this._dataserver.post("getAuditLockSetting", req)
     }
 
     saveAuditLockAction(req: any) {
-        return this._dataserver.post("SaveAuditLockAction", req)
+        return this._dataserver.post("saveAuditLockAction", req)
     }
 }

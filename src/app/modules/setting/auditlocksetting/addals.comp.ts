@@ -2,8 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
-import { ALSService } from '../../../_service/auditlocksetting/als-service'; /* add reference for audit lock setting */
+import { ALSService } from '../../../_service/auditlock/als-service'; /* add reference for audit lock setting */
 import { Router, ActivatedRoute } from '@angular/router';
+import { MessageService, messageType } from '../../../_service/messages/message-service';
+import { UserService } from '../../../_service/user/user-service';
+import { LoginUserModel } from '../../../_model/user_model';
 
 declare var $: any;
 
@@ -14,101 +17,37 @@ declare var $: any;
 
 export class ALSAddEdit implements OnInit, OnDestroy {
     title: any;
-    Remark: any;
+    remarks: any;
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
     private subscribeParameters: any;
 
-    alsRowData: any[] = [];
+    alsRowData: any = [];
 
-    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router, private _alsservice: ALSService) {
+    minDate: Date;
+    maxDate: Date;
+
+    constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
+        private _alsservice: ALSService, private _msg: MessageService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
         this.getAuditLockSetting();
-    }
-
-    getAuditLockSetting() {
-        this._alsservice.getAuditLockSetting({ "FilterType": "", "ALSAutoID": "0" }).subscribe(data => {
-            this.alsRowData = JSON.parse(data.data);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    expandDetails(row) {
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
-            if (row.Details.length === 0) {
-                this._alsservice.getAuditLockSetting({ "FilterType": "Details", "ALSAutoID": row.ALSAutoID }).subscribe(data => {
-                    row.Details = JSON.parse(data.data);
-                    debugger;
-                    console.log(row.ALSAutoID);
-                    console.log(row.Details);
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
-        } else {
-            row.IsCollapse = 0;
-        }
-    }
-
-    saveALSData() {
-        var xmldt = "<r>";
-        var lockDate: any;
-
-        for (var i = 0; i < this.alsRowData.length; i++) {
-            var field = this.alsRowData[i];
-            lockDate = field.LockDate;
-
-            if (lockDate != "") {
-                xmldt += "<i>";
-
-                xmldt += "<ALAAutoID>0</ALAAutoID>";
-                xmldt += "<MN>" + field.ModuleName + "</MN>";
-                xmldt += "<AD>" + field.LockDate + "</AD>";
-                xmldt += field.CurrentLockDate == null ? "<PAD></PAD>" : "<PAD>" + field.CurrentLockDate + "</PAD>";
-                xmldt += "<FY>5</FY>";
-                xmldt += "<CB>vivek</CB>";
-                xmldt += "<RM>" + this.Remark + "</RM>";
-
-                xmldt += "</i>";
-            }
-        }
-
-        xmldt += "</r>";
-        console.log(xmldt);
-
-        var saveDR = {
-            "AuditLockAction": xmldt
-        }
-
-        this._alsservice.saveAuditLockAction(saveDR).subscribe(data => {
-            var dataResult = JSON.parse(data.data);
-            debugger;
-            console.log(dataResult);
-
-            if (dataResult[0].Doc != "-1") {
-                alert(dataResult[0].Status + ', Doc : ' + dataResult[0].Doc);
-                this._router.navigate(['/setting']);
-            }
-            else {
-                alert("Error");
-            }
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
     }
 
     ngOnInit() {
         this.title = "Add dn";
         console.log('ngOnInit');
+
+        let today = new Date();
+        let month = today.getMonth();
+        let prevMonth = (month === 0) ? 11 : month - 1;
+        let nextMonth = (month === 11) ? 0 : month + 1;
+        this.minDate = new Date();
+        this.minDate.setMonth(nextMonth);
+        this.maxDate = new Date();
+        this.maxDate.setMonth(prevMonth);
 
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
@@ -132,6 +71,79 @@ export class ALSAddEdit implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         }
+    }
+
+    getAuditLockSetting() {
+        this._alsservice.getAuditLockSetting({ "flag": "" }).subscribe(data => {
+            this.alsRowData = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    expandDetails(row) {
+        if (row.issh == 0) {
+            row.issh = 1;
+            if (row.details.length === 0) {
+                this._alsservice.getAuditLockSetting({ "flag": "details" }).subscribe(data => {
+                    row.details = data.data;
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    // console.log("Complete");
+                })
+            }
+        } else {
+            row.issh = 0;
+        }
+    }
+
+    saveALSData() {
+        var that = this;
+        var auditlockdt = [];
+        var lockDate: any;
+
+        for (var i = 0; i < that.alsRowData.length; i++) {
+            var field = that.alsRowData[i];
+            lockDate = field.lockdate;
+
+            if (lockDate != "") {
+                auditlockdt.push({
+                    "alaid": 0,
+                    "dispnm": field.dispcd,
+                    "auditdt": field.lockdate,
+                    //"prevauditdate": field.currlockdate == null ? "" : field.currlockdate,
+                    "fyid": that.loginUser.fyid,
+                    "cmpid": that.loginUser.cmpid,
+                    "uidcode": that.loginUser.login,
+                    "remarks": that.remarks
+                });
+            }
+        }
+
+        console.log(JSON.stringify(auditlockdt));
+
+        var saveDR = {
+            "auditlockaction": auditlockdt
+        }
+
+        that._alsservice.saveAuditLockAction(saveDR).subscribe(data => {
+            var dataResult = data.data;
+
+            if (dataResult[0].msgid != "-1") {
+                that._msg.Show(messageType.success, "Success", dataResult[0].msg);
+                that._router.navigate(['/setting']);
+            }
+            else {
+                that._msg.Show(messageType.error, "Error", dataResult[0].msg);
+            }
+        }, err => {
+            that._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        });
     }
 
     ngOnDestroy() {
