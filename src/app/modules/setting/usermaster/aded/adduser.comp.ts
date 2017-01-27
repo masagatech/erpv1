@@ -70,7 +70,6 @@ export class AddUser implements OnInit, OnDestroy {
     }
 
     private selectAndDeselectCompanyWiseCheckboxes(row) {
-        debugger;
         if (row.iscmpcheck == true) {
             $("#C" + row.cmpid + " input[type=checkbox]").prop('checked', false);
         }

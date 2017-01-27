@@ -684,7 +684,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             // this.addressline2 = EmpDetails[0].addressline2;
 
             this.adrcsvid = "";
-            for (let items of EmpDetails[0].adr) {
+            var addressdt = EmpDetails[0].address === null ? [] : EmpDetails[0].address;
+
+            for (let items of addressdt) {
                 this.adrcsvid += items.adrid + ',';
             }
             this.addressBook.getAddress(this.adrcsvid.slice(0, -1));

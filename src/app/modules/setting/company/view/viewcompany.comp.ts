@@ -2,7 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
+import { UserService } from '../../../../_service/user/user-service';
 import { CompService } from '../../../../_service/company/comp-service' /* add reference for view employee */
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -16,17 +18,21 @@ export class ViewCompany implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
+    loginUser: LoginUserModel;
+
     isShowGrid: any = true;
     isShowList: any = false;
 
     company: any[];
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _compservice: CompService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _userservice: UserService,
+        private _compservice: CompService) {
+        this.loginUser = this._userservice.getUser();
         this.getCompany();
     }
 
     getCompany() {
-        this._compservice.getCompany({ "flag": "all" }).subscribe(data => {
+        this._compservice.getCompany({ "flag": "all", "fyid": this.loginUser.fyid }).subscribe(data => {
             this.company = data.data;
         }, err => {
             console.log("Error");
