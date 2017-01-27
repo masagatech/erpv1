@@ -8,6 +8,13 @@
     font-size: 13px;
 }
 
+.btn-simple {
+    text-shadow: 0 1px 0 #ffffff;
+    border-color: #ffffff;
+    background-color: #ffffff;
+    padding: 0;
+}
+
 .btn-default,
 .btn-primary,
 .btn-success,
@@ -1129,6 +1136,7 @@ html select[disabled] {
     z-index: 1065!important;
 }
 
-.tab-content{
-    min-height:200px;
+.require
+{
+    color: red;
 }
