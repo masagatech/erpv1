@@ -6,7 +6,8 @@ import { UserService } from '../../../../_service/user/user-service' /* add refe
 import { CompService } from '../../../../_service/company/comp-service' /* add reference for company */
 import { FYService } from '../../../../_service/fy/fy-service' /* add reference for view FY */
 import { Router, ActivatedRoute } from '@angular/router';
-import { LazyLoadEvent, Checkbox } from 'primeng/primeng';
+import { LazyLoadEvent } from 'primeng/primeng';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 declare var $: any;
 
@@ -39,7 +40,7 @@ export class AddUser implements OnInit, OnDestroy {
     CompanyDetails: any = [];
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
-        private _userservice: UserService, private _compservice: CompService, private _fyservice: FYService) {
+        private _userservice: UserService, private _compservice: CompService, private _fyservice: FYService, private _msg: MessageService) {
         var that = this;
 
         that.getCompanyDetails();
@@ -49,23 +50,12 @@ export class AddUser implements OnInit, OnDestroy {
         var that = this;
 
         that._compservice.getCompany({ "flag": "actwithfy" }).subscribe(data => {
-            that.CompanyDetails = data.data[0];
-            that.financialyear = data.data[1]
+            that.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    getFYData(row) {
-        var that = this;
-
-        if (row != null) {
-            return that.fydata = that.financialyear.filter(a => row.map(function (d) { return parseInt(d['fyid']); }).indexOf(parseInt(a.fyid)) !== -1);
-        } else {
-            return [];
-        }
     }
 
     allCheck: boolean = false;
@@ -103,23 +93,23 @@ export class AddUser implements OnInit, OnDestroy {
         var that = this;
 
         if (that.emailid == undefined) {
-            alert("Enter Email Address !!!!");
+            this._msg.Show(messageType.warn, "Warning", "Enter Email Address");
             return false;
         }
 
         if (that.iscpwd === 'Y') {
             if (that.pwd == undefined) {
-                alert("Enter Password !!!!");
+                this._msg.Show(messageType.warn, "Warning", "Enter Password");
                 return false;
             }
 
             if (that.confpwd == undefined) {
-                alert("Enter Confirm Password !!!!");
+                this._msg.Show(messageType.warn, "Warning", "Enter Confirm Password");
                 return false;
             }
 
             if (that.pwd != that.confpwd) {
-                alert("Password and Confirm Password not match !!!!");
+                this._msg.Show(messageType.warn, "Warning", "Password and Confirm Password not match");
                 return false;
             }
         }
@@ -136,8 +126,6 @@ export class AddUser implements OnInit, OnDestroy {
 
         that._userservice.getUsers({ "flag": "id", "uid": puid }).subscribe(data => {
             var UserDT = data.data;
-
-            debugger;
 
             that.uid = UserDT[0].uid;
             that.ucode = UserDT[0].ucode;
@@ -209,7 +197,6 @@ export class AddUser implements OnInit, OnDestroy {
 
         that.validSuccess = that.isValidSuccess();
         var cmprights = that.getCompanyRights();
-        console.log(cmprights);
 
         var saveUser = {
             "uid": that.uid,
@@ -222,26 +209,24 @@ export class AddUser implements OnInit, OnDestroy {
             "companyrights": cmprights
         }
 
-        debugger;
-
         if (that.validSuccess) {
             that._userservice.saveUsers(saveUser).subscribe(data => {
                 var dataResult = data.data;
                 console.log(dataResult);
 
-                if (dataResult[0].funsave_user.doc == "1") {
-                    alert(dataResult[0].funsave_user.msg);
+                if (dataResult[0].funsave_user.msgid == "1") {
+                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_user.msg);
                     that._router.navigate(['/setting/usermaster']);
                 }
-                else if (dataResult[0].funsave_user.doc == "-1") {
-                    alert(dataResult[0].funsave_user.msg);
+                else if (dataResult[0].funsave_user.msgid == "-1") {
+                    this._msg.Show(messageType.warn, "Warning", dataResult[0].funsave_user.msg);
                     that.emailid = "";
                 }
                 else {
-                    alert("Error");
+                    this._msg.Show(messageType.error, "Error", dataResult[0].funsave_user.msg);
                 }
             }, err => {
-                console.log(err);
+                this._msg.Show(messageType.error, "Error", err);
             }, () => {
                 // console.log("Complete");
             });
