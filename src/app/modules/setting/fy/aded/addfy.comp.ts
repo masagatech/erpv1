@@ -8,6 +8,7 @@ import { CommonService } from '../../../../_service/common/common-service' /* ad
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 declare var $: any;
 
@@ -34,7 +35,7 @@ export class AddFY implements OnInit, OnDestroy {
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService,
-        private _userService: UserService) {
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getCompany();
     }
@@ -51,11 +52,11 @@ export class AddFY implements OnInit, OnDestroy {
 
     isValidSuccess() {
         if (this.fromdt == "") {
-            alert("Enter From Year !!!!");
+            this._msg.Show(messageType.warn, "Warning", "Enter From Year");
             return false;
         }
         if (this.todt == "") {
-            alert("Enter To Year !!!!");
+            this._msg.Show(messageType.warn, "Warning", "Enter To Year");
             return false;
         }
 
@@ -65,11 +66,29 @@ export class AddFY implements OnInit, OnDestroy {
     getFYDetailsById(pfyid: number) {
         this._fyservice.getfy({ "flag": "id", "fyid": pfyid }).subscribe(data => {
             var FYDT = data.data;
-            console.log(FYDT);
 
             this.fyid = FYDT[0].fyid;
             this.fromdt = FYDT[0].fromdt;
             this.todt = FYDT[0].todt;
+
+            var cmprights = null;
+            var cmpitem = null;
+
+            if (FYDT[0] != null) {
+                cmprights = null;
+                cmprights = FYDT[0].cmprights;
+
+                if (cmprights != null) {
+                    for (var i = 0; i <= cmprights.length - 1; i++) {
+                        cmpitem = null;
+                        cmpitem = cmprights[i];
+
+                        if (cmpitem != null) {
+                            $("#C" + cmpitem.cmpid).find("#" + cmpitem.cmpid).prop('checked', true);
+                        }
+                    }
+                }
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -77,76 +96,64 @@ export class AddFY implements OnInit, OnDestroy {
         })
     }
 
+    getCompanyRights() {
+        var that = this;
+
+        var GiveRights = [];
+        var cmpitem = null;
+
+        for (var i = 0; i <= that.CompanyDetails.length - 1; i++) {
+            cmpitem = null;
+            cmpitem = that.CompanyDetails[i];
+
+            if (cmpitem !== null) {
+                var cmprights = "";
+
+                $("#C" + cmpitem.cmpid).find("input[type=checkbox]").each(function () {
+                    cmprights += (this.checked ? $(this).val() + "," : "");
+                });
+
+                if (cmprights != "") {
+                    GiveRights.push({ "cmpid": cmprights.slice(0, -1) });
+                }
+            }
+        }
+
+        return GiveRights;
+    }
+
     saveFYDetails() {
         this.validSuccess = this.isValidSuccess();
-        console.log(this.validSuccess);
-        var companyitem = null;
+        var cmprights = this.getCompanyRights();
 
         var saveFY = {
             "fyid": this.fyid,
             "fromdt": this.fromdt,
             "todt": this.todt,
-            "uidcode": this.loginUser.login
+            "uidcode": this.loginUser.login,
+            "cmprights": cmprights
         }
 
         if (this.validSuccess) {
             this._fyservice.savefy(saveFY).subscribe(data => {
                 var dataResult = data.data;
-                console.log(dataResult);
 
-                if (dataResult[0].funsave_fy.doc == "1") {
-                    alert(dataResult[0].funsave_fy.msg);
-
-                    // var companyid = "";
-                    // var fyrights = "<fy>";
-
-                    // for (var i = 0; i <= this.CompanyDetails.length - 1; i++) {
-                    //     companyitem = null;
-                    //     companyitem = this.CompanyDetails[i];
-
-                    //     if (companyitem !== null) {
-
-                    //         $("#C" + companyitem.CompanyID).find("input[type=checkbox]").each(function () {
-                    //             companyid += (this.checked ? $(this).val() + "," : "");
-                    //         });
-                    //     }
-                    // }
-
-                    // fyrights += "<id>" + dataResult[0].FYID + "</id>";
-                    // fyrights = "</fy>";
-
-                    // this.updateCompanyFYMapping(companyid, fyrights);
-
+                if (dataResult[0].funsave_fy.msgid == "1") {
+                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_fy.msg);
                     this._router.navigate(['/setting/fy']);
                 }
-                else if (dataResult[0].funsave_fy.doc == "-1") {
-                    alert(dataResult[0].funsave_fy.msg);
+                else if (dataResult[0].funsave_fy.msgid == "-1") {
+                    this._msg.Show(messageType.warn, "Warning", dataResult[0].funsave_fy.msg);
                 }
                 else {
-                    alert("Error");
+                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_fy.msg);
                 }
             }, err => {
-                console.log(err);
+                this._msg.Show(messageType.success, "Success", err);
             }, () => {
                 // console.log("Complete");
             });
         }
-    }
-
-    saveCompanyFYMap(cmpid, fyRights) {
-        this._compservice.saveCompanyFYMap({ "cmpid": cmpid, "fyrights": fyRights }).subscribe(data => {
-            var dataResult2 = data.data;
-
-            if (dataResult2[0].FYID !== "-1") {
-            }
-            else {
-                alert("Error");
-            }
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
     }
 
     actionBarEvt(evt) {

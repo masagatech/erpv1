@@ -31,7 +31,7 @@
 						</thead>
 						<tbody>
 							<tr *ngFor="let row of CompanyDetails">
-								<td id="{{row.cmpid}}">
+								<td id="C{{row.cmpid}}">
 									<input id="{{row.cmpid}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" class="companyCheck" />
 								</td>
 								<td>
