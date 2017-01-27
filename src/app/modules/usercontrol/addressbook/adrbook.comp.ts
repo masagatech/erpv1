@@ -50,14 +50,14 @@ export class AddrbookComp implements OnInit, OnDestroy {
         private _msg: MessageService, private _userService: UserService) {
         // this.getAddress();
         this.loginUser = this._userService.getUser();
-        this.filldropdown("Country");
-        this.filldropdown("adrtyp");
+        this.filldropdown("country");
+        this.filldropdown("adrtype");
     }
 
     filldropdown(group) {
         var that = this;
         this._commonservice.getMOM({ "group": group }).subscribe(data => {
-            if (group == "Country") {
+            if (group == "country") {
                 that.countryDT = data.data;
             }
             else {
