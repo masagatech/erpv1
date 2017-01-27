@@ -274,11 +274,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             that.Parameter()
         ).subscribe(result => {
             var dataset = result.data;
-            if (dataset[0].funsave_addressbook.maxid == -1) {
-                that._msg.Show(messageType.info, "info", dataset[0].funsave_addressbook.msg);
-                $(".firstnam").focus();
-                return;
-            }
             if (dataset[0].funsave_addressbook.maxid > 0) {
                 var adridmaxid = dataset[0].funsave_addressbook.maxid;
                 that._msg.Show(messageType.success, "success", "Data save successfully");
