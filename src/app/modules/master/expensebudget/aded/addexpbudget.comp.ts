@@ -68,7 +68,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     fillControlCenterDDL() {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "ctrlddl" }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "ctrlddl", "cmpid": that.loginUser.cmpid }).subscribe(data => {
             that.ctrlcenterDT = data.data;
         }, err => {
             console.log("Error");
