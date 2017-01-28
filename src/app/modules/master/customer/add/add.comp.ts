@@ -155,7 +155,7 @@ declare var $: any;
         this.fromval = "";
         this.toval = "";
         this.dis = "";
-        setTimeout(function() {
+        setTimeout(function () {
             $(".disattr").focus();
         }, 100);
 
@@ -182,7 +182,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.disattrid = ui.item.value;
                     me.disattrname = ui.item.label;
                 }
@@ -214,7 +214,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.transid = ui.item.value;
                     me.transname = ui.item.label;
                 }
@@ -261,7 +261,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.itemsid = ui.item.value;
                     me.itemsname = ui.item.label;
                 }
@@ -309,7 +309,7 @@ declare var $: any;
     }
 
     transtab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.transid = 0;
             this.transname = "";
             $(".transname").focus();
@@ -397,7 +397,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.saleid = ui.item.value;
                     me.salename = ui.item.label;
                     me.SalemanAdd(me.saleid);
@@ -410,7 +410,7 @@ declare var $: any;
     }
 
     saletab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.salename = "";
             $(".sales").focus();
         }, 0);
@@ -467,7 +467,7 @@ declare var $: any;
     }
 
     itemdis() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.itemsname = "";
             this.itemsdis = "";
             this.itemsid = 0;
@@ -510,7 +510,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.parentid = ui.item.value;
                     me.parentcodename = ui.item.label;
                     me.getparentname(me.parentid);
@@ -686,6 +686,17 @@ declare var $: any;
         }
     }
 
+    //Salesman Create Json
+    salesmanjson() {
+        var salesman = [];
+        for (let items of this.salesmanlist) {
+            salesman.push({
+                "id": items.value
+            });
+        }
+        return salesman;
+    }
+
     //Add Accounting Row
     AddNewKyeval() {
         var that = this;
@@ -810,6 +821,7 @@ declare var $: any;
             that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
             that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
             that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
+             that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
 
 
             that.debit = _custdata[0].debit;
@@ -931,7 +943,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.attrid = ui.item.value;
                     me.attrname = ui.item.label;
                 }
@@ -963,7 +975,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.ctrlid = ui.item.value;
                     me.ctrlname = ui.item.label;
                 }
@@ -996,7 +1008,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.acinfiid = ui.item.value;
                     me.acinfival = ui.item.label;
                 }
@@ -1009,7 +1021,7 @@ declare var $: any;
     }
 
     Ctrl() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".ctrl").val("");
             $(".ctrl").focus();
         }, 0)
@@ -1031,7 +1043,6 @@ declare var $: any;
             "id": this.ctrlid,
             "cmpid": this.loginUser.cmpid
         }).subscribe(result => {
-            console.log(result.data);
             if (result.data.length > 0) {
                 this.Duplicateflag = true;
                 for (var i = 0; i < this.Ctrllist.length; i++) {
@@ -1106,7 +1117,7 @@ declare var $: any;
             "docfile": this.docfile,
             "itemsdis": this.itemsdiscountjson(),
             "trans": this.transpoterjson(),
-            "sales": [],
+            "sales": this.salesmanjson(),
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
@@ -1182,7 +1193,7 @@ declare var $: any;
 
     //Attribute Tab Click Event
     Attr() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
         }, 0);
@@ -1190,7 +1201,7 @@ declare var $: any;
 
     //Account Info Tab Click Event
     Acinfo() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".key").val("");
             $(".val").val("");
             $(".key").focus();

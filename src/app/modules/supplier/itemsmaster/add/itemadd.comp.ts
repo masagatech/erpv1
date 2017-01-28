@@ -103,16 +103,24 @@ declare var $: any;
         });
     }
 
+    attrtab() {
+        setTimeout(function () {
+            this.attname = "";
+            $(".attr").focus();
+        },0);
+    }
+
     //Shelf Life Dropdown Fill
     getAllDropdown() {
         var that = this;
         this.itemsaddServies.getdorpdown({ "cmpid": this.loginUser.cmpid }).subscribe(data => {
             var dswarehaouse = data.data[0].filter(item => item.group === "warehouse");
             that.warehouselist = dswarehaouse;
-            var dsshelflife = data.data[0].filter(item => item.group === "shelf life");
+            var dsshelflife = data.data[0].filter(item => item.group === "shelflife");
             that.shelflifelist = dsshelflife;
-            var dsUoM = data.data[0].filter(item => item.group === "UoM");
+            var dsUoM = data.data[0].filter(item => item.group === "uom");
             that.UoMlist = dsUoM;
+            console.log(data.data);
             if (data.data[1].length > 0) {
                 that.Keyvallist = data.data[1]
             }

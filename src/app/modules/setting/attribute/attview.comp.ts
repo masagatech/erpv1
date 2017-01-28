@@ -127,7 +127,7 @@ declare var $: any;
                 this.counter++;
                 this.attName = "";
                 this.attrgrp = "";
-                $(".attname").focus();
+                $("#attnam").focus();
                 this.getAttribute();
             }
             else {

@@ -29,7 +29,7 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Supplier</label>
-					<input type="text" class="form-control type" tabindex="4" [(ngModel)]="type" />
+					<input type="text" class="form-control salesman" tabindex="4" [(ngModel)]="suppname" (keyup)="getAutoCompleteSalesman(this)" />
 				</div>
 			</div>
 			<div class="col-md-3">

@@ -1,0 +1,93 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-5">
+			<div class='form-group'>
+				<label>From</label>
+				<input type="text" class="form-control from" tabindex="1" [(ngModel)]="fromwarname" (keyup)="getAutoCompleteWareFrom(this)">
+			</div>
+		</div>
+		<div class="col-md-5">
+			<div class='form-group'>
+				<label>To</label>
+				<input type="text" class="form-control to" tabindex="2" [(ngModel)]="Towarname" (keyup)="getAutoCompleteWareTO(this)" />
+			</div>
+		</div>
+		<div class="col-md-10">
+			<div class='form-group'>
+				<label>Remark</label>
+				<input type="text" class="form-control remark" tabindex="3" [(ngModel)]="rem">
+			</div>
+		</div>
+		<div class="col-md-10">
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th class="col-md-3">Item</th>
+						<th class="col-md-1 textalign">Qty</th>
+						<th class="col-md-2 textalign">Rate</th>
+						<th class="col-md-2 textalign">Amount</th>
+						<th class="col-md-4">Remark</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let item of newAddRow let i=index">
+						<td>
+							<span>{{i+1}}</span>
+						</td>
+						<td>
+							<input type="text" class="form-control ProdName" autocomplete='off' value=""  [(ngModel)]="item.itemsname" (keyup)="getAutoCompleteProd(item,1)"
+							/></td>
+						<td>
+							<input type="text" class="form-control textalign" [(ngModel)]="item.qty" />
+						</td>
+						<td>
+							<select [(ngModel)]="item.rate" class="form-control">
+						<option *ngFor="let row of ratelist" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
+						</td>
+						<td>
+							<input type="text" class="form-control textalign"  [(ngModel)]="item.amt" />
+						</td>
+						<td>
+							<input type="text" class="form-control"  [(ngModel)]="item.remark" />
+						</td>
+						<td>
+							<button class="btn btn-theme btn-sm"  (click)="DeleteRow(item)"><i class="fa fa-trash"></i></button>
+						</td>
+					</tr>
+					<tr>
+						<td>#</td>
+						<td class="col-md-5">
+							<input type="text" id="foot_custname" class="form-control ProdName" tabindex="4" autocomplete='off' value="" [(ngModel)]="NewItemsName"
+								(keyup)="getAutoCompleteProd(this,0)" />
+						</td>
+						<td class="col-md-1">
+							<input type="text" class="form-control textalign qty" value="" tabindex="5"  [(ngModel)]="qty" (keyup.enter)="NewRowAdd()" />
+						</td>
+						<td class="col-md-1">
+							<select [(ngModel)]="newrate" class="form-control"  tabindex="6" >
+						<option *ngFor="let row of ratelistnew" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
+						</td>
+						<td class="col-md-1">
+							<input type="text" class="form-control textalign amt" value="" tabindex="7" [(ngModel)]="amt" />
+						</td>
+						<td class="col-md-1">
+							<input type="text" class="form-control" value="" tabindex="8" [(ngModel)]="remark" (keyup.enter)="NewRowAdd()" />
+						</td>
+						<td class="col-md-2">
+							<button type="button" class="btn btn-theme btn-sm" tabindex="9" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button>
+						</td>
+
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

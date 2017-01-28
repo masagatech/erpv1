@@ -25,13 +25,34 @@
 <div class="panel panel-theme">
 	<div class="panel-body">
 		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#adr" role="button" data-toggle="tab">Contact Details</a></li>
-			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
+			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contact Details</a></li>
+			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
 				<div class="row">
 					<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
+				</div>
+			</div>
+			<div class="tab-pane" id="attr">
+				<div class="row">
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Attribute</label>
+							<input type="text=" class="form-control attr" tabindex="5" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+								(keyup)="getAutoCompleteattr(this)" />
+						</div>
+					</div>
+					<div class="col-md-10">
+						<div class="col-md-6" *ngFor="let row of attrlist">
+							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
+								<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+							<span data-role="remove" (click)="Removeattr(row)"></span>
+								</span>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="tab-pane" id="docup">
