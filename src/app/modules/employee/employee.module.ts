@@ -16,14 +16,15 @@ const routerConfig = [
     path: '',
     component: EmployeeComp,
     canActivate: [AuthGuard],
+    data: { "module": "emp" },
     children: [
       {
         path: '',
         children: [
-          { path: 'viewemployee', component: ViewEmployee, canActivateChid: [AuthGuard], },
-          { path: 'addemployee', component: EmployeeAddEdit, canActivateChid: [AuthGuard], },
-          { path: 'editemployee/:empid', component: EmployeeAddEdit, canActivateChid: [AuthGuard], },
-          { path: '', component: EmployeeDashboardComp, canActivateChid: [AuthGuard], },
+          { path: 'view', component: ViewEmployee, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "view", "urlname": "/view" } },
+          { path: 'add', component: EmployeeAddEdit, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "add", "urlname": "/add" } },
+          { path: 'edit/:empid', component: EmployeeAddEdit, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "edit", "urlname": "/edit" } },
+          { path: '', redirectTo: 'view' },
         ]
       }
     ]

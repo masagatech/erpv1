@@ -120,9 +120,9 @@ export class AddJV implements OnInit, OnDestroy {
 
     isvaliddate() {
         var that = this;
-            debugger;
 
-        that._validmsg.checkDateValidate({
+
+        that._validmsg.checkDateValid({
             "dispnm": "JV", "auditdt": that.docdate,
             "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
         }).subscribe(data => {

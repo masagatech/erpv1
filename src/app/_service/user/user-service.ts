@@ -32,6 +32,7 @@ export class UserService {
             return this.loginUser;
         }
     }
+
     savePassword(req: any) {
         return this._dataserver.post("savePassword", req);
     }
@@ -67,6 +68,4 @@ export class UserService {
     getSettings(req: any) {
         return this._dataserver.post("getSettings", req);
     }
-
-
 }

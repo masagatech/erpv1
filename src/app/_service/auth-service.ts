@@ -7,7 +7,6 @@ import { UserService } from './user/user-service';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 declare var swfobject: any;
 
-
 @Injectable()
 export class AuthenticationService {
 
@@ -27,38 +26,36 @@ export class AuthenticationService {
       if (error) {
         error(err);
       }
-
     }, () => {
       if (callback) {
         callback('done');
       }
-
     });
-    //Cookie.delete('user');
-
   }
 
-  login(user:UserReq) {
+  login(user: UserReq) {
     var otherdetails = this.getClientInfo();
     let loginRes: any = this._dataserver.post("getLogin", {
       "email": user.email,
       "pwd": user.pwd,
       "otherdetails": otherdetails
     })
-    //console.log(loginRes);
+    
     return loginRes;
   }
 
-  
   loginsession(details: any) {
     var otherdetails = this.getClientInfo();
     details.otherdetails = otherdetails;
-    let loginRes: any = this._dataserver.post("getLogin",details)
-    //console.log(loginRes);
+    let loginRes: any = this._dataserver.post("getLogin", details);
+
     return loginRes;
   }
 
-
+  checkmenuaccess(details: any) {
+    let Res: any = this._dataserver.post("getMenuAccess", details);
+    return Res;
+  }
 
   private getClientInfo() {
     var unknown: any = '-';
@@ -140,15 +137,18 @@ export class AuthenticationService {
       fullVersion = fullVersion.substring(0, ix);
 
     majorVersion = parseInt('' + fullVersion, 10);
+    
     if (isNaN(majorVersion)) {
       fullVersion = '' + parseFloat(navigator.appVersion);
       majorVersion = parseInt(navigator.appVersion, 10);
     }
+
     // mobile version
     var mobile = /Mobile|mini|Fennec|Android|iP(ad|od|hone)/.test(nVer);
 
     // cookie
     var cookieEnabled = (navigator.cookieEnabled) ? true : false;
+
     if (typeof navigator.cookieEnabled == 'undefined' && !cookieEnabled) {
       document.cookie = 'testcookie';
       cookieEnabled = (document.cookie.indexOf('testcookie') != -1) ? true : false;
@@ -184,8 +184,10 @@ export class AuthenticationService {
       { s: 'OS/2', r: /OS\/2/ },
       { s: 'Search Bot', r: /(nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\/Teoma|ia_archiver)/ }
     ];
+
     for (var id in clientStrings) {
       var cs = clientStrings[id];
+
       if (cs.r.test(nAgt)) {
         os = cs.s;
         break;
@@ -214,9 +216,8 @@ export class AuthenticationService {
         break;
     }
 
-    // flash (you'll need to include swfobject)
-    /* script src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js" */
     var flashVersion = 'no check';
+
     if (typeof swfobject != 'undefined') {
       var fv = swfobject.getFlashPlayerVersion();
       if (fv.major > 0) {
@@ -237,15 +238,6 @@ export class AuthenticationService {
     d.WindowSize = windowSize;
 
     return d;
-
-
-    // document.write(''
-    //  +'Browser name  = '+browserName+'<br>'
-    //  +'Full version  = '+fullVersion+'<br>'
-    //  +'Major version = '+majorVersion+'<br>'
-    //  +'navigator.appName = '+navigator.appName+'<br>'
-    //  +'navigator.userAgent = '+navigator.userAgent+'<br>'
-    // )
   }
 
   public checkCredentials(): any {
@@ -265,6 +257,4 @@ export class AuthenticationService {
       }
     }
   }
-
-
 }

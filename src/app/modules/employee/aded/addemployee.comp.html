@@ -145,7 +145,12 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Joining Date</label>
-                                        <input type="date" [(ngModel)]="doj" class="form-control" />
+                                        <div class="controls">
+                                            <div class="input-group" tabindex="2">
+                                                <input id="date-picker-4" type="text" class="date-picker form-control doj" [(ngModel)]="doj" />
+                                                <label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

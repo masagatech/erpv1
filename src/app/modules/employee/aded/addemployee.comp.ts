@@ -36,15 +36,17 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     bloodgroup: string = "";
     familybg: string = "";
     healthdtls: string = "";
-    mobileno: string = "";
-    altmobileno: string = "";
-    altemailid: string = "";
-    country: string = "";
-    state: string = "";
-    city: string = "";
-    pincode: string = "";
-    addressline1: string = "";
-    addressline2: string = "";
+
+    // mobileno: string = "";
+    // altmobileno: string = "";
+    // altemailid: string = "";
+    // country: string = "";
+    // state: string = "";
+    // city: string = "";
+    // pincode: string = "";
+    // addressline1: string = "";
+    // addressline2: string = "";
+
     companyname: string = "";
     companyemail: string = "";
     deptid: number = 0;
@@ -118,74 +120,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // Page Load
 
     ngOnInit() {
-        var that = this;
-
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['empid'] !== undefined) {
-                this.title = "Add Employee";
-
-                // this._actaccsservice.setActionButton('emp', ["edit", "delete", "view"], function (actionButton: any) {
-                //     that.actionButton = actionButton;
-                //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-                // });
-
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.empid = params['empid'];
-                this.getEmpDataById(this.empid);
-
-                $('button').attr('disabled', 'disabled');
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Edit Employee";
-
-                // this._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
-                //     that.actionButton = actionButton;
-                //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-                // });
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                this.clearEmployeeFields();
-
-                $('button').removeAttr('disabled');
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-
-                setTimeout(function () {
-                    var date = new Date();
-                    var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-                    // Doc Date 
-
-                    $(".dob").datepicker({
-                        dateFormat: "dd/mm/yy",
-                        autoclose: true,
-                        setDate: new Date()
-                    });
-
-                    $(".dob").datepicker('setDate', today);
-                }, 0);
-            }
-        });
-
-        setTimeout(function () {
-            commonfun.addrequire();
-        }, 0);
+        this.setActionRights();
+        this.setEmployeeFields();
     }
 
     // add, edit, delete button
@@ -193,8 +129,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     actionBarEvt(evt) {
         var that = this;
 
-        if (evt === "view") {
-            that._router.navigate(['employee/viewemployee']);
+        if (evt === "back") {
+            that._router.navigate(['employee/view']);
         }
         else if (evt === "save") {
             var validateme = commonfun.validate();
@@ -213,16 +149,67 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
             $('#uname').attr('disabled', 'disabled');
 
-            // that._actaccsservice.setActionButton('emp', ["delete", "view"], function (actionButton: any) {
-            //     that.actionButton = actionButton;
-            //     that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-            // });
-
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
         }
+    }
+
+    // Set Action Rights
+
+    setActionRights() {
+        var that = this;
+
+        that._userservice.getMenuDetails({
+            "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
+            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
+        }).subscribe(data => {
+            var data = data.data.filter(a => a.dispfor === "add");
+
+            if (data.length === 0) {
+                return;
+            }
+            else {
+                for (var i = 0; i < data.length; i++) {
+                    var id = data[i].actnm;
+                    var code = data[i].actcd;
+                    var text = data[i].dispnm;
+                    var icon = data[i].acticon;
+
+                    that.actionButton.push(new ActionBtnProp(id, text, icon, true, false));
+
+                    that.setActionButtons.setActionButtons(that.actionButton);
+
+                    that.subscribeParameters = that._routeParams.params.subscribe(params => {
+                        if (params['empid'] !== undefined) {
+                            that.title = "Add Employee";
+
+                            if (code === "add") {
+                                that.actionButton.find(a => a.id === "save").hide = true;
+                            }
+
+                            if (code === "edit") {
+                                that.actionButton.find(a => a.id === "edit").hide = false;
+                            }
+                        }
+                        else {
+                            that.title = "Edit Employee";
+
+                            if (code === "add") {
+                                that.actionButton.find(a => a.id === "save").hide = false;
+                            }
+
+                            if (code === "edit") {
+                                that.actionButton.find(a => a.id === "edit").hide = true;
+                            }
+                        }
+                    });
+                }
+            }
+
+            that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+        });
     }
 
     // Get Employee Auto Complete
@@ -380,12 +367,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     //Reset Employee Fields
-
-    clearEmployeeFields() {
-        $('input').attr('value', '');
-        $('select').attr('value', '');
-        $('textarea').attr('value', '');
-    }
 
     // onUploadStart(e) {
     //     this.actionButton.find(a => a.id === "save").enabled = false;
@@ -642,7 +623,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 this.saveDynamicFields(parentid);
                 this._msg.Show(messageType.success, "Success", msg);
 
-                this._router.navigate(['/employee/viewemployee']);
+                this._router.navigate(['/employee/view']);
             }
             else {
                 var msg = dataResult[0].funsave_employee.msg;
@@ -657,63 +638,116 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     // Get Employee
 
-    getEmpDataById(pempid: number) {
-        this._empservice.getEmployee({ "flag": "id", "empid": pempid }).subscribe(data => {
-            var EmpDetails = data.data[0]._empdata;
-            var SecondayCC = data.data[0]._secondarycc === null ? [] : data.data[0]._secondarycc;
+    setEmployeeFields() {
+        var that = this;
 
-            this.empid = EmpDetails[0].empid;
-            this.uid = EmpDetails[0].uid;
-            this.uname = EmpDetails[0].uname;
-            this.dob = EmpDetails[0].dob;
-            this.gender = EmpDetails[0].gender;
-            this.maritalstatus = EmpDetails[0].maritalstatus;
-            this.bloodgroup = EmpDetails[0].bloodgroup;
-            this.familybg = EmpDetails[0].familybg;
-            this.healthdtls = EmpDetails[0].healthdtls;
-            // this.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-            // this.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-            // this.mobileno = EmpDetails[0].mobileno;
-            // this.altmobileno = EmpDetails[0].altmobileno;
-            // this.altemailid = EmpDetails[0].altemailid;
-            // this.country = EmpDetails[0].country;
-            // this.state = EmpDetails[0].state;
-            // this.city = EmpDetails[0].city;
-            // this.pincode = EmpDetails[0].pincode;
-            // this.addressline1 = EmpDetails[0].addressline1;
-            // this.addressline2 = EmpDetails[0].addressline2;
+        setTimeout(function () {
+            commonfun.addrequire();
 
-            this.adrcsvid = "";
-            var addressdt = EmpDetails[0].address === null ? [] : EmpDetails[0].address;
+            var date = new Date();
+            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
 
-            for (let items of addressdt) {
-                this.adrcsvid += items.adrid + ',';
+            $(".dob").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            $(".doj").datepicker({
+                dateFormat: "dd/mm/yy",
+                autoclose: true,
+                setDate: new Date()
+            });
+
+            that.subscribeParameters = that._routeParams.params.subscribe(params => {
+                if (params['empid'] === undefined) {
+                    $(".dob").datepicker('setDate', today);
+                    $(".doj").datepicker('setDate', today);
+                }
+            });
+        }, 0);
+
+        that.subscribeParameters = that._routeParams.params.subscribe(params => {
+            if (params['empid'] !== undefined) {
+                that.title = "Add Employee";
+                that.empid = params['empid'];
+
+                this._empservice.getEmployee({ "flag": "id", "empid": that.empid }).subscribe(data => {
+                    var EmpDetails = data.data[0]._empdata;
+                    var SecondayCC = data.data[0]._secondarycc === null ? [] : data.data[0]._secondarycc;
+
+                    this.empid = EmpDetails[0].empid;
+                    this.uid = EmpDetails[0].uid;
+                    this.uname = EmpDetails[0].uname;
+                    this.dob = EmpDetails[0].dob;
+                    this.gender = EmpDetails[0].gender;
+                    this.maritalstatus = EmpDetails[0].maritalstatus;
+                    this.bloodgroup = EmpDetails[0].bloodgroup;
+                    this.familybg = EmpDetails[0].familybg;
+                    this.healthdtls = EmpDetails[0].healthdtls;
+
+                    // this.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
+                    // this.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
+                    // this.mobileno = EmpDetails[0].mobileno;
+                    // this.altmobileno = EmpDetails[0].altmobileno;
+                    // this.altemailid = EmpDetails[0].altemailid;
+                    // this.country = EmpDetails[0].country;
+                    // this.state = EmpDetails[0].state;
+                    // this.city = EmpDetails[0].city;
+                    // this.pincode = EmpDetails[0].pincode;
+                    // this.addressline1 = EmpDetails[0].addressline1;
+                    // this.addressline2 = EmpDetails[0].addressline2;
+
+                    this.adrcsvid = "";
+                    var addressdt = EmpDetails[0].address === null ? [] : EmpDetails[0].address;
+
+                    for (let items of addressdt) {
+                        this.adrcsvid += items.adrid + ',';
+                    }
+                    this.addressBook.getAddress(this.adrcsvid.slice(0, -1));
+
+                    this.aboutus = EmpDetails[0].aboutus;
+                    this.companyname = EmpDetails[0].companyname;
+                    this.deptid = EmpDetails[0].deptid;
+                    this.desigid = EmpDetails[0].desigid;
+                    this.salary = EmpDetails[0].salary;
+                    this.salarymode = EmpDetails[0].salarymode;
+                    this.companyemail = EmpDetails[0].companyemail;
+                    this.noticedays = EmpDetails[0].noticedays;
+                    this.doj = EmpDetails[0].doj;
+                    this.pctrlcenterid = EmpDetails[0].pctrlid;
+                    this.ctrlcenterList = SecondayCC;
+
+                    this.getDynamicFields(that.empid);
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    // console.log("Complete");
+                })
+
+                $('button').attr('disabled', 'disabled');
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
             }
-            this.addressBook.getAddress(this.adrcsvid.slice(0, -1));
+            else {
+                $('input').attr('value', '');
+                $('select').attr('value', '');
+                $('textarea').attr('value', '');
 
-            this.aboutus = EmpDetails[0].aboutus;
-            this.companyname = EmpDetails[0].companyname;
-            this.deptid = EmpDetails[0].deptid;
-            this.desigid = EmpDetails[0].desigid;
-            this.salary = EmpDetails[0].salary;
-            this.salarymode = EmpDetails[0].salarymode;
-            this.companyemail = EmpDetails[0].companyemail;
-            this.noticedays = EmpDetails[0].noticedays;
-            this.doj = EmpDetails[0].doj;
-            this.pctrlcenterid = EmpDetails[0].pctrlid;
-            this.ctrlcenterList = SecondayCC;
-
-            this.getDynamicFields(pempid);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+                $('button').removeAttr('disabled');
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+            }
+        });
     }
+
+    // Destroy
 
     ngOnDestroy() {
         this.actionButton = [];
-
+        
         if (this.subscr_actionbarevt !== undefined) {
             this.subscr_actionbarevt.unsubscribe();
         }

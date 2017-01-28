@@ -27,13 +27,14 @@ const routerConfig = [
         path: '',
         component: JVComp,
         canActivate: [AuthGuard],
+        data: { "module": "accs" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddJV, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: AddJV, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewJV, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddJV, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"jv", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddJV, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"jv", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewJV, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"jv", "rights": "view", "urlname": "/jv" } },
                 ]
             }
         ]

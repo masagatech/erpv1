@@ -3,6 +3,7 @@ import { SharedVariableService } from "../../../_service/sharedvariable-service"
 import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { EmpService } from '../../../_service/employee/emp-service' /* add reference for view employee */
+import { ValidationService } from '../../../_service/validation/valid-service';
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
 
@@ -10,7 +11,7 @@ import { Router } from '@angular/router';
 
 @Component({
     templateUrl: 'viewemployee.comp.html',
-    providers: [EmpService]
+    providers: [EmpService, ValidationService]
 })
 
 export class ViewEmployee implements OnInit, OnDestroy {
@@ -27,14 +28,10 @@ export class ViewEmployee implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    viewEmployeeDT: any[];
-
-    filterEmployeeData() {
-        this.getEmployeeData();
-    }
+    viewEmployeeDT: any = [];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService,
-        private _userservice: UserService) {
+        private _userservice: UserService, private _validservice: ValidationService) {
         this.loginUser = this._userservice.getUser();
         this.getEmployeeData();
     }
@@ -43,26 +40,54 @@ export class ViewEmployee implements OnInit, OnDestroy {
         this.title = "View Employee";
         this.type = "EmpWithCode";
 
-        console.log(this.value);
-        console.log(this.name);
+        this.setActionRights();
 
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        //this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        //this.setActionButtons.setActionButtons(this.actionButton);
+        //this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/employee/add']);
+        }
     }
 
     selectedItem(e: any) {
         console.log(this.autoEmpName);
     }
 
+    isviewform() {
+        var that = this;
+
+        that._validservice.checkFormValid({
+            "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
+            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid, "actcd": "edit", "dispfor": "add"
+        }).subscribe(data => {
+            var msg = data.data[0].msg;
+            return msg;
+        });
+    }
+
     getEmployeeData() {
-        this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(data => {
-            this.viewEmployeeDT = data.data;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        var that = this;
+
+        that._validservice.checkFormValid({
+            "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
+            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid, "actcd": "edit", "dispfor": "add"
+        }).subscribe(data => {
+            var msg = data.data[0].msg;
+
+            if (msg === "success") {
+                this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(employee => {
+                    this.viewEmployeeDT = employee.data;
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    // console.log("Complete");
+                })
+            }
+        });
     }
 
     expandDetails(row) {
@@ -83,17 +108,47 @@ export class ViewEmployee implements OnInit, OnDestroy {
     }
 
     openEmployeeDetails(row) {
-        this._router.navigate(['/employee/editemployee', row.empid]);
+        this._router.navigate(['/employee/edit', row.empid]);
     }
 
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/employee/addemployee']);
-        }
+    // Set Action Rights
+
+    isGivenRights() {
+    }
+
+    setActionRights() {
+        var that = this;
+
+        that._userservice.getMenuDetails({
+            "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
+            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
+        }).subscribe(data => {
+            var data = data.data.filter(a => a.dispfor === "view");
+
+            if (data.length === 0) {
+                return;
+            }
+            else {
+                for (var i = 0; i < data.length; i++) {
+                    var id = data[i].actnm;
+                    var code = data[i].actcd;
+                    var text = data[i].dispnm;
+                    var icon = data[i].acticon;
+
+                    that.actionButton.push(new ActionBtnProp(id, text, icon, true, false));
+                    that.setActionButtons.setActionButtons(that.actionButton);
+                }
+            }
+
+            that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+        });
     }
 
     ngOnDestroy() {
         console.log('ngOnDestroy');
-        this.subscr_actionbarevt.unsubscribe();
+
+        if (this.subscr_actionbarevt !== undefined) {
+            this.subscr_actionbarevt.unsubscribe();
+        }
     }
 }
