@@ -87,13 +87,11 @@ declare var $: any;
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.itemsid = params['id'];
-                this._editid = this.itemsid;
-
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
+                this.itemsid = params['id'];
+                this._editid = this.itemsid;
 
             }
             else {
@@ -107,7 +105,7 @@ declare var $: any;
         setTimeout(function () {
             this.attname = "";
             $(".attr").focus();
-        },0);
+        }, 0);
     }
 
     //Shelf Life Dropdown Fill
@@ -660,10 +658,10 @@ declare var $: any;
         ).subscribe(result => {
             var returndata = result.data;
             if (returndata.length > 0) {
+
                 var _custdata = returndata[0]._custdata;
                 var _uploadedfile = returndata[0]._uploadedfile;
                 var _docfile = returndata[0]._docfile;
-
                 this.itemcode = returndata[0].itemcode;
                 this.itemname = returndata[0].itemname;
                 this.skucode = returndata[0].skucode;
@@ -676,6 +674,7 @@ declare var $: any;
                 this.saleslist = returndata[0]._salesjson;
                 this.purchaselist = returndata[0]._purchasejson;
                 this.supplist = returndata[0]._supplierjson;
+
 
                 if (_uploadedfile != null) {
                     that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
@@ -795,6 +794,23 @@ declare var $: any;
         }
     }
 
+    craetLedgerjson() {
+        var ledgerjson = [];
+        ledgerjson.push({
+            "autoid": 0,
+            "wareid": this.CreatejsonWarehouse(),
+            "typ": "OB",
+            "rate": this.CreatejsonSalePrice(),
+            "qty": 0,
+            "outward": 0,
+            "fy": this.loginUser.fyid,
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login,
+            "remark": "item Add"
+        });
+        return ledgerjson;
+    }
+
     //Parametr With Json
     private ParamJson() {
         var Param = {
@@ -816,7 +832,8 @@ declare var $: any;
             "purc": this.CreatejsonPurchasePrice(),
             "supp": this.CreatejsonSupplier(),
             "ware": this.CreatejsonWarehouse(),
-            "docfile": this.docfile
+            "docfile": this.docfile,
+            "ledger": this.craetLedgerjson()
         }
         return Param;
     }

@@ -163,6 +163,7 @@ declare var $: any;
             "createdby": this.loginUser.login
         }).subscribe(result => {
             var dataset = result.data;
+            console.log(dataset);
             if (dataset.length > 0) {
                 this.locationlist = result.data;
             }

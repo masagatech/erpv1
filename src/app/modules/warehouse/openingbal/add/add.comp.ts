@@ -93,7 +93,6 @@ declare var $: any;
                 "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
-                console.log(ItemsResult);
                 if (ItemsResult.length > 0) {
                     this.Openinglist = ItemsResult;
                 }
@@ -147,6 +146,7 @@ declare var $: any;
                     "itemid": item.value,
                     "rate": item.ratename.split(':')[0],
                     "qty": item.qty,
+                    "typ":"OB",
                     "amt": item.amt,
                     "rem": item.remark,
                     "wareid": that.warehouseid,
@@ -166,6 +166,7 @@ declare var $: any;
         var param = {
             "openstockdetails": this.tablejson()
         }
+        console.log(JSON.stringify(param));
         return param;
     }
 
