@@ -4,7 +4,7 @@ import { AboutComponent } from './about';
 import { NoContentComponent } from './no-content';
 
 import { DataResolver } from './app.resolver';
-import { LoginComp } from './login/login.comp'
+import { LoginComp } from './login/login.comp';
 
 export const ROUTES: Routes = [
   { path: 'login', component: LoginComp },
