@@ -17,14 +17,15 @@ const routerConfig = [
         path: '',
         component: DocRepoComp,
         canActivate: [AuthGuard],
+        data: { "module": "dr" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'setting', component: ViewDR, canActivateChid: [AuthGuard], },
-                    { path: 'add', component: AddDR, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:uid', component: AddDR, canActivateChid: [AuthGuard], },
-                    { path: '', component: DRDashboardComp, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddDR, canActivateChid: [AuthGuard],  data: { "module": "dr", "submodule":"dr", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:uid', component: AddDR, canActivateChid: [AuthGuard], data: { "module": "dr", "submodule":"dr", "rights": "edit", "urlname": "/edit" } },
+                    { path: 'setting', component: ViewDR, canActivateChid: [AuthGuard], data: { "module": "dr", "submodule":"dr", "rights": "add", "urlname": "/setting" } },
+                    { path: '', component: DRDashboardComp, canActivateChid: [AuthGuard], data: { "module": "dr", "submodule":"dr", "rights": "view", "urlname": "/docrepo" } },
                 ]
             }
         ]

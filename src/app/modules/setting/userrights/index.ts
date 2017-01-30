@@ -29,13 +29,14 @@ const routerConfig = [
         path: '',
         component: UserRightsComp,
         canActivate: [AuthGuard],
+        data: { "module": "pset" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddUserRights, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:uid', component: AddUserRights, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewUserRights, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddUserRights, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"ur", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"ur", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"ur", "rights": "view", "urlname": "/userrights" } },
                 ]
             }
         ]

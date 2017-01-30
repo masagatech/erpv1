@@ -27,13 +27,14 @@ const routerConfig = [
         path: '',
         component: CompanyComp,
         canActivate: [AuthGuard],
+        data: { "module": "pset" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddCompany, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:cmpid', component: AddCompany, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewCompany, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddCompany, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"cmp", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddCompany, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"cmp", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewCompany, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"cmp", "rights": "view", "urlname": "/company" } },
                 ]
             }
         ]

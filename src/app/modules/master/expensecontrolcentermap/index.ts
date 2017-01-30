@@ -27,13 +27,14 @@ const routerConfig = [
         path: '',
         component: ExpenseComp,
         canActivate: [AuthGuard],
+        data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddExpenseComp, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: AddExpenseComp, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewExpenseComp, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddExpenseComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "eccm", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddExpenseComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "eccm", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewExpenseComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "eccm", "rights": "view", "urlname": "/expensecontrolcentermap" } },
                 ]
             }
         ]

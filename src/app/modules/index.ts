@@ -10,8 +10,6 @@ import { DashboardComponent } from './dashboard/dashboard.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-// import { HotkeyModule } from 'angular2-hotkeys';
-// canActivateChild: [AuthGuard]
 const routerConfig =
     [
         {

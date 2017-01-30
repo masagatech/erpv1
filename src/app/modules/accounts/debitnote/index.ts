@@ -27,13 +27,14 @@ const routerConfig = [
         path: '',
         component: DebitNoteComp,
         canActivate: [AuthGuard],
+        data: { "module": "accs" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddDebitNote, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: AddDebitNote, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewDebitNote, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddDebitNote, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"dn", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"dn", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"dn", "rights": "view", "urlname": "/debitnote" } },
                 ]
             }
         ]

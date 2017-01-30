@@ -41,7 +41,7 @@ export class AddFY implements OnInit, OnDestroy {
     }
 
     getCompany() {
-        this._compservice.getCompany({ "flag": "all" }).subscribe(data => {
+        this._compservice.getCompany({ "flag": "all", "fyid": this.loginUser.fyid }).subscribe(data => {
             this.CompanyDetails = data.data;
         }, err => {
             console.log("Error");

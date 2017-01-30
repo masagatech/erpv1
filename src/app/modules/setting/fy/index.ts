@@ -26,13 +26,14 @@ const routerConfig = [
         path: '',
         component: FYComp,
         canActivate: [AuthGuard],
+        data: { "module": "pset" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddFY, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:fyid', component: AddFY, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewFY, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddFY, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"fy", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"fy", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"fy", "rights": "view", "urlname": "/fy" } },
                 ]
             }
         ]

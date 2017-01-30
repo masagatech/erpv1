@@ -30,13 +30,14 @@ const routerConfig = [
         path: '',
         component: MOMComp,
         canActivate: [AuthGuard],
+        data: { "module": "pset" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddMOM, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: AddMOM, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewMOM, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddMOM, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"mom", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"mom", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"mom", "rights": "view", "urlname": "/masterofmaster" } },
                 ]
             }
         ]

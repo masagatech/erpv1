@@ -1,8 +1,7 @@
 import { NgModule, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
-import { AddUser } from './aded/adduser.comp';
-import { ViewUser } from './view/viewuser.comp';
+import { ALSAddEdit } from './addals.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module'
 
@@ -13,7 +12,7 @@ import { CommonModule } from '@angular/common';
     template: '<router-outlet></router-outlet>'
 })
 
-export class UserMasterComp implements OnInit {
+export class AuditLockSettingComp implements OnInit {
     constructor() {
     }
 
@@ -24,16 +23,14 @@ export class UserMasterComp implements OnInit {
 const routerConfig = [
     {
         path: '',
-        component: UserMasterComp,
+        component: AuditLockSettingComp,
         canActivate: [AuthGuard],
         data: { "module": "pset" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddUser, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"um", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: AddUser, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"um", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: ViewUser, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"um", "rights": "view", "urlname": "/usermaster" } },
+                    { path: '', component: ALSAddEdit, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"als", "rights": "add", "urlname": "/auditlocksetting" } },
                 ]
             }
         ]
@@ -43,12 +40,11 @@ const routerConfig = [
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule],
     declarations: [
-        AddUser,
-        ViewUser,
-        UserMasterComp
+        AuditLockSettingComp,
+        ALSAddEdit
     ],
     providers: [AuthGuard]
 })
 
-export default class UserModule {
+export default class AuditLockSettingModule {
 }

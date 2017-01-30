@@ -29,13 +29,14 @@ const routerConfig = [
         path: '',
         component: ReceiptBookComp,
         canActivate: [AuthGuard],
+        data: { "module": "invaccs" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddReceiptBook, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:rbid', component: AddReceiptBook, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewReceiptBook, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddReceiptBook, canActivateChid: [AuthGuard],  data: { "module": "invaccs", "submodule":"rb", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:rbid', component: AddReceiptBook, canActivateChid: [AuthGuard], data: { "module": "invaccs", "submodule":"rb", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewReceiptBook, canActivateChid: [AuthGuard], data: { "module": "invaccs", "submodule":"rb", "rights": "view", "urlname": "/receiptbook" } },
                 ]
             }
         ]

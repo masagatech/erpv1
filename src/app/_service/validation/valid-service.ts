@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 export class ValidationService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    checkDateValidate(req: any) {
-        return this._dataserver.post("checkDateValidate", req)
+    checkDateValid(req: any) {
+        return this._dataserver.post("checkDateValid", req)
     }
 }

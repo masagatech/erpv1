@@ -22,15 +22,16 @@ const routerConfig = [
         path: '',
         component: BankReceiptComp,
         canActivate: [AuthGuard],
+        data: { "module": "accs" },
         children: [
             {
                 path: '',
                 children: [
                     //Bank Payment Add Edit View
 
-                    { path: 'add', component: bankreceiptaddedit, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: bankreceiptaddedit, canActivateChid: [AuthGuard], },
-                    { path: '', component: bankreceiptview, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: bankreceiptaddedit, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ar", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: bankreceiptaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"ar", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: bankreceiptview, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"ar", "rights": "view", "urlname": "/bankreceipt" } },
                 ]
             }
         ]

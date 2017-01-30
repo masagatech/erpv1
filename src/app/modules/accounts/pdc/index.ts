@@ -27,13 +27,14 @@ const routerConfig = [
         path: '',
         component: PDCComp,
         canActivate: [AuthGuard],
+        data: { "module": "accs" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddPDC, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: AddPDC, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewPDC, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddPDC, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"pdc", "rights": "add", "urlname": "/add" }},
+                    { path: 'edit/:id', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"pdc", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"pdc", "rights": "view", "urlname": "/pdc" } },
                 ]
             }
         ]

@@ -21,15 +21,16 @@ const routerConfig = [
         path: '',
         component: BankPaymentComp,
         canActivate: [AuthGuard],
+        data: { "module": "accs" },
         children: [
             {
                 path: '',
                 children: [
                     //Bank Payment Add Edit View
                     
-                    { path: 'add', component: bankpaymentaddedit, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard], },
-                    { path: '', component: bankpaymentview, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: bankpaymentaddedit, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/add" }, },
+                    { path: 'edit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/edit" }, },
+                    { path: '', component: bankpaymentview, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/bankpayment" }, },
                 ]
             }
         ]

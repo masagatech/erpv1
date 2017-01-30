@@ -27,13 +27,14 @@ const routerConfig = [
         path: '',
         component: ReceiptBookIssuedComp,
         canActivate: [AuthGuard],
+        data: { "module": "accs" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddRBI, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:irbid', component: AddRBI, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewRBI, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/add" }, },
+                    { path: 'edit/:irbid', component: AddRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/edit" }, },
+                    { path: '', component: ViewRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/receiptbookissued" }, },
                 ]
             }
         ]

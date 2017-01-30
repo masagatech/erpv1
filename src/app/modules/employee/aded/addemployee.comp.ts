@@ -99,11 +99,15 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     adrcsvid: any = "";
     accode: string = "";
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     // Page Pre Render
 
-    constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
-        private _empservice: EmpService, private _actaccsservice: ActionAccess, private _userservice: UserService,
-        private _dynfldserive: DynamicFieldsService, private _commonservice: CommonService, private _msg: MessageService) {
+    constructor(private _routeParams: ActivatedRoute, private _router: Router,
+        private setActionButtons: SharedVariableService, private _empservice: EmpService, private _actaccsservice: ActionAccess,
+        private _userservice: UserService, private _dynfldserive: DynamicFieldsService, private _commonservice: CommonService, private _msg: MessageService) {
         this.module = "Employee";
         this.loginUser = this._userservice.getUser();
 
@@ -115,6 +119,10 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.fillDropDownList("desig");
         this.fillDropDownList("salarymode");
         this.fillCtrlCenterDDL();
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
 
     // Page Load
@@ -142,15 +150,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             }
             that.saveEmployeeData();
         } else if (evt === "edit") {
-            $('button').removeAttr('disabled');
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
+            that._router.navigate(['employee/edit/', that.empid]);
 
-            $('#uname').attr('disabled', 'disabled');
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
         }
@@ -171,41 +172,53 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 return;
             }
             else {
-                for (var i = 0; i < data.length; i++) {
-                    var id = data[i].actnm;
-                    var code = data[i].actcd;
-                    var text = data[i].dispnm;
-                    var icon = data[i].acticon;
 
-                    that.actionButton.push(new ActionBtnProp(id, text, icon, true, false));
+                that.subscribeParameters = that._routeParams.params.subscribe(params => {
+                    for (var i = 0; i < data.length; i++) {
+                        var id = data[i].actnm;
+                        var code = data[i].actcd;
+                        var text = data[i].dispnm;
+                        var icon = data[i].acticon;
 
-                    that.setActionButtons.setActionButtons(that.actionButton);
+                        that.actionButton.push(new ActionBtnProp(id, text, icon, true, false));
 
-                    that.subscribeParameters = that._routeParams.params.subscribe(params => {
-                        if (params['empid'] !== undefined) {
-                            that.title = "Add Employee";
+                        that.setActionButtons.setActionButtons(that.actionButton);
+                    }
 
-                            if (code === "add") {
-                                that.actionButton.find(a => a.id === "save").hide = true;
-                            }
+                    if (that.isadd) {
+                        that.title = "Add Employee";
+                        $('button').removeAttr('disabled');
+                        $('input').removeAttr('disabled');
+                        $('select').removeAttr('disabled');
+                        $('textarea').removeAttr('disabled');
 
-                            if (code === "edit") {
-                                that.actionButton.find(a => a.id === "edit").hide = false;
-                            }
-                        }
-                        else {
-                            that.title = "Edit Employee";
+                        $('#uname').attr('disabled', 'disabled');
+                        this.actionButton.find(a => a.id === "save").hide = false;
+                        this.actionButton.find(a => a.id === "edit").hide = true;
+                    }
+                    else if (that.isedit) {
+                        that.title = "Edit Employee";
+                        $('button').removeAttr('disabled');
+                        $('input').removeAttr('disabled');
+                        $('select').removeAttr('disabled');
+                        $('textarea').removeAttr('disabled');
 
-                            if (code === "add") {
-                                that.actionButton.find(a => a.id === "save").hide = false;
-                            }
+                        $('#uname').attr('disabled', 'disabled');
+                        this.actionButton.find(a => a.id === "save").hide = false;
+                        this.actionButton.find(a => a.id === "edit").hide = true;
+                    }
+                    else {
+                        that.title = "Details of Employee";
 
-                            if (code === "edit") {
-                                that.actionButton.find(a => a.id === "edit").hide = true;
-                            }
-                        }
-                    });
-                }
+                        $('button').attr('disabled', 'disabled');
+                        $('input').attr('disabled', 'disabled');
+                        $('select').attr('disabled', 'disabled');
+                        $('textarea').attr('disabled', 'disabled');
+
+                        this.actionButton.find(a => a.id === "save").hide = true;
+                        this.actionButton.find(a => a.id === "edit").hide = false;
+                    }
+                });
             }
 
             that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
@@ -723,12 +736,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     console.log("Error");
                 }, () => {
                     // console.log("Complete");
-                })
-
-                $('button').attr('disabled', 'disabled');
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
+                });
             }
             else {
                 $('input').attr('value', '');
@@ -747,7 +755,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.actionButton = [];
-        
+
         if (this.subscr_actionbarevt !== undefined) {
             this.subscr_actionbarevt.unsubscribe();
         }

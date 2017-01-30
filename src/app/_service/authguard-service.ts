@@ -12,7 +12,6 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
 
   }
 
-
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.checkFun(route, state);
   }
@@ -22,20 +21,21 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
   }
 
   canLoad() {
-    //console.log('AuthGuard#canLoad called');
     return true;
-    //return this.authser.checkCredentials();
   }
 
-
   private checkFun(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    //check route info 
+    //check route info
+
     var routeconfig = route.data;
     var checks = this.authser.checkCredentials();
     var that = this;
+
     return Observable.create((observer: Subject<boolean>) => {
+      //debugger;
       if (checks.status) {
         //call here
+
         that.checkMenuAccess(route, state, that._userService.getUser(), function (e) {
           if (e) {
             observer.next(true);
@@ -47,6 +47,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
       } else if (checks.takefrmdb) {
         that.getSession(function () {
           //call here
+
           that.checkMenuAccess(route, state, that._userService.getUser(), function (e) {
             if (e) {
               observer.next(true);
@@ -55,7 +56,6 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
               observer.next(true);
             }
           })
-
         }, checks);
       } else {
         this._router.navigate(['login']);
@@ -65,24 +65,28 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
     }).first();
   }
 
-
   private checkMenuAccess(route: ActivatedRouteSnapshot, state: RouterStateSnapshot, userdetails, callback) {
     var segments = state.url;
     var maindata = route.children[0].data;
     var submenudetails = route.children[0].routeConfig.children;
     var matchData = {};
+    var ismatch = false;
+
     if (maindata.hasOwnProperty("module")) {
       var modname = maindata["module"];
+
       for (var i = 0; i <= submenudetails.length - 1; i++) {
         var menumatch = submenudetails[i].data;
+
         if (menumatch != undefined) {
           if (segments.indexOf(menumatch["urlname"]) > -1) {
             matchData = menumatch;
+            ismatch = true;
             var params = {
               "uid": userdetails.uid, "cmpid": userdetails.cmpid, "fyid": userdetails.fyid,
               "ptype": menumatch["module"], "smtype": menumatch["submodule"], "actcd": menumatch["rights"]
             };
-            console.log(params);
+
             this.authser.checkmenuaccess(params).subscribe(d => {
               if (d.data) {
                 if (d.data[0].access) {
@@ -100,12 +104,15 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
           }
         }
       }
+
+      if (!ismatch) {
+        callback(false);
+      }
     } else {
       callback(true);
       return;
     }
   }
-
 
   private getSession(callback, checks) {
     this.authser.loginsession({ "base": "_sid", "sid": checks.sessionid }).subscribe(d => {
@@ -113,6 +120,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
         if (d.status) {
           let usrobj = d.data;
           let userDetails = usrobj[0];
+
           if (userDetails.status) {
             this._userService.setUsers(userDetails);
             if (userDetails.cmpid != 0 && userDetails.fyid != 0) {

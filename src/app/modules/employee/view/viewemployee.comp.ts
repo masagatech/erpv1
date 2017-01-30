@@ -57,37 +57,16 @@ export class ViewEmployee implements OnInit, OnDestroy {
         console.log(this.autoEmpName);
     }
 
-    isviewform() {
-        var that = this;
-
-        that._validservice.checkFormValid({
-            "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid, "actcd": "edit", "dispfor": "add"
-        }).subscribe(data => {
-            var msg = data.data[0].msg;
-            return msg;
-        });
-    }
-
     getEmployeeData() {
         var that = this;
 
-        that._validservice.checkFormValid({
-            "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid, "actcd": "edit", "dispfor": "add"
-        }).subscribe(data => {
-            var msg = data.data[0].msg;
-
-            if (msg === "success") {
-                this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(employee => {
-                    this.viewEmployeeDT = employee.data;
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
-        });
+        this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(employee => {
+            this.viewEmployeeDT = employee.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     expandDetails(row) {
@@ -108,13 +87,10 @@ export class ViewEmployee implements OnInit, OnDestroy {
     }
 
     openEmployeeDetails(row) {
-        this._router.navigate(['/employee/edit', row.empid]);
+        this._router.navigate(['/employee/details', row.empid]);
     }
 
     // Set Action Rights
-
-    isGivenRights() {
-    }
 
     setActionRights() {
         var that = this;

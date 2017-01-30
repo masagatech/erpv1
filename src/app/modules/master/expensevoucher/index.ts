@@ -28,13 +28,14 @@ const routerConfig = [
         path: '',
         component: ExpenseVoucherComp,
         canActivate: [AuthGuard],
+        data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddExpenseVocuherComp, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:docno', component: AddExpenseVocuherComp, canActivateChid: [AuthGuard], },
-                    { path: '', component: ViewExpenseVoucherComp, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: AddExpenseVocuherComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ev", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddExpenseVocuherComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ev", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewExpenseVoucherComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ev", "rights": "view", "urlname": "/expensevoucher" } },
                 ]
             }
         ]

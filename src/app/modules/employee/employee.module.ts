@@ -22,6 +22,7 @@ const routerConfig = [
         path: '',
         children: [
           { path: 'view', component: ViewEmployee, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "view", "urlname": "/view" } },
+          { path: 'details/:empid', component: EmployeeAddEdit, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "view", "urlname": "/details" } },
           { path: 'add', component: EmployeeAddEdit, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "add", "urlname": "/add" } },
           { path: 'edit/:empid', component: EmployeeAddEdit, canActivateChild: [AuthGuard], data: { "module": "emp", "submodule": "emp", "rights": "edit", "urlname": "/edit" } },
           { path: '', redirectTo: 'view' },

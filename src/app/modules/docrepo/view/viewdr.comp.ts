@@ -82,7 +82,7 @@ export class ViewDR implements OnInit, OnDestroy {
 
             if (dataResult[0].msgid != "-1") {
                 alert(dataResult[0].funsave_empdocrepo.msg);
-                that._router.navigate(['/docrepo/view']);
+                that._router.navigate(['/docrepo']);
             }
             else {
                 alert("Error");

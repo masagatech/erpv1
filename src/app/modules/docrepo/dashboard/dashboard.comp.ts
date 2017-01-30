@@ -104,7 +104,7 @@ export class DRDashboardComp implements OnInit, OnDestroy {
         }
         if (evt === "edit") {
             if (that.selecteduid == 0) {
-                alert("Please select 1 User !!!!")
+                alert("Please select 1 User !!!!");
             }
             else {
                 that._router.navigate(['/docrepo/edit', that.selecteduid]);
