@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../_service/auth-service'
 import { UserService } from '../_service/user/user-service'
 import { UserReq, LoginUserModel } from '../_model/user_model';
@@ -9,18 +9,26 @@ import { Router } from '@angular/router';
     templateUrl: 'login.comp.html'
 })
 
-export class LoginComp {
+export class LoginComp implements OnInit {
     public errorMsg = '';
     public btnLoginText = 'Login';
     _user = new UserReq("", "");
 
     constructor(private _router: Router, private _service: AuthenticationService, private _loginModel: UserService) {
-
+        var that = this;
+        var checks = this._service.checkCredentials();
+        if (checks.status) that._router.navigate(['/']);
+        if (checks.takefrmdb) {
+            that._service.getSession(function (e) {
+                if (e == "success")
+                    that._router.navigate(['/']);
+            }, checks);
+        }
     }
 
     login(e) {
         this.btnLoginText = "Loging..";
-
+        debugger;
         this._service.login(this._user).subscribe(d => {
             if (d) {
                 if (d.status) {
@@ -50,5 +58,9 @@ export class LoginComp {
         });
 
         e.preventDefault();
+    }
+
+    ngOnInit() {
+
     }
 }

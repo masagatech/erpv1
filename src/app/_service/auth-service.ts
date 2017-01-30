@@ -15,13 +15,14 @@ export class AuthenticationService {
 
   logout(callback?: any, error?: any) {
     var usr: LoginUserModel = this._userService.getUser();
-
+    debugger
     this._dataserver.post("getLogout", { "sessionid": usr._sessiondetails.sessionid }).subscribe(r => {
-      this._router.navigate(['login']);
       Cookie.delete('_session_');
+      this._userService.setUsers(null);
       if (callback) {
         callback(r);
       }
+      this._router.navigate(['login']);
     }, err => {
       if (error) {
         error(err);
@@ -40,7 +41,7 @@ export class AuthenticationService {
       "pwd": user.pwd,
       "otherdetails": otherdetails
     })
-    
+
     return loginRes;
   }
 
@@ -51,6 +52,44 @@ export class AuthenticationService {
 
     return loginRes;
   }
+
+
+  getSession(callback, checks) {
+    this.loginsession({ "base": "_sid", "sid": checks.sessionid }).subscribe(d => {
+      if (d) {
+        if (d.status) {
+          let usrobj = d.data;
+          let userDetails = usrobj[0];
+
+          if (userDetails.status) {
+            this._userService.setUsers(userDetails);
+            if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
+              // propr user
+            } else if (userDetails.errcode === "chpwd") {
+              this._router.navigate(['/changepwd']);
+            } else {
+              this._router.navigate(['/usersettings/defaultcompandfy']);
+            }
+          } else {
+            this._router.navigate(['login']);
+            console.log("user status false");
+          }
+        } else {
+          this._router.navigate(['login']);
+          console.log("data status false");
+        }
+      } else {
+        this._router.navigate(['login']);
+      }
+      callback("success")
+    }, err => {
+      this._router.navigate(['login']);
+      console.log(err);
+      callback("failed")
+    });
+  }
+
+
 
   checkmenuaccess(details: any) {
     let Res: any = this._dataserver.post("getMenuAccess", details);
@@ -137,7 +176,7 @@ export class AuthenticationService {
       fullVersion = fullVersion.substring(0, ix);
 
     majorVersion = parseInt('' + fullVersion, 10);
-    
+
     if (isNaN(majorVersion)) {
       fullVersion = '' + parseFloat(navigator.appVersion);
       majorVersion = parseInt(navigator.appVersion, 10);

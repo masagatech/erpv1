@@ -13,6 +13,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    debugger;
     return this.checkFun(route, state);
   }
 
@@ -45,17 +46,21 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
           }
         })
       } else if (checks.takefrmdb) {
-        that.getSession(function () {
+        that.authser.getSession(function (e) {
           //call here
-
-          that.checkMenuAccess(route, state, that._userService.getUser(), function (e) {
-            if (e) {
-              observer.next(true);
-            } else {
-              that._router.navigate(['/']);
-              observer.next(true);
-            }
-          })
+          if (e === "success") {
+            that.checkMenuAccess(route, state, that._userService.getUser(), function (e) {
+              if (e) {
+                observer.next(true);
+              } else {
+                that._router.navigate(['/']);
+                observer.next(true);
+              }
+            });
+          } else {
+            that._router.navigate(['login']);
+             observer.next(true);
+          }
         }, checks);
       } else {
         this._router.navigate(['login']);
@@ -114,38 +119,38 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
     }
   }
 
-  private getSession(callback, checks) {
-    this.authser.loginsession({ "base": "_sid", "sid": checks.sessionid }).subscribe(d => {
-      if (d) {
-        if (d.status) {
-          let usrobj = d.data;
-          let userDetails = usrobj[0];
+  // private getSession(callback, checks) {
+  //   this.authser.loginsession({ "base": "_sid", "sid": checks.sessionid }).subscribe(d => {
+  //     if (d) {
+  //       if (d.status) {
+  //         let usrobj = d.data;
+  //         let userDetails = usrobj[0];
 
-          if (userDetails.status) {
-            this._userService.setUsers(userDetails);
-            if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
-              // propr user
-            } else if (userDetails.errcode === "chpwd") {
-              this._router.navigate(['/changepwd']);
-            } else {
-              this._router.navigate(['/usersettings/defaultcompandfy']);
-            }
-          } else {
-            this._router.navigate(['login']);
-            console.log("user status false");
-          }
-        } else {
-          this._router.navigate(['login']);
-          console.log("data status false");
-        }
-      } else {
-        this._router.navigate(['login']);
-      }
-      callback("success")
-    }, err => {
-      this._router.navigate(['login']);
-      console.log(err);
-      callback("failed")
-    });
-  }
+  //         if (userDetails.status) {
+  //           this._userService.setUsers(userDetails);
+  //           if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
+  //             // propr user
+  //           } else if (userDetails.errcode === "chpwd") {
+  //             this._router.navigate(['/changepwd']);
+  //           } else {
+  //             this._router.navigate(['/usersettings/defaultcompandfy']);
+  //           }
+  //         } else {
+  //           this._router.navigate(['login']);
+  //           console.log("user status false");
+  //         }
+  //       } else {
+  //         this._router.navigate(['login']);
+  //         console.log("data status false");
+  //       }
+  //     } else {
+  //       this._router.navigate(['login']);
+  //     }
+  //     callback("success")
+  //   }, err => {
+  //     this._router.navigate(['login']);
+  //     console.log(err);
+  //     callback("failed")
+  //   });
+  // }
 }

@@ -18,11 +18,11 @@ export class ModuleComponent implements OnDestroy {
 
         router.events.forEach((event: NavigationEvent) => {
             if (event instanceof NavigationStart) {
-                console.log("nav start");
-                this.ActionButtons = [];
+               // console.log("nav start");
+                //this.ActionButtons = [];
                 this.slimLoadingBarService.progress = 30;
                 this.slimLoadingBarService.start(() => {
-                    console.log('Loading complete');
+                    //console.log('Loading complete');
                 });
             }
 
