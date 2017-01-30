@@ -26,7 +26,7 @@ const routerConfig =
                             }),
                         },
                         {
-                            path:'warestock', loadChildren: () => System.import('./warehousestock').then((comp: any) => {
+                            path:'warestock', loadChildren: () => System.import('./wartransfer').then((comp: any) => {
                                 return comp.default;
                             }),
                         },
@@ -37,6 +37,16 @@ const routerConfig =
                         },
                         {
                             path:'goodreceipt', loadChildren: () => System.import('./goodreceiptnote').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
+                        {
+                            path:'stckreport', loadChildren: () => System.import('./warstockrpt').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
+                        {
+                            path:'invlocation', loadChildren: () => System.import('./inventorylocation').then((comp: any) => {
                                 return comp.default;
                             }),
                         },

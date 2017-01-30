@@ -194,6 +194,37 @@ declare var $: any;
         })
     }
 
+     getAutoCompleteSalesman(me: any) {
+        var _me = this;
+        this._autoservice.getAutoData({
+            "type": "salesmanwithcust",
+            "search": _me.suppname,
+            "cmpid": _me.loginUser.cmpid,
+            "custid":_me.custid,
+            "fy": this.loginUser.fyid
+        }).subscribe(data => {
+            $(".salesman").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.suppid = ui.item.value;
+                    me.suppname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
 
     getAutoCompleteCust(me: any) {
         var _me = this;

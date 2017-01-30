@@ -25,6 +25,8 @@ declare var $: any;
     code: any = "";
     remark: any = "";
     wareid: any = 0;
+    attrname: any = "";
+    attrid: any = 0;
 
     //other module
     adrbookid: any = [];
@@ -35,6 +37,8 @@ declare var $: any;
     adrcsvid: any = "";
     adrmodule: string = "";
     accode: string = "";
+    Duplicateflag: boolean;
+    attrlist: any = [];
     private subscribeParameters: any;
 
     //user details
@@ -80,27 +84,122 @@ declare var $: any;
         });
     }
 
+    //attribute list Add Div
+    AttributeAdd() {
+        if (this.attrid > 0) {
+            this.Duplicateflag = true;
+            if (this.attrlist.length > 0) {
+                for (var i = 0; i < this.attrlist.length; i++) {
+                    if (this.attrlist[i].attrname == this.attrname) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.attrlist.push({
+                    'attrname': this.attrname,
+                    'value': this.attrid
+                });
+                this.attrname = "";
+                $(".attr").focus();
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                $(".attr").focus();
+                return;
+            }
+
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+            $(".attr").focus();
+            return;
+        }
+
+    }
+
+    //Remove Attribute
+    Removeattr(row) {
+        var index = -1;
+        for (var i = 0; i < this.attrlist.length; i++) {
+            if (this.attrlist[i].value === row.value) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.attrlist.splice(index, 1);
+        $(".attr").focus();
+    }
+
+    createattrjson() {
+        var attrid = [];
+        if (this.attrlist.length > 0) {
+            for (let items of this.attrlist) {
+                attrid.push({ "id": items.value });
+            }
+            return attrid;
+        }
+    }
+
+    //Autocompleted Attribute Name
+    getAutoCompleteattr(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.attrname,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "filter": "Warehouse Attribute",
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".attr").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.attrid = ui.item.value;
+                    me.attrname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
     EditItem(wareid) {
         var that = this;
         that.wareServies.getwarehouse({
             "cmpid": that.loginUser.cmpid,
             "wareid": wareid,
-            "flag":"Edit"
+            "flag": "Edit"
         }).subscribe(result => {
             var dataset = result.data;
-            debugger;
+
             var _uploadedfile = dataset[0][0]._uploadedfile;
             var _docfile = dataset[0][0]._docfile;
-
+            
             that.name = dataset[0][0].nam;
             that.code = dataset[0][0].code;
             that.remark = dataset[0][0].remark;
+            that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
-            that.adrcsvid="";
+            that.adrcsvid = "";
             for (let items of dataset[0][0].adr) {
                 that.adrcsvid += items.adrid + ',';
             }
@@ -136,8 +235,18 @@ declare var $: any;
         this.code = "";
         this.remark = "";
         this.adrbookid = [];
+        this.attrlist = [];
         this.addressBook.ClearArray();
         $(".code").focus();
+    }
+
+    Attr() {
+        setTimeout(function () {
+            this.attrname = "";
+            $(".attr").focus();
+        }, 0);
+
+
     }
 
     paramterjson() {
@@ -148,6 +257,7 @@ declare var $: any;
             "remark": this.remark,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
+            "attr": this.createattrjson(),
             "adrid": this.adrbookid,
             "docfile": this.docfile
         }
