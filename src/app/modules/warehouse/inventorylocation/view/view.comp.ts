@@ -4,6 +4,10 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { InvViewService } from "../../../../_service/inventorylocation/view/view-service";
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -17,14 +21,18 @@ declare var $: any;
     subscr_actionbarevt: Subscription;
 
     // local veriable 
-    wareid: any = 0;
-    warename: any = "";
-    warehousedetails: any = [];
+    invlocationlist: any = [];
+    totalRecords: number = 0;
     private subscribeParameters: any;
 
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private wareServies: InvViewService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute) { //Inherit Service
+        private invlocServies: InvViewService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) { //Inherit Service
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -36,6 +44,29 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
+    getinvlocation(from: number, to: number) {
+        this.invlocServies.getinvlocation({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "from": from,
+            "to": to,
+            "createdby": this.loginUser.login
+        }).subscribe(result => {
+            console.log(result.data);
+            var dataset = result.data;
+                this.totalRecords = dataset[1][0].recordstotal;
+                //total row
+                this.invlocationlist = dataset[0];
+        }, err => {
+            console.log('Error');
+        }, () => {
+            //Complete
+        });
+    }
+
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getinvlocation(event.first, (event.first + event.rows));
+    }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {

@@ -6,6 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service' /* ad
 import { InvAddService } from "../../../../_service/inventorylocation/add/add-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -27,6 +28,7 @@ declare var $: any;
     localoldid: any = 0;
     locationlist: any = [];
     counter: any = 0;
+    Duplicateflag: boolean = true;
     private subscribeParameters: any;
 
     //user details
@@ -35,7 +37,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private invServies: InvAddService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _userService: UserService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -80,7 +82,39 @@ declare var $: any;
         })
     }
 
+    clearcontroll() {
+        this.warename = "";
+        this.wareid = 0;
+        this.locationlist = [];
+        $(".warename").focus();
+    }
 
+    jsondata() {
+        var jdata = [];
+        for (let item of this.locationlist) {
+            if (item.localist != undefined) {
+                if (item.localist.length > 0) {
+                    var loclist = [];
+                    for (let loc of item.localist) {
+                        loclist.push({
+                            'id': loc.id
+                        })
+                    }
+                    jdata.push({
+                        'autoid': 0,
+                        'itemid': item.itemid,
+                        'localist': loclist,
+                        'remark': item.remark,
+                        'remark1': '',
+                        'remark2': '',
+                        'remark3': ''
+                    })
+                }
+            }
+
+        }
+        return jdata;
+    }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
@@ -89,12 +123,17 @@ declare var $: any;
         }
         if (evt === "save") {
             this.invServies.savelocation({
-                "locationdetails": this.locationlist,
+                "locationdetails": this.jsondata(),
+                "wareid": this.wareid,
                 "fy": this.loginUser.fyid,
                 "cmpid": this.loginUser.cmpid,
                 "createdby": this.loginUser.login
             }).subscribe(result => {
-                console.log(result.data);
+                if (result.data[0].funsave_inventorylocal.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", result.data[0].funsave_inventorylocal.msg);
+                    this.clearcontroll();
+                }
+
             }, err => {
                 console.log('Error');
             }, () => {
@@ -112,13 +151,27 @@ declare var $: any;
 
     //Get Button CLick Event 
     getwarehouselocation() {
+        if ($(".warename").val() == "") {
+            this._msg.Show(messageType.info, "info", "Please enter warehouse name");
+            $(".warename").focus();
+            return;
+        }
         this.invServies.getlocation({
             "cmpid": this.loginUser.cmpid,
             "wareid": this.wareid,
             "fy": this.loginUser.fyid,
             "createdby": this.loginUser.login
         }).subscribe(result => {
-            this.locationlist = result.data;
+            var dataset = result.data;
+            if (dataset.length > 0) {
+                this.locationlist = result.data;
+            }
+            else {
+                this._msg.Show(messageType.info, "info", "Record not found");
+                this.clearcontroll();
+                $(".warename").focus();
+                return;
+            }
 
         }, err => {
             console.log('Error');
@@ -186,11 +239,26 @@ declare var $: any;
             me.localist = [];
         }
         var that = this;
-        me.localist.push({
-            "id": id,
-            "localnam": val,
-        });
-        me.localname = "";
+        this.Duplicateflag = true;
+        if (this.locationlist.length > 0) {
+            for (var i = 0; i < me.localist.length; i++) {
+                if (me.localist[i].id == id) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+        }
+        if (this.Duplicateflag == true) {
+            me.localist.push({
+                "id": id,
+                "localnam": val,
+            });
+            me.localname = "";
+        }
+        else {
+            this._msg.Show(messageType.info, "info", "Duplicate location");
+        }
+
     }
 
     ngOnDestroy() {
