@@ -56,7 +56,6 @@ export class DefCmpFyComp implements OnInit {
         this.cmpid = this.loginUser.cmpid;
         this.getFYDetails(this.loginUser.cmpid);
         this.fyid = this.loginUser.fyid;
-
     }
 
     getFYDetails(cmpid) {
@@ -88,9 +87,10 @@ export class DefCmpFyComp implements OnInit {
         var that = this;
         this.loginUser.cmpid = this.cmpid;
         this.loginUser.fyid = this.fyid;
+        this.loginUser.fyfrom = that.FYDetails.find(d=>d.fyid == that.fyid).fromdt;
+        this.loginUser.fyto = that.FYDetails.find(d=>d.fyid == that.fyid).todt;
+
         var settings = [{ "key": "fy", "value": this.fyid }, { "key": "cmpid", "value": this.cmpid }];
-
-
         this._userService.saveSettings({
             "uid": this.loginUser.uid, "cmpid": this.cmpid,
             settings, "userid": this.loginUser.login
