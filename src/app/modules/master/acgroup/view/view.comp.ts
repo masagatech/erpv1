@@ -6,6 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { acgroupview } from "../../../../_service/acgroup/view/view-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router } from '@angular/router';
 
@@ -29,7 +30,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private acgroupServies: acgroupview, private _autoservice: CommonService,
-        private _userService: UserService) {
+        private _userService: UserService,private _msg: MessageService ) {
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -65,9 +66,9 @@ declare var $: any;
             var dataset = result.data;
             if (dataset.length > 0) {
                 this.acgrouplist = dataset;
+                console.log(dataset);
             }
             else {
-                alert("Record not found");
                 $(".GroupName").focus();
                 return;
             }
@@ -112,7 +113,7 @@ declare var $: any;
     //Group Code (Edit) Group
     Editacgroup(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['/master/acgroup/acedit', row.groupid]);
+            this._router.navigate(['/master/acgroup/edit', row.groupid]);
         }
     }
 
@@ -150,7 +151,7 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/master/acgroup/acadd']);
+            this._router.navigate(['/master/acgroup/add']);
         }
         else if (evt === "save") {
             //Save CLick Event

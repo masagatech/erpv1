@@ -38,6 +38,8 @@ declare var commonfun: any;
     uploadedFiles: any = [];
     accode: string = "";
     transid: number = 0;
+    editmode: boolean = false;
+    isactive: boolean = false;
 
     //user details
     loginUser: LoginUserModel;
@@ -110,6 +112,7 @@ declare var commonfun: any;
     //Edit Transpoter 
     EditTranspoter(id) {
         var that = this;
+
         that.transpoter_service.getTranspoter({
             "cmpid": that.loginUser.cmpid,
             "flag": "Edit",
@@ -117,7 +120,7 @@ declare var commonfun: any;
             "fy": that.loginUser.fyid,
             "createdby": that.loginUser.login
         }).subscribe(result => {
-            console.log(result.data);
+            that.editmode = true;
             var _Transdata = result.data[0][0]._transdata;
             var _uploadedfile = result.data[0][0]._uploadedfile;
             var _docfile = result.data[0][0]._docfile;
@@ -126,12 +129,14 @@ declare var commonfun: any;
             that.transname = _Transdata[0].transname;
             that.desc = _Transdata[0].descp;
             that.remark = _Transdata[0].remark;
+            that.remark = _Transdata[0].remark;
+            that.isactive = _Transdata[0].isactive;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
-            debugger;
+
             that.adrcsvid = "";
             if (_Transdata[0].adr.length > 0) {
                 for (let items of _Transdata[0].adr) {
@@ -149,7 +154,7 @@ declare var commonfun: any;
     paramterjson() {
         var param = {
             "transid": this.transid,
-            "code": this.accode,
+            "code": this.code,
             "transname": this.transname,
             "desc": this.desc,
             "adr": this.adrbookid,
@@ -158,6 +163,7 @@ declare var commonfun: any;
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "remark": this.remark,
+            "isactive": this.isactive,
             "remark1": "",
             "remark2": "",
             "remark3": ""
@@ -176,7 +182,7 @@ declare var commonfun: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "back") {
-            this._router.navigate(['master/transpoter/view']);
+            this._router.navigate(['master/transpoter']);
         }
         if (evt === "save") {
             var validateme = commonfun.validate();
@@ -185,7 +191,10 @@ declare var commonfun: any;
                 validateme.data[0].input.focus();
                 return;
             }
-
+            if (this.adrbookid.length == 0) {
+                this._msg.Show(messageType.info, "error", "Please enter contact address");
+                return;
+            }
             this.transpoter_service.saveTranspoter(
                 this.paramterjson()
             ).subscribe(result => {

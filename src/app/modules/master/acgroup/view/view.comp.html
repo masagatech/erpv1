@@ -1,88 +1,65 @@
-<div class="panel panel-theme">
-	<div class="panel-body">
-		<div class='form-group col-md-12'>
-			<div class="col-md-4">
-				<div class='form-group'>
-					<label>Group Name</label>
-					<input type="text=" class="form-control GroupName" tabindex="1" value="" [(ngModel)]="GroupName" (keyup)="getAutoCompleteGroupName(this)"
-					/>
+	<div class="panel panel-theme">
+		<div class="panel-body">
+			<div class='form-group col-md-12'>
+				<div class="col-md-4">
+					<div class='form-group'>
+						<label>Group Name</label>
+						<input type="text=" class="form-control GroupName" tabindex="1" value="" [(ngModel)]="GroupName" (keyup)="getAutoCompleteGroupName(this)"
+						/>
+					</div>
 				</div>
-			</div>
-			<!--<div class="col-md-3">
-				<div class='form-group'>
-					<label>From Date</label>
-					<div class="controls">
-						<div class="input-group">
-							<input id="date-picker-3" id="FromDate" type="text" tabindex="2" class="date-picker form-control" [(ngModel)]="FromDate"
-							/>
-							<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-						</div>
+				<div class="col-md-1">
+					<div class='form-group'>
+						<label>Action</label>
+						<button type="button" class="btn btn-primary" tabindex="4" (click)="GetAccountGroup()">Get</button>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-3">
-				<div class='form-group'>
-					<label>To Date</label>
-					<div class="controls">
-						<div class="input-group date">
-							<input id="date-picker-4" id="ToDate" type="text" tabindex="3" class="date-picker form-control" [(ngModel)]="ToDate" />
-							<label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-						</div>
-					</div>
-				</div>
-			</div>-->
-			<div class="col-md-1">
-				<div class='form-group'>
-					<label>Action</label>
-					<button type="button" class="btn btn-primary" tabindex="4" (click)="GetAccountGroup()">Get</button>
-				</div>
-			</div>
-		</div>
-		<table class="table table-striped table-bordered" *ngIf="acgrouplist.length">
-			<thead>
-				<tr>
-					<th class="col-sm-1">#</th>
-					<th class="col-sm-1">More</th>
-					<th class="col-sm-10">Nature Of Group</th>
-				</tr>
-			</thead>
-			<tbody *ngFor="let row of acgrouplist let i=index">
-				<tr>
-					<td><span>{{i+1}}</span><span class="hide">{{row.autoid}}</span></td>
-					<td>
-						<button (click)="expandDetails(row)">
+			<table class="table table-striped table-bordered" *ngIf="acgrouplist.length">
+				<thead>
+					<tr>
+						<th class="col-sm-1">#</th>
+						<th class="col-sm-1">More</th>
+						<th class="col-sm-10">Nature Of Group</th>
+					</tr>
+				</thead>
+				<tbody *ngFor="let row of acgrouplist let i=index">
+					<tr>
+						<td><span>{{i+1}}</span><span class="hide">{{row.autoid}}</span></td>
+						<td>
+							<button (click)="expandDetails(row)">
 						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
 					</button>
-					</td>
-					<td>{{row.val}}</td>
-				</tr>
-				<tr [style.display]="row.issh == 0?'none':''">
-					<td colspan="3">
-						<table class="table table-striped table-bordered">
-							<thead>
-								<tr>
-									<th>#</th>
-									<th>Group Code</th>
-									<th>Group Name</th>
-									<th>Nature Of Group</th>
-									<th>Applicable From</th>
-									<th>Remark</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr *ngFor="let drow of row.Details let x=index">
-									<td><span>{{x+1}}</span><span class="hide">{{drow.groupid}}</span></td>
-									<td><a role="button" (click)="Editacgroup(drow)">{{drow.groupcode}}</a></td>
-									<td>{{drow.groupname}}</td>
-									<td>{{drow.val}}</td>
-									<td>{{drow.appfrom}}</td>
-									<td>{{drow.remark}}</td>
-								</tr>
-							</tbody>
-						</table>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+						</td>
+						<td>{{row.val}}</td>
+					</tr>
+					<tr [style.display]="row.issh == 0?'none':''">
+						<td colspan="3">
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>Group Code</th>
+										<th>Group Name</th>
+										<th>Nature Of Group</th>
+										<th>Applicable From</th>
+										<th>Remark</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let drow of row.Details let x=index">
+										<td><span>{{x+1}}</span><span class="hide">{{drow.groupid}}</span></td>
+										<td><a role="button" (click)="Editacgroup(drow)">{{drow.groupcode}}</a></td>
+										<td>{{drow.groupname}}</td>
+										<td>{{drow.val}}</td>
+										<td>{{drow.appfrom}}</td>
+										<td>{{drow.remark}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>

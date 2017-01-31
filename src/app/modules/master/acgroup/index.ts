@@ -8,6 +8,7 @@ import { acview } from './view/view.comp';             //Purchase View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -22,16 +23,16 @@ const routerConfig = [
         path: '',
         component: AcGrouptComp,
         canActivate: [AuthGuard],
+        data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
 
                     //Bank Payment Add Edit View
-                    { path: 'acadd', component: acadd, canActivateChid: [AuthGuard], },
-                    { path: 'acedit/:id', component: acadd, canActivateChid: [AuthGuard], },
-                    { path: 'acview', component: acview, canActivateChid: [AuthGuard], },
-                    { path: '', component: acview, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: acadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: acadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: acview, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "view", "urlname": "/acgroup" } },
                 ]
             }
         ]
@@ -39,7 +40,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, CheckboxModule],
     declarations: [
         acadd,
         acview,

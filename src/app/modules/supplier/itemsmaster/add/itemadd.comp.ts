@@ -798,10 +798,12 @@ declare var $: any;
         var ledgerjson = [];
         ledgerjson.push({
             "autoid": 0,
-            "wareid": this.CreatejsonWarehouse(),
+            "wareid":1, //this.CreatejsonWarehouse(),
             "typ": "OB",
-            "rate": this.CreatejsonSalePrice(),
+            "rate":0,
             "qty": 0,
+            "amt":0,
+            "itemid":1,
             "outward": 0,
             "fy": this.loginUser.fyid,
             "cmpid": this.loginUser.cmpid,

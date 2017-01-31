@@ -4,12 +4,12 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 //import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
 
-import { CustAdd } from './add/add.comp';                
-import { CustView } from './view/view.comp';             
+import { CustAdd } from './add/add.comp';
+import { CustView } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -24,14 +24,14 @@ const routerConfig = [
         path: '',
         component: CustomerComp,
         canActivate: [AuthGuard],
+        data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: CustAdd, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: CustAdd, canActivateChid: [AuthGuard], },
-                    { path: 'view', component: CustView, canActivateChid: [AuthGuard], },
-                    { path: '', component: CustView, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: CustAdd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "cm", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: CustAdd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "cm", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: CustView, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "cm", "rights": "view", "urlname": "/customer" } },
                 ]
             }
         ]
@@ -39,7 +39,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,DataTableModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule, CheckboxModule],
     declarations: [
         CustAdd,
         CustView,
