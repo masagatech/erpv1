@@ -14,12 +14,20 @@ export interface LoginUserModel {
   fyid: number;
   fyfrom: any;
   fyto: any;
-  ucode:string;
-  email:string;
-  fullname:string;
-  login:string ,
-  status:boolean,
-  errcode:string,
-  errmsg:string,
-  _sessiondetails:any;
+  ucode: string;
+  email: string;
+  fullname: string;
+  login: string,
+  status: boolean,
+  errcode: string,
+  errmsg: string,
+  _sessiondetails: any;
+  _globsettings: GlobalSettings;
+}
+
+export interface GlobalSettings {
+  dateformat: string,
+  numberforamt: string,
+  language: string
+
 }

@@ -9,7 +9,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { ValidationService } from '../../../../_service/validation/valid-service';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 declare var commonfun: any;
@@ -46,7 +46,8 @@ export class AddJV implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     formvals: string = "";
-
+    @ViewChild("jvdate")
+    jvdate: CalendarComp;
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -58,6 +59,9 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.jvdate.initialize(this.loginUser);
+        this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -82,6 +86,9 @@ export class AddJV implements OnInit, OnDestroy {
             else {
                 this.title = "Add Journal Voucher";
 
+                var date = new Date();
+                this.jvdate.setDate(date);
+
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
 
@@ -90,8 +97,6 @@ export class AddJV implements OnInit, OnDestroy {
                 $('textarea').prop('disabled', false);
             }
         });
-        
-        
     }
 
     private isFormChange() {
@@ -360,6 +365,9 @@ export class AddJV implements OnInit, OnDestroy {
             var _docfile = data.data[0]._docfile;
 
             that.jvmid = _jvdata[0].jvmid;
+
+            var date = new Date(_jvdata[0].docdate);
+            this.jvdate.setDate(date);
             that.docdate = _jvdata[0].docdate;
             that.narration = _jvdata[0].narration;
 
@@ -413,7 +421,7 @@ export class AddJV implements OnInit, OnDestroy {
                 "uid": that.loginUser.uid,
                 "fyid": that.loginUser.fyid,
                 "cmpid": that.loginUser.cmpid,
-                "docdate": $('.docdate').datepicker('getDate'),
+                "docdate": that.jvdate.getDate(), // $('.docdate').datepicker('getDate'),
                 "docfile": that.docfile.length === 0 ? null : that.docfile,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login,
