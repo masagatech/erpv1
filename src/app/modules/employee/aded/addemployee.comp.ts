@@ -148,6 +148,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 validateme.data[0].input.focus();
                 return;
             }
+
             that.saveEmployeeData();
         } else if (evt === "edit") {
             that._router.navigate(['employee/edit/', that.empid]);
@@ -399,6 +400,11 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     addNewTabs() {
+        if (this.fldname === "") {
+            this._msg.Show(messageType.error, "Error", "Please Enter Tab Name");
+            return;
+        }
+
         var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
         this.tabListDT.push({ "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "keyvaluedt": [] });
         this.fldname = "";
