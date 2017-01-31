@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
@@ -10,7 +10,9 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { ValidationService } from '../../../../_service/validation/valid-service';
 import { Router, ActivatedRoute } from '@angular/router';
 
+
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'addjv.comp.html',
@@ -29,7 +31,8 @@ export class AddJV implements OnInit, OnDestroy {
     docfile: any = [];
     uploadedFiles: any = [];
 
-    jvRowData: any[] = [];
+    jvRowData: any = [];
+    duplicateaccount: boolean = true;
 
     newjvdid: number = 0;
     newacid: number = 0;
@@ -37,12 +40,12 @@ export class AddJV implements OnInit, OnDestroy {
     newdramt: any = "";
     newcramt: any = "";
     newdetnarr: string = "";
-
     counter: any;
     title: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    formvals: string = "";
 
     private subscribeParameters: any;
 
@@ -50,6 +53,7 @@ export class AddJV implements OnInit, OnDestroy {
         private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
         private _validmsg: ValidationService) {
         this.loginUser = this._userService.getUser();
+
         this.module = "JV";
     }
 
@@ -71,9 +75,9 @@ export class AddJV implements OnInit, OnDestroy {
                 this.jvmid = params['id'];
                 this.getJVDataById(this.jvmid);
 
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
             }
             else {
                 this.title = "Add Journal Voucher";
@@ -81,36 +85,41 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
 
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
             }
         });
+        
+        
+    }
 
-        setTimeout(function() {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            // Doc Date 
-
-            $(".docdate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".docdate").datepicker('setDate', today);
-        }, 0);
+    private isFormChange() {
+        return (this.formvals == $("#frmjv").serialize());
     }
 
     actionBarEvt(evt) {
         if (evt === "save") {
+            if (this.isFormChange()) {
+                this._msg.Show(messageType.info, "info", "No save! There is no change!");
+                return;
+            };
+
+            var validateme = commonfun.validate();
+
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+
             this.saveJVData();
         } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
+            $('input').prop('disabled', false);
+            $('select').prop('disabled', false);
+            $('textarea').prop('disabled', false);
 
+            this.formvals = $("#frmjv").serialize();
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
@@ -120,7 +129,6 @@ export class AddJV implements OnInit, OnDestroy {
 
     isvaliddate() {
         var that = this;
-
 
         that._validmsg.checkDateValid({
             "dispnm": "JV", "auditdt": that.docdate,
@@ -142,30 +150,148 @@ export class AddJV implements OnInit, OnDestroy {
 
     // add jv details
 
-    private NewRowAdd() {
-        this.jvRowData.push({
-            'counter': this.counter,
-            'jvdid': this.newjvdid,
-            'acid': this.newacid,
-            'acname': this.newacname,
-            'dramt': this.newdramt,
-            'cramt': this.newcramt
-        });
+    isDuplicateAccount() {
+        for (var i = 0; i < this.jvRowData.length; i++) {
+            var field = this.jvRowData[i];
 
-        this.counter++;
-        this.newjvdid = 0;
-        this.newacid = 0;
-        this.newacname = "";
-        this.newdramt = "";
-        this.newcramt = "";
+            if (field.acid == this.newacid) {
+                this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
+
+                this.newacid = 0;
+                this.newacname = "";
+                this.newdramt = "";
+                this.newcramt = "";
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    TotalDebitAmt() {
+        var DebitAmtTotal = 0;
+
+        for (var i = 0; i < this.jvRowData.length; i++) {
+            var items = this.jvRowData[i];
+            DebitAmtTotal += parseInt(items.dramt);
+        }
+
+        return DebitAmtTotal;
+    }
+
+    TotalCreditAmt() {
+        var CreditAmtTotal = 0;
+
+        for (var i = 0; i < this.jvRowData.length; i++) {
+            var items = this.jvRowData[i];
+            CreditAmtTotal += parseInt(items.cramt);
+        }
+
+        return CreditAmtTotal;
+    }
+
+    private NewRowAdd() {
+        // Validation
+
+        if (this.newacname == "") {
+            this._msg.Show(messageType.error, "Error", "Please Enter Account Name");
+            return;
+        }
+
+        if (this.newdramt === "") {
+            this._msg.Show(messageType.error, "Error", "Please Enter Debit Amount");
+            return;
+        }
+
+        if (this.newcramt === "") {
+            this._msg.Show(messageType.error, "Error", "Please Enter Credit Amount");
+            return;
+        }
+
+        // Duplicate items Check
+        this.duplicateaccount = this.isDuplicateAccount();
+
+        // Add New Row
+        if (this.duplicateaccount === false) {
+            this.jvRowData.push({
+                'counter': this.counter,
+                'jvdid': this.newjvdid,
+                'acid': this.newacid,
+                'acname': this.newacname,
+                'dramt': this.newdramt,
+                'cramt': this.newcramt
+            });
+
+            this.counter++;
+            this.newjvdid = 0;
+            this.newacid = 0;
+            this.newacname = "";
+            this.newdramt = "";
+            this.newcramt = "";
+            var that = this;
+
+            // setTimeout(function () {
+            //     that.bindAutoComplete();
+            // }, 0);
+
+            $(".accname").focus();
+        }
+    }
+
+    deleteJVRow(row) {
+        this.jvRowData.splice(this.jvRowData.indexOf(row), 1);
     }
 
     // account details
 
+    // bindAutoComplete() {
+    //     var that = this;
+
+    //     $(".accname").each(function () {
+
+    //         if ($(this).attr("added")) {
+    //             return;
+    //         }
+    //         $(this).attr("added", "1");
+    //         $(this).autocomplete({
+    //             source: function (request, response) {
+    //                 that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": request.term }).subscribe(data => {
+    //                     response($.map(data.data, function (item) {
+    //                         return {
+    //                             label: item.label,
+    //                             value: item.label,
+    //                             "iid": item.value
+    //                         }
+    //                     }));
+    //                 }, err => {
+    //                     console.log("Error");
+    //                 }, () => {
+    //                     // console.log("Complete");
+    //                 })
+    //             },
+    //             width: 300,
+    //             max: 20,
+    //             delay: 100,
+    //             minLength: 0,
+    //             autoFocus: true,
+    //             cacheLength: 1,
+    //             scroll: true,
+    //             highlight: false,
+    //             select: function (event, ui) {
+    //                 event.preventDefault();
+    //                 $(event.target).val(ui.item.label);
+    //                 console.log(ui.item.iid)
+    //                 $(event.target).trigger('input');
+
+    //             }
+    //         });
+    //     })
+    // }
+
     getAutoComplete(me: any, arg: number) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "customer", "search": arg == 0 ? me.newacname : me.acname }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": arg == 0 ? me.newacname : me.acname }).subscribe(data => {
             $(".accname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -176,7 +302,7 @@ export class AddJV implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     if (arg === 1) {
                         me.acname = ui.item.label;
                         me.acid = ui.item.value;
@@ -280,34 +406,42 @@ export class AddJV implements OnInit, OnDestroy {
     saveJVData() {
         var that = this;
 
-        var saveJV = {
-            "jvmid": that.jvmid,
-            "fyid": this.loginUser.fyid,
-            "cmpid": this.loginUser.cmpid,
-            "docdate": that.docdate,
-            "docfile": that.docfile,
-            "narration": that.narration,
-            "uidcode": this.loginUser.login,
-            "jvdetails": that.jvRowData
+        if (that.jvRowData.length > 0) {
+            var saveJV = {
+                "jvmid": that.jvmid,
+                "loginsessionid": that.loginUser._sessiondetails.sessionid,
+                "uid": that.loginUser.uid,
+                "fyid": that.loginUser.fyid,
+                "cmpid": that.loginUser.cmpid,
+                "docdate": $('.docdate').datepicker('getDate'),
+                "docfile": that.docfile.length === 0 ? null : that.docfile,
+                "narration": that.narration,
+                "uidcode": that.loginUser.login,
+                "jvdetails": that.jvRowData
+            }
+
+            that._jvservice.saveJVDetails(saveJV).subscribe(data => {
+                var dataResult = data.data;
+                console.log(dataResult);
+
+                if (dataResult[0].funsave_jv.msgid != "-1") {
+                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
+                    that._router.navigate(['/accounts/jv']);
+                }
+                else {
+                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
+                }
+            }, err => {
+                that._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            });
         }
-
-        that._jvservice.saveJVDetails(saveJV).subscribe(data => {
-            var dataResult = data.data;
-            console.log(dataResult);
-
-            if (dataResult[0].funsave_jv.msgid != "-1") {
-                this._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
-                that._router.navigate(['/accounts/jv']);
-            }
-            else {
-                this._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
-            }
-        }, err => {
-            this._msg.Show(messageType.error, "Error", err);
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
+        else {
+            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Account Details");
+            $(".accname").focus();
+        }
     }
 
     removeFileUpload() {
