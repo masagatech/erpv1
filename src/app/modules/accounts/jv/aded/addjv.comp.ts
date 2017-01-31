@@ -7,7 +7,7 @@ import { CommonService } from '../../../../_service/common/common-service'; /* a
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
-import { ValidationService } from '../../../../_service/validation/valid-service';
+import { ALSService } from '../../../../_service/auditlock/als-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
@@ -16,7 +16,7 @@ declare var commonfun: any;
 
 @Component({
     templateUrl: 'addjv.comp.html',
-    providers: [JVService, CommonService, ValidationService]
+    providers: [JVService, CommonService, ALSService]
 })
 
 export class AddJV implements OnInit, OnDestroy {
@@ -52,15 +52,33 @@ export class AddJV implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
-        private _validmsg: ValidationService) {
+        private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
 
         this.module = "JV";
     }
 
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "jv", "fyid": that.loginUser.fyid
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.jvdate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     ngOnInit() {
         this.jvdate.initialize(this.loginUser);
         this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
 
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
@@ -130,27 +148,6 @@ export class AddJV implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         }
-    }
-
-    isvaliddate() {
-        var that = this;
-
-        that._validmsg.checkDateValid({
-            "dispnm": "JV", "auditdt": that.docdate,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
-        }).subscribe(data => {
-            var dataResult = data.data;
-            var validmsg = dataResult[0].funcheck_datevalidate.msg;
-
-            if (validmsg === "failed") {
-                that._msg.Show(messageType.success, "Success", "Not Allowed");
-                that.docdate = "";
-            }
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 
     // add jv details

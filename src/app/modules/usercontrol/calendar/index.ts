@@ -14,6 +14,7 @@ export class CalendarComp implements OnInit {
     docdate: InputMask;
 
     @Input() name: string = "";
+    @Input() module: string = "";
 
     loginUser: any = {};
 
@@ -37,8 +38,10 @@ export class CalendarComp implements OnInit {
     setMinMaxDate(min: any, max: any) {
         var that = this;
         setTimeout(function () {
-            $("[name='" + that.name + "']").datepicker('option', 'minDate', min);
-            $("[name='" + that.name + "']").datepicker('option', 'maxDate', max);
+            if (min != null)
+                $("[name='" + that.name + "']").datepicker('option', 'minDate', min);
+            if (max != null)
+                $("[name='" + that.name + "']").datepicker('option', 'maxDate', max);
         }, 0)
     }
 
@@ -52,7 +55,7 @@ export class CalendarComp implements OnInit {
             var range = moment(new Date(selDate)).isBetween(minDt, maxDt);
             if (range) { return true; }
         }
-        
+
         return false;
     }
 
