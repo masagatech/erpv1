@@ -96,7 +96,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "flag": "",
             "adrid": _adrid
         }).subscribe(result => {
-            debugger;
             var dataset = result.data;
             if (dataset.length > 0) {
                 //_this.addrbooklist = dataset;

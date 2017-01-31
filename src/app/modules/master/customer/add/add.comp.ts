@@ -12,6 +12,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [CustomerAddService, CommonService]
@@ -85,6 +86,8 @@ declare var $: any;
     transname: any = "";
     transid: any = 0;
     translist: any = [];
+    editmode: boolean = false;
+    isactive: boolean = false;
 
     //user details
     loginUser: LoginUserModel;
@@ -141,6 +144,9 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
     }
 
     //Get Code Blur Event
@@ -666,6 +672,7 @@ declare var $: any;
             _this.debitlist = result.data[1];
             _this.creditlist = result.data[1];
             _this.dayslist = result.data[2];
+            _this.keyvallist = result.data[3];
             _this.allload.otherdropdwn = true;
             _this.checkalllead();
         }, err => {
@@ -725,8 +732,9 @@ declare var $: any;
                 'keyid': that.acinfiid,
                 'value': that.value
             });
-            that.key = "";
+            that.acinfival = "";
             that.value = "";
+            that.acinfiid = 0;
             that.attrtable = false;
             $(".key").focus();
 
@@ -740,11 +748,15 @@ declare var $: any;
 
     createkeydatajson() {
         var keydata = [];
-        for (let items of this.keyvallist) {
-            keydata.push({
-                "id": items.keyid,
-                "val": items.value
-            });
+        if (this.keyvallist.length > 0) {
+            for (let items of this.keyvallist) {
+                if (items.value != "") {
+                    keydata.push({
+                        "id": items.keyid,
+                        "val": items.value
+                    });
+                }
+            }
         }
         return keydata;
     }
@@ -793,7 +805,7 @@ declare var $: any;
         this.parentid = 0;
         this.parentcodename = "";
         this.addressBook.ClearArray();
-
+        this.getcustomerdrop();
     }
 
     //Edit Customer 
@@ -805,15 +817,20 @@ declare var $: any;
             "custid": id,
             "createdby": this.loginUser.login
         }).subscribe(result => {
+            that.editmode = true;
             var resultdata = result.data[0][0]
             var _custdata = resultdata._custdata;
             var _uploadedfile = resultdata._uploadedfile;
             var _docfile = resultdata._docfile;
-
-
+            var _parentname = resultdata._parentid;
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].code;
             that.Custname = _custdata[0].custname;
+            that.isactive = _custdata[0].isactive;
+            that.parentcodename = _parentname[0].pcode;
+
+            that.parentid = _parentname[0].pid;
+            that.parentname = _parentname[0].pname;
             that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
             that.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
             that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
@@ -821,7 +838,7 @@ declare var $: any;
             that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
             that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
             that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
-             that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
+            that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
 
 
             that.debit = _custdata[0].debit;
@@ -830,9 +847,6 @@ declare var $: any;
             that.days = _custdata[0].days;
             that.remark = _custdata[0].remark;
             that.adrid = _custdata[0].adrid;
-            that.parentid = _custdata[0].pid;
-            that.parentname = _custdata[0].pcode;
-            that.parentcodename = _custdata[0].pname;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
@@ -889,23 +903,26 @@ declare var $: any;
     //Create a Json in discount
     discountjson() {
         var dislist = [];
-        for (let item of this.disattrlist) {
-            dislist.push({
-                "id": item.id, "froms": item.fromval,
-                "tos": item.toval, "discou": item.dis
-            });
+        if (this.disattrlist.length > 0) {
+            for (let item of this.disattrlist) {
+                dislist.push({
+                    "id": item.id, "froms": item.fromval,
+                    "tos": item.toval, "discou": item.dis
+                });
+            }
         }
-        console.log(dislist);
         return dislist;
     }
 
     //Create a Json in items discount
     itemsdiscountjson() {
         var itemdislist = [];
-        for (let item of this.itemslist) {
-            itemdislist.push({
-                "id": item.itemsid, "val": item.itemsdis
-            });
+        if (this.itemslist.length > 0) {
+            for (let item of this.itemslist) {
+                itemdislist.push({
+                    "id": item.itemsid, "val": item.itemsdis
+                });
+            }
         }
         return itemdislist;
 
@@ -914,10 +931,12 @@ declare var $: any;
     //Create a Json in items transpoter
     transpoterjson() {
         var translist = [];
-        for (let item of this.translist) {
-            translist.push({
-                "id": item.value
-            });
+        if (this.translist.length > 0) {
+            for (let item of this.translist) {
+                translist.push({
+                    "id": item.value
+                });
+            }
         }
         return translist;
     }
@@ -1039,6 +1058,7 @@ declare var $: any;
 
     //Add New Controll Center
     AddNewCtrl() {
+        debugger;
         this.CustAddServies.getctrldetail({
             "id": this.ctrlid,
             "cmpid": this.loginUser.cmpid
@@ -1118,6 +1138,7 @@ declare var $: any;
             "itemsdis": this.itemsdiscountjson(),
             "trans": this.transpoterjson(),
             "sales": this.salesmanjson(),
+            "isactive":this.isactive,
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
@@ -1129,36 +1150,51 @@ declare var $: any;
             "adrid": this.adrbookid,
             "parentid": this.parentid == "" ? 0 : this.parentid
         }
-        console.log(param);
         return param;
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "back") {
-            this._router.navigate(['master/customer/view']);
+            this._router.navigate(['master/customer']);
         }
         if (evt === "save") {
-            if (this.code == "") {
-                this._msg.Show(messageType.info, "info", "Please enter customer code");
-                $(".code").focus();
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
                 return;
             }
-            if (this.Custname == "") {
-                this._msg.Show(messageType.info, "info", "Please enter customer name");
-                $(".firstname").focus();
+            if (this.adrbookid.length == 0) {
+                this._msg.Show(messageType.info, "error", "Please enter contact address");
                 return;
             }
-            if (this.warehouselist.length == 0) {
-                this._msg.Show(messageType.info, "info", "Please enter warehouse");
+            else if (this.Ctrllist.length == 0) {
+                this._msg.Show(messageType.info, "error", "Please enter control center");
                 return;
+            }
+
+            if (this.warehouselist.length > 0) {
+                var checkware = false;
+                for (let wareid of this.warehouselist) {
+                    if (wareid.Warechk == true) {
+                        checkware = true;
+                    }
+                }
+                if (checkware == false) {
+                    this._msg.Show(messageType.info, "error", "Please Check Warehouse");
+                }
+                return;
+            }
+            else {
+                this._msg.Show(messageType.info, "error", "Please create warehouse master");
             }
             this.CustAddServies.saveCustomer(
                 this.paramterjson()
             ).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].funsave_customer.maxid == '-1') {
-                    this._msg.Show(messageType.info, "info", "Customer code already exists");
+                    this._msg.Show(messageType.info, "error", "Customer code already exists");
                     $(".code").focus();
                     return;
                 }

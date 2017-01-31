@@ -1,22 +1,24 @@
+<!--<form id="acgroup">-->
 <div class="panel panel-theme">
 	<div class="panel-body">
 		<div class='col-md-8'>
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Group Code</label>
-					<input type="text" class="form-control groupcode" tabindex="1" [(ngModel)]="groupcode">
+					<input type="text" validate="" class="form-control groupcode" tabindex="1" name="groupcode" [(ngModel)]="groupcode">
 				</div>
 			</div>
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Group Name</label>
-					<input type="text" class="form-control groupName" tabindex="2" [(ngModel)]="groupName">
+					<input type="text" validate="" class="form-control groupName" tabindex="2" name="groupName" [(ngModel)]="groupName">
 				</div>
 			</div>
 		</div>
 		<div class='col-md-8'>
 			<div class="col-md-1">
-				<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="chkall" (change)="checkall()" value="">All</label>
+				<!--<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="chkall" name="chkall" (change)="checkall()" value="">All</label>-->
+				<p-checkbox [(ngModel)]="chkall" name="chkall" (change)="checkall()" binary="true"></p-checkbox>All
 			</div>
 			<div class="col-md-3">
 				<div class='form-group'>
@@ -31,8 +33,8 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Nature of group</label>
-					<input type="text=" class="form-control neturofgr" tabindex="4" value="" [(ngModel)]="neturname" (keyup)="getAutoCompleteNature(this)"
-					/>
+					<input type="text=" class="form-control neturofgr" validate="" tabindex="4" value="" name="neturname" [(ngModel)]="neturname"
+						(keyup)="getAutoCompleteNature(this)" />
 				</div>
 			</div>
 		</div>
@@ -40,11 +42,18 @@
 			<div class='form-group'>
 				<label>Remark</label>
 				<div class="input-group">
-					<textarea [(ngModel)]="remark" tabindex="5" class="form-control medium-text-box" cols="75" autocomplete='off' rows="2"></textarea>
+					<textarea [(ngModel)]="remark" tabindex="5" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
+						rows="2"></textarea>
 				</div>
 			</div>
 		</div>
-
+		<div class="row" *ngIf="editmode">
+			<div class="col-md-10">
+				<div class="checkbox">
+					<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
+				</div>
+			</div>
+		</div>
 	</div>
-
 </div>
+<!--</form>-->

@@ -4,13 +4,13 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" tabindex="1" [(ngModel)]="code">
+					<input type="text" class="form-control code" validate="" tabindex="1" [(ngModel)]="code">
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Customer Name</label>
-					<input type="text" class="form-control firstname" tabindex="2" [(ngModel)]="Custname">
+					<input type="text" class="form-control firstname" validate="" tabindex="2" [(ngModel)]="Custname">
 				</div>
 			</div>
 
@@ -48,6 +48,13 @@
 				</div>
 			</div>
 		</div>
+		<div class="row" *ngIf="editmode">
+			<div class="col-md-10">
+				<div class="checkbox">
+					<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 <div class="panel panel-theme">
@@ -55,8 +62,7 @@
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contacts</a></li>
 			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
-			<li><a data-target="#itemdis" role="button" (click)="itemdis()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Item Discount</a></li>
-			<li><a data-target="#dis" role="button" (click)="discount()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>
+			<li><a data-target="#itemdis" role="button" (click)="itemdis()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>
 			<li><a data-target="#trans" role="button" (click)="transtab()" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
 			<li><a data-target="#sales" role="button" (click)="saletab()" data-toggle="tab"><i class="fa fa-user-secret" aria-hidden="true"></i> Salesman</a></li>
 			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
@@ -92,7 +98,7 @@
 			</div>
 			<div class="tab-pane" id="itemdis">
 				<div class="row">
-					<div class="col-md-8">
+					<div class="col-md-5">
 						<div class="panel panel-theme">
 							<div class="panel-body">
 								<div class="col-md-5">
@@ -135,11 +141,7 @@
 							</table>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="tab-pane" id="dis">
-				<div class="row">
-					<div class="col-md-8">
+					<div class="col-md-7">
 						<div class="panel panel-theme">
 							<div class="panel-body">
 								<div class="col-md-4">
@@ -163,7 +165,7 @@
 								</div>
 								<div class="col-md-2">
 									<div class='form-group'>
-										<label>Discount (%)</label>
+										<label>Dis (%)</label>
 										<input type="text" class="form-control disval text-right" tabindex="14" (keyup.enter)="AddNewdisattr()" [(ngModel)]="dis">
 									</div>
 								</div>
@@ -201,6 +203,9 @@
 					</div>
 				</div>
 			</div>
+			<!--<div class="tab-pane" id="dis">
+
+			</div>-->
 			<div class="tab-pane" id="sales">
 				<div class="row">
 					<div class="col-md-3">
@@ -262,8 +267,8 @@
 						<div class="col-md-6">
 							<div class='form-group'>
 								<label>Control Name</label>
-								<input type="text=" class="form-control ctrl" tabindex="18" value="" [(ngModel)]="ctrlname" (keyup.enter)="AddNewCtrl()" (keyup)="getAutoCompleteCtrl(this)"
-								/>
+								<input type="text=" class="form-control ctrl" tabindex="18" value="" [(ngModel)]="ctrlname" (keyup.enter)="AddNewCtrl()"
+									(keyup)="getAutoCompleteCtrl(this)" />
 							</div>
 						</div>
 						<div class="col-md-1">
@@ -335,7 +340,7 @@
 									<tr>
 										<td><span>{{i+1}}</span></td>
 										<td>{{row.key}}</td>
-										<td>{{row.value}}</td>
+										<td><input type="text" class="form-control" [(ngModel)]="row.value" /></td>
 										<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
 									</tr>
 								</tbody>

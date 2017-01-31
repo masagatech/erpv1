@@ -4,6 +4,9 @@ import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { ContrService } from "../../../../_service/contrcenter/contr-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -25,8 +28,16 @@ declare var $: any;
     remark: any = "";
     private subscribeParameters: any;
 
-    constructor(private _router: Router,private setActionButtons: SharedVariableService, private ctrlServies: ContrService, private _autoservice: CommonService, private _routeParams: ActivatedRoute) {
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private ctrlServies: ContrService, private _autoservice: CommonService,
+        private _routeParams: ActivatedRoute,
+        private _userService: UserService,
+        private _msg: MessageService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -60,8 +71,10 @@ declare var $: any;
 
     EditCtrl(autoid) {
         this.ctrlServies.getCtrlcenter({
-            "cmpid": 1,
-            "ctrlid": autoid
+            "cmpid": this.loginUser.cmpid,
+            "ctrlid": autoid,
+            "fy":this.loginUser.fyid,
+            "createdby":this.loginUser.login
         }).subscribe(result => {
             var dataset = result.data;
             this.centername = dataset[0][0].ctrlname;
@@ -118,11 +131,10 @@ declare var $: any;
             "ctrlid": this.autoid,
             "costcode": this.cost,
             "empid": this.empid,
-            "cmpid": 1,
-            "createdby": "admin",
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login,
             "remark": this.remark
         }
-        console.log(param);
         return param;
     }
 
@@ -136,7 +148,7 @@ declare var $: any;
 
             if (this.centername == "" || this.centername == undefined) {
                 alert("Please enter center name");
-               $(".centername").focus();
+                $(".centername").focus();
                 return;
             }
             if (this.cost == "" && this.profit == "") {

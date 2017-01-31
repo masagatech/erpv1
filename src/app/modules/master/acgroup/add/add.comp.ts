@@ -11,6 +11,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [acgroupadd, CommonService]
@@ -31,6 +32,9 @@ declare var $: any;
     appfrom: any = 0;
     chkall: boolean;
     financiallist: any = [];
+    isactive: boolean = false;
+    editmode: boolean = false;
+
     private subscribeParameters: any;
 
     //user details
@@ -38,7 +42,8 @@ declare var $: any;
     loginUserName: string;
 
     //, private _autoservice:AutoService
-    constructor(private _router: Router,private setActionButtons: SharedVariableService, private acgroupServies: acgroupadd,
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private acgroupServies: acgroupadd,
         private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _userService: UserService,
         private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
@@ -55,7 +60,7 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".groupcode").removeAttr('disabled', 'disabled');
-         $(".groupcode").focus();
+        $(".groupcode").focus();
         setTimeout(function () {
             var date = new Date();
             var CurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -68,6 +73,7 @@ declare var $: any;
                 setDate: new Date()
             });
             $("#docdate").datepicker('setDate', CurrentDate);
+            commonfun.addrequire();
         }, 0);
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -147,12 +153,14 @@ declare var $: any;
             "fy": this.loginUser.fyid,
             "createdby": this.loginUser.login
         }).subscribe(data => {
+            this.editmode = true;
             var dataset = data.data;
             this.groupcode = dataset[0].groupcode;
             this.groupName = dataset[0].groupname;
             this.neturname = dataset[0].val;
             this.neturid = dataset[0].natureofg;
             this.appfrom = dataset[0].appfromedit;
+            this.isactive=dataset[0].isactive;
             if (this.appfrom == 0) {
                 this.chkall = true;
             }
@@ -205,6 +213,7 @@ declare var $: any;
             "createdby": this.loginUser.login,
             "neturid": this.neturid,
             "remark": this.remark,
+            "isactive":this.isactive,
             "remark1": "remark1",
             "remark2": "remark2",
             "remark3": "remark3"
@@ -216,24 +225,14 @@ declare var $: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-         if (evt === "back") {
-            this._router.navigate(['master/acgroup/acview']);
+        if (evt === "back") {
+            this._router.navigate(['master/acgroup']);
         }
         if (evt === "save") {
-            if (this.groupcode == "") {
-                this._msg.Show(messageType.info, "info", "Please enter group code");
-                $(".groupcode").focus();
-                return;
-
-            }
-            else if (this.groupcode == "") {
-                this._msg.Show(messageType.info, "info", "Please enter group name");
-                $(".groupName").focus();
-                return;
-            }
-            else if (this.neturid == 0) {
-                this._msg.Show(messageType.info, "info", "Please select nature of group");
-                $(".neturofgr").focus();
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
                 return;
             }
             this.acgroupServies.acGroupSave(
@@ -247,7 +246,7 @@ declare var $: any;
                 }
                 if (dataset[0].funsave_acgroup.maxid > 0) {
                     this._msg.Show(messageType.success, "success", dataset[0].funsave_acgroup.msg);
-                     $(".code").removeAttr('disabled', 'disabled');
+                    $(".code").removeAttr('disabled', 'disabled');
                     this.ClearControll();
                     return;
                 }
