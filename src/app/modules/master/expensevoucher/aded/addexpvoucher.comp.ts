@@ -69,9 +69,9 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params["docno"] !== undefined) {
+            if (params["id"] !== undefined) {
                 this.title = "Expesne Voucher : Edit";
-                this.docno = params["docno"];
+                this.docno = params["id"];
                 this.getExpenseVoucher(this.docno);
             }
             else {
@@ -206,6 +206,8 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         else {
             that._expvoucherservice.saveExpenseVoucher({
                 "expvid": that.expvid,
+                "loginsessionid": that.loginUser._sessiondetails.sessionid,
+                "uid": that.loginUser.uid,
                 "cmpid": that.loginUser.cmpid,
                 "fyid": that.loginUser.fyid,
                 "period": that.period,
@@ -246,6 +248,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
             var _expvdata = dataresult[0]._expvdata;
 
             that.expvid = _expvdata[0].expvid;
+            that.docno = _expvdata[0].docno;
             that.period = _expvdata[0].period;
             that.noofdocs = _expvdata[0].noofdocs;
             that.ctrlcenterid = _expvdata[0].ctrlcenterid;
