@@ -11,16 +11,7 @@
 						<div class="col-md-3">
 							<div class="form-group">
 								<label class="control-label">JV Date</label>
-								<!--<input name="jvdate" type="date" validate="" [(ngModel)]="docdate" (keydown)="isvaliddate()" class="form-control">-->
-								<!--<div class="controls">
-									<div class="input-group" tabindex="2">
-										<p-inputMask #jvdate name="jvdate" ui-calendar [(ngModel)]="docdate" styleClass="date-picker form-control docdate"></p-inputMask>
-										<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-									</div>
-								</div>-->
-
 								<calendar #jvdate [name]="'jvdate'"></calendar>
-								<!--<button type="button" (click)="getJVDate()">Get</button>-->
 							</div>
 						</div>
 						<div class="col-md-9">

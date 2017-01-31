@@ -421,7 +421,7 @@ export class AddJV implements OnInit, OnDestroy {
                 "uid": that.loginUser.uid,
                 "fyid": that.loginUser.fyid,
                 "cmpid": that.loginUser.cmpid,
-                "docdate": that.jvdate.getDate(), // $('.docdate').datepicker('getDate'),
+                "docdate": that.jvdate.getDate(),
                 "docfile": that.docfile.length === 0 ? null : that.docfile,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login,
