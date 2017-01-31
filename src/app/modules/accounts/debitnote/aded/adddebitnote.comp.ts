@@ -70,7 +70,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     private NewRowAdd() {
         if (this.newacname == "" || this.newacname == null) {
-            alert("Please Enter Account NAme");
+            alert("Please Enter Account Name");
             return;
         }
 
@@ -101,7 +101,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
     getAutoComplete(me: any, arg: number) {
         var that = this;
 
-        this._commonservice.getAutoData({ "type": "customer", "search": arg == 1 ? me.acname : arg == 2 ? me.dnacname : me.newacname }).subscribe(data => {
+        this._commonservice.getAutoData({
+            "type": "customer", "cmpid": this.loginUser.cmpid,
+            "search": arg == 1 ? me.acname : arg == 2 ? me.dnacname : me.newacname
+        }).subscribe(data => {
             $(arg == 1 ? ".accname" : arg == 2 ? ".dnaccname" : ".accname").autocomplete({
                 source: data.data,
                 width: 300,
