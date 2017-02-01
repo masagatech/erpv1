@@ -4,6 +4,7 @@ import { MessageService, messageType } from '../../../_service/messages/message-
 
 declare var $: any;
 declare var moment: any;
+
 @Component({
     selector: '<calendar></calendar>',
     templateUrl: 'calendar.comp.html'
@@ -61,7 +62,7 @@ export class CalendarComp implements OnInit {
 
     initialize(loginUser) {
         var that = this;
-
+        
         this.loginUser = loginUser;
         this.docdate.name = that.name;
         this.docdate.mask = loginUser._globsettings.dateformat.replace(/d/g, "9").replace(/m/g, "9").replace(/y/g, "99");

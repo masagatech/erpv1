@@ -73,6 +73,10 @@ export class AddUserRights implements OnInit, OnDestroy {
                 //this.getUserRightsById(params['uid']);
             }
             else {
+                setTimeout(function () {
+                    $("#uname").focus();
+                }, 0);
+
                 this.title = "Add User Rights";
             }
         });

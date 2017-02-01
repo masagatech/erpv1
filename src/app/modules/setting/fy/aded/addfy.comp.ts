@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
@@ -9,12 +9,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 
 @Component({
     templateUrl: 'addfy.comp.html',
-    providers: [FYService, CompService, CommonService]
+    providers: [FYService, CompService, CommonService, ALSService]
 })
 
 export class AddFY implements OnInit, OnDestroy {
@@ -24,6 +26,13 @@ export class AddFY implements OnInit, OnDestroy {
     fyid: number = 0;
     fromdt: any = "";
     todt: any = "";
+    isactive: boolean = false;
+
+    @ViewChild("fromdate")
+    @ViewChild("todate")
+
+    fromdate: CalendarComp;
+    todate: CalendarComp;
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -35,13 +44,69 @@ export class AddFY implements OnInit, OnDestroy {
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _fyservice: FYService, private _compservice: CompService, private _commonservice: CommonService,
-        private _userService: UserService, private _msg: MessageService) {
+        private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getCompany();
     }
 
+    ngOnInit() {
+        //this.fromdate.initialize(this.loginUser);
+        //this.todate.initialize(this.loginUser);
+        //this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.fyid = params['id'];
+                this.getFYDetailsById(this.fyid);
+
+                $('select').attr('disabled', 'disabled');
+            }
+            else {
+                setTimeout(function () {
+                    $("#FromDate").focus();
+                }, 0);
+
+                //var date = new Date();
+                //this.fromdate.setDate(date);
+                //this.todate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                $('select').removeAttr('disabled');
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveFYDetails();
+        } else if (evt === "edit") {
+            $('select').removeAttr('disabled');
+
+            setTimeout(function () {
+                $("#FromDate").focus();
+            }, 0);
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
     getCompany() {
-        this._compservice.getCompany({ "flag": "all", "fyid": this.loginUser.fyid }).subscribe(data => {
+        this._compservice.getCompany({ "flag": "all", "fyid": 0 }).subscribe(data => {
             this.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
@@ -64,12 +129,17 @@ export class AddFY implements OnInit, OnDestroy {
     }
 
     getFYDetailsById(pfyid: number) {
-        this._fyservice.getfy({ "flag": "id", "fyid": pfyid }).subscribe(data => {
+        var that = this;
+
+        that._fyservice.getfy({ "flag": "id", "fyid": pfyid }).subscribe(data => {
             var FYDT = data.data;
 
-            this.fyid = FYDT[0].fyid;
-            this.fromdt = FYDT[0].fromdt;
-            this.todt = FYDT[0].todt;
+            that.fyid = FYDT[0].fyid;
+            that.fromdt = FYDT[0].fromdt;
+            that.todt = FYDT[0].todt;
+
+            // that.fromdate.setDate(FYDT[0].fromdt);
+            // that.todate.setDate(FYDT[0].todt);
 
             var cmprights = null;
             var cmpitem = null;
@@ -89,6 +159,8 @@ export class AddFY implements OnInit, OnDestroy {
                     }
                 }
             }
+
+            that.isactive = FYDT[0].isactive;
         }, err => {
             console.log("Error");
         }, () => {
@@ -109,6 +181,7 @@ export class AddFY implements OnInit, OnDestroy {
             if (cmpitem !== null) {
                 var cmprights = "";
 
+                //$("#C" + cmpitem.cmpid).find("p-checkbox").each(function () {
                 $("#C" + cmpitem.cmpid).find("input[type=checkbox]").each(function () {
                     cmprights += (this.checked ? $(this).val() + "," : "");
                 });
@@ -131,6 +204,7 @@ export class AddFY implements OnInit, OnDestroy {
             "fromdt": this.fromdt,
             "todt": this.todt,
             "uidcode": this.loginUser.login,
+            "isactive": this.isactive,
             "cmprights": cmprights
         }
 
@@ -154,46 +228,6 @@ export class AddFY implements OnInit, OnDestroy {
                 // console.log("Complete");
             });
         }
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveFYDetails();
-        } else if (evt === "edit") {
-            $('select').removeAttr('disabled');
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['fyid'] !== undefined) {
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.fyid = params['fyid'];
-                this.getFYDetailsById(this.fyid);
-
-                $('select').attr('disabled', 'disabled');
-            }
-            else {
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                $('select').removeAttr('disabled');
-            }
-        });
     }
 
     ngOnDestroy() {

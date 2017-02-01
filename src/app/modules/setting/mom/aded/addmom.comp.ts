@@ -18,6 +18,7 @@ export class AddMOM implements OnInit, OnDestroy {
     validSuccess: Boolean = true;
 
     momid: number = 0;
+    groupdt: any = [];
     group: string = "";
     key: string = "";
     val: string = "";
@@ -29,7 +30,19 @@ export class AddMOM implements OnInit, OnDestroy {
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _commonservice: CommonService, private _message: MessageService) {
+        this.getMOMGroup();
+    }
 
+    getMOMGroup() {
+        var that = this;
+
+        that._commonservice.getMOM({ "flag": "group" }).subscribe(data => {
+            that.groupdt = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     saveMOMDetails() {
@@ -96,6 +109,10 @@ export class AddMOM implements OnInit, OnDestroy {
             $('#Key').attr('disabled', 'disabled');
             $('#Val').removeAttr('disabled');
 
+            setTimeout(function () {
+                $("#Val").focus();
+            }, 0);
+
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
@@ -119,17 +136,21 @@ export class AddMOM implements OnInit, OnDestroy {
                 this.momid = params['id'];
                 this.getMOMByID(this.momid);
 
-                $('#Group').attr('disabled', 'disabled');
-                $('#Key').attr('disabled', 'disabled');
-                $('#Val').attr('disabled', 'disabled');
+                $('#Group').prop('disabled', true);
+                $('#Key').prop('disabled', true);
+                $('#Val').prop('disabled', true);
             }
             else {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
 
-                $('#Group').removeAttr('disabled');
-                $('#Group').removeAttr('disabled');
-                $('#Val').removeAttr('disabled');
+                setTimeout(function () {
+                    $("#Group").focus();
+                }, 0);
+
+                $('#Group').prop('disabled', false);
+                $('#Key').prop('disabled', false);
+                $('#Val').prop('disabled', false);
             }
         });
     }

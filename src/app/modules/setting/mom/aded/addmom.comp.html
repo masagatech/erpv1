@@ -11,7 +11,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="control-label">Group</label>
-                                    <input id="Group" name="Group" type="text" [(ngModel)]="group" class="form-control" />
+                                    <!--<input id="Group" name="Group" type="text" [(ngModel)]="group" class="form-control" />-->
+                                    <select id="Group" name="Group" [(ngModel)]="group" class="form-control">
+										<option value="">-- Select Group --</option>
+										<option *ngFor="let grow of groupdt" [value]="grow.key">
+											{{grow.val}}
+										</option>
+									</select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -40,6 +46,4 @@
             </ul>
         </template>
     </p-fileUpload>-->
-
-    
 </div>

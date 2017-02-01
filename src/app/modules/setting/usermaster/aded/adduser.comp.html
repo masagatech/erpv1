@@ -1,77 +1,81 @@
-<div class="col-md-12">
-	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<h3 class="panel-title">Create User</h3>
-		</div>
-		<div class="panel-body">
-			<div class="col-md-6">
-				<div class="row">
-					<div class="col-md-4">
-						<div class="form-group">
-							<label class="control-label">User Code</label>
-							<input type="text" [(ngModel)]="ucode" class="form-control input-sm" size="20" required />
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="form-group">
-							<label class="control-label">First Name</label>
-							<input type="text" [(ngModel)]="firstname" class="form-control input-sm" size="20">
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="form-group">
-							<label class="control-label">Last Name</label>
-							<input type="text" [(ngModel)]="lastname" class="form-control input-sm" size="20">
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label">Email Address</label>
-							<input type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20" required />
-						</div>
-						<button (click)="isChangePwd()" [style.display]="isviscpwd == 'N'?'none':''" class="btn {{iscpwd == 'Y' ? 'btn-danger' : 'btn-primary'}}">
-							{{iscpwd == "Y" ? "- No Change" : "+ Change Password"}}
-						</button>
-						<div [style.display]="iscpwd == 'N'?'none':''">
-							<div class="form-group">
-								<label class="control-label">Password</label>
-								<input type="password" [(ngModel)]="pwd" class="form-control input-sm" size="20" required />
-							</div>
-							<div class="form-group">
-								<label class="control-label">Confirm Password</label>
-								<input type="password" [(ngModel)]="confpwd" class="form-control input-sm" size="20" required />
-							</div>
-						</div>
-					</div>
-				</div>
+<form id="frmUser">
+	<div class="col-md-12">
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<h3 class="panel-title">Create User</h3>
 			</div>
-			<div class="col-md-12">
-				<div class="row">
-					<div class="panel panel-theme">
-						<div class="panel-heading">
-							<input type="checkbox" [(ngModel)]="allCheck" (change)="selectAndDeselectAllCheckboxes()" /> Select All
+			<div class="panel-body">
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">User Code</label>
+								<input id="ucode" name="ucode" type="text" [(ngModel)]="ucode" class="form-control input-sm" size="20" required />
+							</div>
 						</div>
-						<div class="panel-body">
-							<div *ngFor="let row of CompanyDetails" class="allcheckboxes">
-								<div class="ui-grid-col-12">
-									<div class="ui-grid-row">
-										<div class="col-md-3">
-											<input id="{{row.cmpid}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" (change)="selectAndDeselectCompanyWiseCheckboxes(row)"
-											/>&nbsp;{{row.cmpname}}
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">First Name</label>
+								<input id="fname" name="fname" type="text" [(ngModel)]="firstname" class="form-control input-sm" size="20">
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">Last Name</label>
+								<input id="lname" name="lname" type="text" [(ngModel)]="lastname" class="form-control input-sm" size="20">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label class="control-label">Email Address</label>
+								<input id="emailid" name="emailid" type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20" required />
+							</div>
+							<button id="btnChangePwd" name="btnChangePwd" (click)="isChangePwd()" [style.display]="isviscpwd == 'N'?'none':''" class="btn {{iscpwd == 'Y' ? 'btn-danger' : 'btn-primary'}}">
+								{{iscpwd == "Y" ? "- No Change" : "+ Change Password"}}
+							</button>
+							<div [style.display]="iscpwd == 'N'?'none':''">
+								<div class="form-group">
+									<label class="control-label">Password</label>
+									<input id="pwd" name="pwd" type="password" [(ngModel)]="pwd" class="form-control input-sm" size="20" required />
+								</div>
+								<div class="form-group">
+									<label class="control-label">Confirm Password</label>
+									<input id="cpwd" name="cpwd" type="password" [(ngModel)]="confpwd" class="form-control input-sm" size="20" required />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row">
+						<div class="panel panel-theme">
+							<div class="panel-heading">
+								<input id="selectall" name="selectall" type="checkbox" [(ngModel)]="allCheck" (change)="selectAndDeselectAllCheckboxes()"
+								/> Select All
+							</div>
+							<div class="panel-body">
+								<div *ngFor="let row of CompanyDetails; let i = index;" class="allcheckboxes">
+									<div class="ui-grid-col-12">
+										<div class="ui-grid-row">
+											<div class="col-md-3">
+												<input id="{{row.cmpid}}" name="cmp{{i + 1}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" (change)="selectAndDeselectCompanyWiseCheckboxes(row)"
+												/>&nbsp;{{row.cmpname}}
+											</div>
+											<div class="col-md-1">
+												<img id="img{{row.cmpid}}" name="img{{i + 1}}" src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';"
+													width="50" height="50" />
+											</div>
+											<div id="C{{row.cmpid}}" class="col-md-8">
+												<label *ngFor="let fyrow of row.fyrights">
+													<input id="{{row.cmpid}}{{fyrow.fyid}}" name="fy{{i + 1}}" type="checkbox" value="{{fyrow.fyid}}">
+													{{fyrow.fyname}}
+												</label>
+											</div>
 										</div>
-										<div class="col-md-1">
-											<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50" height="50" />
-										</div>
-										<div id="C{{row.cmpid}}" class="col-md-8">
-											<label *ngFor="let fyrow of row.fyrights">
-												<input id="{{row.cmpid}}{{fyrow.fyid}}" type="checkbox" value="{{fyrow.fyid}}">
-												{{fyrow.fyname}}
-											</label>
-										</div>
+										<hr />
 									</div>
-									<hr />
 								</div>
 							</div>
 						</div>
@@ -80,4 +84,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</form>

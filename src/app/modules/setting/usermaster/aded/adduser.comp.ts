@@ -46,6 +46,66 @@ export class AddUser implements OnInit, OnDestroy {
         that.getCompanyDetails();
     }
 
+    ngOnInit() {
+        var that = this;
+
+        that.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        that.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        that.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        that.setActionButtons.setActionButtons(that.actionButton);
+        that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
+
+        that.subscribeParameters = that._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                that.actionButton.find(a => a.id === "save").hide = true;
+                that.actionButton.find(a => a.id === "edit").hide = false;
+
+                that.uid = params['id'];
+
+                that.getUserDataById(that.uid);
+
+                $('input').attr('disabled', 'disabled');
+                that.iscpwd = 'N';
+                that.isviscpwd = 'N';
+            }
+            else {
+                that.actionButton.find(a => a.id === "save").hide = false;
+                that.actionButton.find(a => a.id === "edit").hide = true;
+
+                setTimeout(function () {
+                    $("#ucode").focus();
+                }, 0);
+
+                $('input').removeAttr('disabled');
+                that.iscpwd = 'Y';
+                that.isviscpwd = 'N';
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        var that = this;
+
+        if (evt === "save") {
+            that.saveUserMaster();
+        } else if (evt === "edit") {
+            $('input').prop('disabled', false);
+
+            that.actionButton.find(a => a.id === "save").hide = false;
+            that.actionButton.find(a => a.id === "edit").hide = true;
+
+            setTimeout(function () {
+                $("#ucode").focus();
+            }, 0);
+
+            that.isviscpwd = 'Y';
+            that.iscpwd = 'N';
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
     getCompanyDetails() {
         var that = this;
 
@@ -230,58 +290,6 @@ export class AddUser implements OnInit, OnDestroy {
                 // console.log("Complete");
             });
         }
-    }
-
-    actionBarEvt(evt) {
-        var that = this;
-
-        if (evt === "save") {
-            that.saveUserMaster();
-        } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-
-            that.actionButton.find(a => a.id === "save").hide = false;
-            that.actionButton.find(a => a.id === "edit").hide = true;
-
-            that.isviscpwd = 'Y';
-            that.iscpwd = 'N';
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
-    ngOnInit() {
-        var that = this;
-
-        that.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        that.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        that.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        that.setActionButtons.setActionButtons(that.actionButton);
-        that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
-
-        that.subscribeParameters = that._routeParams.params.subscribe(params => {
-            if (params['uid'] !== undefined) {
-                that.actionButton.find(a => a.id === "save").hide = true;
-                that.actionButton.find(a => a.id === "edit").hide = false;
-
-                that.uid = params['uid'];
-
-                that.getUserDataById(that.uid);
-
-                $('input').attr('disabled', 'disabled');
-                that.iscpwd = 'N';
-                that.isviscpwd = 'N';
-            }
-            else {
-                that.actionButton.find(a => a.id === "save").hide = false;
-                that.actionButton.find(a => a.id === "edit").hide = true;
-
-                $('input').removeAttr('disabled');
-                that.iscpwd = 'Y';
-                that.isviscpwd = 'N';
-            }
-        });
     }
 
     ngOnDestroy() {

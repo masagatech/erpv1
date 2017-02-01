@@ -1,50 +1,59 @@
-<div class="col-md-6">
-	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<h3 class="panel-title">Add Financial Year</h3>
-		</div>
-		<div class="panel-body">
-			<div class="col-md-12">
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<label class="control-label">From Date</label>
-							<input id="FromDate" name="FromDate" type="date" [(ngModel)]="fromdt" class="form-control" />
+<form id="frmfy">
+	<div class="col-md-6">
+		<div class="panel panel-theme">
+			<div class="panel-body">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">From Date</label>
+								<!--<calendar #fromdate [name]="'fromdate'"></calendar>-->
+								<input id="FromDate" name="FromDate" type="date" [(ngModel)]="fromdt" class="form-control" />
+							</div>
 						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group">
-							<label class="control-label">To Date</label>
-							<input id="ToDate" name="ToDate" type="date" [(ngModel)]="todt" class="form-control" />
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">To Date</label>
+								<!--<calendar #todate [name]="'todate'"></calendar>-->
+								<input id="ToDate" name="ToDate" type="date" [(ngModel)]="todt" class="form-control" />
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-12">
-				<div class="row">
-					<table class="table table-striped table-bordered">
-						<thead>
-							<tr>
-								<th></th>
-								<th colspan="2">Company</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr *ngFor="let row of CompanyDetails">
-								<td id="C{{row.cmpid}}">
-									<input id="{{row.cmpid}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" class="companyCheck" />
-								</td>
-								<td>
-									<img src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50" height="50" />
-								</td>
-								<td>
-									{{row.cmpname}}
-								</td>
-							</tr>
-						</tbody>
-					</table>
+				<div class="col-md-12">
+					<div class="row">
+						<table class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th></th>
+									<th colspan="2">Company</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let row of CompanyDetails; let i = index;">
+									<td id="C{{row.cmpid}}">
+										<!--<p-checkbox id="{{row.cmpid}}" [(ngModel)]="row.iscmpcheck" name="chkIsCmpCheck" value="{{row.cmpid}}" binary="true" class="companyCheck"></p-checkbox>-->
+										<input id="{{row.cmpid}}" name="cmpid{{i + 1}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" class="companyCheck"
+										/>
+									</td>
+									<td>
+										<img src="assets/img/logo/{{row.cmplogo}}" name="cmpid{{i + 1}}" onerror="this.src='assets/img/logo/No_Images.gif';" width="50"
+											height="50" />
+									</td>
+									<td>
+										{{row.cmpname}}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="row">
+						<p-checkbox [(ngModel)]="isactive" name="isactive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
+</form>
