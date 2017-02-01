@@ -11,6 +11,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [ContrService, CommonService]
@@ -26,6 +27,8 @@ declare var $: any;
     empid: any = 0;
     empname: any = "";
     remark: any = "";
+    editmode: boolean = false;
+    isactive: boolean = false;
     private subscribeParameters: any;
 
     //user details
@@ -48,7 +51,9 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".centername").focus();
-
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -73,16 +78,18 @@ declare var $: any;
         this.ctrlServies.getCtrlcenter({
             "cmpid": this.loginUser.cmpid,
             "ctrlid": autoid,
-            "fy":this.loginUser.fyid,
-            "createdby":this.loginUser.login
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
         }).subscribe(result => {
             var dataset = result.data;
+            this.editmode = true;
             this.centername = dataset[0][0].ctrlname;
             this.profit = dataset[0][0].profitctr;
             this.cost = dataset[0][0].costctr;
             this.empid = dataset[0][0].empid;
             this.empname = dataset[0][0].person;
             this.remark = dataset[0][0].remark;
+            this.isactive = dataset[0][0].isactive;
             $(".centername").focus();
         }, err => {
             console.log("Error");
@@ -93,7 +100,12 @@ declare var $: any;
 
     getAutoCompleteEmp(me: any) {
         var that = this;
-        this._autoservice.getAutoData({ "type": "userwithcode", "search": that.empname, "cmpid": 1 }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "userwithcode", "search": that.empname,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -120,7 +132,9 @@ declare var $: any;
         this.centername = "";
         this.profit = "";
         this.cost = "";
-        $("empname").val("");
+        this.empname = "";
+        this.empid = 0;
+        this.editmode = false;
         this.remark = "";
     }
 
@@ -131,6 +145,7 @@ declare var $: any;
             "ctrlid": this.autoid,
             "costcode": this.cost,
             "empid": this.empid,
+            "isactive":this.isactive,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "remark": this.remark
@@ -145,30 +160,23 @@ declare var $: any;
             this._router.navigate(['/setting/contrcenter']);
         }
         if (evt === "save") {
-
-            if (this.centername == "" || this.centername == undefined) {
-                alert("Please enter center name");
-                $(".centername").focus();
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
                 return;
             }
-            if (this.cost == "" && this.profit == "") {
-                alert("Please enter profit and cost");
-                $(".profitcost").focus();
-                return;
-            }
-
             this.ctrlServies.saveCtrlcenter(
                 this.paramjson()
             ).subscribe(result => {
                 var dataset = result.data;
-                console.log(dataset);
                 if (dataset[0].funsave_ctrlcenter.maxid == -1) {
-                    alert("Center Name already exists");
+                    this._msg.Show(messageType.info, "info", "Center Name already exists");
                     $(".centername").focus();
                     return;
                 }
                 if (dataset[0].funsave_ctrlcenter.maxid > 0) {
-                    alert("Data Save Successfully");
+                    this._msg.Show(messageType.success, "success", "Data Save Successfully");
                     this.ClearControll();
                     $(".centername").focus();
                     return;
