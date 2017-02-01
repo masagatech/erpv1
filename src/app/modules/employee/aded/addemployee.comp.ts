@@ -188,33 +188,33 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
                     if (that.isadd) {
                         that.title = "Add Employee";
-                        $('button').removeAttr('disabled');
-                        $('input').removeAttr('disabled');
-                        $('select').removeAttr('disabled');
-                        $('textarea').removeAttr('disabled');
+                        $('button').prop('disabled', false);
+                        $('input').prop('disabled', false);
+                        $('select').prop('disabled', false);
+                        $('textarea').prop('disabled', false);
 
-                        $('#uname').attr('disabled', 'disabled');
+                        $('#uname').prop('disabled', false);
                         this.actionButton.find(a => a.id === "save").hide = false;
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else if (that.isedit) {
                         that.title = "Edit Employee";
-                        $('button').removeAttr('disabled');
-                        $('input').removeAttr('disabled');
-                        $('select').removeAttr('disabled');
-                        $('textarea').removeAttr('disabled');
+                        $('button').prop('disabled', false);
+                        $('input').prop('disabled', false);
+                        $('select').prop('disabled', false);
+                        $('textarea').prop('disabled', false);
 
-                        $('#uname').attr('disabled', 'disabled');
+                        $('#uname').prop('disabled', true);
                         this.actionButton.find(a => a.id === "save").hide = false;
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else {
                         that.title = "Details of Employee";
 
-                        $('button').attr('disabled', 'disabled');
-                        $('input').attr('disabled', 'disabled');
-                        $('select').attr('disabled', 'disabled');
-                        $('textarea').attr('disabled', 'disabled');
+                        $('button').prop('disabled', true);
+                        $('input').prop('disabled', true);
+                        $('select').prop('disabled', true);
+                        $('textarea').prop('disabled', true);
 
                         this.actionButton.find(a => a.id === "save").hide = true;
                         this.actionButton.find(a => a.id === "edit").hide = false;
@@ -380,16 +380,16 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.ctrlcenterList.splice(this.ctrlcenterList.indexOf(row), 1);
     }
 
-    //Reset Employee Fields
+    // Upload Photo
 
-    // onUploadStart(e) {
-    //     this.actionButton.find(a => a.id === "save").enabled = false;
-    // }
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
 
-    // onUploadComplete(e) {
-    //     this.attachfile = e.files[0].path;
-    //     this.actionButton.find(a => a.id === "save").enabled = true;
-    // }
+    onUploadComplete(e) {
+        this.attachfile = e.files[0].path;
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
 
     // Add Dynamic Tab
 
@@ -705,8 +705,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     this.familybg = EmpDetails[0].familybg;
                     this.healthdtls = EmpDetails[0].healthdtls;
 
-                    // this.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-                    // this.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
+                    this.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
+                    this.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
+                    
                     // this.mobileno = EmpDetails[0].mobileno;
                     // this.altmobileno = EmpDetails[0].altmobileno;
                     // this.altemailid = EmpDetails[0].altemailid;
