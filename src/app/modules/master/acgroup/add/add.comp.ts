@@ -62,17 +62,6 @@ declare var commonfun: any;
         $(".groupcode").removeAttr('disabled', 'disabled');
         $(".groupcode").focus();
         setTimeout(function () {
-            var date = new Date();
-            var CurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-            $("#docdate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#docdate").datepicker('setDate', CurrentDate);
             commonfun.addrequire();
         }, 0);
 
@@ -160,7 +149,7 @@ declare var commonfun: any;
             this.neturname = dataset[0].val;
             this.neturid = dataset[0].natureofg;
             this.appfrom = dataset[0].appfromedit;
-            this.isactive=dataset[0].isactive;
+            this.isactive = dataset[0].isactive;
             if (this.appfrom == 0) {
                 this.chkall = true;
             }
@@ -213,7 +202,7 @@ declare var commonfun: any;
             "createdby": this.loginUser.login,
             "neturid": this.neturid,
             "remark": this.remark,
-            "isactive":this.isactive,
+            "isactive": this.isactive,
             "remark1": "remark1",
             "remark2": "remark2",
             "remark3": "remark3"
