@@ -11,6 +11,7 @@ import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
 import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { AddrbookComp } from "../../usercontrol/addressbook/adrbook.comp";
+import { DynamicTabModule } from "../../usercontrol/dynamictab";
 
 declare var $: any;
 declare var commonfun: any;
@@ -105,19 +106,21 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     // Page Pre Render
 
-    constructor(private _routeParams: ActivatedRoute, private _router: Router,
-        private setActionButtons: SharedVariableService, private _empservice: EmpService, private _actaccsservice: ActionAccess,
-        private _userservice: UserService, private _dynfldserive: DynamicFieldsService, private _commonservice: CommonService, private _msg: MessageService) {
+    constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
+        private _empservice: EmpService, private _actaccsservice: ActionAccess, private _userservice: UserService,
+        private _dynfldserive: DynamicFieldsService, private _commonservice: CommonService, private _msg: MessageService) {
         this.module = "Employee";
         this.loginUser = this._userservice.getUser();
 
-        this.fillDropDownList("gender");
-        this.fillDropDownList("marital");
-        this.fillDropDownList("bldgrp");
-        this.fillDropDownList("country");
-        this.fillDropDownList("dept");
-        this.fillDropDownList("desig");
-        this.fillDropDownList("salarymode");
+        // this.fillDropDownList("gender");
+        // this.fillDropDownList("marital");
+        // this.fillDropDownList("bldgrp");
+        // this.fillDropDownList("country");
+        // this.fillDropDownList("dept");
+        // this.fillDropDownList("desig");
+        // this.fillDropDownList("salarymode");
+
+        this.fillDropDownList();
         this.fillCtrlCenterDDL();
 
         this.isadd = _router.url.indexOf("add") > -1;
@@ -173,7 +176,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 return;
             }
             else {
-
                 that.subscribeParameters = that._routeParams.params.subscribe(params => {
                     for (var i = 0; i < data.length; i++) {
                         var id = data[i].actnm;
@@ -188,6 +190,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
                     if (that.isadd) {
                         that.title = "Add Employee";
+                        //$('div *').prop('disabled', false);
+
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -199,6 +203,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     }
                     else if (that.isedit) {
                         that.title = "Edit Employee";
+                        //$('div *').prop('disabled', false);
+
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -210,6 +216,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     }
                     else {
                         that.title = "Details of Employee";
+                        //$('div *').prop('disabled', true);
 
                         $('button').prop('disabled', true);
                         $('input').prop('disabled', true);
@@ -242,7 +249,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.uid = ui.item.value;
                     me.uname = ui.item.label;
                 }
@@ -256,40 +263,32 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     // Fill Gender, MaritalStatus, BloodGroup, Country, Department, Designation, SalaryMode Drop Down
 
-    fillDropDownList(group) {
-        this._commonservice.getMOM({ "group": group }).subscribe(data => {
+    fillDropDownList() {
+        this._empservice.getEmployee({ "flag": "dropdown" }).subscribe(data => {
             var d = data.data;
 
-            if (group == "gender") {
-                // BIND Gender TO DROPDOWN
-                this.genderDT = d;
-            }
-            else if (group == "marital") {
-                // BIND MaritalStatus TO DROPDOWN
-                this.maritalstatusDT = d;
-            }
-            else if (group == "bldgrp") {
-                // BIND Blood Group TO DROPDOWN
-                this.bloodgroupDT = d;
-            }
-            else if (group == "country") {
-                // BIND Country TO DROPDOWN
-                this.countryDT = d;
-            }
-            else if (group == "dept") {
-                // BIND Department TO DROPDOWN
-                this.departmentDT = d;
-            }
-            else if (group == "desig") {
-                // BIND Designation TO DROPDOWN
-                this.designationDT = d;
-            }
-            else if (group == "salarymode") {
-                // BIND Salary Mode TO DROPDOWN
-                this.salarymodeDT = d;
-            }
+            // BIND Gender TO DROPDOWN
+            this.genderDT = d.filter(a => a.group === "gender");
+
+            // BIND MaritalStatus TO DROPDOWN
+            this.maritalstatusDT = d.filter(a => a.group === "marital");
+
+            // BIND Blood Group TO DROPDOWN
+            this.bloodgroupDT = d.filter(a => a.group === "bldgrp");
+
+            // BIND Country TO DROPDOWN
+            this.countryDT = d.filter(a => a.group === "country");
+
+            // BIND Department TO DROPDOWN
+            this.departmentDT = d.filter(a => a.group === "dept");
+
+            // BIND Designation TO DROPDOWN
+            this.designationDT = d.filter(a => a.group === "desig");
+
+            // BIND Salary Mode TO DROPDOWN
+            this.salarymodeDT = d.filter(a => a.group === "salarymode");
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             console.log("Complete");
         })
@@ -323,7 +322,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.sctrlcenterid = ui.item.value;
                     me.sctrlcentername = ui.item.label;
                 }
@@ -394,9 +393,11 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // Add Dynamic Tab
 
     openTabPopup() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".tabname").focus();
         }, 500);
+
+        this.fldname = "";
     }
 
     addNewTabs() {
@@ -406,13 +407,21 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         }
 
         var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
-        this.tabListDT.push({ "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "keyvaluedt": [] });
+        this.tabListDT.push({
+            "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "fldvalue": [],
+            "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid
+        });
+
         this.fldname = "";
         $('#dynTabModel').modal('hide');
         this.isedittab = false;
     }
 
     EditTabs(tab) {
+        setTimeout(function() {
+            $(".tabname").focus();
+        }, 500);
+
         this.selectedtab = tab;
         this.fldname = tab.fldname;
         this.isedittab = true;
@@ -441,7 +450,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     getKeyAuto(tab) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "attribute", "search": tab.key, "filter": "Employee Attribute" }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "attribute", "cmpid": that.loginUser.cmpid, "search": tab.key, "filter": "Employee Attribute"
+        }).subscribe(data => {
             $(".key").autocomplete({
                 source: data.data,
                 width: 300,
@@ -452,7 +463,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     tab.keyid = ui.item.value;
                     tab.key = ui.item.label;
                 }
@@ -478,14 +489,14 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         else {
             that.DuplicateFlag = true;
 
-            for (var i = 0; i < tab.keyvaluedt.length; i++) {
-                if (tab.keyvaluedt[i].key === tab.key && tab.keyvaluedt[i].value === tab.value) {
+            for (var i = 0; i < tab.fldvalue.length; i++) {
+                if (tab.fldvalue[i].key === tab.key && tab.fldvalue[i].value === tab.value) {
                     that.DuplicateFlag = false;
                 }
             }
 
             if (that.DuplicateFlag === true) {
-                tab.keyvaluedt.push({
+                tab.fldvalue.push({
                     'key': tab.key,
                     'value': tab.value
                 });
@@ -525,53 +536,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     }
 
     DeleteKeyVal(tab, row) {
-        tab.keyvaluedt.splice(tab.keyvaluedt.indexOf(row), 1);
+        tab.fldvalue.splice(tab.fldvalue.indexOf(row), 1);
         $(".key").focus();
-    }
-
-    // Save Dynamic Fields
-
-    saveDynamicFields(parentid) {
-        var that = this;
-
-        for (var i = 0; i < that.tabListDT.length; i++) {
-            var saveDynFlds = {
-                "autoid": that.tabListDT[i].autoid,
-                "fldcode": that.tabListDT[i].fldcode,
-                "fldname": that.tabListDT[i].fldname,
-                "fldvalue": that.tabListDT[i].keyvaluedt === null ? "" : that.tabListDT[i].keyvaluedt,
-                "module": "Employee",
-                "parentid": parentid,
-                "cmpid": that.loginUser.cmpid,
-                "fyid": that.loginUser.fyid,
-                "uidcode": that.loginUser.login
-            }
-
-            that._dynfldserive.saveDynamicFields(saveDynFlds).subscribe(data => {
-                var dataResult = data.data;
-            }, err => {
-                console.log(err);
-            }, () => {
-                // console.log("Complete");
-            });
-        }
-    }
-
-    // Get Dynamic Fields
-
-    getDynamicFields(pempid: number) {
-        var that = this;
-
-        that._dynfldserive.getDynamicFields({
-            "module": "Employee", "parentid": pempid,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
-        }).subscribe(data => {
-            that.tabListDT = data.data;
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
     }
 
     // Save Employee
@@ -580,56 +546,58 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         var primarycc: any = [];
         var secondarycc: any = [];
         var allcc: any = [];
+        var that = this;
 
-        primarycc.push({ "id": this.pctrlcenterid });
+        primarycc.push({ "id": that.pctrlcenterid });
 
-        for (var i = 0; i < this.ctrlcenterList.length; i++) {
-            secondarycc.push({ "id": this.ctrlcenterList[i].ctrlcenterid });
+        for (var i = 0; i < that.ctrlcenterList.length; i++) {
+            secondarycc.push({ "id": that.ctrlcenterList[i].ctrlcenterid });
         }
 
         allcc.push({ "primarycc": primarycc }, { "secondarycc": secondarycc });
 
         var saveEmp = {
-            "empid": this.empid,
-            "uid": this.uid,
+            "empid": that.empid,
+            "uid": that.uid,
 
             // personal
-            "dob": this.dob,
-            "gender": this.gender,
-            "maritalstatus": this.maritalstatus,
-            "bloodgroup": this.bloodgroup,
-            "familybg": this.familybg,
-            "healthdtls": this.healthdtls,
-            "attachfile": this.attachfile,
-            "address": this.adrbookid,
+            "dob": that.dob,
+            "gender": that.gender,
+            "maritalstatus": that.maritalstatus,
+            "bloodgroup": that.bloodgroup,
+            "familybg": that.familybg,
+            "healthdtls": that.healthdtls,
+            "attachfile": that.attachfile,
+            "address": that.adrbookid,
 
             // contact
-            // "mobileno": this.mobileno,
-            // "altmobileno": this.altmobileno,
-            // "altemailid": this.altemailid,
-            // "country": this.country,
-            // "state": this.state,
-            // "city": this.city,
-            // "pincode": this.pincode,
-            // "addressline1": this.addressline1,
-            // "addressline2": this.addressline2,
+            // "mobileno": that.mobileno,
+            // "altmobileno": that.altmobileno,
+            // "altemailid": that.altemailid,
+            // "country": that.country,
+            // "state": that.state,
+            // "city": that.city,
+            // "pincode": that.pincode,
+            // "addressline1": that.addressline1,
+            // "addressline2": that.addressline2,
 
             // job profile
-            "companyname": this.companyname,
-            "companyemail": this.companyemail,
-            "deptid": this.deptid,
-            "desigid": this.desigid,
+            "companyname": that.companyname,
+            "companyemail": that.companyemail,
+            "deptid": that.deptid,
+            "desigid": that.desigid,
             "salary": this.salary,
-            "salarymode": this.salarymode,
-            "noticedays": this.noticedays,
-            "doj": this.doj,
+            "salarymode": that.salarymode,
+            "noticedays": that.noticedays,
+            "doj": that.doj,
 
             // about me
-            "aboutus": this.aboutus,
+            "aboutus": that.aboutus,
 
             // control center
             "ctrlcenter": allcc,
-            "uidcode": this.loginUser.login
+            "uidcode": that.loginUser.login,
+            "dynamicfields": that.tabListDT
         }
 
         this._empservice.saveEmployee(saveEmp).subscribe(data => {
@@ -639,9 +607,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 var msg = dataResult[0].funsave_employee.msg;
                 var parentid = dataResult[0].funsave_employee.keyid;
 
-                this.saveDynamicFields(parentid);
                 this._msg.Show(messageType.success, "Success", msg);
-
                 this._router.navigate(['/employee/view']);
             }
             else {
@@ -660,7 +626,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     setEmployeeFields() {
         var that = this;
 
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
 
             var date = new Date();
@@ -691,54 +657,55 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 that.title = "Add Employee";
                 that.empid = params['empid'];
 
-                this._empservice.getEmployee({ "flag": "id", "empid": that.empid }).subscribe(data => {
+                that._empservice.getEmployee({ "flag": "id", "empid": that.empid }).subscribe(data => {
                     var EmpDetails = data.data[0]._empdata;
                     var SecondayCC = data.data[0]._secondarycc === null ? [] : data.data[0]._secondarycc;
+                    var dynFields = data.data[0]._dynfields === null ? [] : data.data[0]._dynfields;
 
-                    this.empid = EmpDetails[0].empid;
-                    this.uid = EmpDetails[0].uid;
-                    this.uname = EmpDetails[0].uname;
-                    this.dob = EmpDetails[0].dob;
-                    this.gender = EmpDetails[0].gender;
-                    this.maritalstatus = EmpDetails[0].maritalstatus;
-                    this.bloodgroup = EmpDetails[0].bloodgroup;
-                    this.familybg = EmpDetails[0].familybg;
-                    this.healthdtls = EmpDetails[0].healthdtls;
+                    that.empid = EmpDetails[0].empid;
+                    that.uid = EmpDetails[0].uid;
+                    that.uname = EmpDetails[0].uname;
+                    that.dob = EmpDetails[0].dob;
+                    that.gender = EmpDetails[0].gender;
+                    that.maritalstatus = EmpDetails[0].maritalstatus;
+                    that.bloodgroup = EmpDetails[0].bloodgroup;
+                    that.familybg = EmpDetails[0].familybg;
+                    that.healthdtls = EmpDetails[0].healthdtls;
 
-                    this.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-                    this.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-                    
-                    // this.mobileno = EmpDetails[0].mobileno;
-                    // this.altmobileno = EmpDetails[0].altmobileno;
-                    // this.altemailid = EmpDetails[0].altemailid;
-                    // this.country = EmpDetails[0].country;
-                    // this.state = EmpDetails[0].state;
-                    // this.city = EmpDetails[0].city;
-                    // this.pincode = EmpDetails[0].pincode;
-                    // this.addressline1 = EmpDetails[0].addressline1;
-                    // this.addressline2 = EmpDetails[0].addressline2;
+                    // that.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
+                    // that.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
 
-                    this.adrcsvid = "";
+                    // that.mobileno = EmpDetails[0].mobileno;
+                    // that.altmobileno = EmpDetails[0].altmobileno;
+                    // that.altemailid = EmpDetails[0].altemailid;
+                    // that.country = EmpDetails[0].country;
+                    // that.state = EmpDetails[0].state;
+                    // that.city = EmpDetails[0].city;
+                    // that.pincode = EmpDetails[0].pincode;
+                    // that.addressline1 = EmpDetails[0].addressline1;
+                    // that.addressline2 = EmpDetails[0].addressline2;
+
+                    that.adrcsvid = "";
                     var addressdt = EmpDetails[0].address === null ? [] : EmpDetails[0].address;
 
                     for (let items of addressdt) {
-                        this.adrcsvid += items.adrid + ',';
+                        that.adrcsvid += items.adrid + ',';
                     }
-                    this.addressBook.getAddress(this.adrcsvid.slice(0, -1));
 
-                    this.aboutus = EmpDetails[0].aboutus;
-                    this.companyname = EmpDetails[0].companyname;
-                    this.deptid = EmpDetails[0].deptid;
-                    this.desigid = EmpDetails[0].desigid;
-                    this.salary = EmpDetails[0].salary;
-                    this.salarymode = EmpDetails[0].salarymode;
-                    this.companyemail = EmpDetails[0].companyemail;
-                    this.noticedays = EmpDetails[0].noticedays;
-                    this.doj = EmpDetails[0].doj;
-                    this.pctrlcenterid = EmpDetails[0].pctrlid;
-                    this.ctrlcenterList = SecondayCC;
+                    that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
 
-                    this.getDynamicFields(that.empid);
+                    that.aboutus = EmpDetails[0].aboutus;
+                    that.companyname = EmpDetails[0].companyname;
+                    that.deptid = EmpDetails[0].deptid;
+                    that.desigid = EmpDetails[0].desigid;
+                    that.salary = EmpDetails[0].salary;
+                    that.salarymode = EmpDetails[0].salarymode;
+                    that.companyemail = EmpDetails[0].companyemail;
+                    that.noticedays = EmpDetails[0].noticedays;
+                    that.doj = EmpDetails[0].doj;
+                    that.pctrlcenterid = EmpDetails[0].pctrlid;
+                    that.ctrlcenterList = SecondayCC;
+                    that.tabListDT = dynFields;
                 }, err => {
                     console.log("Error");
                 }, () => {

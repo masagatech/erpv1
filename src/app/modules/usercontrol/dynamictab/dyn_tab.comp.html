@@ -1,0 +1,60 @@
+<!--<div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">-->
+<div class="panel-body">
+    <div class="col-md-12" *ngIf="!isdetails">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Key</label>
+                    <input type="text" [(ngModel)]="tab.key" class="key form-control" (keyup)="getKeyAuto(tab)">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Value</label>
+                    <input type="text" [(ngModel)]="tab.value" class="val form-control" (keydown.enter)="AddNewKeyVal(tab)" (keydown.tab)="AddNewKeyVal(tab)">
+                </div>
+            </div>
+            <div class="col-md-2" *ngIf="!tab.isedit">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-theme btn-sm fa fa-plus" type="button" (click)="AddNewKeyVal(tab)"></button>
+                </div>
+            </div>
+            <div class="col-md-2" *ngIf="tab.isedit">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="UpdateKeyVal(tab)"></button>
+                    <button class="btn btn-danger btn-sm fa fa-remove" type="button" (click)="ClearKeyVal(tab)"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div *ngIf="tab.fldvalue.length">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th class="col-sm-1">#</th>
+                        <th class="col-sm-3">Key</th>
+                        <th class="col-sm-5">Value</th>
+                        <th class="col-sm-3" *ngIf="!isdetails"></th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let row of tab.fldvalue let i=index">
+                    <tr>
+                        <td><span>{{i+1}}</span></td>
+                        <td>{{row.key}}</td>
+                        <td>{{row.value}}</td>
+                        <td *ngIf="!isdetails">
+                            <button class="btn btn-theme btn-sm" (click)="EditKeyVal(tab, row)">
+                                    <i class="fa fa-edit"></i></button>
+                            <button class="btn btn-theme btn-sm" (click)="DeleteKeyVal(tab, row)">
+                                    <i class="fa fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--</div>-->

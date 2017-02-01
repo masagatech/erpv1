@@ -78,11 +78,14 @@
                 <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
                 <li *ngFor="let tab of tabListDT">
                     <a href="#{{tab.fldcode}}" role="button" data-toggle="tab">
-                        <button data-target="#dynTabModel" data-toggle="modal" class="btn btn-simple btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>&nbsp;{{tab.fldname}}&nbsp;
-                        <button class="btn btn-simple btn-sm fa fa-remove" type="button" (click)="DeleteTabs(tab)"></button>
+                        <button data-target="#dynTabModel" data-toggle="modal" class="btn btn-simple btn-sm fa fa-edit" type="button" (click)="EditTabs(tab);"
+                            *ngIf="!isdetails"></button> &nbsp;{{tab.fldname}}&nbsp;
+                        <button class="btn btn-simple btn-sm fa fa-remove" type="button" (click)="DeleteTabs(tab)" *ngIf="!isdetails"></button>
                     </a>
                 </li>
-                <li><a data-target="#dynTabModel" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a></li>
+                <li *ngIf="!isdetails">
+                    <a data-target="#dynTabModel" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a>
+                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="aboutus">
@@ -246,8 +249,12 @@
                 </div>
 
                 <div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
+                    <dynamictab [tab]="tab" [isdetails]="isdetails"></dynamictab>
+                </div>
+
+                <!--<div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
                     <div class="panel-body">
-                        <div class="col-md-12">
+                        <div class="col-md-12" *ngIf="isedit">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -277,22 +284,22 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div *ngIf="tab.keyvaluedt.length">
+                            <div *ngIf="tab.fldvalue.length">
                                 <table class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
                                             <th class="col-sm-1">#</th>
                                             <th class="col-sm-3">Key</th>
                                             <th class="col-sm-5">Value</th>
-                                            <th class="col-sm-3"></th>
+                                            <th class="col-sm-3" *ngIf="!isdetails"></th>
                                         </tr>
                                     </thead>
-                                    <tbody *ngFor="let row of tab.keyvaluedt let i=index">
+                                    <tbody *ngFor="let row of tab.fldvalue let i=index">
                                         <tr>
                                             <td><span>{{i+1}}</span></td>
                                             <td>{{row.key}}</td>
                                             <td>{{row.value}}</td>
-                                            <td>
+                                            <td *ngIf="!isdetails">
                                                 <button class="btn btn-theme btn-sm" (click)="EditKeyVal(tab, row)">
                                                     <i class="fa fa-edit"></i></button>
                                                 <button class="btn btn-theme btn-sm" (click)="DeleteKeyVal(tab, row)">
@@ -304,7 +311,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>

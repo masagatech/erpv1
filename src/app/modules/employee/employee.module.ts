@@ -10,6 +10,7 @@ import { ActionBarModule } from '../../_shared/shared.module'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
+import { DynamicTabModule } from '../usercontrol/dynamictab';
 
 const routerConfig = [
   {
@@ -33,7 +34,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule],
+  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DynamicTabModule],
   declarations: [
     ViewEmployee,
     EmployeeAddEdit,
