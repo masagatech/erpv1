@@ -10,6 +10,7 @@ import { LoginUserModel } from '../../../_model/user_model';
 
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'attview.comp.html',
     providers: [attributeService, CommonService]
@@ -26,6 +27,7 @@ declare var $: any;
     val: any;
     attrgrp: any = 0;
     key: any = "";
+    keyid: number = 0;
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -39,13 +41,16 @@ declare var $: any;
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.getAttribute();
         this.getattributegroup();
         $("#attnam").focus();
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
     }
 
     getattributegroup() {
@@ -73,6 +78,7 @@ declare var $: any;
     }
 
     jsonparam() {
+        console.log(this.attrgrp);
         var Param = {
             "flag": "at",
             "cmpid": this.loginUser.cmpid,
@@ -103,10 +109,11 @@ declare var $: any;
     }
 
     private NewRowAdd() {
-        if ($("#attnam").val() == "") {
-            this._msg.Show(messageType.info, "info", "Please enter attribute name");
-            $("#attnam").focus();
-            return;
+        if(this.attName=="")
+        {
+             this._msg.Show(messageType.error, "error", "Attribute required");
+             $("#attnam").focus();
+             return;
         }
         this.attributeServies.attsave(
             this.jsonparam()
@@ -121,7 +128,9 @@ declare var $: any;
                 this._msg.Show(messageType.success, "success", "Data Save Successfully");
                 this.addNewAttr.push({
                     'atname': this.attName,
-                    'isact': true,
+                    'key': this.attrgrp.split(':')[1],
+                    'id': this.attrgrp.split(':')[0],
+                    'val': true,
                     'counter': this.counter
                 });
                 this.counter++;
@@ -146,9 +155,16 @@ declare var $: any;
         if (row.val) {
             this.attid = row.autoid;
             this.attName = row.atname;
-            this.attrgrp = row.key;
+            this.attrgrp = row.id + ':' + row.key;
             $("#attnam").focus();
         }
+    }
+
+    ClearRow() {
+        this.attid = 0;
+        this.attName = "";
+        this.attrgrp = "";
+        $("#attnam").focus();
     }
 
     DeleteRow(row) {

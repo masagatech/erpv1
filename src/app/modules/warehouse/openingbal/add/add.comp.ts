@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -7,13 +7,16 @@ import { WarAddOpbal } from "../../../../_service/wareopeningbal/add/add-service
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
-    providers: [WarAddOpbal, CommonService]
+    providers: [WarAddOpbal, CommonService, ALSService]
 
 }) export class WareopebalAdd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
@@ -30,16 +33,42 @@ declare var $: any;
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    //Calendor
+    @ViewChild("jvdate")
+    jvdate: CalendarComp;
+
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private opeingServies: WarAddOpbal, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService
-        , private _userService: UserService) { //Inherit Service
+        , private _userService: UserService, private _alsservice: ALSService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
+
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "os", "fyid": that.loginUser.fyid
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.jvdate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     //Add Save Edit Delete Button
     ngOnInit() {
+        this.jvdate.initialize(this.loginUser);
+        this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
@@ -58,6 +87,7 @@ declare var $: any;
                 setDate: new Date()
             });
             $("#opedate").datepicker('setDate', opeingdate);
+            commonfun.addrequire();
         }, 0);
 
 
@@ -76,6 +106,9 @@ declare var $: any;
 
             }
             else {
+                var date = new Date();
+                this.jvdate.setDate(date);
+                
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
@@ -146,7 +179,7 @@ declare var $: any;
                     "itemid": item.value,
                     "rate": item.ratename.split(':')[0],
                     "qty": item.qty,
-                    "typ":"OB",
+                    "typ": "OB",
                     "amt": item.amt,
                     "rem": item.remark,
                     "wareid": that.warehouseid,
@@ -166,7 +199,6 @@ declare var $: any;
         var param = {
             "openstockdetails": this.tablejson()
         }
-        console.log(JSON.stringify(param));
         return param;
     }
 
@@ -181,9 +213,15 @@ declare var $: any;
 
     actionBarEvt(evt) {
         if (evt === "back") {
-            this._router.navigate(['warehouse/openingbal/view']);
+            this._router.navigate(['warehouse/openingbal']);
         }
         if (evt === "save") {
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
             this.opeingServies.saveopeningstock(
                 this.Paramter()
             ).subscribe(result => {

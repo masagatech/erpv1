@@ -20,13 +20,12 @@ const routerConfig = [
         path: '',
         component: AttributeComp,
         canActivate: [AuthGuard],
+        data: { "module": "pset" },
         children: [
             {
                 path: '',
                 children: [
-
-                    { path: 'attview', component: attrview, canActivateChid: [AuthGuard], },
-                    { path: '', component: attrview, canActivateChid: [AuthGuard], },
+                    { path: '', component: attrview, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "attr", "rights": "view", "urlname": "/attribute" } },
                 ]
             }
         ]

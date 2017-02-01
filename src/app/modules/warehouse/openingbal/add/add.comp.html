@@ -4,20 +4,13 @@
 			<div class="col-md-5">
 				<div class='form-group'>
 					<label>Warehouse</label>
-					<input type="text" class="form-control ware" tabindex="1" [(ngModel)]="warehousename" (keyup)="getAutoCompleteWare(this)">
+					<input type="text" class="form-control ware" tabindex="1" validate="" [(ngModel)]="warehousename" (keyup)="getAutoCompleteWare(this)">
 				</div>
 			</div>
 			<div class="col-md-3">
 				<div class='form-group'>
-					<label>Date</label>
-					<div class="controls">
-						<div class="input-group">
-							<input type="text" name="date" id="opedate" tabindex="2" class="date-picker form-control" [(ngModel)]="opedate" />
-							<label for="date" class="input-group-addon btn">
-							<span class="glyphicon glyphicon-calendar"></span>
-						</label>
-						</div>
-					</div>
+					<label class="control-label">Date</label>
+					<calendar #jvdate [name]="'jvdate'"></calendar>
 				</div>
 			</div>
 			<div class="col-md-8">
@@ -26,7 +19,7 @@
 					<textarea class="form-control medium-text-box" tabindex="3" [(ngModel)]="remark"></textarea>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered">
+			<table class="table table-striped table-bordered" *ngIf="Openinglist.length">
 				<thead>
 					<tr>
 						<th>#</th>

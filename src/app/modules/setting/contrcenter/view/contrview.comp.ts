@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { ContrService } from "../../../../_service/contrcenter/contr-service";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
@@ -20,7 +22,13 @@ declare var $: any;
     Ctrlview: any = [];
     totalRecords: number = 0;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private ContrServies: ContrService, private _autoservice: CommonService) {
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService,
+        private ContrServies: ContrService, private _autoservice: CommonService, private _userService: UserService) {
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -38,7 +46,9 @@ declare var $: any;
     getCtrlView(from: number, to: number) {
         var that = this;
         that.ContrServies.getCtrlcenter({
-            "cmpid": 1,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fyid,
+            "createdby": this.loginUser.login,
             "from": from,
             "to": to
         }).subscribe(result => {
