@@ -14,8 +14,6 @@ declare var $: any;
 })
 
 export class AddrbookComp implements OnInit, OnDestroy {
-
-
     @Input() adrbookid: any = [];
     @Input() adrid: number = 0;
     @Input() module: string = "";
