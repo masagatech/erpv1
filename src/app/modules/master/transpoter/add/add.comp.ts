@@ -176,6 +176,7 @@ declare var commonfun: any;
         this.transname = "";
         this.desc = "";
         this.remark = "";
+        this.editmode = false;
         this.addressBook.ClearArray();
     }
 

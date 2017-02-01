@@ -12,6 +12,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [VendorAddService, CommonService]
@@ -31,6 +32,7 @@ declare var $: any;
     shippingchk: boolean = false;
     issh: any = 0;
     key: any = "";
+    keyid: number = 0;
     value: any = "";
     debit: any = 0;
     credit: any = 0;
@@ -51,6 +53,8 @@ declare var $: any;
     module: string = "";
     uploadedFiles: any = [];
     accode: string = "";
+    editmode: boolean = false;
+    isactive: boolean = false;
 
     //user details
     loginUser: LoginUserModel;
@@ -103,22 +107,30 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
     }
 
     //On Blur Event Cust Code
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.adrbookid = [];
     }
 
     //attribute list Add Div
     AttributeAdd() {
+        debugger;
         if (this.attrid > 0) {
             this.Duplicateflag = true;
-            for (var i = 0; i < this.attrlist.length; i++) {
-                if (this.attrlist[i].attrname == this.attrname) {
-                    this.Duplicateflag = false;
-                    break;
+            this.attrlist === null ? [] : this.attrlist;
+            if (this.attrlist.length > 0) {
+                for (var i = 0; i < this.attrlist.length; i++) {
+                    if (this.attrlist[i].attrname == this.attrname) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
                 }
             }
             if (this.Duplicateflag == true) {
@@ -165,7 +177,8 @@ declare var $: any;
         var that = this;
         that.vendorAddServies.getVendordrop({
             "cmpid": this.loginUser.cmpid,
-            "createdby": this.loginUser.login
+            "createdby": this.loginUser.login,
+            "fy": this.loginUser.fyid
         }).subscribe(result => {
             that.debitlist = result.data[1];
             that.creditlist = result.data[1];
@@ -202,19 +215,24 @@ declare var $: any;
             return;
         }
         this.Duplicateflag = true;
-        for (var i = 0; i < this.keyvallist.length; i++) {
-            if (this.keyvallist[i].key == this.key && this.keyvallist[i].value == this.value) {
-                this.Duplicateflag = false;
-                break;
+        this.keyvallist == null ? [] : this.keyvallist;
+        if (this.keyvallist.length > 0) {
+            for (var i = 0; i < this.keyvallist.length; i++) {
+                if (this.keyvallist[i].key == this.key && this.keyvallist[i].value == this.value) {
+                    this.Duplicateflag = false;
+                    break;
+                }
             }
         }
         if (this.Duplicateflag == true) {
             this.keyvallist.push({
                 'key': this.key,
+                'keyid': this.keyid,
                 'value': this.value
             });
             this.key = "";
             this.value = "";
+            this.keyid = 0;
             this.attrtable = false;
             $(".key").focus();
 
@@ -257,6 +275,7 @@ declare var $: any;
         this.debit = 0;
         this.credit = 0;
         this.ope = "";
+        this.editmode = false;
         this.addressBook.ClearArray();
     }
 
@@ -282,26 +301,29 @@ declare var $: any;
             "venid": id,
             "createdby": this.loginUser.login
         }).subscribe(result => {
-            debugger;
+            that.editmode = true;
             var _venddata = result.data[0][0]._venddata;
             var _uploadedfile = result.data[0][0]._uploadedfile;
             var _docfile = result.data[0][0]._docfile;
-
+            var _attr = result.data[0][0]._attrlist;
+            var _keyval = result.data[0][0]._keylist;
             that.venid = _venddata[0].autoid;
             that.code = _venddata[0].code;
             that.vendor = _venddata[0].vendor;
-            that.keyvallist = _venddata[0].keyval;
-            that.attrlist = _venddata[0].attr;
+            that.keyvallist = _keyval;
+            that.attrlist = _attr;
             that.debit = _venddata[0].debit;
             that.credit = _venddata[0].credit;
             that.ope = _venddata[0].op;
             that.days = _venddata[0].days;
             that.remark = _venddata[0].remark;
+            that.isactive = _venddata[0].isactive;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
+            debugger;
             that.adrcsvid = "";
             for (let items of _venddata[0].adr) {
                 that.adrcsvid += items.adrid + ',';
@@ -323,6 +345,7 @@ declare var $: any;
             "search": that.attrname,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fyid,
+            "filter": "Vendor Attribute",
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".attr").autocomplete({
@@ -343,8 +366,59 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            this.attrid = 0;
         })
+    }
+
+    //Autocompleted Control Center
+    getAutoCompletekey(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "attribute",
+            "search": that.key,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "filter": "Account Attribute",
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".key").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.keyid = ui.item.value;
+                    me.key = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    createattrjson() {
+        var attrlist = [];
+        if (this.attrlist.length > 0) {
+            for (let items of this.attrlist) {
+                attrlist.push({ "id": items.value });
+            }
+            return attrlist;
+        }
+    }
+    createkeyvaljson() {
+        var keylist = [];
+        if (this.keyvallist.length > 0) {
+            for (let items of this.keyvallist) {
+                keylist.push({ "id": items.keyid, "val": items.value });
+            }
+            return keylist;
+        }
     }
 
     //Paramter Wth Json
@@ -353,18 +427,20 @@ declare var $: any;
             "venid": this.venid,
             "code": this.code,
             "vendor": this.vendor,
-            "keyval": this.keyvallist,
+            "keyval": this.createkeyvaljson(),
             "docfile": this.docfile,
-            "attr": this.attrlist,
+            "attr": this.createattrjson(),
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
             "op": this.ope == "" ? 0 : this.ope,
             "cmpid": this.loginUser.cmpid,
             "remark": this.remark,
+            "isactive": this.isactive,
             "createdby": this.loginUser.login,
             "adr": this.adrbookid
         }
+        debugger;
         return param;
     }
 
@@ -374,14 +450,14 @@ declare var $: any;
             this._router.navigate(['master/vendor']);
         }
         if (evt === "save") {
-            if (this.code == "") {
-                this._msg.Show(messageType.info, "info", "Please enter vendor code");
-                $(".code").focus();
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
                 return;
             }
-            if (this.vendor == "") {
-                this._msg.Show(messageType.info, "info", "Please enter vendor name");
-                $(".vendor").focus();
+            if (this.adrbookid.length == 0) {
+                this._msg.Show(messageType.info, "error", "Please enter contact address");
                 return;
             }
             this.vendorAddServies.saveVendor(

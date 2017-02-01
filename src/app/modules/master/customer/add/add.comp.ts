@@ -153,6 +153,7 @@ declare var commonfun: any;
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.adrbookid = [];
     }
 
     //Discount Tab Click Event
@@ -804,6 +805,7 @@ declare var commonfun: any;
         this.parentname = "";
         this.parentid = 0;
         this.parentcodename = "";
+        this.editmode = false;
         this.addressBook.ClearArray();
         this.getcustomerdrop();
     }
@@ -1138,7 +1140,7 @@ declare var commonfun: any;
             "itemsdis": this.itemsdiscountjson(),
             "trans": this.transpoterjson(),
             "sales": this.salesmanjson(),
-            "isactive":this.isactive,
+            "isactive": this.isactive,
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,

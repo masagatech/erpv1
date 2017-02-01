@@ -171,6 +171,7 @@ declare var commonfun: any;
         this.remark = "";
         this.appfrom = "";
         this.chkall = false;
+        this.editmode=false;
         $(".groupcode").removeAttr('disabled', 'disabled');
         $(".groupcode").focus();
     }
