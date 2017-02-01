@@ -42,6 +42,7 @@ export class AddCompany implements OnInit, OnDestroy {
     pincode: string = "";
     addressline1: string = "";
     addressline2: string = "";
+    isactive: boolean = false;
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -80,10 +81,6 @@ export class AddCompany implements OnInit, OnDestroy {
     // Page Load
 
     ngOnInit() {
-        setTimeout(function () {
-            $("#cmpcode").focus();
-        }, 0);
-
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -92,13 +89,13 @@ export class AddCompany implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['cmpid'] !== undefined) {
+            if (params['id'] !== undefined) {
                 this.title = "Edit Company Details";
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.cmpid = params['cmpid'];
+                this.cmpid = params['id'];
                 this.getCompanyById(this.cmpid);
 
                 $('input').attr('disabled', 'disabled');
@@ -107,6 +104,10 @@ export class AddCompany implements OnInit, OnDestroy {
             }
             else {
                 this.title = "Add Company Details";
+
+                setTimeout(function () {
+                    $("#cmpcode").focus();
+                }, 0);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
@@ -124,6 +125,10 @@ export class AddCompany implements OnInit, OnDestroy {
         if (evt === "save") {
             this.saveCompanyData();
         } else if (evt === "edit") {
+            setTimeout(function () {
+                $("#cmpcode").focus();
+            }, 0);
+
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
@@ -173,10 +178,15 @@ export class AddCompany implements OnInit, OnDestroy {
     }
 
     addNewTabs() {
+        if (this.fldname === "") {
+            this._msg.Show(messageType.error, "Error", "Please Enter Tab Name");
+            return;
+        }
+
         var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
         this.tabListDT.push({ "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "keyvaluedt": [] });
         this.fldname = "";
-        $('#myModal').modal('hide');
+        $('#dynTabModel').modal('hide');
         this.isedittab = false;
     }
 
@@ -190,7 +200,7 @@ export class AddCompany implements OnInit, OnDestroy {
         var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
         this.selectedtab.key = fldcode;
         this.selectedtab.fldname = this.fldname;
-        $('#myModal').modal('hide');
+        $('#dynTabModel').modal('hide');
         this.isedittab = false;
         this.fldname = "";
     }
@@ -364,10 +374,12 @@ export class AddCompany implements OnInit, OnDestroy {
             "altmobileno": this.altmobileno,
             "addressline1": this.addressline1,
             "addressline2": this.addressline2,
+            "country": this.country,
             "state": this.state,
             "city": this.city,
             "pincode": this.pincode,
-            "uidcode": this.loginUser.login
+            "uidcode": this.loginUser.login,
+            "isactive": this.isactive
         }
 
         this._compservice.saveCompany(savecmp).subscribe(data => {
@@ -423,6 +435,7 @@ export class AddCompany implements OnInit, OnDestroy {
             this.state = company[0].state;
             this.city = company[0].city;
             this.pincode = company[0].pincode;
+            this.isactive = company[0].isactive;
 
             this.getDynamicFields(pcmpid);
         }, err => {

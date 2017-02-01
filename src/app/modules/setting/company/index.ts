@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataListModule, DataGridModule, PanelModule, FileUploadModule } from 'primeng/primeng';
+import { DataListModule, DataGridModule, PanelModule, CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,7 +43,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, DataGridModule, PanelModule, FileUploadModule],
+        DataListModule, DataGridModule, PanelModule, CheckboxModule],
     declarations: [
         AddCompany,
         ViewCompany,

@@ -78,7 +78,7 @@
                 <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
                 <li *ngFor="let tab of tabListDT">
                     <a href="#{{tab.fldcode}}" role="button" data-toggle="tab">
-                        <button data-target="#dynTabModel" data-toggle="modal" class="btn btn-simple btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>                        &nbsp;{{tab.fldname}}&nbsp;
+                        <button data-target="#dynTabModel" data-toggle="modal" class="btn btn-simple btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>&nbsp;{{tab.fldname}}&nbsp;
                         <button class="btn btn-simple btn-sm fa fa-remove" type="button" (click)="DeleteTabs(tab)"></button>
                     </a>
                 </li>

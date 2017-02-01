@@ -55,11 +55,14 @@
 			<div class="panel-body" style="width:800px; overflow:auto;">
 				<ul class="nav nav-tabs" id="tabs">
 					<li class="active"><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
-					<li><a data-target="#remarks" role="button" data-toggle="tab">Remarks</a></li>
+					<!--<li><a data-target="#remarks" role="button" data-toggle="tab">Remarks</a></li>-->
 					<li *ngFor="let tab of tabListDT">
-						<a href="#{{tab.fldcode}}" role="button" data-toggle="tab">{{tab.fldname}}</a>
+						<a href="#{{tab.fldcode}}" role="button" data-toggle="tab">
+							<button data-target="#dynTabModel" data-toggle="modal" class="btn btn-simple btn-sm fa fa-edit" type="button" (click)="EditTabs(tab); openTabPopup();"></button>&nbsp;{{tab.fldname}}&nbsp;
+							<button class="btn btn-simple btn-sm fa fa-remove" type="button" (click)="DeleteTabs(tab)"></button>
+						</a>
 					</li>
-					<li><a data-target="#myModal" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a></li>
+					<li><a data-target="#dynTabModel" role="button" data-toggle="modal" (click)="openTabPopup()"><i class="fa fa-plus"></i></a></li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane active" id="contact">
@@ -76,7 +79,7 @@
 										<div class="form-group">
 											<label class="control-label">Designation</label>
 											<select name="desigid" [(ngModel)]="desigid" class="form-control">
-									<option [value]="0">-- Select Designation --</option>
+												<option [value]="0">-- Select Designation --</option>
 												<option *ngFor="let row of desigDT" [value]="row.key">
 													{{row.val}}
 												</option>
@@ -125,7 +128,7 @@
 										<div class="form-group">
 											<label class="control-label">Country</label>
 											<select name="country" [(ngModel)]="country" class="form-control">
-									<option [value]="0">-- Select Country --</option>
+												<option [value]="">-- Select Country --</option>
 												<option *ngFor="let row of countryDT" [value]="row.key">
 													{{row.val}}
 												</option>
@@ -166,13 +169,13 @@
 					<div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-xs-3">
+								<div class="col-xs-4">
 									<div class="form-group">
 										<label>Key</label>
 										<input name="key" type="text" [(ngModel)]="tab.key" class="key form-control" (keyup)="getKeyAuto(tab)">
 									</div>
 								</div>
-								<div class="col-xs-5">
+								<div class="col-xs-6">
 									<div class="form-group">
 										<label>Value</label>
 										<input name="value" type="text" [(ngModel)]="tab.value" class="val form-control" (keydown.enter)="AddNewKeyVal(tab)" (keydown.tab)="AddNewKeyVal(tab)">
@@ -190,11 +193,6 @@
 										<button name="btnUpdateTabs" class="btn btn-theme btn-sm fa fa-edit" type="button" (click)="UpdateKeyVal(tab)"></button>
 										<button name="btnRemoveTabs" class="btn btn-danger btn-sm fa fa-remove" type="button" (click)="ClearKeyVal(tab)"></button>
 									</div>
-								</div>
-								<div class="col-xs-2">
-									<button name="btnEditTabs" data-target="#myModal" data-toggle="modal" class="btn btn-theme btn-sm fa fa-edit" type="button"
-										(click)="EditTabs(tab); openTabPopup();"></button>
-									<button name="btnDeleteTabs" class="btn btn-theme btn-sm fa fa-trash" type="button" (click)="DeleteTabs(tab)"></button>
 								</div>
 							</div>
 						</div>
@@ -226,10 +224,16 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="panel-body">
+				<div class="col-md-12">
+					<p-checkbox [(ngModel)]="isactive" name="chkIsActive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<div id="myModal" class="modal fade" role="dialog">
+	<div id="dynTabModel" class="modal fade" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -244,7 +248,7 @@
 				</div>
 				<div class="modal-footer" *ngIf="!isedittab">
 					<button name="btnAdd" type="button" class="btn btn-theme btn-sm" (click)="addNewTabs()" tabindex="16">
-                   <i class="fa fa-plus"></i> Add</button>
+                   		<i class="fa fa-plus"></i> Add</button>
 				</div>
 				<div class="modal-footer" *ngIf="isedittab">
 					<button name="btnUpdate" class="btn btn-theme btn-sm" (click)="UpdateTabs()"><i class="fa fa-edit"></i></button>
