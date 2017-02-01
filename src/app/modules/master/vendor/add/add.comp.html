@@ -35,9 +35,7 @@
 		</div>
 		<div class="row" *ngIf="editmode">
 			<div class="col-md-8">
-				<div class="checkbox">
-					<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
-				</div>
+				<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
 			</div>
 		</div>
 	</div>
@@ -45,10 +43,10 @@
 <div class="panel panel-theme">
 	<div class="panel-body">
 		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#adr" role="button" data-toggle="tab">Contact Details</a></li>
-			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab">Attribute</a></li>
-			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab">Accounting Info</a></li>
-			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
+			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contact Details</a></li>
+			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
+			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
@@ -99,7 +97,7 @@
 									</div>
 								</div>
 							</div>
-							<table class="table table-striped table-bordered">
+							<table class="table table-striped table-bordered" *ngIf="keyvallist.length">
 								<thead>
 									<tr>
 										<th class="col-sm-1">#</th>
@@ -111,7 +109,7 @@
 									<tr>
 										<td><span>{{i+1}}</span></td>
 										<td>{{row.key}}</td>
-										<td>{{row.value}}</td>
+										<td><input type="text" class="form-control" [(ngModel)]="row.value" /></td>
 										<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
 									</tr>
 								</tbody>

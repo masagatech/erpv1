@@ -147,7 +147,7 @@ declare var commonfun: any;
         }, err => {
             console.log("error");
         }, () => {
-            console.log("Done");
+            //Done
         })
     }
 
@@ -199,7 +199,6 @@ declare var commonfun: any;
             this.transpoter_service.saveTranspoter(
                 this.paramterjson()
             ).subscribe(result => {
-                console.log(result.data);
                 if (result.data[0].funsave_transpoter.maxid == -1) {
                     this._msg.Show(messageType.info, "info", "Dulpicate Transpoter");
                     $(".code").focus();
@@ -215,7 +214,7 @@ declare var commonfun: any;
             }, err => {
                 console.log("error");
             }, () => {
-                console.log("Done");
+                //Done
             })
 
             this.actionButton.find(a => a.id === "save").hide = false;

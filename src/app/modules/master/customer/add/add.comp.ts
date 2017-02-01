@@ -560,7 +560,6 @@ declare var commonfun: any;
                     'counter': this.counter
                 });
                 this.counter++;
-                console.log(this.counter);
                 this.disattrname = "";
                 this.fromval = "";
                 this.disattrid = 0;
@@ -667,13 +666,17 @@ declare var commonfun: any;
         var _this = this;
         this.CustAddServies.getCustomerdrop({
             "cmpid": this.loginUser.cmpid,
-            "createdby": this.loginUser.login
+            "createdby": this.loginUser.login,
+            "tblname": "customer",
+            "fy": this.loginUser.fyid
         }).subscribe(result => {
             _this.warehouselist = result.data[0];
             _this.debitlist = result.data[1];
             _this.creditlist = result.data[1];
             _this.dayslist = result.data[2];
-            _this.keyvallist = result.data[3];
+            if (!_this.editmode) {
+                _this.keyvallist = result.data[3];
+            }
             _this.allload.otherdropdwn = true;
             _this.checkalllead();
         }, err => {
@@ -873,8 +876,7 @@ declare var commonfun: any;
         }, err => {
             console.log("error");
         }, () => {
-            console.log("Done");
-
+            //Done
         })
     }
 
@@ -1060,7 +1062,6 @@ declare var commonfun: any;
 
     //Add New Controll Center
     AddNewCtrl() {
-        debugger;
         this.CustAddServies.getctrldetail({
             "id": this.ctrlid,
             "cmpid": this.loginUser.cmpid
@@ -1082,7 +1083,6 @@ declare var commonfun: any;
                         "constflag": this.constflag,
                         "id": result.data[0].autoid
                     });
-                    console.log(this.Ctrllist);
                     this.ctrlhide = false;
                     this.ctrlid = 0;
                     this.ctrlname = "";

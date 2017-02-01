@@ -9,7 +9,7 @@ import { WarehouseView } from './view/view.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule,CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -24,14 +24,14 @@ const routerConfig = [
         path: '',
         component: WarehouseComp,
         canActivate: [AuthGuard],
+        data: { "module": "waresub" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: WarehouseAdd, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: WarehouseAdd, canActivateChid: [AuthGuard], },
-                    { path: 'view', component: WarehouseView, canActivateChid: [AuthGuard], },
-                    { path: '', component: WarehouseView, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: WarehouseAdd, canActivateChid: [AuthGuard], data: { "module": "waresub", "submodule": "wm", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: WarehouseAdd, canActivateChid: [AuthGuard], data: { "module": "waresub", "submodule": "wm", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: WarehouseView, canActivateChid: [AuthGuard], data: { "module": "waresub", "submodule": "wm", "rights": "view", "urlname": "/warehouse" } },
                 ]
             }
         ]
@@ -39,7 +39,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,DataTableModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,DataTableModule,CheckboxModule],
     declarations: [
         WarehouseAdd,
         WarehouseView,

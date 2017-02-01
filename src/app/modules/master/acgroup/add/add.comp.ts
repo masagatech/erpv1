@@ -95,7 +95,7 @@ declare var commonfun: any;
         }, err => {
             console.log("Error");
         }, () => {
-            console.log("Done");
+            //Completed
         })
     }
 

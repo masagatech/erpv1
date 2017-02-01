@@ -178,11 +178,16 @@ declare var commonfun: any;
         that.vendorAddServies.getVendordrop({
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
+            "tblname": "",
             "fy": this.loginUser.fyid
         }).subscribe(result => {
             that.debitlist = result.data[1];
             that.creditlist = result.data[1];
             that.dayslist = result.data[2];
+            if (!that.editmode) {
+                that.keyvallist = result.data[3];
+            }
+
             that.allload.otherdropdwn = true;
             that.checkalllead();
         }, err => {
@@ -310,8 +315,8 @@ declare var commonfun: any;
             that.venid = _venddata[0].autoid;
             that.code = _venddata[0].code;
             that.vendor = _venddata[0].vendor;
-            that.keyvallist = _keyval;
-            that.attrlist = _attr;
+            that.keyvallist = _keyval === null ? [] : _keyval;
+            that.attrlist = _attr === null ? [] : _attr;
             that.debit = _venddata[0].debit;
             that.credit = _venddata[0].credit;
             that.ope = _venddata[0].op;
@@ -323,7 +328,6 @@ declare var commonfun: any;
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                 that.docfile = _docfile == null ? [] : _docfile;
             }
-            debugger;
             that.adrcsvid = "";
             for (let items of _venddata[0].adr) {
                 that.adrcsvid += items.adrid + ',';
@@ -440,7 +444,6 @@ declare var commonfun: any;
             "createdby": this.loginUser.login,
             "adr": this.adrbookid
         }
-        debugger;
         return param;
     }
 
