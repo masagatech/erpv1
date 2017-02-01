@@ -24,14 +24,14 @@ const routerConfig = [
         path: '',
         component: VendorComp,
         canActivate: [AuthGuard],
+        data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: VenAdd, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: VenAdd, canActivateChid: [AuthGuard], },
-                    { path: 'view', component: VenView, canActivateChid: [AuthGuard], },
-                    { path: '', component: VenView, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: VenAdd, canActivateChid: [AuthGuard],data: { "module": "coa", "submodule": "vm", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: VenAdd, canActivateChid: [AuthGuard],data: { "module": "coa", "submodule": "vm", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: VenView, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "vm", "rights": "view", "urlname": "/vendor" } },
                 ]
             }
         ]
