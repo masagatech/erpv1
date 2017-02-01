@@ -71,15 +71,19 @@ export class AddCompany implements OnInit, OnDestroy {
         private _commonservice: CommonService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
 
-        this.fillDropDownList("Industries");
-        this.fillDropDownList("Designation");
-        this.fillDropDownList("CompanyType");
-        this.fillDropDownList("Country");
+        this.fillDropDownList("industries");
+        this.fillDropDownList("desig");
+        this.fillDropDownList("cmptype");
+        this.fillDropDownList("country");
     }
 
     // Page Load
 
     ngOnInit() {
+        setTimeout(function () {
+            $("#cmpcode").focus();
+        }, 0);
+
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -137,19 +141,19 @@ export class AddCompany implements OnInit, OnDestroy {
         this._commonservice.getMOM({ "group": flag }).subscribe(data => {
             var d = data.data;
 
-            if (flag == "Industries") {
+            if (flag == "industries") {
                 // BIND Industries TO DROPDOWN
                 this.industriesDT = d;
             }
-            else if (flag == "Designation") {
+            else if (flag == "desig") {
                 // BIND Designation TO DROPDOWN
                 this.desigDT = d;
             }
-            else if (flag == "CompanyType") {
+            else if (flag == "cmptype") {
                 // BIND Company Type TO DROPDOWN
                 this.cmptypeDT = d;
             }
-            else if (flag == "Country") {
+            else if (flag == "country") {
                 // BIND Country TO DROPDOWN
                 this.countryDT = d;
             }
