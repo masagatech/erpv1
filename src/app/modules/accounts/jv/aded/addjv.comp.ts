@@ -46,8 +46,10 @@ export class AddJV implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     formvals: string = "";
+
     @ViewChild("jvdate")
     jvdate: CalendarComp;
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -364,7 +366,7 @@ export class AddJV implements OnInit, OnDestroy {
             that.jvmid = _jvdata[0].jvmid;
 
             var date = new Date(_jvdata[0].docdate);
-            this.jvdate.setDate(date);
+            that.jvdate.setDate(date);
             that.docdate = _jvdata[0].docdate;
             that.narration = _jvdata[0].narration;
 
