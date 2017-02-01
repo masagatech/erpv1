@@ -85,7 +85,7 @@ declare var commonfun: any;
             }
         });
 
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
         }, 0);
     }
@@ -107,6 +107,7 @@ declare var commonfun: any;
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.adrbookid = [];
     }
 
     //Edit Transpoter 
@@ -147,7 +148,7 @@ declare var commonfun: any;
         }, err => {
             console.log("error");
         }, () => {
-            console.log("Done");
+            //Done
         })
     }
 
@@ -176,6 +177,7 @@ declare var commonfun: any;
         this.transname = "";
         this.desc = "";
         this.remark = "";
+        this.editmode = false;
         this.addressBook.ClearArray();
     }
 
@@ -192,13 +194,12 @@ declare var commonfun: any;
                 return;
             }
             if (this.adrbookid.length == 0) {
-                this._msg.Show(messageType.info, "error", "Please enter contact address");
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
             this.transpoter_service.saveTranspoter(
                 this.paramterjson()
             ).subscribe(result => {
-                console.log(result.data);
                 if (result.data[0].funsave_transpoter.maxid == -1) {
                     this._msg.Show(messageType.info, "info", "Dulpicate Transpoter");
                     $(".code").focus();
@@ -214,7 +215,7 @@ declare var commonfun: any;
             }, err => {
                 console.log("error");
             }, () => {
-                console.log("Done");
+                //Done
             })
 
             this.actionButton.find(a => a.id === "save").hide = false;

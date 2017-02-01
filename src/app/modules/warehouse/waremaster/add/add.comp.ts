@@ -12,6 +12,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [WarehouseAddService, CommonService]                         //Provides Add Service
@@ -39,6 +40,9 @@ declare var $: any;
     accode: string = "";
     Duplicateflag: boolean;
     attrlist: any = [];
+    isactive: boolean = false;
+    editmode: boolean = false;
+
     private subscribeParameters: any;
 
     //user details
@@ -64,6 +68,10 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".code").focus();
+
+        setTimeout(function() {
+            commonfun.addrequire();
+        }, 0);
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
@@ -166,7 +174,7 @@ declare var $: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.attrid = ui.item.value;
                     me.attrname = ui.item.label;
                 }
@@ -186,13 +194,13 @@ declare var $: any;
             "flag": "Edit"
         }).subscribe(result => {
             var dataset = result.data;
-
             var _uploadedfile = dataset[0][0]._uploadedfile;
             var _docfile = dataset[0][0]._docfile;
-            
+            this.editmode = true;
             that.name = dataset[0][0].nam;
             that.code = dataset[0][0].code;
             that.remark = dataset[0][0].remark;
+            that.isactive = dataset[0][0].isactive;
             that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
 
             if (_uploadedfile != null) {
@@ -228,6 +236,7 @@ declare var $: any;
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.adrbookid = [];
     }
 
     Clearcontroll() {
@@ -236,12 +245,13 @@ declare var $: any;
         this.remark = "";
         this.adrbookid = [];
         this.attrlist = [];
+        this.editmode = false;
         this.addressBook.ClearArray();
         $(".code").focus();
     }
 
     Attr() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.attrname = "";
             $(".attr").focus();
         }, 0);
@@ -257,6 +267,7 @@ declare var $: any;
             "remark": this.remark,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
+            "isactive": this.isactive,
             "attr": this.createattrjson(),
             "adrid": this.adrbookid,
             "docfile": this.docfile
@@ -267,9 +278,19 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "back") {
-            this._router.navigate(['warehouse/warehouse/view']);
+            this._router.navigate(['warehouse/warehouse']);
         }
         if (evt === "save") {
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+            if (this.adrbookid.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
+                return;
+            }
             if (this.adrbookid.length > 0) {
                 this.wareServies.save(
                     this.paramterjson()

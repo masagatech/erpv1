@@ -9,7 +9,7 @@ import { VenView } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -29,8 +29,8 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: VenAdd, canActivateChid: [AuthGuard],data: { "module": "coa", "submodule": "vm", "rights": "add", "urlname": "/add" } },
-                    { path: 'edit/:id', component: VenAdd, canActivateChid: [AuthGuard],data: { "module": "coa", "submodule": "vm", "rights": "edit", "urlname": "/edit" } },
+                    { path: 'add', component: VenAdd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "vm", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: VenAdd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "vm", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: VenView, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "vm", "rights": "view", "urlname": "/vendor" } },
                 ]
             }
@@ -39,7 +39,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule, CheckboxModule],
     declarations: [
         VenAdd,
         VenView,

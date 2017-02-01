@@ -77,12 +77,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
                 $(".firstnam").focus();
             }, 500);
         }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter the code");
-            $('#myModal').modal('hide');
-            return;
-        }
-
     }
 
     public getAddress(_adrid: string) {
@@ -166,6 +160,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     public ClearArray() {
         this.addrbooklist = [];
+        this.adrbookid = [];
     }
 
     EditAdr(row) {

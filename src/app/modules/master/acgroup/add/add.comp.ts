@@ -95,7 +95,7 @@ declare var commonfun: any;
         }, err => {
             console.log("Error");
         }, () => {
-            console.log("Done");
+            //Completed
         })
     }
 
@@ -171,6 +171,7 @@ declare var commonfun: any;
         this.remark = "";
         this.appfrom = "";
         this.chkall = false;
+        this.editmode=false;
         $(".groupcode").removeAttr('disabled', 'disabled');
         $(".groupcode").focus();
     }

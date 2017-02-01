@@ -153,6 +153,7 @@ declare var commonfun: any;
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.adrbookid = [];
     }
 
     //Discount Tab Click Event
@@ -559,7 +560,6 @@ declare var commonfun: any;
                     'counter': this.counter
                 });
                 this.counter++;
-                console.log(this.counter);
                 this.disattrname = "";
                 this.fromval = "";
                 this.disattrid = 0;
@@ -666,13 +666,17 @@ declare var commonfun: any;
         var _this = this;
         this.CustAddServies.getCustomerdrop({
             "cmpid": this.loginUser.cmpid,
-            "createdby": this.loginUser.login
+            "createdby": this.loginUser.login,
+            "tblname": "customer",
+            "fy": this.loginUser.fyid
         }).subscribe(result => {
             _this.warehouselist = result.data[0];
             _this.debitlist = result.data[1];
             _this.creditlist = result.data[1];
             _this.dayslist = result.data[2];
-            _this.keyvallist = result.data[3];
+            if (!_this.editmode) {
+                _this.keyvallist = result.data[3];
+            }
             _this.allload.otherdropdwn = true;
             _this.checkalllead();
         }, err => {
@@ -804,6 +808,7 @@ declare var commonfun: any;
         this.parentname = "";
         this.parentid = 0;
         this.parentcodename = "";
+        this.editmode = false;
         this.addressBook.ClearArray();
         this.getcustomerdrop();
     }
@@ -871,8 +876,7 @@ declare var commonfun: any;
         }, err => {
             console.log("error");
         }, () => {
-            console.log("Done");
-
+            //Done
         })
     }
 
@@ -1058,7 +1062,6 @@ declare var commonfun: any;
 
     //Add New Controll Center
     AddNewCtrl() {
-        debugger;
         this.CustAddServies.getctrldetail({
             "id": this.ctrlid,
             "cmpid": this.loginUser.cmpid
@@ -1080,7 +1083,6 @@ declare var commonfun: any;
                         "constflag": this.constflag,
                         "id": result.data[0].autoid
                     });
-                    console.log(this.Ctrllist);
                     this.ctrlhide = false;
                     this.ctrlid = 0;
                     this.ctrlname = "";
@@ -1138,7 +1140,7 @@ declare var commonfun: any;
             "itemsdis": this.itemsdiscountjson(),
             "trans": this.transpoterjson(),
             "sales": this.salesmanjson(),
-            "isactive":this.isactive,
+            "isactive": this.isactive,
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
@@ -1166,7 +1168,7 @@ declare var commonfun: any;
                 return;
             }
             if (this.adrbookid.length == 0) {
-                this._msg.Show(messageType.info, "error", "Please enter contact address");
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
             else if (this.Ctrllist.length == 0) {
