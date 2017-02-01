@@ -85,7 +85,7 @@ declare var commonfun: any;
             }
         });
 
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
         }, 0);
     }
@@ -107,6 +107,7 @@ declare var commonfun: any;
     Getcode() {
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.adrbookid = [];
     }
 
     //Edit Transpoter 
@@ -193,7 +194,7 @@ declare var commonfun: any;
                 return;
             }
             if (this.adrbookid.length == 0) {
-                this._msg.Show(messageType.info, "error", "Please enter contact address");
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
             this.transpoter_service.saveTranspoter(

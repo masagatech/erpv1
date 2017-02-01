@@ -1168,7 +1168,7 @@ declare var commonfun: any;
                 return;
             }
             if (this.adrbookid.length == 0) {
-                this._msg.Show(messageType.info, "error", "Please enter contact address");
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
             else if (this.Ctrllist.length == 0) {

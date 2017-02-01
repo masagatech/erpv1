@@ -12,6 +12,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [WarehouseAddService, CommonService]                         //Provides Add Service
@@ -67,6 +68,10 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".code").focus();
+
+        setTimeout(function() {
+            commonfun.addrequire();
+        }, 0);
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
@@ -276,6 +281,16 @@ declare var $: any;
             this._router.navigate(['warehouse/warehouse']);
         }
         if (evt === "save") {
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+            if (this.adrbookid.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
+                return;
+            }
             if (this.adrbookid.length > 0) {
                 this.wareServies.save(
                     this.paramterjson()

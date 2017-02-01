@@ -47,10 +47,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="row" *ngIf="editmode">
-			<div class="col-md-10">
-				<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
-			</div>
+		<div class="col-md-8" *ngIf="editmode">
+			<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
 		</div>
 	</div>
 </div>

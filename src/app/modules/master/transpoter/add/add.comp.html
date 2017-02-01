@@ -38,24 +38,25 @@
 			</div>
 		</div>
 	</div>
-	<div class="panel panel-theme">
-		<div class="panel-body">
-			<ul class="nav nav-tabs">
-				<li class="active"><a data-target="#adr" role="button" data-toggle="tab">Contact Details</a></li>
-				<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" id="adr">
-					<div class="row">
-						<addressbook #addrbook [adrbookid]="adrbookid" ngControl="adrid" [module]="module" [accode]="accode"></addressbook>
-					</div>
+</div>
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contact Details</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="adr">
+				<div class="row">
+					<addressbook #addrbook [adrbookid]="adrbookid" ngControl="adrid" [module]="module" [accode]="accode"></addressbook>
 				</div>
-				<div class="tab-pane" id="docup">
-					<div class="row">
-						<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-							(onComplete)="onUploadComplete($event)"></fileupload>
-					</div>
+			</div>
+			<div class="tab-pane" id="docup">
+				<div class="row">
+					<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+						(onComplete)="onUploadComplete($event)"></fileupload>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
