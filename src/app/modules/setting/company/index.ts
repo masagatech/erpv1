@@ -9,6 +9,8 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DataListModule, DataGridModule, PanelModule, CheckboxModule } from 'primeng/primeng';
+import { DynamicTabModule } from '../../usercontrol/dynamictab';
+import { AddDynamicTabModule } from '../../usercontrol/adddynamictab';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, DataGridModule, PanelModule, CheckboxModule],
+        DataListModule, DataGridModule, PanelModule, CheckboxModule, DynamicTabModule, AddDynamicTabModule],
     declarations: [
         AddCompany,
         ViewCompany,

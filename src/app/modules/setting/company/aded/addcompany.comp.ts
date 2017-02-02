@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
@@ -10,6 +10,8 @@ import { FileUpload, Growl, Message } from 'primeng/primeng';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { DynamicTabModule } from "../../../usercontrol/dynamictab";
+import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
 
 declare var $: any;
 
@@ -55,27 +57,30 @@ export class AddCompany implements OnInit, OnDestroy {
     cmptypeDT: any = [];
     countryDT: any = [];
 
+    // tab panel
+    @ViewChild('tabpanel')
+    tabpanel: AddDynamicTabComp;
     tabListDT: any = [];
     selectedtab: any = [];
     isedittab: boolean = false;
+    atttype: string = "";
 
-    fldname: string = "";
-    keyid: number = 0;
-    key: string = "";
-    value: string = "";
-    DuplicateFlag: boolean = false;
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
 
     // Page Pre Render
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _compservice: CompService, private _userService: UserService, private _dynfldserive: DynamicFieldsService,
-        private _commonservice: CommonService, private _msg: MessageService) {
+        private _compservice: CompService, private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
 
-        this.fillDropDownList("industries");
-        this.fillDropDownList("desig");
-        this.fillDropDownList("cmptype");
-        this.fillDropDownList("country");
+        this.fillDropDownList();
+        this.atttype = "Company Attribute";
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
 
     // Page Load
@@ -142,26 +147,21 @@ export class AddCompany implements OnInit, OnDestroy {
 
     // Fill Industries, Designation, CompanyType, Country Drop Down
 
-    fillDropDownList(flag) {
-        this._commonservice.getMOM({ "group": flag }).subscribe(data => {
+    fillDropDownList() {
+        this._compservice.getCompany({ "flag": "dropdown" }).subscribe(data => {
             var d = data.data;
 
-            if (flag == "industries") {
-                // BIND Industries TO DROPDOWN
-                this.industriesDT = d;
-            }
-            else if (flag == "desig") {
-                // BIND Designation TO DROPDOWN
-                this.desigDT = d;
-            }
-            else if (flag == "cmptype") {
-                // BIND Company Type TO DROPDOWN
-                this.cmptypeDT = d;
-            }
-            else if (flag == "country") {
-                // BIND Country TO DROPDOWN
-                this.countryDT = d;
-            }
+            // BIND Industries TO DROPDOWN
+            this.industriesDT = d.filter(a => a.group === "industries");
+
+            // BIND Designation TO DROPDOWN
+            this.desigDT = d.filter(a => a.group === "desig");
+
+            // BIND Company Type TO DROPDOWN
+            this.cmptypeDT = d.filter(a => a.group === "cmptype");
+
+            // BIND Country TO DROPDOWN
+            this.countryDT = d.filter(a => a.group === "country");
         }, err => {
             console.log("Error");
         }, () => {
@@ -169,188 +169,18 @@ export class AddCompany implements OnInit, OnDestroy {
         })
     }
 
-    // Add Dynamic Tab
+    // Tab Panel
 
     openTabPopup() {
-        setTimeout(function () {
-            $(".tabname").focus();
-        }, 500);
+        this.tabpanel.openTabPopup();
     }
 
-    addNewTabs() {
-        if (this.fldname === "") {
-            this._msg.Show(messageType.error, "Error", "Please Enter Tab Name");
-            return;
-        }
-
-        var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
-        this.tabListDT.push({ "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "keyvaluedt": [] });
-        this.fldname = "";
-        $('#dynTabModel').modal('hide');
-        this.isedittab = false;
+    editTabPopup(tab) {
+        this.tabpanel.editTabPopup(tab);
     }
 
-    EditTabs(tab) {
-        this.selectedtab = tab;
-        this.fldname = tab.fldname;
-        this.isedittab = true;
-    }
-
-    UpdateTabs() {
-        var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
-        this.selectedtab.key = fldcode;
-        this.selectedtab.fldname = this.fldname;
-        $('#dynTabModel').modal('hide');
-        this.isedittab = false;
-        this.fldname = "";
-    }
-
-    ClearTabs() {
-        this.fldname = "";
-        this.isedittab = false;
-    }
-
-    DeleteTabs(tab, row) {
-        tab.keyvaluedt.splice(tab.keyvaluedt.indexOf(row), 1);
-        $(".key").focus();
-    }
-
-    // Add Key and Value for Dynamic Tab
-
-    getKeyAuto(tab) {
-        var that = this;
-
-        that._commonservice.getAutoData({ "type": "attribute", "search": tab.key, "filter": "Company Attribute" }).subscribe(data => {
-            $(".key").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    tab.keyid = ui.item.value;
-                    tab.key = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    AddNewKeyVal(tab) {
-        var that = this;
-
-        if (tab.key === "") {
-            that._msg.Show(messageType.info, "info", "Please enter key");
-            $(".key").focus();
-        }
-        else if (tab.value === "") {
-            that._msg.Show(messageType.info, "info", "Please enter value");
-            $(".val").focus();
-        }
-        else {
-            that.DuplicateFlag = true;
-
-            for (var i = 0; i < tab.keyvaluedt.length; i++) {
-                if (tab.keyvaluedt[i].key === tab.key && tab.keyvaluedt[i].value === tab.value) {
-                    that.DuplicateFlag = false;
-                }
-            }
-
-            if (that.DuplicateFlag === true) {
-                tab.keyvaluedt.push({
-                    'key': tab.key,
-                    'value': tab.value
-                });
-
-                tab.key = "";
-                tab.value = "";
-                $(".key").focus();
-            }
-            else {
-                that._msg.Show(messageType.info, "info", "Duplicate key and value");
-                $(".key").focus();
-                return;
-            }
-        }
-
-        tab.isedit = false;
-    }
-
-    EditKeyVal(tab, row) {
-        tab.selectedrow = row;
-        tab.key = row.key;
-        tab.value = row.value;
-        tab.isedit = true;
-    }
-
-    UpdateKeyVal(tab) {
-        tab.selectedrow.key = tab.key;
-        tab.selectedrow.value = tab.value;
-        tab.isedit = false;
-        this.ClearKeyVal(tab);
-    }
-
-    ClearKeyVal(tab) {
-        tab.key = "";
-        tab.value = "";
-        tab.isedit = false;
-    }
-
-    DeleteKeyVal(tab, row) {
-        tab.keyvaluedt.splice(tab.keyvaluedt.indexOf(row), 1);
-        $(".key").focus();
-    }
-
-    // Save Dynamic Fields
-
-    saveDynamicFields(parentid) {
-        var that = this;
-
-        for (var i = 0; i < that.tabListDT.length; i++) {
-            var saveDynFlds = {
-                "autoid": that.tabListDT[i].autoid,
-                "fldcode": that.tabListDT[i].fldcode,
-                "fldname": that.tabListDT[i].fldname,
-                "fldvalue": that.tabListDT[i].keyvaluedt === null ? "" : that.tabListDT[i].keyvaluedt,
-                "module": "Company",
-                "parentid": parentid,
-                "cmpid": that.loginUser.cmpid,
-                "fyid": that.loginUser.fyid,
-                "uidcode": that.loginUser.login
-            }
-
-            that._dynfldserive.saveDynamicFields(saveDynFlds).subscribe(data => {
-                var dataResult = data.data;
-            }, err => {
-                console.log(err);
-            }, () => {
-                // console.log("Complete");
-            });
-        }
-    }
-
-    // Get Dynamic Fields
-
-    getDynamicFields(pcmpid: number) {
-        var that = this;
-
-        that._dynfldserive.getDynamicFields({
-            "module": "Company", "parentid": pcmpid,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
-        }).subscribe(data => {
-            that.tabListDT = data.data;
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        });
+    DeleteTabs(tab) {
+        this.tabpanel.DeleteTabs(tab);
     }
 
     // Save Company
@@ -379,7 +209,8 @@ export class AddCompany implements OnInit, OnDestroy {
             "city": this.city,
             "pincode": this.pincode,
             "uidcode": this.loginUser.login,
-            "isactive": this.isactive
+            "isactive": this.isactive,
+            "dynamicfields": this.tabListDT
         }
 
         this._compservice.saveCompany(savecmp).subscribe(data => {
@@ -390,9 +221,7 @@ export class AddCompany implements OnInit, OnDestroy {
                 var msg = dataResult[0].funsave_company.msg;
                 var parentid = dataResult[0].funsave_company.keyid;
 
-                this.saveDynamicFields(parentid);
                 this._msg.Show(messageType.success, "Success", msg);
-
                 this._router.navigate(['/setting/company']);
             }
             else {
@@ -410,7 +239,8 @@ export class AddCompany implements OnInit, OnDestroy {
 
     getCompanyById(pcmpid: any) {
         this._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
-            var company = data.data;
+            var company = data.data[0]._cmpdata;
+            var dynFields = data.data[0]._dynfields === null ? [] : data.data[0]._dynfields;
 
             console.log(company);
 
@@ -436,8 +266,7 @@ export class AddCompany implements OnInit, OnDestroy {
             this.city = company[0].city;
             this.pincode = company[0].pincode;
             this.isactive = company[0].isactive;
-
-            this.getDynamicFields(pcmpid);
+            this.tabListDT = dynFields;
         }, err => {
             console.log("Error");
         }, () => {

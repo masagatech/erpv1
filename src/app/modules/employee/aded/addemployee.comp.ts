@@ -12,6 +12,7 @@ import { LoginUserModel } from '../../../_model/user_model';
 import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { AddrbookComp } from "../../usercontrol/addressbook/adrbook.comp";
 import { DynamicTabModule } from "../../usercontrol/dynamictab";
+import { AddDynamicTabComp } from "../../usercontrol/adddynamictab";
 
 declare var $: any;
 declare var commonfun: any;
@@ -71,6 +72,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     private subscribeParameters: any;
 
+    // dropdown
     genderDT: any[];
     maritalstatusDT: any[];
     bloodgroupDT: any[];
@@ -82,16 +84,15 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     DuplicateCtrlCenter: boolean = false;
 
-    ctrlcenterList: any = [];
+    // tab panel
+    @ViewChild('tabpanel')
+    tabpanel: AddDynamicTabComp;
     tabListDT: any = [];
     selectedtab: any = [];
     isedittab: boolean = false;
+    atttype: string = "";
 
-    fldname: string = "";
-    keyid: number = 0;
-    key: string = "";
-    value: string = "";
-    DuplicateFlag: boolean = false;
+    ctrlcenterList: any = [];
 
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
@@ -112,14 +113,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.module = "Employee";
         this.loginUser = this._userservice.getUser();
 
-        // this.fillDropDownList("gender");
-        // this.fillDropDownList("marital");
-        // this.fillDropDownList("bldgrp");
-        // this.fillDropDownList("country");
-        // this.fillDropDownList("dept");
-        // this.fillDropDownList("desig");
-        // this.fillDropDownList("salarymode");
-
         this.fillDropDownList();
         this.fillCtrlCenterDDL();
 
@@ -131,6 +124,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // Page Load
 
     ngOnInit() {
+        this.atttype = "Employee Attribute";
         this.setActionRights();
         this.setEmployeeFields();
     }
@@ -233,6 +227,20 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         });
     }
 
+    // Tab Panel
+
+    openTabPopup() {
+        this.tabpanel.openTabPopup();
+    }
+
+    editTabPopup(tab) {
+        this.tabpanel.editTabPopup(tab);
+    }
+
+    DeleteTabs(tab) {
+        this.tabpanel.DeleteTabs(tab);
+    }
+
     // Get Employee Auto Complete
 
     getUserAuto(me: any) {
@@ -249,7 +257,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.uid = ui.item.value;
                     me.uname = ui.item.label;
                 }
@@ -322,7 +330,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.sctrlcenterid = ui.item.value;
                     me.sctrlcentername = ui.item.label;
                 }
@@ -388,156 +396,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     onUploadComplete(e) {
         this.attachfile = e.files[0].path;
         this.actionButton.find(a => a.id === "save").enabled = true;
-    }
-
-    // Add Dynamic Tab
-
-    openTabPopup() {
-        setTimeout(function() {
-            $(".tabname").focus();
-        }, 500);
-
-        this.fldname = "";
-    }
-
-    addNewTabs() {
-        if (this.fldname === "") {
-            this._msg.Show(messageType.error, "Error", "Please Enter Tab Name");
-            return;
-        }
-
-        var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
-        this.tabListDT.push({
-            "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "fldvalue": [],
-            "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid
-        });
-
-        this.fldname = "";
-        $('#dynTabModel').modal('hide');
-        this.isedittab = false;
-    }
-
-    EditTabs(tab) {
-        setTimeout(function() {
-            $(".tabname").focus();
-        }, 500);
-
-        this.selectedtab = tab;
-        this.fldname = tab.fldname;
-        this.isedittab = true;
-    }
-
-    UpdateTabs() {
-        var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
-        this.selectedtab.key = fldcode;
-        this.selectedtab.fldname = this.fldname;
-        $('#dynTabModel').modal('hide');
-        this.isedittab = false;
-        this.fldname = "";
-    }
-
-    ClearTabs() {
-        this.fldname = "";
-        this.isedittab = false;
-    }
-
-    DeleteTabs(tab) {
-        this.tabListDT.splice(this.tabListDT.indexOf(tab), 1);
-    }
-
-    // Add Key and Value for Dynamic Tab
-
-    getKeyAuto(tab) {
-        var that = this;
-
-        that._commonservice.getAutoData({
-            "type": "attribute", "cmpid": that.loginUser.cmpid, "search": tab.key, "filter": "Employee Attribute"
-        }).subscribe(data => {
-            $(".key").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function(event, ui) {
-                    tab.keyid = ui.item.value;
-                    tab.key = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    AddNewKeyVal(tab) {
-        var that = this;
-
-        if (tab.key === "") {
-            that._msg.Show(messageType.info, "info", "Please enter key");
-            $(".key").focus();
-        }
-        else if (tab.value === "") {
-            that._msg.Show(messageType.info, "info", "Please enter value");
-            $(".val").focus();
-        }
-        else {
-            that.DuplicateFlag = true;
-
-            for (var i = 0; i < tab.fldvalue.length; i++) {
-                if (tab.fldvalue[i].key === tab.key && tab.fldvalue[i].value === tab.value) {
-                    that.DuplicateFlag = false;
-                }
-            }
-
-            if (that.DuplicateFlag === true) {
-                tab.fldvalue.push({
-                    'key': tab.key,
-                    'value': tab.value
-                });
-
-                tab.key = "";
-                tab.value = "";
-                $(".key").focus();
-            }
-            else {
-                that._msg.Show(messageType.info, "info", "Duplicate key and value");
-                $(".key").focus();
-                return;
-            }
-        }
-
-        tab.isedit = false;
-    }
-
-    EditKeyVal(tab, row) {
-        tab.selectedrow = row;
-        tab.key = row.key;
-        tab.value = row.value;
-        tab.isedit = true;
-    }
-
-    UpdateKeyVal(tab) {
-        tab.selectedrow.key = tab.key;
-        tab.selectedrow.value = tab.value;
-        tab.isedit = false;
-        this.ClearKeyVal(tab);
-    }
-
-    ClearKeyVal(tab) {
-        tab.key = "";
-        tab.value = "";
-        tab.isedit = false;
-    }
-
-    DeleteKeyVal(tab, row) {
-        tab.fldvalue.splice(tab.fldvalue.indexOf(row), 1);
-        $(".key").focus();
     }
 
     // Save Employee
@@ -626,7 +484,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     setEmployeeFields() {
         var that = this;
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
 
             var date = new Date();
