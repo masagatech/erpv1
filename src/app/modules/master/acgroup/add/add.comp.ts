@@ -137,7 +137,7 @@ declare var commonfun: any;
         this.acgroupServies.acGroupView({
             "flag": "",
             "groupid": groupid,
-            "neturid": 0,
+            "neturid": this.neturid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fyid,
             "createdby": this.loginUser.login
@@ -147,7 +147,7 @@ declare var commonfun: any;
             this.groupcode = dataset[0].groupcode;
             this.groupName = dataset[0].groupname;
             this.neturname = dataset[0].val;
-            this.neturid = dataset[0].natureofg;
+            this.neturid = dataset[0].grnature;
             this.appfrom = dataset[0].appfromedit;
             this.isactive = dataset[0].isactive;
             if (this.appfrom == 0) {
@@ -171,7 +171,7 @@ declare var commonfun: any;
         this.remark = "";
         this.appfrom = "";
         this.chkall = false;
-        this.editmode=false;
+        this.editmode = false;
         $(".groupcode").removeAttr('disabled', 'disabled');
         $(".groupcode").focus();
     }
@@ -206,7 +206,7 @@ declare var commonfun: any;
             "isactive": this.isactive,
             "remark1": "remark1",
             "remark2": "remark2",
-            "remark3": "remark3"
+            "remark3": []
         }
         return Param;
 
@@ -238,6 +238,7 @@ declare var commonfun: any;
                     this._msg.Show(messageType.success, "success", dataset[0].funsave_acgroup.msg);
                     $(".code").removeAttr('disabled', 'disabled');
                     this.ClearControll();
+                    this._router.navigate(['master/acgroup']);
                     return;
                 }
                 else {

@@ -2,7 +2,6 @@ import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-//import { AddrbookComp } from '../../usercontrol/addressbook/adrbook.comp';
 
 import { CustAdd } from './add/add.comp';
 import { CustView } from './view/view.comp';

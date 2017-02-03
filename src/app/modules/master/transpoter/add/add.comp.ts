@@ -85,7 +85,7 @@ declare var commonfun: any;
             }
         });
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
         }, 0);
     }
@@ -126,7 +126,7 @@ declare var commonfun: any;
             var _uploadedfile = result.data[0][0]._uploadedfile;
             var _docfile = result.data[0][0]._docfile;
 
-            that.code = _Transdata[0].code;
+            that.code = _Transdata[0].transcode;
             that.transname = _Transdata[0].transname;
             that.desc = _Transdata[0].descp;
             that.remark = _Transdata[0].remark;
@@ -167,7 +167,7 @@ declare var commonfun: any;
             "isactive": this.isactive,
             "remark1": "",
             "remark2": "",
-            "remark3": ""
+            "remark3": []
         }
         return param;
     }
@@ -210,6 +210,7 @@ declare var commonfun: any;
                     this.clearcontrol();
                     $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
+                    this._router.navigate(['master/transpoter']);
                     return;
                 }
             }, err => {

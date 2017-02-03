@@ -55,6 +55,9 @@ declare var commonfun: any;
     accode: string = "";
     editmode: boolean = false;
     isactive: boolean = false;
+    parentid: number = 0;
+    parentcode: any = "";
+    parentname: any = "";
 
     //user details
     loginUser: LoginUserModel;
@@ -282,6 +285,9 @@ declare var commonfun: any;
         this.ope = "";
         this.editmode = false;
         this.addressBook.ClearArray();
+        this.parentid = 0;
+        this.parentcode = "";
+        this.parentname = "";
     }
 
     //File Upload Start 
@@ -425,6 +431,69 @@ declare var commonfun: any;
         }
     }
 
+    getparentname(pid: number) {
+        this.vendorAddServies.getvendor({
+            "cmpid": this.loginUser.cmpid,
+            "flag": "parentname",
+            "parentid": pid,
+            "createdby": this.loginUser.login
+        }).subscribe(result => {
+            this.parentname = result.data[0][0].vname;
+        }, err => {
+            console.log("error");
+        }, () => {
+            //Complete
+        })
+    }
+
+    //Parent Code Auto Extender
+    getAutoCompleteParentCode(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "vendorcode",
+            "search": that.parentcode,
+            "cmpid": this.loginUser.cmpid,
+            "FY": this.loginUser.fyid,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".parentcode").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.parentid = ui.item.value;
+                    me.parentcode = ui.item.label;
+                    me.getparentname(me.parentid);
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            this.attrid = 0;
+        })
+    }
+
+    ledgerparam() {
+        var ledgerlist = [];
+        ledgerlist.push({
+            "autoid": 0,
+            "cmpid": this.loginUser.cmpid,
+            "acid": 0,
+            "fy": this.loginUser.fyid,
+            "typ": "vendor",
+            "dramt": this.ope == "" ? 0 : this.ope,
+            "nar": this.remark,
+            "createdby": this.loginUser.login
+        })
+        return ledgerlist;
+    }
+
     //Paramter Wth Json
     paramterjson() {
         var param = {
@@ -442,7 +511,8 @@ declare var commonfun: any;
             "remark": this.remark,
             "isactive": this.isactive,
             "createdby": this.loginUser.login,
-            "adr": this.adrbookid
+            "adr": this.adrbookid,
+            "ledgerparam": this.ledgerparam()
         }
         return param;
     }
@@ -477,6 +547,7 @@ declare var commonfun: any;
                     $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
                     this.ClearControll();
+                    this._router.navigate(['master/vendor']);
                 }
             }, err => {
                 console.log("Error");

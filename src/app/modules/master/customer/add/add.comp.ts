@@ -74,6 +74,8 @@ declare var commonfun: any;
     adrid: number = 0;
     docfile: any = [];
     module: string = "";
+
+
     uploadedFiles: any = [];
     adrcsvid: any = "";
     adrmodule: string = "";
@@ -89,6 +91,9 @@ declare var commonfun: any;
     editmode: boolean = false;
     isactive: boolean = false;
 
+    //Attribute
+    labelname: string = "";
+    attrparam: string = "";
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -112,6 +117,7 @@ declare var commonfun: any;
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "cust";
+        this.labelname="Attribute";
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -497,7 +503,7 @@ declare var commonfun: any;
         $(".itemsname").focus();
     }
 
-    //Attribute Auto Extender
+    //Parent Code Auto Extender
     getAutoCompleteParentCode(me: any) {
         var that = this;
         this._autoservice.getAutoData({
@@ -810,7 +816,6 @@ declare var commonfun: any;
         this.parentcodename = "";
         this.editmode = false;
         this.addressBook.ClearArray();
-        this.getcustomerdrop();
     }
 
     //Edit Customer 
@@ -827,15 +832,16 @@ declare var commonfun: any;
             var _custdata = resultdata._custdata;
             var _uploadedfile = resultdata._uploadedfile;
             var _docfile = resultdata._docfile;
-            var _parentname = resultdata._parentid;
+            var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
+            if (_parentname.length > 0) {
+                that.parentcodename = _parentname[0].pcode;
+                that.parentid = _parentname[0].pid;
+                that.parentname = _parentname[0].pname;
+            }
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].code;
             that.Custname = _custdata[0].custname;
             that.isactive = _custdata[0].isactive;
-            that.parentcodename = _parentname[0].pcode;
-
-            that.parentid = _parentname[0].pid;
-            that.parentname = _parentname[0].pname;
             that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
             that.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
             that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
@@ -845,10 +851,6 @@ declare var commonfun: any;
             that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
             that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
 
-
-            that.debit = _custdata[0].debit;
-            that.credit = _custdata[0].credit;
-            that.ope = _custdata[0].op;
             that.days = _custdata[0].days;
             that.remark = _custdata[0].remark;
             that.adrid = _custdata[0].adrid;
@@ -982,7 +984,7 @@ declare var commonfun: any;
     getAutoCompleteCtrl(me: any) {
         var that = this;
         this._autoservice.getAutoData({
-            "type": "ctrl",
+            "type": "ccauto",
             "search": that.ctrlname,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fyid,
@@ -1126,6 +1128,21 @@ declare var commonfun: any;
         $(".ctrl").focus();
     }
 
+    ledgerparam() {
+        var ledgerlist = [];
+        ledgerlist.push({
+            "autoid": 0,
+            "cmpid": this.loginUser.cmpid,
+            "acid": 0,
+            "fy": this.loginUser.fyid,
+            "typ": "customer",
+            "dramt": this.ope == "" ? 0 : this.ope,
+            "nar": this.remark,
+            "createdby": this.loginUser.login
+        })
+        return ledgerlist;
+    }
+
     //Paramter Wth Json
     paramterjson() {
         var param = {
@@ -1150,7 +1167,11 @@ declare var commonfun: any;
             "ctrl": this.Ctrljson(),
             "createdby": this.loginUser.login,
             "adrid": this.adrbookid,
-            "parentid": this.parentid == "" ? 0 : this.parentid
+            "parentid": this.parentcodename,
+            "ledgerparam": this.ledgerparam(),
+            "remark1": '',
+            "remark2": "",
+            "remark3": []
         }
         return param;
     }
@@ -1181,12 +1202,12 @@ declare var commonfun: any;
                 for (let wareid of this.warehouselist) {
                     if (wareid.Warechk == true) {
                         checkware = true;
+                        break;
                     }
                 }
                 if (checkware == false) {
                     this._msg.Show(messageType.info, "error", "Please Check Warehouse");
                 }
-                return;
             }
             else {
                 this._msg.Show(messageType.info, "error", "Please create warehouse master");
@@ -1205,6 +1226,7 @@ declare var commonfun: any;
                     this.ClearControll();
                     $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
+                    this._router.navigate(['master/customer']);
                 }
             }, err => {
                 console.log("Error");
@@ -1272,7 +1294,7 @@ declare var commonfun: any;
         var that = this;
         if (that.issh == 0) {
             that.issh = 1;
-            that.warehouseBind();
+            //that.warehouseBind();
         } else {
             that.issh == 0;
         }

@@ -4,13 +4,27 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" validate="" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
+					<input type="text" class="form-control code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Vendor Name</label>
 					<input type="text" class="form-control vendor" validate="" tabindex="2" [(ngModel)]="vendor">
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>Parent Code</label>
+					<input type="text" class="form-control parentcode" maxlength="10" tabindex="3" [(ngModel)]="parentcode" (keyup)="getAutoCompleteParentCode(this)">
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Parent Name</label>
+					<input type="text" class="form-control parentname" tabindex="4" readonly="true" [(ngModel)]="parentname">
 				</div>
 			</div>
 		</div>
@@ -119,7 +133,7 @@
 					<div class="col-md-6">
 						<div class="panel panel-theme">
 							<div class="panel-body">
-								<div class="col-md-4">
+								<div class="col-md-4 hide">
 									<div class='form-group'>
 										<label>Debit</label>
 										<select [(ngModel)]="debit" class="form-control" tabindex="8">
@@ -130,7 +144,7 @@
 									</select>
 									</div>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-4 hide">
 									<div class='form-group'>
 										<label>Credit</label>
 										<select [(ngModel)]="credit" class="form-control" tabindex="9">

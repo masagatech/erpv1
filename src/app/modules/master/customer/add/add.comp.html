@@ -4,7 +4,7 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" validate="" tabindex="1" [(ngModel)]="code">
+					<input type="text" class="form-control code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code">
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -19,7 +19,7 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Parent Code</label>
-					<input type="text" class="form-control parentcode" tabindex="3" [(ngModel)]="parentcodename" (keyup)="getAutoCompleteParentCode(this)">
+					<input type="text" class="form-control parentcode" maxlength="10" tabindex="3" [(ngModel)]="parentcodename" (keyup)="getAutoCompleteParentCode(this)">
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -75,24 +75,7 @@
 				</div>
 			</div>
 			<div class="tab-pane" id="attr">
-				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Attribute</label>
-							<input type="text=" class="form-control attr" tabindex="7" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
-								(keyup)="getAutoCompleteattr(this)" />
-						</div>
-					</div>
-					<div class="col-md-10">
-						<div class="col-md-6" *ngFor="let row of attrlist">
-							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
-							<span data-role="remove" (click)="Removeattr(row)"></span>
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
+				<attribute #attribute [labelname]="labelname" [attrparam]="attrparam"></attribute>
 			</div>
 			<div class="tab-pane" id="itemdis">
 				<div class="row">
@@ -354,7 +337,7 @@
 					<div class="col-md-6">
 						<div class="panel panel-theme">
 							<div class="panel-body">
-								<div class="col-md-4">
+								<div class="col-md-4 hide">
 									<div class='form-group'>
 										<label>Debit</label>
 										<select [(ngModel)]="debit" class="form-control" tabindex="23">
@@ -365,7 +348,7 @@
 									</select>
 									</div>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-4 hide">
 									<div class='form-group'>
 										<label>Credit</label>
 										<select [(ngModel)]="credit" class="form-control" tabindex="24">
