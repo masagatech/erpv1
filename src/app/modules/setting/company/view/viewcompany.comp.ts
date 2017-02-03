@@ -32,7 +32,7 @@ export class ViewCompany implements OnInit, OnDestroy {
     }
 
     getCompany() {
-        this._compservice.getCompany({ "flag": "all", "fyid": this.loginUser.fyid }).subscribe(data => {
+        this._compservice.getCompany({ "flag": "all", "fy": this.loginUser.fy }).subscribe(data => {
             this.company = data.data;
         }, err => {
             console.log("Error");

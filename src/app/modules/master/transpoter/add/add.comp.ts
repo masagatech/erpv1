@@ -33,7 +33,7 @@ declare var commonfun: any;
     adrbookid: any = [];
     adrid: number = 0;
     adrcsvid: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     module: string = "";
     uploadedFiles: any = [];
     accode: string = "";
@@ -98,7 +98,7 @@ declare var commonfun: any;
     //File Upload Complete 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
@@ -118,13 +118,13 @@ declare var commonfun: any;
             "cmpid": that.loginUser.cmpid,
             "flag": "Edit",
             "transid": id,
-            "fy": that.loginUser.fyid,
+            "fy": that.loginUser.fy,
             "createdby": that.loginUser.login
         }).subscribe(result => {
             that.editmode = true;
             var _Transdata = result.data[0][0]._transdata;
             var _uploadedfile = result.data[0][0]._uploadedfile;
-            var _docfile = result.data[0][0]._docfile;
+            var _suppdoc = result.data[0][0]._suppdoc;
 
             that.code = _Transdata[0].transcode;
             that.transname = _Transdata[0].transname;
@@ -134,8 +134,8 @@ declare var commonfun: any;
             that.isactive = _Transdata[0].isactive;
 
             if (_uploadedfile != null) {
-                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-                that.docfile = _docfile == null ? [] : _docfile;
+                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
             }
 
             that.adrcsvid = "";
@@ -159,8 +159,8 @@ declare var commonfun: any;
             "transname": this.transname,
             "desc": this.desc,
             "adr": this.adrbookid,
-            "docfile": this.docfile,
-            "fy": this.loginUser.fyid,
+            "suppdoc": this.suppdoc,
+            "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "remark": this.remark,

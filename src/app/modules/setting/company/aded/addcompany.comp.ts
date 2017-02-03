@@ -42,8 +42,7 @@ export class AddCompany implements OnInit, OnDestroy {
     state: string = "";
     city: string = "";
     pincode: string = "";
-    addressline1: string = "";
-    addressline2: string = "";
+    address: string = "";
     isactive: boolean = false;
 
     actionButton: ActionBtnProp[] = [];
@@ -202,8 +201,7 @@ export class AddCompany implements OnInit, OnDestroy {
             "altemailid": this.altemailid,
             "mobileno": this.mobileno,
             "altmobileno": this.altmobileno,
-            "addressline1": this.addressline1,
-            "addressline2": this.addressline2,
+            "address": this.address,
             "country": this.country,
             "state": this.state,
             "city": this.city,
@@ -259,8 +257,7 @@ export class AddCompany implements OnInit, OnDestroy {
             this.altemailid = company[0].altemailid;
             this.mobileno = company[0].mobileno;
             this.altmobileno = company[0].altmobileno;
-            this.addressline1 = company[0].addressline1;
-            this.addressline2 = company[0].addressline2;
+            this.address = company[0].address;
             this.country = company[0].country;
             this.state = company[0].state;
             this.city = company[0].city;

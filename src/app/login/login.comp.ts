@@ -39,7 +39,7 @@ export class LoginComp implements OnInit {
                     if (userDetails.status) {
                         this._loginModel.setUsers(userDetails);
 
-                        if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
+                        if (userDetails.cmpid != 0 && userDetails.fy != 0) {
                             this._router.navigate(['/']);
                         } else if (userDetails.errcode === "chpwd") {
                             this._router.navigate(['/changepwd']);

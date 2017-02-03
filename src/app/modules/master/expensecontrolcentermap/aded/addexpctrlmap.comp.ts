@@ -47,7 +47,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     isselectcc: boolean = false;
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -62,7 +62,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     getExpenseAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "expense", "cmpid": 2, "fyid": 5, "search": that.expname }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "expense", "cmpid": 2, "fy": 5, "search": that.expname }).subscribe(data => {
             $(".expense").autocomplete({
                 source: data.data,
                 width: 300,
@@ -94,7 +94,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
 
         this.actionButton.find(a => a.id === "save").enabled = true;
@@ -171,7 +171,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
                 var saveExpense = {
                     "autoid": that.autoid,
                     "cmpid": that.loginUser.cmpid,
-                    "fyid": that.loginUser.fyid,
+                    "fy": that.loginUser.fy,
                     "docdate": that.docdate,
                     "expid": that.expid,
                     "iscmplevel": that.iscmplevel,
@@ -179,7 +179,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
                     "ctrlcentermap": that.getCCMapping(),
                     "narration": that.narration,
                     "createdby": "1:admin",
-                    "docfile": that.docfile
+                    "suppdoc": that.suppdoc
                 }
 
                 that._ecmservice.saveExpenseCtrlMap(saveExpense).subscribe(data => {
@@ -208,7 +208,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
 
         that._commonservice.getAutoData({
             "type": "ctrl", "cmpid": that.loginUser.cmpid,
-            "fy": that.loginUser.fyid, "search": ""
+            "fy": that.loginUser.fy, "search": ""
         }).subscribe(data => {
             that.ctrlcenterDT = data.data;
 
@@ -232,13 +232,13 @@ export class AddExpenseComp implements OnInit, OnDestroy {
 
         this._ecmservice.getExpenseCtrlMap({
             "flag": "id", "cmpid": that.loginUser.cmpid,
-            "fyid": that.loginUser.fyid, "expid": expid
+            "fy": that.loginUser.fy, "expid": expid
         }).subscribe(data => {
             var dataresult = data.data;
 
             var _ecmdata = dataresult[0]._ecmdata;
             var _uploadedfile = dataresult[0]._uploadedfile;
-            var _docfile = dataresult[0]._docfile;
+            var _suppdoc = dataresult[0]._suppdoc;
 
             that.expid = _ecmdata[0].expid;
             that.expname = _ecmdata[0].expname;
@@ -261,8 +261,8 @@ export class AddExpenseComp implements OnInit, OnDestroy {
                 }
             }
 
-            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            that.docfile = _docfile == null ? [] : _docfile;
+            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
         }, err => {
             console.log("Error");
         }, () => {

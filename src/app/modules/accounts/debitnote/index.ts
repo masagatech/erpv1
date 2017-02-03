@@ -9,6 +9,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DataListModule, FileUploadModule } from 'primeng/primeng';
+import { CalendarModule } from '../../usercontrol/calendar';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -42,7 +43,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataListModule, FileUploadModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataListModule, CalendarModule],
     declarations: [
         AddDebitNote,
         ViewDebitNote,

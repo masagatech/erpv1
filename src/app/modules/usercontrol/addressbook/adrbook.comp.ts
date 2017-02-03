@@ -83,7 +83,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         var _this = this;
         this._adrbookservice.getAdrBook({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "flag": "",
             "adrid": _adrid
@@ -167,7 +167,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         var _this = this;
         this._adrbookservice.getAdrBook({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "adrid": row.id,
             "flag": "edit"

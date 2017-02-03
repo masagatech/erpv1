@@ -32,7 +32,7 @@ declare var commonfun: any;
     //other module
     adrbookid: any = [];
     adrid: number = 0;
-    docfile: any = [];
+    suppdoc: any = [];
     module: string = "";
     uploadedFiles: any = [];
     adrcsvid: any = "";
@@ -160,7 +160,7 @@ declare var commonfun: any;
             "type": "attribute",
             "search": that.attrname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "filter": "Warehouse Attribute",
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -195,7 +195,7 @@ declare var commonfun: any;
         }).subscribe(result => {
             var dataset = result.data;
             var _uploadedfile = dataset[0][0]._uploadedfile;
-            var _docfile = dataset[0][0]._docfile;
+            var _suppdoc = dataset[0][0]._suppdoc;
             this.editmode = true;
             that.name = dataset[0][0].nam;
             that.code = dataset[0][0].code;
@@ -204,8 +204,8 @@ declare var commonfun: any;
             that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
 
             if (_uploadedfile != null) {
-                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-                that.docfile = _docfile == null ? [] : _docfile;
+                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
             }
             that.adrcsvid = "";
             for (let items of dataset[0][0].adr) {
@@ -228,7 +228,7 @@ declare var commonfun: any;
     //File Upload Complete 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
@@ -270,7 +270,7 @@ declare var commonfun: any;
             "isactive": this.isactive,
             "attr": this.createattrjson(),
             "adrid": this.adrbookid,
-            "docfile": this.docfile
+            "suppdoc": this.suppdoc
         }
         return param;
     }

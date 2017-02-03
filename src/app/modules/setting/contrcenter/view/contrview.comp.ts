@@ -47,7 +47,7 @@ declare var $: any;
         var that = this;
         that.ContrServies.getCtrlcenter({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "from": from,
             "to": to

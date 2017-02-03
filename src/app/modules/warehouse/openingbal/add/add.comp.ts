@@ -50,7 +50,7 @@ declare var commonfun: any;
         var that = this;
 
         that._alsservice.getAuditLockSetting({
-            "flag": "modulewise", "dispnm": "os", "fyid": that.loginUser.fyid
+            "flag": "modulewise", "dispnm": "os", "fy": that.loginUser.fy
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
@@ -120,7 +120,7 @@ declare var commonfun: any;
         if (val != 0) {
             this.opeingServies.getopeningstock({
                 "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fyid,
+                "fy": this.loginUser.fy,
                 "flag": "wardetails",
                 "wareid": val,
                 "createdby": this.loginUser.login
@@ -189,7 +189,7 @@ declare var commonfun: any;
                     "wareid": that.warehouseid,
                     "opedate": $('#opedate').datepicker('getDate'),
                     "remark": that.remark,
-                    "fy": that.loginUser.fyid,
+                    "fy": that.loginUser.fy,
                     "cmpid": that.loginUser.cmpid,
                     "createdby": that.loginUser.login
                 })

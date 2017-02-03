@@ -87,7 +87,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
             matchData = menumatch;
             ismatch = true;
             var params = {
-              "uid": userdetails.uid, "cmpid": userdetails.cmpid, "fyid": userdetails.fyid,
+              "uid": userdetails.uid, "cmpid": userdetails.cmpid, "fy": userdetails.fy,
               "ptype": menumatch["module"], "smtype": menumatch["submodule"], "actcd": menumatch["rights"]
             };
 
@@ -127,7 +127,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
 
   //         if (userDetails.status) {
   //           this._userService.setUsers(userDetails);
-  //           if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
+  //           if (userDetails.cmpid != 0 && userDetails.fy != 0) {
   //             // propr user
   //           } else if (userDetails.errcode === "chpwd") {
   //             this._router.navigate(['/changepwd']);

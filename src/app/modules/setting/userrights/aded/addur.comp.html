@@ -40,7 +40,7 @@
 							<div class="ui-grid ui-grid-responsive ui-grid-pad" *ngIf="selectedCompany">
 								<div class="col-md-12">
 									<div class="row">
-										<select id="fyid" name="fyid" [(ngModel)]="fyid" class="form-control" (ngModelChange)="getUserRightsById(selectedCompany)">
+										<select id="fy" name="fy" [(ngModel)]="fy" class="form-control" (ngModelChange)="getUserRightsById(selectedCompany)">
 											<option value="0">-- Select Financial Year --</option>
 											<option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
 												{{fyrow.fyname}}

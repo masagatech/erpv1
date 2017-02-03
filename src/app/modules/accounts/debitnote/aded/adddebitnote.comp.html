@@ -14,12 +14,7 @@
 						</div>
 						<div class="form-group">
 							<label class="control-label">Doc Date</label>
-							<div class="controls">
-								<div class="input-group" tabindex="2">
-									<input id="date-picker-3" type="text" class="date-picker form-control dndate" [(ngModel)]="dndate" />
-									<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-								</div>
-							</div>
+							<calendar #dndate [name]="'dndate'"></calendar>
 						</div>
 						<div class="form-group">
 							<label class="control-label">Debit Amount</label>
@@ -86,9 +81,10 @@
 			<div class="panel-body"></div>
 		</div>
 	</div>
-	
-	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)" (onComplete)="onUploadComplete($event)"></fileupload>
-	
+
+	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+		(onComplete)="onUploadComplete($event)"></fileupload>
+
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">

@@ -29,8 +29,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     empid: number = 0;
     uid: number = 0;
     uname: string = "";
-    firstname: string = "";
-    lastname: string = "";
+    fname: string = "";
+    lname: string = "";
     emailid: string = "";
     dob: string = "";
     gender: string = "";
@@ -162,7 +162,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
         that._userservice.getMenuDetails({
             "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             var data = data.data.filter(a => a.dispfor === "add");
 

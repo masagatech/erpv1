@@ -30,7 +30,7 @@ export class ViewJV implements OnInit, OnDestroy {
     getJVDetails() {
         this._jvservice.getJVDetails({
             "flag": "docrange", "fromdocno": "1", "todocno": "100",
-            "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid
+            "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
         }).subscribe(data => {
             this.viewJVDT = data.data;
         }, err => {

@@ -34,7 +34,7 @@ export class ViewExpenseVoucherComp implements OnInit, OnDestroy {
 
     BindExpenseVoucherGrid(from: number, to: number) {
         var that = this;
-        that._expvoucherservice.getAllExpenseVoucher({ "flag": "grid", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid, "from": from, "to": to }).subscribe(data => {
+        that._expvoucherservice.getAllExpenseVoucher({ "flag": "grid", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "from": from, "to": to }).subscribe(data => {
             that.totalRecords = data.data[1][0].recordstotal;
             that.expenseVoucherData = data.data[0];
         });

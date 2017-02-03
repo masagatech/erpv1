@@ -40,7 +40,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     Typelist: any = [];
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     //constructor Call Method 
@@ -58,11 +58,11 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     GetBankPayment(BankPayId) {
         this.BankServies.getBankReceiptView({
             "bankreid": this.BankRecpId, "cmpid": this.loginUser.cmpid,
-            "fyid": this.loginUser.fyid, "flag": "edit"
+            "fy": this.loginUser.fy, "flag": "edit"
         }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
-            var _docfile = data.data[0]._docfile;
+            var _suppdoc = data.data[0]._suppdoc;
 
             this.BankName = _bankreceipt[0].bank;
             this.DepDate = _bankreceipt[0].depdate;
@@ -74,8 +74,8 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             this.Amount = _bankreceipt[0].amount;
             this.Naration = _bankreceipt[0].naration;
 
-            this.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            this.docfile = _docfile == null ? [] : _docfile;
+            this.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            this.suppdoc = _suppdoc == null ? [] : _suppdoc;
         }, err => {
             console.log('Error');
         }, () => {
@@ -104,7 +104,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
 
         this.actionButton.find(a => a.id === "save").enabled = true;
@@ -113,7 +113,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     ParamJson() {
         var ParamName = {
             "cmpid": this.loginUser.cmpid,
-            "fyid": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "refno": this.Refno,
             "bankreid": this.BankRecpId,
             "depdate": $('#DepDate').datepicker('getDate'),
@@ -124,7 +124,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             "amount": this.Amount,
             "naration": this.Naration,
             "createdby": this.loginUser.login,
-            "docfile": this.docfile
+            "suppdoc": this.suppdoc
         }
         return ParamName;
     }

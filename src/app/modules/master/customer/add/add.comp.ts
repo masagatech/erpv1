@@ -72,7 +72,7 @@ declare var commonfun: any;
     //Other Module Declare
     adrbookid: any = [];
     adrid: number = 0;
-    docfile: any = [];
+    suppdoc: any = [];
     module: string = "";
 
 
@@ -181,7 +181,7 @@ declare var commonfun: any;
             "type": "attribute",
             "search": that.disattrname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "filter": "Item Attributes",
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -214,7 +214,7 @@ declare var commonfun: any;
             "type": "transpoter",
             "search": that.transname,
             "cmpid": that.loginUser.cmpid,
-            "fy": that.loginUser.fyid,
+            "fy": that.loginUser.fy,
             "createdby": that.loginUser.login
         }).subscribe(data => {
             $(".transname").autocomplete({
@@ -261,7 +261,7 @@ declare var commonfun: any;
             "type": "product",
             "search": that.itemsname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".itemsname").autocomplete({
@@ -397,7 +397,7 @@ declare var commonfun: any;
             "type": "salesman",
             "search": that.salename,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".sales").autocomplete({
@@ -510,7 +510,7 @@ declare var commonfun: any;
             "type": "custcode",
             "search": that.parentcodename,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".parentcode").autocomplete({
@@ -662,7 +662,7 @@ declare var commonfun: any;
     //File Upload Complete 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
@@ -674,7 +674,7 @@ declare var commonfun: any;
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "tblname": "customer",
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(result => {
             _this.warehouselist = result.data[0];
             _this.debitlist = result.data[1];
@@ -831,6 +831,7 @@ declare var commonfun: any;
             var resultdata = result.data[0][0]
             var _custdata = resultdata._custdata;
             var _uploadedfile = resultdata._uploadedfile;
+
             var _docfile = resultdata._docfile;
             var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
             if (_parentname.length > 0) {
@@ -838,6 +839,7 @@ declare var commonfun: any;
                 that.parentid = _parentname[0].pid;
                 that.parentname = _parentname[0].pname;
             }
+
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].code;
             that.Custname = _custdata[0].custname;
@@ -857,7 +859,7 @@ declare var commonfun: any;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-                that.docfile = _docfile == null ? [] : _docfile;
+                that.suppdoc = _docfile == null ? [] : _docfile;
             }
             that.adrcsvid = "";
             for (let items of _custdata[0].adr) {
@@ -954,7 +956,7 @@ declare var commonfun: any;
             "type": "attribute",
             "search": that.attrname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "filter": "Item Attributes",
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -987,7 +989,7 @@ declare var commonfun: any;
             "type": "ccauto",
             "search": that.ctrlname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".ctrl").autocomplete({
@@ -1019,7 +1021,7 @@ declare var commonfun: any;
             "type": "attribute",
             "search": that.acinfival,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "filter": "Account Attribute",
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -1134,7 +1136,7 @@ declare var commonfun: any;
             "autoid": 0,
             "cmpid": this.loginUser.cmpid,
             "acid": 0,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "typ": "customer",
             "dramt": this.ope == "" ? 0 : this.ope,
             "nar": this.remark,
@@ -1153,7 +1155,7 @@ declare var commonfun: any;
             "keyval": this.createkeydatajson(),
             "dis": this.discountjson(),
             "attr": this.createattrjson(),
-            "docfile": this.docfile,
+            "suppdoc": this.suppdoc,
             "itemsdis": this.itemsdiscountjson(),
             "trans": this.transpoterjson(),
             "sales": this.salesmanjson(),
@@ -1243,7 +1245,7 @@ declare var commonfun: any;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-            $(".firstname").focus();
+            $(".fname").focus();
             this.issh = 0;
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {

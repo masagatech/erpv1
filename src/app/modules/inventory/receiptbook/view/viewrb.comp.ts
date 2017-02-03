@@ -34,7 +34,7 @@ export class ViewReceiptBook implements OnInit, OnDestroy {
         that._rbservice.getAllRB({
             "flag": "grid",
             "cmpid": that.loginUser.cmpid,
-            "fyid": that.loginUser.fyid,
+            "fy": that.loginUser.fy,
             "from": from,
             "to": to
         }).subscribe(data => {

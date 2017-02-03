@@ -82,7 +82,7 @@ declare var commonfun: any;
         var Param = {
             "flag": "at",
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "typ": "at",
             "parent": 0,
             "attid": this.attid,
@@ -170,7 +170,7 @@ declare var commonfun: any;
     DeleteRow(row) {
         this.attributeServies.attsave({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "flag": "del",
             "createdby": this.loginUser.login,
             "isact": row.val,

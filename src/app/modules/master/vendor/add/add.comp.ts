@@ -49,7 +49,7 @@ declare var commonfun: any;
     adrbookid: any = [];
     adrid: number = 0;
     adrcsvid: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     module: string = "";
     uploadedFiles: any = [];
     accode: string = "";
@@ -182,7 +182,7 @@ declare var commonfun: any;
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "tblname": "",
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(result => {
             that.debitlist = result.data[1];
             that.creditlist = result.data[1];
@@ -298,7 +298,7 @@ declare var commonfun: any;
     //File Upload Complete 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
@@ -315,7 +315,7 @@ declare var commonfun: any;
             that.editmode = true;
             var _venddata = result.data[0][0]._venddata;
             var _uploadedfile = result.data[0][0]._uploadedfile;
-            var _docfile = result.data[0][0]._docfile;
+            var _suppdoc = result.data[0][0]._suppdoc;
             var _attr = result.data[0][0]._attrlist;
             var _keyval = result.data[0][0]._keylist;
             that.venid = _venddata[0].autoid;
@@ -331,8 +331,8 @@ declare var commonfun: any;
             that.isactive = _venddata[0].isactive;
 
             if (_uploadedfile != null) {
-                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-                that.docfile = _docfile == null ? [] : _docfile;
+                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
             }
             that.adrcsvid = "";
             for (let items of _venddata[0].adr) {
@@ -354,7 +354,7 @@ declare var commonfun: any;
             "type": "attribute",
             "search": that.attrname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "filter": "Vendor Attribute",
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -386,7 +386,7 @@ declare var commonfun: any;
             "type": "attribute",
             "search": that.key,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "filter": "Account Attribute",
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -501,7 +501,7 @@ declare var commonfun: any;
             "code": this.code,
             "vendor": this.vendor,
             "keyval": this.createkeyvaljson(),
-            "docfile": this.docfile,
+            "suppdoc": this.suppdoc,
             "attr": this.createattrjson(),
             "days": this.days == "" ? 0 : this.days,
             "cr": this.credit == "" ? 0 : this.credit,

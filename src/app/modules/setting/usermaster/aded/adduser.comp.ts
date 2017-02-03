@@ -17,16 +17,16 @@ declare var $: any;
 })
 
 export class AddUser implements OnInit, OnDestroy {
-    title: any;
+    title: string = "";
     validSuccess: Boolean = true;
     fydata: any = [];
-    uid: any;
-    ucode: any;
-    firstname: any;
-    lastname: any;
-    emailid: any;
-    pwd: any;
-    confpwd: any;
+    uid: number = 0;
+    ucode: string = "";
+    fname: string = "";
+    lname: string = "";
+    emailid: string = "";
+    pwd: string = "";
+    confpwd: string = "";
     financialyear: any = [];
 
     actionButton: ActionBtnProp[] = [];
@@ -151,23 +151,28 @@ export class AddUser implements OnInit, OnDestroy {
     isValidSuccess() {
         var that = this;
 
-        if (that.emailid == undefined) {
+        if (that.ucode === "") {
+            this._msg.Show(messageType.warn, "Warning", "Enter User Code");
+            return false;
+        }
+
+        if (that.emailid === "") {
             this._msg.Show(messageType.warn, "Warning", "Enter Email Address");
             return false;
         }
 
         if (that.iscpwd === 'Y') {
-            if (that.pwd == undefined) {
+            if (that.pwd === "") {
                 this._msg.Show(messageType.warn, "Warning", "Enter Password");
                 return false;
             }
 
-            if (that.confpwd == undefined) {
+            if (that.confpwd === "") {
                 this._msg.Show(messageType.warn, "Warning", "Enter Confirm Password");
                 return false;
             }
 
-            if (that.pwd != that.confpwd) {
+            if (that.pwd !== that.confpwd) {
                 this._msg.Show(messageType.warn, "Warning", "Password and Confirm Password not match");
                 return false;
             }
@@ -188,8 +193,8 @@ export class AddUser implements OnInit, OnDestroy {
 
             that.uid = UserDT[0].uid;
             that.ucode = UserDT[0].ucode;
-            that.firstname = UserDT[0].firstname;
-            that.lastname = UserDT[0].lastname;
+            that.fname = UserDT[0].fname;
+            that.lname = UserDT[0].lname;
             that.emailid = UserDT[0].emailid;
 
             var cmprights = null;
@@ -198,7 +203,7 @@ export class AddUser implements OnInit, OnDestroy {
 
             if (UserDT[0] != null) {
                 cmprights = null;
-                cmprights = UserDT[0].companyrights;
+                cmprights = UserDT[0].cmprights;
 
                 if (cmprights != null) {
                     for (var i = 0; i <= cmprights.length - 1; i++) {
@@ -207,7 +212,7 @@ export class AddUser implements OnInit, OnDestroy {
 
                         if (cmpitem != null) {
                             fyrights = null;
-                            fyrights = cmpitem.fyid.split(',');
+                            fyrights = cmpitem.fy.split(',');
 
                             if (fyrights != null) {
                                 for (var j = 0; j <= fyrights.length - 1; j++) {
@@ -243,7 +248,7 @@ export class AddUser implements OnInit, OnDestroy {
                 });
 
                 if (fyrights != "") {
-                    GiveRights.push({ "cmpid": companyitem.cmpid, "fyid": fyrights.slice(0, -1) });
+                    GiveRights.push({ "cmpid": companyitem.cmpid, "fy": fyrights.slice(0, -1) });
                 }
             }
         }
@@ -260,12 +265,12 @@ export class AddUser implements OnInit, OnDestroy {
         var saveUser = {
             "uid": that.uid,
             "ucode": that.ucode,
-            "firstname": that.firstname,
-            "lastname": that.lastname,
+            "fname": that.fname,
+            "lname": that.lname,
             "emailid": that.emailid,
             "pwd": that.pwd,
             "iscpwd": that.iscpwd,
-            "companyrights": cmprights
+            "cmprights": cmprights
         }
 
         if (that.validSuccess) {

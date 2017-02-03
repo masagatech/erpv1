@@ -13,11 +13,11 @@
                     <div class="input-group">
                         <label class="control-label">Company</label>
                         <select [(ngModel)]="cmpid" tabindex="1" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
-                                <option value="0">-- Select Company --</option>
-                                <option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
-                                    {{row.cmpname}}
-                                </option>
-                            </select>
+                            <option value="0">-- Select Company --</option>
+                            <option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
+                                {{row.cmpname}}
+                            </option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label">Financial Year</label>
-                        <select [(ngModel)]="fyid" tabindex="2" class="form-control">
+                        <select [(ngModel)]="fy" tabindex="2" class="form-control">
                                 <option value="0">-- Select Financial Year --</option>
                                 <option *ngFor="let fyrow of FYDetails" [value]="fyrow.fyid">
                                     {{fyrow.fyname}}

@@ -39,7 +39,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     detnarr: string = "";
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     rbRowData: any = [];
@@ -59,7 +59,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
 
         this.actionButton.find(a => a.id === "save").enabled = true;
@@ -70,7 +70,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
 
         that.rbRowData = [];
 
-        that._commonservice.checkValidate({ "flag": "receiptbook", "frmno": that.newseriesno, "tono": that.newseriesno + that.newqty, "cmpid": "2", "fyid": "7" }).subscribe(data => {
+        that._commonservice.checkValidate({ "flag": "receiptbook", "frmno": that.newseriesno, "tono": that.newseriesno + that.newqty, "cmpid": "2", "fy": "7" }).subscribe(data => {
             var dataResult = data.data;
             var frmno = 0;
             frmno = that.newseriesno;
@@ -81,14 +81,14 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                         "counter": i,
                         "rbid": that.rbid,
                         "cmpid": that.loginUser.cmpid,
-                        "fyid": that.loginUser.fyid,
+                        "fy": that.loginUser.fy,
                         "docdate": that.docdate,
                         "seriesno": frmno++,
                         "noofpage": that.newnoofpage,
                         "qty": that.newqty,
                         "narration": that.narration,
                         "detnarr": that.detnarr,
-                        //"docfile": this.docfile,
+                        //"suppdoc": this.suppdoc,
                         "uidcode": that.loginUser.login
                     });
                 }

@@ -30,7 +30,7 @@ export class AddPDC implements OnInit, OnDestroy {
     narration: string = "";
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     pdctypedt: any = [];
@@ -93,7 +93,7 @@ export class AddPDC implements OnInit, OnDestroy {
         var that = this;
 
         for (var i = 0; i < e.length; i++) {
-            that.docfile.push({ "id": e[i].id });
+            that.suppdoc.push({ "id": e[i].id });
         }
 
         that.actionButton.find(a => a.id === "save").enabled = true;
@@ -105,7 +105,7 @@ export class AddPDC implements OnInit, OnDestroy {
         var savepdc = {
             "pdcid": that.pdcid,
             "cmpid": that.loginUser.cmpid,
-            "fy": that.loginUser.fyid,
+            "fy": that.loginUser.fy,
             "acid": that.acid,
             "amount": that.amount,
             "bankname": that.bankname,
@@ -113,7 +113,7 @@ export class AddPDC implements OnInit, OnDestroy {
             "chequedate": that.chequedate,
             "pdctype": that.pdctype,
             "narration": that.narration,
-            "docfile": that.docfile,
+            "suppdoc": that.suppdoc,
             "uidcode": that.loginUser.login
         }
 
@@ -151,8 +151,8 @@ export class AddPDC implements OnInit, OnDestroy {
             that.bankname = pdcdata[0].bankname;
             that.chequeno = pdcdata[0].chequeno;
             that.narration = pdcdata[0].narration;
-            that.uploadedFiles = pdcdata[0].docfile == null ? [] : pdcdata[0].uploadedfile;
-            that.docfile = pdcdata[0].docfile == null ? [] : pdcdata[0].docfile;
+            that.uploadedFiles = pdcdata[0].suppdoc == null ? [] : pdcdata[0].uploadedfile;
+            that.suppdoc = pdcdata[0].suppdoc == null ? [] : pdcdata[0].suppdoc;
         }, err => {
             console.log("Error");
         }, () => {

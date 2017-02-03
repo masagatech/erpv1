@@ -23,7 +23,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private _dnservice: DNService, private _userService: UserService) {
-        this._dnservice.getDebitNote({ "flag": "docrange", "fyid": "7", "DNAutoID": "0", "fromdocno": "1", "todocno": "100" }).subscribe(data => {
+        this._dnservice.getDebitNote({ "flag": "docrange", "fy": "7", "DNAutoID": "0", "fromdocno": "1", "todocno": "100" }).subscribe(data => {
             this.viewDebitNoteDT = data.data;
         }, err => {
             console.log("Error");

@@ -58,7 +58,7 @@ declare var $: any;
             "type": "warehouse",
             "search": _me.warename,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".warename").autocomplete({
                 source: data.data,
@@ -125,7 +125,7 @@ declare var $: any;
             this.invServies.savelocation({
                 "locationdetails": this.jsondata(),
                 "wareid": this.wareid,
-                "fy": this.loginUser.fyid,
+                "fy": this.loginUser.fy,
                 "cmpid": this.loginUser.cmpid,
                 "createdby": this.loginUser.login
             }).subscribe(result => {
@@ -159,7 +159,7 @@ declare var $: any;
         this.invServies.getlocation({
             "cmpid": this.loginUser.cmpid,
             "wareid": this.wareid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(result => {
             var dataset = result.data;
@@ -203,7 +203,7 @@ declare var $: any;
             "search": arg == 0 ? me.localname : me.localname,
             "filter": "Warehouse Bin Location",
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".local").autocomplete({
                 source: data.data,
