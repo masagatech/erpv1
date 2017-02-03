@@ -8,6 +8,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -94,6 +95,16 @@ declare var commonfun: any;
     //Attribute
     labelname: string = "";
     attrparam: string = "";
+    attrtype: string = "";
+
+     // tab panel
+    @ViewChild('tabpanel')
+    tabpanel: AddDynamicTabComp;
+    tabListDT: any = [];
+    selectedtab: any = [];
+    isedittab: boolean = false;
+    atttype: string = "";
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -117,7 +128,9 @@ declare var commonfun: any;
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "cust";
-        this.labelname="Attribute";
+        this.labelname = "Attribute";
+        this.attrparam = "Item Attributes";
+        this.attrtype = "attribute";
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -604,55 +617,55 @@ declare var commonfun: any;
     }
 
     //attribute list Add Div
-    AttributeAdd() {
-        if (this.attrid > 0) {
-            this.Duplicateflag = true;
-            if (this.attrlist.length > 0) {
-                for (var i = 0; i < this.attrlist.length; i++) {
-                    if (this.attrlist[i].attrname == this.attrname) {
-                        this.Duplicateflag = false;
-                        break;
-                    }
-                }
-            }
-            if (this.Duplicateflag == true) {
-                this.attrlist.push({
-                    'attrname': this.attrname,
-                    'value': this.attrid
-                });
-                this.attrname = "";
-                $(".attr").focus();
-            }
-            else {
-                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
-                $(".attr").focus();
-                return;
-            }
+    // AttributeAdd() {
+    //     if (this.attrid > 0) {
+    //         this.Duplicateflag = true;
+    //         if (this.attrlist.length > 0) {
+    //             for (var i = 0; i < this.attrlist.length; i++) {
+    //                 if (this.attrlist[i].attrname == this.attrname) {
+    //                     this.Duplicateflag = false;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //         if (this.Duplicateflag == true) {
+    //             this.attrlist.push({
+    //                 'attrname': this.attrname,
+    //                 'value': this.attrid
+    //             });
+    //             this.attrname = "";
+    //             $(".attr").focus();
+    //         }
+    //         else {
+    //             this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+    //             $(".attr").focus();
+    //             return;
+    //         }
 
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-            $(".attr").focus();
-            return;
-        }
+    //     }
+    //     else {
+    //         this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+    //         $(".attr").focus();
+    //         return;
+    //     }
 
-    }
+    // }
 
     //Remove Attribute
-    Removeattr(row) {
-        var index = -1;
-        for (var i = 0; i < this.attrlist.length; i++) {
-            if (this.attrlist[i].value === row.value) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.attrlist.splice(index, 1);
-        $(".attr").focus();
-    }
+    // Removeattr(row) {
+    //     var index = -1;
+    //     for (var i = 0; i < this.attrlist.length; i++) {
+    //         if (this.attrlist[i].value === row.value) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    //     if (index === -1) {
+    //         console.log("Wrong Delete Entry");
+    //     }
+    //     this.attrlist.splice(index, 1);
+    //     $(".attr").focus();
+    // }
 
     //File Upload Start 
     onUploadStart(e) {
@@ -841,7 +854,7 @@ declare var commonfun: any;
             }
 
             that.custid = _custdata[0].autoid;
-            that.code = _custdata[0].code;
+            that.code = _custdata[0].custcode;
             that.Custname = _custdata[0].custname;
             that.isactive = _custdata[0].isactive;
             that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
@@ -1171,6 +1184,7 @@ declare var commonfun: any;
             "adrid": this.adrbookid,
             "parentid": this.parentcodename,
             "ledgerparam": this.ledgerparam(),
+             "dynamicfields": this.tabListDT,
             "remark1": '',
             "remark2": "",
             "remark3": []

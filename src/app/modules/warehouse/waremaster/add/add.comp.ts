@@ -69,7 +69,7 @@ declare var commonfun: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".code").focus();
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
         }, 0);
 
@@ -174,7 +174,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.attrid = ui.item.value;
                     me.attrname = ui.item.label;
                 }
@@ -251,7 +251,7 @@ declare var commonfun: any;
     }
 
     Attr() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.attrname = "";
             $(".attr").focus();
         }, 0);
@@ -266,6 +266,7 @@ declare var commonfun: any;
             "code": this.code,
             "remark": this.remark,
             "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "isactive": this.isactive,
             "attr": this.createattrjson(),

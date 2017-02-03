@@ -75,7 +75,7 @@
 				</div>
 			</div>
 			<div class="tab-pane" id="attr">
-				<attribute #attribute [labelname]="labelname" [attrparam]="attrparam"></attribute>
+				<attribute #attribute [attrlist]="attrlist" [labelname]="labelname" [attrparam]="attrparam" [attrtype]="attrtype"></attribute>
 			</div>
 			<div class="tab-pane" id="itemdis">
 				<div class="row">
@@ -376,6 +376,11 @@
 						(onComplete)="onUploadComplete($event)"></fileupload>
 				</div>
 			</div>
+			<div *ngFor="let tab of tabListDT" class="tab-pane" id="{{tab.fldcode}}">
+				<dynamictab [tab]="tab" [atttype]="atttype" [cmpid]="loginUser.cmpid" [isdetails]="isdetails"></dynamictab>
+			</div>
 		</div>
 	</div>
 </div>
+<adddynamictab #tabpanel [tabListDT]="tabListDT" [cmpid]="loginUser.cmpid" [fy]="loginUser.fy" [selectedtab]="selectedtab"
+	[isedittab]="isedittab"></adddynamictab>
