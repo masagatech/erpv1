@@ -40,7 +40,7 @@ declare var $: any;
     titlesaleid: any = 0;
     titlepur: any = "";
     titlepurid: any = 0;
-    docfile: any = [];
+    suppdoc: any = [];
     module: string = "";
     uploadedFiles: any = [];
     shelflifelist: any = [];
@@ -148,7 +148,7 @@ declare var $: any;
     //File Upload Complete 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
@@ -161,7 +161,7 @@ declare var $: any;
             "search": that.attname,
             "filter": "Item Attributes",
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".attr").autocomplete({
@@ -205,7 +205,7 @@ declare var $: any;
             "search": that.keyattr,
             "filter": "Item Attributes",
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".keyattr").autocomplete({
@@ -640,7 +640,7 @@ declare var $: any;
     EditParamJson() {
         var Param = {
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "itemsid": this.itemsid,
             "createdby": this.loginUser.login,
             "flag": "Edit",
@@ -661,7 +661,7 @@ declare var $: any;
 
                 var _custdata = returndata[0]._custdata;
                 var _uploadedfile = returndata[0]._uploadedfile;
-                var _docfile = returndata[0]._docfile;
+                var _suppdoc = returndata[0]._suppdoc;
                 this.itemcode = returndata[0].itemcode;
                 this.itemname = returndata[0].itemname;
                 this.skucode = returndata[0].skucode;
@@ -677,8 +677,8 @@ declare var $: any;
 
 
                 if (_uploadedfile != null) {
-                    that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-                    that.docfile = _docfile == null ? [] : _docfile;
+                    that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                    that.suppdoc = _suppdoc == null ? [] : _suppdoc;
                 }
 
                 //Warehouse check edit mode
@@ -805,7 +805,7 @@ declare var $: any;
             "amt":0,
             "itemid":1,
             "outward": 0,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "remark": "item Add"
@@ -818,7 +818,7 @@ declare var $: any;
         var Param = {
             "itemsid": this.itemsid,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "itemdesc": this.itemsdesc,
             "itemcode": this.itemcode,
@@ -834,7 +834,7 @@ declare var $: any;
             "purc": this.CreatejsonPurchasePrice(),
             "supp": this.CreatejsonSupplier(),
             "ware": this.CreatejsonWarehouse(),
-            "docfile": this.docfile,
+            "suppdoc": this.suppdoc,
             "ledger": this.craetLedgerjson()
         }
         return Param;

@@ -25,7 +25,7 @@ export class ActionAccess {
 
         that._userService.getMenuDetails({
             "flag": "actrights", "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid,
-            "fyid": that.loginUser.fyid, "ptype": menuid, "smid": 28
+            "fy": that.loginUser.fy, "ptype": menuid, "smid": 28
         }).subscribe(data => {
             var data = data.data;
 

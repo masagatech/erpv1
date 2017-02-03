@@ -78,7 +78,7 @@ declare var commonfun: any;
         this.ctrlServies.getCtrlcenter({
             "cmpid": this.loginUser.cmpid,
             "ctrlid": autoid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(result => {
             var dataset = result.data;
@@ -103,7 +103,7 @@ declare var commonfun: any;
         this._autoservice.getAutoData({
             "type": "userwithcode", "search": that.empname,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".empname").autocomplete({

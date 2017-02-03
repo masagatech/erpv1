@@ -71,7 +71,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
                     "flag": "Details",
                     "bankreid": row.id,
                     "cmpid": this.loginUser.cmpid,
-                    "fyid": this.loginUser.fyid
+                    "fy": this.loginUser.fy
                 }).subscribe(data => {
                     row.Details = data.data;
                 }, err => {
@@ -103,7 +103,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
 
         this.BankServies.getBankRecieptView({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "bankid": this.BankCode,
             "flag": "",
             "fromdate": $('#FromDate').datepicker('getDate'),

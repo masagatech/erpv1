@@ -40,7 +40,7 @@ export class AddRBI implements OnInit, OnDestroy {
     empSeriesDT: any = [];
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -89,7 +89,7 @@ export class AddRBI implements OnInit, OnDestroy {
     getLatestSeries() {
         var that = this;
 
-        that._commonservice.getOtherDetails({ "flag": "latestseries", "cmpid": "2", "fyid": "7" }).subscribe(data => {
+        that._commonservice.getOtherDetails({ "flag": "latestseries", "cmpid": "2", "fy": "7" }).subscribe(data => {
             that.latestSeriesDT = data.data;
         });
     }
@@ -99,7 +99,7 @@ export class AddRBI implements OnInit, OnDestroy {
     getEmpSeries(pempid) {
         var that = this;
 
-        that._commonservice.getOtherDetails({ "flag": "empseries", "empid": pempid, "cmpid": "2", "fyid": "7" }).subscribe(data => {
+        that._commonservice.getOtherDetails({ "flag": "empseries", "empid": pempid, "cmpid": "2", "fy": "7" }).subscribe(data => {
             that.empSeriesDT = data.data;
         });
     }
@@ -126,12 +126,12 @@ export class AddRBI implements OnInit, OnDestroy {
         that._rbservice.getRBIDetails({
             "flag": "id",
             "cmpid": that.loginUser.cmpid,
-            "fyid": that.loginUser.fyid,
+            "fy": that.loginUser.fy,
             "irbid": pirbid
         }).subscribe(data => {
             var _rbidata = data.data[0]._rbidata;
             var _uploadedfile = data.data[0]._uploadedfile;
-            var _docfile = data.data[0]._docfile;
+            var _suppdoc = data.data[0]._suppdoc;
 
             that.irbid = _rbidata[0].irbid;
             that.rbid = _rbidata[0].rbid;
@@ -143,8 +143,8 @@ export class AddRBI implements OnInit, OnDestroy {
             that.tono = _rbidata[0].tono;
             that.narration = _rbidata[0].narration;
 
-            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            that.docfile = _docfile == null ? [] : _docfile;
+            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
         });
 
         return nop;
@@ -155,7 +155,7 @@ export class AddRBI implements OnInit, OnDestroy {
     getFromNo() {
         var that = this;
 
-        that._commonservice.checkValidate({ "flag": "seriesno", "rbid": that.rbid, "cmpid": "2", "fyid": "7" }).subscribe(data => {
+        that._commonservice.checkValidate({ "flag": "seriesno", "rbid": that.rbid, "cmpid": "2", "fy": "7" }).subscribe(data => {
             var dataResult = data.data;
 
             if (dataResult[0].statusid == "1") {
@@ -192,7 +192,7 @@ export class AddRBI implements OnInit, OnDestroy {
         var that = this;
 
         that._commonservice.checkValidate({
-            "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": "2", "fyid": "7"
+            "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": "2", "fy": "7"
         }).subscribe(data => {
             var dataResult = data.data;
 
@@ -212,7 +212,7 @@ export class AddRBI implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
 
         this.actionButton.find(a => a.id === "save").enabled = true;
@@ -224,7 +224,7 @@ export class AddRBI implements OnInit, OnDestroy {
         var saveRBI = {
             "irbid": this.irbid,
             "cmpid": that.loginUser.cmpid,
-            "fyid": that.loginUser.fyid,
+            "fy": that.loginUser.fy,
             "docno": this.docno,
             "docdate": this.docdate,
             "empid": this.empid,
@@ -232,7 +232,7 @@ export class AddRBI implements OnInit, OnDestroy {
             "fromno": this.fromno,
             "tono": this.tono,
             "narration": this.narration,
-            "docfile": this.docfile,
+            "suppdoc": this.suppdoc,
             "uidcode": that.loginUser.login
         }
 

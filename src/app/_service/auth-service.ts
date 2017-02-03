@@ -63,7 +63,7 @@ export class AuthenticationService {
 
           if (userDetails.status) {
             this._userService.setUsers(userDetails);
-            if (userDetails.cmpid != 0 && userDetails.fyid != 0) {
+            if (userDetails.cmpid != 0 && userDetails.fy != 0) {
               // propr user
             } else if (userDetails.errcode === "chpwd") {
               this._router.navigate(['/changepwd']);

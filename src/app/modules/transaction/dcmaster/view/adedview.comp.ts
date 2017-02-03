@@ -87,7 +87,7 @@ export class dcview implements OnInit, OnDestroy {
         this.ToData = $('#ToDate').datepicker('getDate');
         this.dcviewServies.getDcmasterView({                     //User getdcdropdown
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": "Admin",
             "acid": this.CustID,
             "FromDoc": 0,
@@ -130,7 +130,7 @@ export class dcview implements OnInit, OnDestroy {
                     "flag": "Details",
                     "doc": row.dcno,
                     "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fyid,
+                    "fy": this.loginUser.fy,
                     "createdby": this.loginUser.login
                 }).subscribe(data => {
                     row.Details = data.data[0];

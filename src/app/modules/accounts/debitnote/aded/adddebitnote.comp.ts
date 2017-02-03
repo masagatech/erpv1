@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
@@ -6,27 +6,29 @@ import { DNService } from '../../../../_service/debitnote/dn-service' /* add ref
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { ALSService } from '../../../../_service/auditlock/als-service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 
 @Component({
     templateUrl: 'adddebitnote.comp.html',
-    providers: [DNService, CommonService]
+    providers: [DNService, CommonService, ALSService]
 })
 
 export class AddDebitNote implements OnInit, OnDestroy {
     viewCustomerDT: any[] = [];
+    loginUser: LoginUserModel;
     duplicateacid: Boolean = true;
 
     dnid: number = 0;
     dnacid: number = 0;
     dnacname: string = "";
-    dndate: any = "";
     dramt: any = "";
     narration: string = "";
     uploadedFiles: any = [];
-    docfile: any = [];
+    suppdoc: any = [];
 
     dnRowData: any = [];
     viewDNData: any = [];
@@ -43,14 +45,90 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-    loginUser: LoginUserModel;
+
+    @ViewChild("dndate")
+    dndate: CalendarComp;
 
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _dnservice: DNService, private _commonservice: CommonService, private _userService: UserService) {
+        private _dnservice: DNService, private _commonservice: CommonService, private _userService: UserService,
+        private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
+    }
+
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "dn", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.dndate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ngOnInit() {
+        this.dndate.initialize(this.loginUser);
+        this.dndate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.title = "Edit Debit Note";
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.dnid = params['id'];
+                this.getDNDataByID(this.dnid);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+            }
+            else {
+                this.title = "Add Debit Note";
+
+                var date = new Date();
+                this.dndate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveDNData();
+        } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
     }
 
     isDuplicateacid() {
@@ -69,6 +147,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     private NewRowAdd() {
+        var that = this;
+
         if (this.newacname == "" || this.newacname == null) {
             alert("Please Enter Account Name");
             return;
@@ -85,10 +165,14 @@ export class AddDebitNote implements OnInit, OnDestroy {
         //Add New Row
         if (this.duplicateacid == false) {
             this.dnRowData.push({
-                'counter': this.counter,
-                'acid': this.newacid,
-                'acname': this.newacname,
-                'cramt': this.newcramt
+                'counter': that.counter,
+                "dnid": 0,
+                'acid': that.newacid,
+                'acname': that.newacname,
+                'cramt': that.newcramt,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "docdate": "" + that.dndate.getDate() + ""
             });
 
             this.counter++;
@@ -138,20 +222,23 @@ export class AddDebitNote implements OnInit, OnDestroy {
     getDNDataByID(pdnid: number) {
         var that = this;
 
-        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid, "dnid": pdnid }).subscribe(data => {
+        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "dnid": pdnid }).subscribe(data => {
             var _dndata = data.data[0]._dndata;
             var _uploadedfile = data.data[0]._uploadedfile;
-            var _docfile = data.data[0]._docfile;
+            var _suppdoc = data.data[0]._suppdoc;
 
             that.dnid = _dndata[0].dnid;
             that.dnacid = _dndata[0].acid;
             that.dnacname = _dndata[0].acname;
-            that.dndate = _dndata[0].docdate;
+
+            var date = new Date(_dndata[0].docdate);
+            that.dndate.setDate(date);
+
             that.dramt = _dndata[0].dramt;
             that.narration = _dndata[0].narration;
 
-            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            that.docfile = _docfile == null ? [] : _docfile;
+            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
 
             that.getDNDetailsByID(_dndata[0].docno);
         }, err => {
@@ -180,7 +267,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         var that = this;
 
         for (var i = 0; i < e.length; i++) {
-            that.docfile.push({ "id": e[i].id });
+            that.suppdoc.push({ "id": e[i].id });
         }
 
         that.actionButton.find(a => a.id === "save").enabled = true;
@@ -189,34 +276,17 @@ export class AddDebitNote implements OnInit, OnDestroy {
     saveDNData() {
         var that = this;
 
-        var jsondt = [];
-        var dnid = 0;
-
-        for (var i = 0; i < that.dnRowData.length; i++) {
-            var field = that.dnRowData[i];
-
-            jsondt = [{
-                "dnid": field.dnid == undefined ? 0 : field.dnid,
-                "cmpid": this.loginUser.cmpid,
-                "fyid": this.loginUser.fyid,
-                "docdate": "" + that.dndate + "",
-                "acid": + field.acid,
-                "dramt": "0",
-                "cramt": field.cramt
-            }];
-        }
-
         var saveDN = {
             "dnid": that.dnid,
-            "cmpid": this.loginUser.cmpid,
-            "fyid": this.loginUser.fyid,
-            "docdate": that.dndate,
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "docdate": that.dndate.getDate(),
             "acid": that.dnacid,
             "dramt": that.dramt,
             "narration": that.narration,
-            "uidcode": this.loginUser.login,
-            "docfile": that.docfile,
-            "dndetails": jsondt
+            "uidcode": that.loginUser.login,
+            "suppdoc": that.suppdoc,
+            "dndetails": that.dnRowData
         }
 
         that.duplicateacid = that.isDuplicateacid();
@@ -225,8 +295,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
         if (that.duplicateacid == false) {
             that._dnservice.saveDebitNote(saveDN).subscribe(data => {
                 var dataResult = data.data;
-                debugger;
-                console.log(dataResult);
 
                 if (dataResult[0].funsave_debitnote.msgid != "-1") {
                     alert(dataResult[0].funsave_debitnote.msg);
@@ -240,69 +308,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
             }, () => {
                 // console.log("Complete");
             });
-        }
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.title = "Add Debit Note";
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.dnid = params['id'];
-                this.getDNDataByID(this.dnid);
-
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Edit Debit Note";
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-            }
-        });
-
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            // Doc Date 
-
-            $(".dndate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".dndate").datepicker('setDate', today);
-        }, 0);
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveDNData();
-        } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
         }
     }
 

@@ -44,7 +44,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
     expheadDT: any = [];
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     selectedrow: any = [];
@@ -177,7 +177,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
 
         this.actionButton.find(a => a.id === "save").enabled = true;
@@ -209,14 +209,14 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
                 "loginsessionid": that.loginUser._sessiondetails.sessionid,
                 "uid": that.loginUser.uid,
                 "cmpid": that.loginUser.cmpid,
-                "fyid": that.loginUser.fyid,
+                "fy": that.loginUser.fy,
                 "period": that.period,
                 "noofdocs": that.noofdocs,
                 "ctrlcenterid": that.ctrlcenterid,
                 "empid": that.empid,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login,
-                "docfile": that.docfile,
+                "suppdoc": that.suppdoc,
                 "expensehead": that.expenseheadDT
             }).subscribe(data => {
                 var dataResult = data.data;
@@ -261,10 +261,10 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
             that.narration = _expvdata[0].narration;
 
             var _uploadedfile = dataresult[0]._uploadedfile;
-            var _docfile = dataresult[0]._docfile;
+            var _suppdoc = dataresult[0]._suppdoc;
 
-            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            that.docfile = _docfile == null ? [] : _docfile;
+            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
         }, err => {
             console.log("Error");
         }, () => {

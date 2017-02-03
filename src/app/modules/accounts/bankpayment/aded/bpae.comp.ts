@@ -40,7 +40,7 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     Issuesdate: any;
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     private subscribeParameters: any;
@@ -77,7 +77,7 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
 
     onUploadComplete(e) {
         for (var i = 0; i < e.length; i++) {
-            this.docfile.push({ "id": e[i].id });
+            this.suppdoc.push({ "id": e[i].id });
         }
 
         this.actionButton.find(a => a.id === "save").enabled = true;
@@ -89,14 +89,14 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
         this.BankServies.getBankPaymentView({
             "bankpayid": this.BankPayId,
             "cmpid": this.loginUser.cmpid,
-            "fyid": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "flag": "edit"
         }).subscribe(data => {
             console.log(data.data);
 
             var _bankpayment = data.data[0]._bankpayment;
             var _uploadedfile = data.data[0]._uploadedfile;
-            var _docfile = data.data[0]._docfile;
+            var _suppdoc = data.data[0]._suppdoc;
 
             this.Bankid = _bankpayment[0].bank;
             this.Issuesdate = _bankpayment[0].issuedate;
@@ -108,8 +108,8 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
             this.Amount = _bankpayment[0].amount;
             this.Remark = _bankpayment[0].remark;
 
-            this.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            this.docfile = _docfile == null ? [] : _docfile;
+            this.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            this.suppdoc = _suppdoc == null ? [] : _suppdoc;
         }, err => {
             console.log('Error');
         }, () => {
@@ -122,14 +122,14 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     ParamJson() {
         var Param = {
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "bankpayid": this.BankPayId,
             "refno": this.Refno,
             "acid": this.CustID,
             "bankid": this.Bankid,
             "issuedate": $('#Issuesdate').datepicker('getDate'),
             "createdby": this.loginUser.login,
-            "docfile": this.docfile,
+            "suppdoc": this.suppdoc,
             "typ": this.Type,
             "amount": this.Amount,
             "cheqno": this.ChequeNo,

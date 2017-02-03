@@ -18,11 +18,11 @@ export class AddDR implements OnInit, OnDestroy {
     uid: number = 0;
     uname: string = "";
     cmpid: number = 0;
-    fyid: number = 0;
+    fy: number = 0;
 
     newdoctitle: string = "";
     newtag: string = "";
-    newdocfile: string = "";
+    newsuppdoc: string = "";
     newfilesize: string = "";
     newfiletype: string = "";
 
@@ -58,10 +58,10 @@ export class AddDR implements OnInit, OnDestroy {
                 "docid": 0,
                 "uid": that.uid,
                 "cmpid": 2,
-                "fyid": 7,
+                "fy": 7,
                 "doctitle": "",
                 "tag": "",
-                "docfile": e[i].path,
+                "suppdoc": e[i].path,
                 "filesize": e[i].size,
                 "filetype": e[i].type,
                 "createdby": "1:admin",

@@ -171,7 +171,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             "traspo": this.Traspoter,
             "billingadr": this.BillAdr,
             "shippadr": this.shippAdr,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
             "remark": this.Remark,
@@ -266,8 +266,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.dcServies.getDcmasterView({
             "flag": "edit",
             "doc": Docno,
-            "cmpid": this.loginUser.fyid,
-            "fy": this.loginUser.fyid,
+            "cmpid": this.loginUser.fy,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             var dataset = data.data;
@@ -308,7 +308,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             "type": "customer",
             "search": _me.CustName,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".Custcode").autocomplete({
@@ -341,7 +341,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             "type": "CatProdName",
             "search": arg == 0 ? me.NewItemsName : me.ItemsName,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".ProdName").autocomplete({
@@ -383,7 +383,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.dcServies.getdropdwn({                     //User getdcdropdown
                 "custid": val,
                 "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fyid,
+                "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "flag": '',
                 "flag1": ''
@@ -408,7 +408,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         if (val != "") {
             this.dcServies.getItemsAutoCompleted({
                 "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fyid,
+                "fy": this.loginUser.fy,
                 "itemsid": val,
                 "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
@@ -541,7 +541,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.dcServies.deleteDcMaster({
                 "DCNo": 0,
                 "DCDetelId": DcDelid,
-                "FY": this.loginUser.fyid,
+                "FY": this.loginUser.fy,
                 "cmpid": this.loginUser.cmpid,
                 "UserCode": this.loginUser.login,
                 "Flag": ""

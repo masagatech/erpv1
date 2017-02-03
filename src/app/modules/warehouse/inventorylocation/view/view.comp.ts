@@ -47,7 +47,7 @@ declare var $: any;
     getinvlocation(from: number, to: number) {
         this.invlocServies.getinvlocation({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "from": from,
             "to": to,
             "createdby": this.loginUser.login

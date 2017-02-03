@@ -24,7 +24,7 @@ export class AddDynamicTabComp implements OnInit, OnDestroy {
     @Input() tabListDT: any = [];
 
     @Input() cmpid: number = 0;
-    @Input() fyid: number = 0;
+    @Input() fy: number = 0;
     
     @Input() selectedtab: any = [];
     @Input() isedittab: boolean = false;
@@ -56,7 +56,7 @@ export class AddDynamicTabComp implements OnInit, OnDestroy {
         var fldcode = this.fldname.replace(" ", "").replace("&", "").replace("/", "");
         this.tabListDT.push({
             "autoid": 0, "fldcode": fldcode, "fldname": this.fldname, "fldvalue": [],
-            "cmpid": that.cmpid, "fyid": that.fyid
+            "cmpid": that.cmpid, "fy": that.fy
         });
 
         $('#dynTabModel').modal('hide');

@@ -101,7 +101,7 @@ declare var $: any;
         this.ToDate = $("#ToDate").val();
         this.itemViewServies.getItemsMaster({
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby":this.loginUser.login,
             "flag": "",
             "itemsid": this.itemsid,
@@ -145,7 +145,7 @@ declare var $: any;
                     "flag": "Details",
                     "itemsid": row.itemsid,
                     "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fyid
+                    "fy": this.loginUser.fy
                 }).subscribe(data => {
                     var dataset = data.data;
                     row.attribute = dataset[0]._attributejson;

@@ -33,7 +33,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     totalRecords: number;
 
     cmpid: any = 0;
-    fyid: number = 0;
+    fy: number = 0;
 
     deptid: number = 0;
     uid: any = "";
@@ -213,7 +213,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         var saveUR = {
             "uid": this.uid,
             "cmpid": this.selectedCompany.cmpid,
-            "fyid": this.fyid,
+            "fy": this.fy,
             "giverights": giverights,
             "uidcode": "1:admin" //this.loginUser.uid
         }
@@ -221,7 +221,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         if (this.uid == "") {
             alert("Please Enter User");
         }
-        else if (this.fyid == 0) {
+        else if (this.fy == 0) {
             alert("Please Select Financial Year");
         }
         else {
@@ -271,7 +271,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         var that = this;
         this.clearcheckboxes();
 
-        that._userservice.getUserRights({ "flag": "details", "uid": row.uid, "cmpid": row.cmpid, "fyid": that.fyid }).subscribe(data => {
+        that._userservice.getUserRights({ "flag": "details", "uid": row.uid, "cmpid": row.cmpid, "fy": that.fy }).subscribe(data => {
             var viewUR = data.data;
 
             var userrights = null;

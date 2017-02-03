@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
     providers: [CompService, FYService]
 })
 export class DefCmpFyComp implements OnInit {
-    fyid: number = 0;
+    fy: number = 0;
     FYDetails: any = [];
     cmpid: number = 0;
     CompanyDetails: any = [];
@@ -29,14 +29,12 @@ export class DefCmpFyComp implements OnInit {
     }
 
     ngOnInit() {
-
-
         // that._userService.getSettings({ "flag": "single", "uid": this.loginUser.uid }).subscribe(r => {
         //     var d = r.data;
         //     var isvalid = false;
         //     if (d.settings) {
         //         if (d.settings.fy && d.settings.cmpid) {
-        //             this.loginUser.fyid = d.settings.fy;
+        //             this.loginUser.fy = d.settings.fy;
         //             this.loginUser.cmpid = d.settings.cmpid;
         //             isvalid = true;
         //         }
@@ -55,7 +53,7 @@ export class DefCmpFyComp implements OnInit {
 
         this.cmpid = this.loginUser.cmpid;
         this.getFYDetails(this.loginUser.cmpid);
-        this.fyid = this.loginUser.fyid;
+        this.fy = this.loginUser.fy;
     }
 
     getFYDetails(cmpid) {
@@ -63,7 +61,6 @@ export class DefCmpFyComp implements OnInit {
 
         that._fyservice.getfy({ "flag": "usrcmpwise", "uid": this.loginUser.uid, "cmpid": cmpid }).subscribe(data => {
             that.FYDetails = data.data;
-
         }, err => {
             console.log("Error");
         }, () => {
@@ -75,7 +72,6 @@ export class DefCmpFyComp implements OnInit {
         var that = this;
         that._compservice.getCompany({ "flag": "usrwise", "uid": uid }).subscribe(data => {
             that.CompanyDetails = data.data;
-
         }, err => {
             console.log("Error");
         }, () => {
@@ -86,11 +82,11 @@ export class DefCmpFyComp implements OnInit {
     private next_click(e) {
         var that = this;
         this.loginUser.cmpid = this.cmpid;
-        this.loginUser.fyid = this.fyid;
-        this.loginUser.fyfrom = that.FYDetails.find(d=>d.fyid == that.fyid).fromdt;
-        this.loginUser.fyto = that.FYDetails.find(d=>d.fyid == that.fyid).todt;
-
-        var settings = [{ "key": "fy", "value": this.fyid }, { "key": "cmpid", "value": this.cmpid }];
+        this.loginUser.fy = this.fy;
+        
+        this.loginUser.fyfrom = that.FYDetails.find(d => d.fyid == that.fy).fromdt;
+        this.loginUser.fyto = that.FYDetails.find(d => d.fyid == that.fy).todt;
+        var settings = [{ "key": "fy", "value": this.fy }, { "key": "cmpid", "value": this.cmpid }];
         this._userService.saveSettings({
             "uid": this.loginUser.uid, "cmpid": this.cmpid,
             settings, "userid": this.loginUser.login

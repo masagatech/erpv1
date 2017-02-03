@@ -123,7 +123,7 @@
 
 								<div class="form-group">
 									<label class="control-label">Address</label>
-									<textarea name="addressline1" [(ngModel)]="addressline1" class="form-control small-text-box" cols="150" rows="5"></textarea>
+									<textarea name="address" [(ngModel)]="address" class="form-control small-text-box" cols="150" rows="5"></textarea>
 								</div>
 
 								<div class="row">
@@ -183,6 +183,6 @@
 		</div>
 	</div>
 
-	<adddynamictab #tabpanel [tabListDT]="tabListDT" [cmpid]="loginUser.cmpid" [fyid]="loginUser.fyid" [selectedtab]="selectedtab"
+	<adddynamictab #tabpanel [tabListDT]="tabListDT" [cmpid]="loginUser.cmpid" [fy]="loginUser.fy" [selectedtab]="selectedtab"
 		[isedittab]="isedittab"></adddynamictab>
 </form>

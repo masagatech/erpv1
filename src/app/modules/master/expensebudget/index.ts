@@ -32,7 +32,7 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard],  data: { "module": "coa", "submodule":"eb", "rights": "add", "urlname": "/add" }},
+                    { path: '', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard],  data: { "module": "coa", "submodule":"eb", "rights": "add", "urlname": "" }},
                     { path: 'edit/:id', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule":"eb", "rights": "edit", "urlname": "/edit" } },
                     //{ path: '', component: ViewExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule":"eb", "rights": "view", "urlname": "/expensebudget" } },
                 ]

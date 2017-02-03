@@ -60,7 +60,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
     getEmployeeData() {
         var that = this;
 
-        this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid }).subscribe(employee => {
+        this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(employee => {
             this.viewEmployeeDT = employee.data;
         }, err => {
             console.log("Error");
@@ -97,7 +97,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
 
         that._userservice.getMenuDetails({
             "flag": "actrights", "ptype": "emp", "mtype": "emp", "uid": that.loginUser.uid,
-            "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             var data = data.data.filter(a => a.dispfor === "view");
 

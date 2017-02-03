@@ -28,7 +28,7 @@ export class AddJV implements OnInit, OnDestroy {
     narration: string = "";
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     jvRowData: any = [];
@@ -64,7 +64,7 @@ export class AddJV implements OnInit, OnDestroy {
         var that = this;
 
         that._alsservice.getAuditLockSetting({
-            "flag": "modulewise", "dispnm": "jv", "fyid": that.loginUser.fyid
+            "flag": "modulewise", "dispnm": "jv", "fy": that.loginUser.fy
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
@@ -358,20 +358,19 @@ export class AddJV implements OnInit, OnDestroy {
     getJVDataById(pjvmid: number) {
         var that = this;
 
-        that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fyid": that.loginUser.fyid, "jvmid": pjvmid }).subscribe(data => {
+        that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "jvmid": pjvmid }).subscribe(data => {
             var _jvdata = data.data[0]._jvdata;
             var _uploadedfile = data.data[0]._uploadedfile;
-            var _docfile = data.data[0]._docfile;
+            var _suppdoc = data.data[0]._suppdoc;
 
             that.jvmid = _jvdata[0].jvmid;
 
             var date = new Date(_jvdata[0].docdate);
             that.jvdate.setDate(date);
-            that.docdate = _jvdata[0].docdate;
             that.narration = _jvdata[0].narration;
 
-            that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-            that.docfile = _docfile == null ? [] : _docfile;
+            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
 
             that.getJVDetailsByJVID(pjvmid);
         }, err => {
@@ -404,7 +403,7 @@ export class AddJV implements OnInit, OnDestroy {
         var that = this;
 
         for (var i = 0; i < e.length; i++) {
-            that.docfile.push({ "id": e[i].id });
+            that.suppdoc.push({ "id": e[i].id });
         }
 
         that.actionButton.find(a => a.id === "save").enabled = true;
@@ -418,10 +417,10 @@ export class AddJV implements OnInit, OnDestroy {
                 "jvmid": that.jvmid,
                 "loginsessionid": that.loginUser._sessiondetails.sessionid,
                 "uid": that.loginUser.uid,
-                "fyid": that.loginUser.fyid,
+                "fy": that.loginUser.fy,
                 "cmpid": that.loginUser.cmpid,
                 "docdate": that.jvdate.getDate(),
-                "docfile": that.docfile.length === 0 ? null : that.docfile,
+                "suppdoc": that.suppdoc.length === 0 ? null : that.suppdoc,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login,
                 "jvdetails": that.jvRowData

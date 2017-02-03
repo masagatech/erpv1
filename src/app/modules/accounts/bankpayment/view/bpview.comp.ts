@@ -112,7 +112,7 @@ export class bankpaymentview implements OnInit, OnDestroy {
                     "flag": "Details",
                     "bankid": row.id,
                     "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fyid
+                    "fy": this.loginUser.fy
                 }).subscribe(data => {
                     row.Details = data.data;
                 }, err => {

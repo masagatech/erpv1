@@ -106,7 +106,7 @@ declare var commonfun: any;
             "type": "nature",
             "search": that.neturname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".neturofgr").autocomplete({
@@ -139,7 +139,7 @@ declare var commonfun: any;
             "groupid": groupid,
             "neturid": 0,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             this.editmode = true;
@@ -198,7 +198,7 @@ declare var commonfun: any;
             "groupname": this.groupName,
             "parentgr": this.parentgr == "" ? 0 : this.parentgr,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "applyfrom": this.appfrom,
             "createdby": this.loginUser.login,
             "neturid": this.neturid,

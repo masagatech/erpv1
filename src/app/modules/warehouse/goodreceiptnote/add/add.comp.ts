@@ -170,7 +170,7 @@ declare var $: any;
             "search": _me.tranname,
             "cmpid": _me.loginUser.cmpid,
             "custid":_me.custid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".trans").autocomplete({
                 source: data.data,
@@ -201,7 +201,7 @@ declare var $: any;
             "search": _me.suppname,
             "cmpid": _me.loginUser.cmpid,
             "custid":_me.custid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".salesman").autocomplete({
                 source: data.data,
@@ -232,7 +232,7 @@ declare var $: any;
             "type": "customer",
             "search": _me.custname,
             "cmpid": _me.loginUser.cmpid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".cust").autocomplete({
                 source: data.data,
@@ -262,7 +262,7 @@ declare var $: any;
             "type": "product",
             "search": arg == 0 ? me.NewItemsName : me.itemname,
             "cmpid": _me.loginUser.cmpid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".ProdName").autocomplete({
                 source: data.data,

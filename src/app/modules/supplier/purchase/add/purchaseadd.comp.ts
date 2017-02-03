@@ -104,7 +104,7 @@ declare var $: any;
     EditParamJson(PurOrid) {
         var Param = {
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "PurOrId": PurOrid,
             "createdby": this.loginUser.login,
             "SupplierId": 0,
@@ -176,7 +176,7 @@ declare var $: any;
         var Param = {
             "purorid": this.PurOrId,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "invno": this.InvNostr,
             "docdate": $('#docdate').datepicker('getDate'),
             "refno": this.OtherRef,
@@ -316,7 +316,7 @@ declare var $: any;
             "type": "customer",
             "search": that.AccountName,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".AccountName").autocomplete({
@@ -347,7 +347,7 @@ declare var $: any;
             "type": "supplier",
             "search": that.SupplierName,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".SupplierName").autocomplete({
@@ -376,7 +376,7 @@ declare var $: any;
         this.PurchaseServies.getitemsDetails({
             "itemsid": Itemsid,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(result => {
             var returndata = result.data;
@@ -400,7 +400,7 @@ declare var $: any;
             "type": "product",
             "search": arg == 0 ? me.NewItemsName : me.ItemsName,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".ProdName").autocomplete({

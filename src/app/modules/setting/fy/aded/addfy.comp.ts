@@ -106,7 +106,7 @@ export class AddFY implements OnInit, OnDestroy {
     }
 
     getCompany() {
-        this._compservice.getCompany({ "flag": "all", "fyid": 0 }).subscribe(data => {
+        this._compservice.getCompany({ "flag": "all", "fy": 0 }).subscribe(data => {
             this.CompanyDetails = data.data;
         }, err => {
             console.log("Error");
@@ -128,10 +128,10 @@ export class AddFY implements OnInit, OnDestroy {
         return true;
     }
 
-    getFYDetailsById(pfyid: number) {
+    getFYDetailsById(pfy: number) {
         var that = this;
 
-        that._fyservice.getfy({ "flag": "id", "fyid": pfyid }).subscribe(data => {
+        that._fyservice.getfy({ "flag": "id", "fyid": pfy }).subscribe(data => {
             var FYDT = data.data;
 
             that.fyid = FYDT[0].fyid;

@@ -51,7 +51,7 @@ declare var $: any;
             "groupid": 0,
             "groupcode": "0",
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "CreatedBy": this.loginUser.login,
             "flag": "all"
         }
@@ -94,7 +94,7 @@ declare var $: any;
                     "fromdate": "",
                     "todate": "",
                     "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fyid,
+                    "fy": this.loginUser.fy,
                     "createdBy": this.loginUser.login
                 }).subscribe(data => {
                     var dataset = data.data;
@@ -123,7 +123,7 @@ declare var $: any;
             "type": "nature",
             "search": this.GroupName,
             "CmpCode": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "createdBy": this.loginUser.login
         }).subscribe(data => {
             $(".GroupName").autocomplete({

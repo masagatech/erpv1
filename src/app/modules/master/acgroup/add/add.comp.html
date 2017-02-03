@@ -24,7 +24,7 @@
 				<div class='form-group'>
 					<label>Applicable From</label>
 					<select class="form-control" tabindex="3" [(ngModel)]="appfrom" [disabled]="chkall==true">
-							<option *ngFor="let items of financiallist"  [value]="items.fyid">
+							<option *ngFor="let items of financiallist"  [value]="items.fy">
 							{{items.years}}
 							</option>
 					</select>

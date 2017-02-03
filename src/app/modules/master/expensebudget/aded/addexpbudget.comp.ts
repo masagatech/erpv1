@@ -32,7 +32,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     docno: number = 0;
 
     module: string = "";
-    docfile: any = [];
+    suppdoc: any = [];
     uploadedFiles: any = [];
 
     private subscribeParameters: any;
@@ -81,7 +81,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "ccid": that.ccid, "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid
+            "flag": "addedit", "ccid": that.ccid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
         }).subscribe(data => {
             that.expbudgetDT = data.data[0];
         }, err => {
@@ -97,7 +97,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "ccid": that.ccid, "fyid": that.loginUser.fyid
+            "flag": "addedit", "ccid": that.ccid, "fy": that.loginUser.fy
         }).subscribe(data => {
             that.financialmonthDT = data.data[1];
         }, err => {
@@ -147,7 +147,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "ccid": that.ccid, "cmpid": this.loginUser.cmpid, "fyid": this.loginUser.fyid
+            "flag": "addedit", "ccid": that.ccid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
         }).subscribe(data => {
             that.amtMonthWise = data.data[2];
         });
@@ -196,7 +196,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
             expbDetails.push({
                 "expbid": that.expbudgetDT[a].expbid,
                 "cmpid": this.loginUser.cmpid,
-                "fyid": this.loginUser.fyid,
+                "fy": this.loginUser.fy,
                 "ccid": this.ccid,
                 "expheadid": that.expbudgetDT[a].expheadid,
                 "exptype": that.expbudgetDT[a].exptype,

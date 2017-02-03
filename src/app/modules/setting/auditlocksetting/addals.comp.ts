@@ -115,7 +115,7 @@ export class ALSAddEdit implements OnInit, OnDestroy {
                     "dispnm": field.dispcd,
                     "auditdt": field.lockdate,
                     //"prevauditdate": field.currlockdate == null ? "" : field.currlockdate,
-                    "fyid": that.loginUser.fyid,
+                    "fy": that.loginUser.fy,
                     "cmpid": that.loginUser.cmpid,
                     "uidcode": that.loginUser.login,
                     "remarks": that.remarks
