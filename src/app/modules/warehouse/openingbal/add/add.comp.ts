@@ -108,7 +108,7 @@ declare var commonfun: any;
             else {
                 var date = new Date();
                 this.jvdate.setDate(date);
-                
+
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
@@ -164,8 +164,12 @@ declare var commonfun: any;
     }
 
     ratechange(row: any = []) {
+        debugger;
         if (row.qty > 0) {
             row.amt = row.qty * row.ratename.split(':')[1];
+        }
+        else {
+            row.amt = "";
         }
     }
 
