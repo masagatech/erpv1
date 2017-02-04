@@ -1,6 +1,4 @@
-<div class="table-responsive">
-	<table class="mui-table">
-	</table>
+<div class="table-responsive" *ngIf="viewDebitNoteDT.length">
 	<table class="table table-striped table-bordered table-hover">
 		<thead>
 			<tr>
@@ -9,10 +7,10 @@
 					<b>Total :</b>
 				</th>
 				<th width="120px" class="text-right">
-					<b>{{TotalDebitAmt() | number}}</b>
+					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat}}</b>
 				</th>
 				<th width="120px" class="text-right">
-					<b>{{TotalCreditAmt() | number}}</b>
+					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat}}</b>
 				</th>
 				<th></th>
 			</tr>
@@ -47,10 +45,10 @@
 					{{row.acname}}
 				</td>
 				<td class="text-right">
-					{{row.totdramt | number}}
+					{{row.totdramt | currency:loginUser._globsettings.numberformat}}
 				</td>
 				<td class="text-right">
-					{{row.totcramt | number}}
+					{{row.totcramt | currency:loginUser._globsettings.numberformat}}
 				</td>
 				<td rowspan="3">
 					{{row.issh == 1 ? row.narration : row.smallnarr}}
@@ -74,8 +72,8 @@
 							<tr class="textTop">
 								<td>{{drow.acid}}</td>
 								<td>{{drow.acname}}</td>
-								<td class="text-right">{{drow.dramt | number}}</td>
-								<td class="text-right">{{drow.cramt | number}}</td>
+								<td class="text-right">{{drow.dramt | currency:loginUser._globsettings.numberformat}}</td>
+								<td class="text-right">{{drow.cramt | currency:loginUser._globsettings.numberformat}}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -90,13 +88,18 @@
 					<b>Total :</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalDebitAmt() | number}}</b>
+					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat}}</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalCreditAmt() | number}}</b>
+					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat}}</b>
 				</td>
 				<td></td>
 			</tr>
 		</tfoot>
 	</table>
+</div>
+<div class="table-responsive" *ngIf="viewDebitNoteDT.length === 0">
+	<div class="error-message">
+		No Data Found
+	</div>
 </div>

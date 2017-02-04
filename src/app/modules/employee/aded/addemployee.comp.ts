@@ -35,7 +35,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     dob: string = "";
     gender: string = "";
     maritalstatus: string = "";
-    bloodgroup: string = "";
+    bldgrp: string = "";
     familybg: string = "";
     healthdtls: string = "";
 
@@ -49,8 +49,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // addressline1: string = "";
     // addressline2: string = "";
 
-    companyname: string = "";
-    companyemail: string = "";
+    cmpname: string = "";
+    cmpemail: string = "";
     deptid: number = 0;
     desigid: number = 0;
     salary: any = "";
@@ -59,9 +59,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     doj: string = "";
     aboutus: string = "";
 
-    pctrlcenterid: number = 0;
-    sctrlcenterid: number = 0;
-    sctrlcentername: string = "";
+    pccid: number = 0;
+    sccid: number = 0;
+    sccname: string = "";
 
     module: string = "";
     attachfile: string = "";
@@ -75,7 +75,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // dropdown
     genderDT: any[];
     maritalstatusDT: any[];
-    bloodgroupDT: any[];
+    bldgrpDT: any[];
     countryDT: any[];
     departmentDT: any[];
     designationDT: any[];
@@ -92,7 +92,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     isedittab: boolean = false;
     atttype: string = "";
 
-    ctrlcenterList: any = [];
+    cclist: any = [];
 
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
@@ -269,7 +269,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         })
     }
 
-    // Fill Gender, MaritalStatus, BloodGroup, Country, Department, Designation, SalaryMode Drop Down
+    // Fill Gender, MaritalStatus, bldgrp, Country, Department, Designation, SalaryMode Drop Down
 
     fillDropDownList() {
         this._empservice.getEmployee({ "flag": "dropdown" }).subscribe(data => {
@@ -282,7 +282,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             this.maritalstatusDT = d.filter(a => a.group === "marital");
 
             // BIND Blood Group TO DROPDOWN
-            this.bloodgroupDT = d.filter(a => a.group === "bldgrp");
+            this.bldgrpDT = d.filter(a => a.group === "bldgrp");
 
             // BIND Country TO DROPDOWN
             this.countryDT = d.filter(a => a.group === "country");
@@ -305,7 +305,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // Get Control Center Drop Down
 
     fillCtrlCenterDDL() {
-        this._commonservice.getAutoData({ "type": "ctrlddl", "cmpid": this.loginUser.cmpid }).subscribe(data => {
+        this._commonservice.getAutoData({ "type": "ccddl", "cmpid": this.loginUser.cmpid }).subscribe(data => {
             this.ctrlcenterDT = data.data;
         }, err => {
             console.log("Error");
@@ -319,8 +319,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     getCtrlCenterAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "ctrl", "search": that.sctrlcentername }).subscribe(data => {
-            $(".ctrlcentername").autocomplete({
+        that._commonservice.getAutoData({ "type": "ccauto", "search": that.sccname }).subscribe(data => {
+            $(".ccname").autocomplete({
                 source: data.data,
                 width: 300,
                 max: 20,
@@ -331,8 +331,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.sctrlcenterid = ui.item.value;
-                    me.sctrlcentername = ui.item.label;
+                    me.sccid = ui.item.value;
+                    me.sccname = ui.item.label;
                 }
             });
         }, err => {
@@ -347,34 +347,34 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     addNewCtrlCenter() {
         var that = this;
 
-        if (that.sctrlcentername == "") {
+        if (that.sccname == "") {
             that._msg.Show(messageType.info, "info", "Please enter control name");
             $(".ctrl").focus()
             return;
         }
 
         that.DuplicateCtrlCenter = true;
-        for (var i = 0; i < that.ctrlcenterList.length; i++) {
-            if (that.ctrlcenterList[i].ctrlcentername == that.sctrlcentername) {
+        for (var i = 0; i < that.cclist.length; i++) {
+            if (that.cclist[i].ccname == that.sccname) {
                 that.DuplicateCtrlCenter = false;
                 break;
             }
         }
         if (that.DuplicateCtrlCenter == true) {
-            that.ctrlcenterList.push({
-                "ctrlcenterid": that.sctrlcenterid,
-                "ctrlcentername": that.sctrlcentername
+            that.cclist.push({
+                "ccid": that.sccid,
+                "ccname": that.sccname
             });
 
-            that.sctrlcenterid = 0;
-            that.sctrlcentername = "";
-            $(".ctrlcentername").focus();
+            that.sccid = 0;
+            that.sccname = "";
+            $(".ccname").focus();
 
         }
         else {
             that._msg.Show(messageType.info, "info", "Duplicate Control Center");
-            that.sctrlcentername = "";
-            $(".ctrlcentername").focus();
+            that.sccname = "";
+            $(".ccname").focus();
             return;
         }
     }
@@ -384,7 +384,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         // var evdt = this.expensevoucherDT;
         // evdt.filter(a => a.isactive === true);
 
-        this.ctrlcenterList.splice(this.ctrlcenterList.indexOf(row), 1);
+        this.cclist.splice(this.cclist.indexOf(row), 1);
     }
 
     // Upload Photo
@@ -406,10 +406,10 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         var allcc: any = [];
         var that = this;
 
-        primarycc.push({ "id": that.pctrlcenterid });
+        primarycc.push({ "id": that.pccid });
 
-        for (var i = 0; i < that.ctrlcenterList.length; i++) {
-            secondarycc.push({ "id": that.ctrlcenterList[i].ctrlcenterid });
+        for (var i = 0; i < that.cclist.length; i++) {
+            secondarycc.push({ "id": that.cclist[i].ccid });
         }
 
         allcc.push({ "primarycc": primarycc }, { "secondarycc": secondarycc });
@@ -422,29 +422,18 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "dob": that.dob,
             "gender": that.gender,
             "maritalstatus": that.maritalstatus,
-            "bloodgroup": that.bloodgroup,
+            "bldgrp": that.bldgrp,
             "familybg": that.familybg,
             "healthdtls": that.healthdtls,
             "attachfile": that.attachfile,
             "address": that.adrbookid,
 
-            // contact
-            // "mobileno": that.mobileno,
-            // "altmobileno": that.altmobileno,
-            // "altemailid": that.altemailid,
-            // "country": that.country,
-            // "state": that.state,
-            // "city": that.city,
-            // "pincode": that.pincode,
-            // "addressline1": that.addressline1,
-            // "addressline2": that.addressline2,
-
             // job profile
-            "companyname": that.companyname,
-            "companyemail": that.companyemail,
+            "cmpname": that.cmpname,
+            "cmpemail": that.cmpemail,
             "deptid": that.deptid,
             "desigid": that.desigid,
-            "salary": this.salary,
+            "salary": that.salary,
             "salarymode": that.salarymode,
             "noticedays": that.noticedays,
             "doj": that.doj,
@@ -453,10 +442,12 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "aboutus": that.aboutus,
 
             // control center
-            "ctrlcenter": allcc,
+            "cc": allcc,
             "uidcode": that.loginUser.login,
             "dynamicfields": that.tabListDT
         }
+
+        console.log(saveEmp);
 
         this._empservice.saveEmployee(saveEmp).subscribe(data => {
             var dataResult = data.data;
@@ -526,7 +517,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     that.dob = EmpDetails[0].dob;
                     that.gender = EmpDetails[0].gender;
                     that.maritalstatus = EmpDetails[0].maritalstatus;
-                    that.bloodgroup = EmpDetails[0].bloodgroup;
+                    that.bldgrp = EmpDetails[0].bldgrp;
                     that.familybg = EmpDetails[0].familybg;
                     that.healthdtls = EmpDetails[0].healthdtls;
 
@@ -553,16 +544,16 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
 
                     that.aboutus = EmpDetails[0].aboutus;
-                    that.companyname = EmpDetails[0].companyname;
+                    that.cmpname = EmpDetails[0].cmpname;
                     that.deptid = EmpDetails[0].deptid;
                     that.desigid = EmpDetails[0].desigid;
                     that.salary = EmpDetails[0].salary;
                     that.salarymode = EmpDetails[0].salarymode;
-                    that.companyemail = EmpDetails[0].companyemail;
+                    that.cmpemail = EmpDetails[0].cmpemail;
                     that.noticedays = EmpDetails[0].noticedays;
                     that.doj = EmpDetails[0].doj;
-                    that.pctrlcenterid = EmpDetails[0].pctrlid;
-                    that.ctrlcenterList = SecondayCC;
+                    that.pccid = EmpDetails[0].pctrlid;
+                    that.cclist = SecondayCC;
                     that.tabListDT = dynFields;
                 }, err => {
                     console.log("Error");

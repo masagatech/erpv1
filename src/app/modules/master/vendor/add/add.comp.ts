@@ -453,7 +453,7 @@ declare var commonfun: any;
             "type": "vendorcode",
             "search": that.parentcode,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fyid,
+            "FY": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".parentcode").autocomplete({
@@ -485,7 +485,7 @@ declare var commonfun: any;
             "autoid": 0,
             "cmpid": this.loginUser.cmpid,
             "acid": 0,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "typ": "vendor",
             "dramt": this.ope == "" ? 0 : this.ope,
             "nar": this.remark,

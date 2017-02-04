@@ -45,9 +45,9 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Blood Group</label>
-                            <select [(ngModel)]="bloodgroup" class="form-control">
+                            <select [(ngModel)]="bldgrp" class="form-control">
                                 <option [value]="'0'">Select Blood Group</option>
-                                <option *ngFor="let row of bloodgroupDT" [value]="row.key">
+                                <option *ngFor="let row of bldgrpDT" [value]="row.key">
                                     {{row.val}}
                                 </option>
                             </select>
@@ -107,13 +107,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Company Name</label>
-                                        <input type="text" [(ngModel)]="companyname" class="form-control input-sm" size="20" />
+                                        <input type="text" [(ngModel)]="cmpname" class="form-control input-sm" size="20" />
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Company Email</label>
-                                        <input type="text" [(ngModel)]="companyemail" class="form-control input-sm" size="20" />
+                                        <input type="text" [(ngModel)]="cmpemail" class="form-control input-sm" size="20" />
                                     </div>
                                 </div>
                             </div>
@@ -192,7 +192,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Primary</label>
-                                <select [(ngModel)]="pctrlcenterid" name="Primary" id="Primary" class="form-control">
+                                <select [(ngModel)]="pccid" name="Primary" id="Primary" class="form-control">
                                     <option [value]="'0'">Select Control Center</option>
                                     <option *ngFor="let row of ctrlcenterDT" [value]="row.key">
                                         {{row.val}}
@@ -203,7 +203,7 @@
                                 <div class="col-xs-10 col-md-11">
                                     <div class="form-group">
                                         <label class="control-label">Secondary</label>
-                                        <input id="ctrlcentername" type="text" [(ngModel)]="sctrlcentername" class="ctrlcentername form-control" (keyup)="getCtrlCenterAuto(this)"
+                                        <input id="ccname" type="text" [(ngModel)]="sccname" class="ccname form-control" (keyup)="getCtrlCenterAuto(this)"
                                         />
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12" *ngIf="ctrlcenterList.length">
+                                <div class="col-md-12" *ngIf="cclist.length">
                                     <table class="table table-striped table-bordered">
                                         <thead>
                                             <tr>
@@ -225,10 +225,10 @@
                                                 <th width="20px">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody *ngFor="let row of ctrlcenterList let i=index">
+                                        <tbody *ngFor="let row of cclist let i=index">
                                             <tr>
                                                 <td width="20px"><span>{{i+1}}</span></td>
-                                                <td>{{row.ctrlcentername}}</td>
+                                                <td>{{row.ccname}}</td>
                                                 <td width="20px">
                                                     <button class="btn btn-theme btn-sm" (click)="deleteCtrlCenter(row)"><i class="fa fa-trash"></i></button>
                                                 </td>

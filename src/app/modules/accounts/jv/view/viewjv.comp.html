@@ -9,10 +9,10 @@
 					<b>Total :</b>
 				</th>
 				<th width="150px" class="text-right">
-					<b>{{TotalDebitAmt()}}</b>
+					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</th>
 				<th width="150px" class="text-right">
-					<b>{{TotalCreditAmt()}}</b>
+					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</th>
 				<th></th>
 			</tr>
@@ -23,7 +23,7 @@
 				<th width="850px">Narration</th>
 				<th width="150px" class="text-right">Dr. Amt</th>
 				<th width="150px" class="text-right">Cr. Amt</th>
-				<th width="10px"></th>
+				<th width="45px"></th>
 			</tr>
 		</thead>
 		<tbody *ngFor="let row of viewJVDT">
@@ -43,10 +43,11 @@
 					{{row.issh == 1 ? row.narration : row.smallnarr}}
 				</td>
 				<td class="text-right">
-					{{row.totdramt}}
+					<!--{{row.totdramt | currency:'USD':true}}-->
+					{{row.totdramt | currency:loginUser._globsettings.numberformat:true}}
 				</td>
 				<td class="text-right">
-					{{row.totcramt}}
+					{{row.totcramt | currency:loginUser._globsettings.numberformat:true}}
 				</td>
 				<td>
 					<button type="button" (click)="openJVDetails(row)" class="btn btn-theme btn-sm fa fa-arrow-right"></button>
@@ -59,10 +60,10 @@
 						<thead>
 							<tr>
 								<th width="90px">A/C Code</th>
-								<th width="150px">A/C Name</th>
-								<th>Narration</th>
+								<th>A/C Name</th>
 								<th width="150px" class="text-right">Dr. Amt</th>
-								<th width="140px" class="text-right">Cr. Amt</th>
+								<th width="150px" class="text-right">Cr. Amt</th>
+								<th width="45px"></th>
 							</tr>
 						</thead>
 						<tbody *ngFor="let drow of row.details">
@@ -73,14 +74,13 @@
 								<td>
 									{{drow.acname}}
 								</td>
+								<td class="text-right">
+									{{drow.dramt | currency:loginUser._globsettings.numberformat:true}}
+								</td>
+								<td class="text-right">
+									{{drow.cramt | currency:loginUser._globsettings.numberformat:true}}
+								</td>
 								<td>
-									{{drow.detnarr}}
-								</td>
-								<td class="text-right">
-									{{drow.dramt}}
-								</td>
-								<td class="text-right">
-									{{drow.cramt}}
 								</td>
 							</tr>
 						</tbody>
@@ -95,13 +95,18 @@
 					<b>Total :</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalDebitAmt()}}</b>
+					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalCreditAmt()}}</b>
+					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</td>
 				<td></td>
 			</tr>
 		</tfoot>
 	</table>
+</div>
+<div class="table-responsive" *ngIf="viewJVDT.length === 0">
+	<div class="error-message">
+		No Data Found
+	</div>
 </div>

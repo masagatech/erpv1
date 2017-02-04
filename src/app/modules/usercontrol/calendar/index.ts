@@ -48,12 +48,12 @@ export class CalendarComp implements OnInit {
 
     isValid() {
         var isValidDT = moment($("[name='" + this.name + "']").val(), this.loginUser._globsettings.dateformat.replace(/y/g, "yy").toUpperCase(), true).isValid();
-        var minDt = $("[name='" + this.name + "']").datepicker('option', 'minDate');
-        var maxDt = $("[name='" + this.name + "']").datepicker('option', 'maxDate');
+        var minDt = moment($("[name='" + this.name + "']").datepicker('option', 'minDate')).format('YYYY-MM-DD').toString();
+        var maxDt = moment($("[name='" + this.name + "']").datepicker('option', 'maxDate')).format('YYYY-MM-DD').toString();
         var selDate = $("[name='" + this.name + "']").val();
 
         if (isValidDT) {
-            var range = moment(new Date(selDate)).isBetween(minDt, maxDt);
+            var range = moment(selDate, this.loginUser._globsettings.dateformat.replace(/y/g, "yy").toUpperCase()).isBetween(minDt, maxDt, null, '[]');
             if (range) { return true; }
         }
 
@@ -62,7 +62,7 @@ export class CalendarComp implements OnInit {
 
     initialize(loginUser) {
         var that = this;
-        
+
         this.loginUser = loginUser;
         this.docdate.name = that.name;
         this.docdate.mask = loginUser._globsettings.dateformat.replace(/d/g, "9").replace(/m/g, "9").replace(/y/g, "99");
