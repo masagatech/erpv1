@@ -8,6 +8,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -42,7 +43,6 @@ declare var commonfun: any;
     remark: any = "";
     attrname: any = "";
     attrid: any = 0;
-    attrlist: any = [];
     attrtable: boolean = true;
     profflag: boolean = true;
     constflag: boolean = true;
@@ -72,6 +72,9 @@ declare var commonfun: any;
 
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
+
+    @ViewChild('attribute')
+    attribute: AttributeComp;
 
     private subscribeParameters: any;
 
@@ -113,6 +116,8 @@ declare var commonfun: any;
         setTimeout(function () {
             commonfun.addrequire();
         }, 0);
+
+        this.attribute.attrparam = ["vendorinfo_attr", "acinfo_attr"];
     }
 
     //On Blur Event Cust Code
@@ -120,59 +125,6 @@ declare var commonfun: any;
         this.addressBook.AddBook(this.code);
         this.accode = this.code;
         this.adrbookid = [];
-    }
-
-    //attribute list Add Div
-    AttributeAdd() {
-        debugger;
-        if (this.attrid > 0) {
-            this.Duplicateflag = true;
-            this.attrlist === null ? [] : this.attrlist;
-            if (this.attrlist.length > 0) {
-                for (var i = 0; i < this.attrlist.length; i++) {
-                    if (this.attrlist[i].attrname == this.attrname) {
-                        this.Duplicateflag = false;
-                        break;
-                    }
-                }
-            }
-            if (this.Duplicateflag == true) {
-                this.attrlist.push({
-                    'attrname': this.attrname,
-                    'value': this.attrid
-                });
-                this.attrname = "";
-                $(".attr").focus();
-            }
-            else {
-                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
-                $(".attr").focus();
-                return;
-            }
-
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-            $(".attr").focus();
-            return;
-        }
-
-    }
-
-    //Remove Attribute
-    Removeattr(row) {
-        var index = -1;
-        for (var i = 0; i < this.attrlist.length; i++) {
-            if (this.attrlist[i].attrid === row.attrid) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.attrlist.splice(index, 1);
-        $(".attr").focus();
     }
 
     //Get Company And Warehouse Dropdown Bind
@@ -279,11 +231,10 @@ declare var commonfun: any;
         this.days = 0;
         this.remark = "";
         this.keyvallist = [];
-        this.attrlist = [];
+        this.attribute.attrlist = [];
         this.debit = 0;
         this.credit = 0;
         this.ope = "";
-        this.editmode = false;
         this.addressBook.ClearArray();
         this.parentid = 0;
         this.parentcode = "";
@@ -322,7 +273,7 @@ declare var commonfun: any;
             that.code = _venddata[0].code;
             that.vendor = _venddata[0].vendor;
             that.keyvallist = _keyval === null ? [] : _keyval;
-            that.attrlist = _attr === null ? [] : _attr;
+            that.attribute.attrlist = _attr === null ? [] : _attr;
             that.debit = _venddata[0].debit;
             that.credit = _venddata[0].credit;
             that.ope = _venddata[0].op;
@@ -355,7 +306,7 @@ declare var commonfun: any;
             "search": that.attrname,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fy,
-            "filter": "Vendor Attribute",
+            "filter": "vendorinfo_attr",
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".attr").autocomplete({
@@ -387,7 +338,7 @@ declare var commonfun: any;
             "search": that.key,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fy,
-            "filter": "Account Attribute",
+            "filter": "acinfo_attr",
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".key").autocomplete({
@@ -414,8 +365,8 @@ declare var commonfun: any;
 
     createattrjson() {
         var attrlist = [];
-        if (this.attrlist.length > 0) {
-            for (let items of this.attrlist) {
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
                 attrlist.push({ "id": items.value });
             }
             return attrlist;
@@ -547,7 +498,10 @@ declare var commonfun: any;
                     $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
                     this.ClearControll();
-                    this._router.navigate(['master/vendor']);
+                    if (this.editmode) {
+                        this._router.navigate(['master/vendor']);
+                    }
+                    this.editmode = false;
                 }
             }, err => {
                 console.log("Error");

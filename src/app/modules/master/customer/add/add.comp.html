@@ -25,7 +25,7 @@
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Parent Name</label>
-					<input type="text" class="form-control parentname" tabindex="4" readonly="true" [(ngModel)]="parentname">
+					<input type="text" class="form-control parentname" tabindex="400" readonly="true" [(ngModel)]="parentname">
 				</div>
 			</div>
 		</div>
@@ -75,7 +75,7 @@
 				</div>
 			</div>
 			<div class="tab-pane" id="attr">
-				<attribute #attribute [attrlist]="attrlist" [labelname]="labelname" [attrparam]="attrparam" [attrtype]="attrtype"></attribute>
+				<attribute #attribute></attribute>
 			</div>
 			<div class="tab-pane" id="itemdis">
 				<div class="row">
@@ -293,7 +293,7 @@
 					<div class="col-md-6">
 						<div class="panel panel-theme">
 							<div class="panel-body">
-								<div class="col-md-3">
+								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Key</label>
 										<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfival" (keyup)="getAutoCompletekey(this)"

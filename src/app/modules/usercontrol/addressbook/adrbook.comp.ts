@@ -50,6 +50,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
         this.filldropdown("country");
         this.filldropdown("adrtype");
+
     }
 
     filldropdown(group) {
@@ -238,32 +239,27 @@ export class AddrbookComp implements OnInit, OnDestroy {
     }
 
     SaveAdr() {
-        if (this.firstnam == "") {
-            this._msg.Show(messageType.info, "info", "Please enter first name");
+        var that = this;
+        if ($(".firstnam").val() == "") {
+            that._msg.Show(messageType.error, "error", "First *");
             $(".firstnam").focus();
             return;
         }
-        if (this.adr1 == "") {
-            this._msg.Show(messageType.info, "info", "Please enter address1");
+        if ($(".addr1").val() == "") {
+            that._msg.Show(messageType.error, "error", "Address *");
             $(".addr1").focus();
             return;
         }
-        if (this.mob == "") {
-            this._msg.Show(messageType.info, "info", "Please enter Primary Mobile No");
+        if ($(".prymob").val() == "") {
+            that._msg.Show(messageType.error, "error", "Primary Mobile *");
             $(".prymob").focus();
             return;
         }
-        if (this.email == "") {
-            this._msg.Show(messageType.info, "info", "Please enter primary email");
+        if ($(".email").val() == "") {
+            that._msg.Show(messageType.error, "error", "Email *");
             $(".email").focus();
             return;
         }
-        if (this.country == 0) {
-            this._msg.Show(messageType.info, "info", "Please select conutry");
-            $(".country").focus();
-            return;
-        }
-        var that = this;
         that._adrbookservice.saveAdrBook(
             that.Parameter()
         ).subscribe(result => {

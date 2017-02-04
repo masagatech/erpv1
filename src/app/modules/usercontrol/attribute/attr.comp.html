@@ -1,18 +1,24 @@
 <div class="row">
-	<div class="col-md-3">
-		<div class='form-group'>
-			<label>{{labelname}}</label>
-			<input type="text=" class="form-control attr" tabindex="1" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
-				(keyup)="getAutoCompleteattr(this)" />
+	<div class="col-md-8">
+		<div class="col-md-5">
+			<div class='form-group'>
+				<label>{{labelname}}</label>
+				<input type="text=" class="form-control attr" tabindex="300" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+					(keyup)="getAutoCompleteattr(this)" />
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class='form-group'>
+				<label></label>
+				<button class="btn btn-theme btn-sm fa fa-plus" type="button" tabindex="301" (click)="AttributeAdd()" title="Add"></button>
+			</div>
 		</div>
 	</div>
-	<div class="col-md-10">
-		<div class="col-md-6" *ngFor="let row of attrlist">
-			<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-				<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
-							<span data-role="remove" (click)="Removeattr(row)"></span>
-				</span>
-			</div>
+	<div class="col-md-12">
+		<div class="col-md-12 bootstrap-tagsinput">
+			<span *ngFor="let row of attrlist" class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
+				<span data-role="remove" (click)="Removeattr(row)"></span>
+			</span>
 		</div>
 	</div>
 </div>

@@ -69,29 +69,14 @@
 				</div>
 			</div>
 			<div class="tab-pane" id="attr">
-				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Attribute</label>
-							<input type="text=" class="form-control attr" tabindex="4" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
-								(keyup)="getAutoCompleteattr(this)" />
-						</div>
-						<div class="col-md-5" *ngFor="let row of attrlist">
-							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.attrname}} 
-							<span data-role="remove" (click)="Removeattr(row)"></span>
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
+				<attribute #attribute></attribute>
 			</div>
 			<div class="tab-pane" id="acinfo">
 				<div class="row">
 					<div class="col-md-6">
 						<div class="panel panel-theme">
 							<div class="panel-body">
-								<div class="col-md-3">
+								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Key</label>
 										<input type="text" class="form-control key" tabindex="5" [(ngModel)]="key" (keyup)="getAutoCompletekey(this)">

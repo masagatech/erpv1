@@ -43,6 +43,7 @@
 	<div class="panel-body">
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contact Details</a></li>
+			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
 		<div class="tab-content">
@@ -50,6 +51,9 @@
 				<div class="row">
 					<addressbook #addrbook [adrbookid]="adrbookid" ngControl="adrid" [module]="module" [accode]="accode"></addressbook>
 				</div>
+			</div>
+			<div class="tab-pane" id="attr">
+				<attribute #attribute></attribute>
 			</div>
 			<div class="tab-pane" id="docup">
 				<div class="row">

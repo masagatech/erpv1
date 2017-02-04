@@ -31,7 +31,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private itemViewServies: ItemViewService, private _autoservice: CommonService,
-        private _userService: UserService,private _msg: MessageService) { //Inherit Service dcmasterService
+        private _userService: UserService, private _msg: MessageService) { //Inherit Service dcmasterService
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -44,28 +44,6 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         $(".items").focus();
-        setTimeout(function () {
-            var date = new Date();
-            var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var ToDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', FromDate);
-
-            $("#ToDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#ToDate").datepicker('setDate', ToDate);
-        }, 0);
     }
 
     getAutoCompleteProductName(me: any) {
@@ -102,7 +80,7 @@ declare var $: any;
         this.itemViewServies.getItemsMaster({
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
-            "createdby":this.loginUser.login,
+            "createdby": this.loginUser.login,
             "flag": "",
             "itemsid": this.itemsid,
             "fromdate": this.FromDate,
@@ -116,7 +94,7 @@ declare var $: any;
             else {
                 this.ItemDetails = [];
                 this.TableHide = true;
-                  this._msg.Show(messageType.info, "info", "Record not found");
+                this._msg.Show(messageType.info, "info", "Record not found");
                 $(".Items").focus();
             }
 

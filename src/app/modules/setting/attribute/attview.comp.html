@@ -23,7 +23,7 @@
 							<td>
 								<select [(ngModel)]="attrgrp" class="form-control" tabindex="2">
 									<option *ngFor="let row of attributegrouplist" [value]="row.id+':'+row.key">
-											{{row.key}}
+											{{row.val}}
 									</option>
 								</select>
 							</td>
@@ -37,7 +37,7 @@
 						<tr *ngFor="let item of addNewAttr let i=index">
 							<td><span>{{i+1}}</span><span class="hide">{{item.autoid}}</span></td>
 							<td (click)="editrow(item)"><span>{{item.atname}}</span></td>
-							<td>{{item.key}}</td>
+							<td>{{item.momval}}</td>
 							<td class="text-center">
 								<input type="checkbox" [(ngModel)]="item.val" name="checkdel" binary="true" (ngModelChange)="DeleteRow(item)" />
 							</td>

@@ -5,7 +5,7 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Item Code</label>
-						<input type="text" class="form-control itemcode" tabindex="1" [(ngModel)]="itemcode">
+						<input type="text" class="form-control itemcode" tabindex="1" maxlength="10" [(ngModel)]="itemcode">
 					</div>
 				</div>
 				<div class="col-md-4">
@@ -81,22 +81,7 @@
 			<!--Attribute-->
 			<div class="tab-pane active" id="attr">
 				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Attribute</label>
-							<input type="text=" class="form-control attr" tabindex="8" value="" [(ngModel)]="attname" (keyup.enter)="AttributeAdd()"
-								(keyup)="getAutoCompleteattr(this)" />
-						</div>
-					</div>
-					<div class="col-md-10">
-						<div class="col-md-6" *ngFor="let row of attrlist">
-							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.attname}} 
-							<span data-role="remove" (click)="Removeattr(row)"></span>
-								</span>
-							</div>
-						</div>
-					</div>
+					<attribute #attribute></attribute>
 				</div>
 			</div>
 			<!--Key Data-->
@@ -266,13 +251,11 @@
 								(keyup)="getAutoCompletesupp(this)" />
 						</div>
 					</div>
-					<div class="col-md-10">
-						<div class="col-md-6" *ngFor="let row of supplist">
-							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.suppname}} 
+					<div class="col-md-12">
+						<div class="col-md-12 bootstrap-tagsinput">
+							<span *ngFor="let row of supplist" class="tag label label-info" style="font-size: 10px;">{{row.suppname}}
 							<span data-role="remove" (click)="Removesupp(row)"></span>
-								</span>
-							</div>
+							</span>
 						</div>
 					</div>
 				</div>

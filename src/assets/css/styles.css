@@ -1140,3 +1140,14 @@ html select[disabled] {
 {
     color: red;
 }
+
+.tag {
+    font-size: 13px!important;
+    padding: 2px 12px 5px;
+    font-weight: normal;
+    /* color: #333!important; */
+    border-radius: 27px;
+    margin-left: 2px;
+    margin-right: 2px;
+    box-shadow: 0px 0px 1px 0px #8c8c8c;
+}

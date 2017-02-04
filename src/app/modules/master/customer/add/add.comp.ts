@@ -9,6 +9,7 @@ import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -48,7 +49,6 @@ declare var commonfun: any;
     attrid: any = 0;
     ctrlname: any = "";
     ctrlid: any = 0;
-    attrlist: any = [];
     Ctrllist: any = [];
     attrtable: boolean = true;
     ctrlhide: boolean = true;
@@ -92,24 +92,16 @@ declare var commonfun: any;
     editmode: boolean = false;
     isactive: boolean = false;
 
-    //Attribute
-    labelname: string = "";
-    attrparam: string = "";
-    attrtype: string = "";
-
-     // tab panel
+    // tab panel
     @ViewChild('tabpanel')
     tabpanel: AddDynamicTabComp;
     tabListDT: any = [];
     selectedtab: any = [];
     isedittab: boolean = false;
-    atttype: string = "";
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
-
-
 
     allload: any = {
         "wearhouse": false,
@@ -121,6 +113,9 @@ declare var commonfun: any;
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
 
+    @ViewChild('attribute')
+    attribute: AttributeComp;
+
     private subscribeParameters: any;
 
     //Add Servies Refrence
@@ -128,9 +123,8 @@ declare var commonfun: any;
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "cust";
-        this.labelname = "Attribute";
-        this.attrparam = "Item Attributes";
-        this.attrtype = "attribute";
+
+
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -166,6 +160,9 @@ declare var commonfun: any;
         setTimeout(function () {
             commonfun.addrequire();
         }, 0);
+
+
+        this.attribute.attrparam = ["item_attr", "acinfo_attr"];
     }
 
     //Get Code Blur Event
@@ -195,7 +192,7 @@ declare var commonfun: any;
             "search": that.disattrname,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fy,
-            "filter": "Item Attributes",
+            "filter": "item_attr",
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".disattr").autocomplete({
@@ -616,57 +613,6 @@ declare var commonfun: any;
         $(".attr").focus();
     }
 
-    //attribute list Add Div
-    // AttributeAdd() {
-    //     if (this.attrid > 0) {
-    //         this.Duplicateflag = true;
-    //         if (this.attrlist.length > 0) {
-    //             for (var i = 0; i < this.attrlist.length; i++) {
-    //                 if (this.attrlist[i].attrname == this.attrname) {
-    //                     this.Duplicateflag = false;
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //         if (this.Duplicateflag == true) {
-    //             this.attrlist.push({
-    //                 'attrname': this.attrname,
-    //                 'value': this.attrid
-    //             });
-    //             this.attrname = "";
-    //             $(".attr").focus();
-    //         }
-    //         else {
-    //             this._msg.Show(messageType.info, "info", "Duplicate Attribute");
-    //             $(".attr").focus();
-    //             return;
-    //         }
-
-    //     }
-    //     else {
-    //         this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-    //         $(".attr").focus();
-    //         return;
-    //     }
-
-    // }
-
-    //Remove Attribute
-    // Removeattr(row) {
-    //     var index = -1;
-    //     for (var i = 0; i < this.attrlist.length; i++) {
-    //         if (this.attrlist[i].value === row.value) {
-    //             index = i;
-    //             break;
-    //         }
-    //     }
-    //     if (index === -1) {
-    //         console.log("Wrong Delete Entry");
-    //     }
-    //     this.attrlist.splice(index, 1);
-    //     $(".attr").focus();
-    // }
-
     //File Upload Start 
     onUploadStart(e) {
         this.actionButton.find(a => a.id === "save").enabled = false;
@@ -810,12 +756,11 @@ declare var commonfun: any;
         this.billadr = "";
         this.shippingadr = "";
         this.shippingchk = false;
-        this.issh = 0;
         this.remark = "";
         this.warehouselist = [];
         this.keyvallist = [];
         this.adrbookid = [];
-        this.attrlist = [];
+        this.attribute.attrlist = [];
         this.disattrlist = [];
         this.itemslist = [];
         this.translist = [];
@@ -858,14 +803,14 @@ declare var commonfun: any;
             that.Custname = _custdata[0].custname;
             that.isactive = _custdata[0].isactive;
             that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
-            that.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
+            that.attribute.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
             that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
             that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
             that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
             that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
             that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
             that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
-
+            that.issh = 1;
             that.days = _custdata[0].days;
             that.remark = _custdata[0].remark;
             that.adrid = _custdata[0].adrid;
@@ -879,7 +824,7 @@ declare var commonfun: any;
                 that.adrcsvid += items.adrid + ',';
             }
             that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
-            that.issh = 1;
+
 
             //Warehouse check edit mode
             if (that.warehouselist.length > 0) {
@@ -970,7 +915,7 @@ declare var commonfun: any;
             "search": that.attrname,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fy,
-            "filter": "Item Attributes",
+            "filter": "item_attr",
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".attr").autocomplete({
@@ -1035,7 +980,7 @@ declare var commonfun: any;
             "search": that.acinfival,
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.fy,
-            "filter": "Account Attribute",
+            "filter": "acinfo_attr",
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".key").autocomplete({
@@ -1069,8 +1014,8 @@ declare var commonfun: any;
 
     createattrjson() {
         var attrid = [];
-        if (this.attrlist.length > 0) {
-            for (let items of this.attrlist) {
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
                 attrid.push({ "id": items.value });
             }
             return attrid;
@@ -1184,7 +1129,7 @@ declare var commonfun: any;
             "adrid": this.adrbookid,
             "parentid": this.parentcodename,
             "ledgerparam": this.ledgerparam(),
-             "dynamicfields": this.tabListDT,
+            "dynamicfields": this.tabListDT,
             "remark1": '',
             "remark2": "",
             "remark3": []
@@ -1242,7 +1187,11 @@ declare var commonfun: any;
                     this.ClearControll();
                     $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
-                    this._router.navigate(['master/customer']);
+                    if (this.issh == 1) {
+                        this._router.navigate(['master/customer']);
+                    }
+
+                    this.issh = 0;
                 }
             }, err => {
                 console.log("Error");
@@ -1260,7 +1209,6 @@ declare var commonfun: any;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".fname").focus();
-            this.issh = 0;
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
@@ -1310,7 +1258,7 @@ declare var commonfun: any;
         var that = this;
         if (that.issh == 0) {
             that.issh = 1;
-            //that.warehouseBind();
+            that.warehouseBind();
         } else {
             that.issh == 0;
         }
