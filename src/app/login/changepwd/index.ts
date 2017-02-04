@@ -37,7 +37,7 @@ export class ChangePwdComp implements OnInit {
         this._userservice.savePassword({ "uid": this.loginuser.uid, "pwd": this.newpwd }).subscribe(d => {
             var da = d.data[0];
             if (da.status) {
-                this._router.navigate(['/login-step1']);
+                this._router.navigate(['/usersettings/defaultcompandfy']);
             } else {
 
             }
