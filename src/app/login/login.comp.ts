@@ -28,12 +28,11 @@ export class LoginComp implements OnInit {
 
     login(e) {
         this.btnLoginText = "Loging..";
-        debugger;
+        
         this._service.login(this._user).subscribe(d => {
             if (d) {
                 if (d.status) {
                     let usrobj = d.data;
-                    console.log(usrobj);
                     let userDetails: LoginUserModel = usrobj[0];
 
                     if (userDetails.status) {
