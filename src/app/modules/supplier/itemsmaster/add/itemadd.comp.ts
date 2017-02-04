@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -7,6 +7,7 @@ import { ItemAddService } from "../../../../_service/itemmaster/add/itemadd-serv
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -25,7 +26,6 @@ declare var $: any;
     attname: any = "";
     skucode: any = "";
     attrid: any = 0;
-    attrlist: any = [];
     saleslist: any = [];
     purchaselist: any = [];
     purch: any = 0;
@@ -60,6 +60,9 @@ declare var $: any;
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+
+    @ViewChild('attribute')
+    attribute: AttributeComp;
 
     allload: any = {
         "wearhouse": false,
@@ -99,6 +102,7 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+        this.attribute.attrparam = ["item_attr"];
     }
 
     attrtab() {
@@ -118,7 +122,6 @@ declare var $: any;
             that.shelflifelist = dsshelflife;
             var dsUoM = data.data[0].filter(item => item.group === "uom");
             that.UoMlist = dsUoM;
-            console.log(data.data);
             if (data.data[1].length > 0) {
                 that.Keyvallist = data.data[1]
             }
@@ -127,7 +130,7 @@ declare var $: any;
         }, err => {
             console.log("Error");
         }, () => {
-            console.log("Complete");
+            //Done
         })
     }
 
@@ -153,39 +156,6 @@ declare var $: any;
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
-    //Autocompleted Attribute Name
-    getAutoCompleteattr(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "attribute",
-            "search": that.attname,
-            "filter": "Item Attributes",
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".attr").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.attrid = ui.item.value;
-                    me.attname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            me.attrid = 0;
-        })
-    }
-
     //Key Val Tab Click
     KeyValTab() {
         setTimeout(function () {
@@ -203,7 +173,7 @@ declare var $: any;
         this._autoservice.getAutoData({
             "type": "attribute",
             "search": that.keyattr,
-            "filter": "Item Attributes",
+            "filter": "item_attr",
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
@@ -293,7 +263,7 @@ declare var $: any;
         this._autoservice.getAutoData({
             "type": "attribute",
             "search": that.titlesale,
-            "filter": "Item Attributes",
+            "filter": "item_attr",
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.login,
             "createdby": this.loginUser.login
@@ -327,7 +297,7 @@ declare var $: any;
         this._autoservice.getAutoData({
             "type": "attribute",
             "search": that.titlepur,
-            "filter": "Item Attributes",
+            "filter": "item_attr",
             "cmpid": this.loginUser.cmpid,
             "FY": this.loginUser.login,
             "createdby": this.loginUser.login
@@ -388,6 +358,7 @@ declare var $: any;
 
     //Add New Supplier 
     SupplierAdd() {
+        debugger;
         if ($(".supp").val() == "") {
             this.suppid = 0;
         }
@@ -444,58 +415,6 @@ declare var $: any;
         }
         this.supplist.splice(index, 1);
         $(".supp").focus();
-    }
-
-    //attribute list Add Div
-    AttributeAdd() {
-        if ($(".attr").val() == "") {
-            this.attrid = 0;
-        }
-        if (this.attrid > 0) {
-            this.Duplicateflag = true;
-            for (var i = 0; i < this.attrlist.length; i++) {
-                if (this.attrlist[i].attname == this.attname) {
-                    this.Duplicateflag = false;
-                    break;
-                }
-            }
-            if (this.Duplicateflag == true) {
-                this.attrlist.push({
-                    'attname': this.attname,
-                    'attrid': this.attrid
-                });
-                this.attname = "";
-                $(".attr").focus();
-            }
-            else {
-                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
-                $(".attr").focus();
-                return;
-            }
-
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-            $(".attr").focus();
-            return;
-        }
-
-    }
-
-    //Remove Attribute
-    Removeattr(row) {
-        var index = -1;
-        for (var i = 0; i < this.attrlist.length; i++) {
-            if (this.attrlist[i].value === row.value) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.attrlist.splice(index, 1);
-        $(".attr").focus();
     }
 
     //Add Accounting Row
@@ -669,11 +588,11 @@ declare var $: any;
                 this.shelf = returndata[0].shelflife;
                 this.itemsdesc = returndata[0].itemdesc;
                 this.itemsremark = returndata[0].itemremark;
-                this.attrlist = returndata[0]._attributejson;
-                this.Keyvallist = returndata[0]._keydatajson;
-                this.saleslist = returndata[0]._salesjson;
-                this.purchaselist = returndata[0]._purchasejson;
-                this.supplist = returndata[0]._supplierjson;
+                this.attribute.attrlist = returndata[0]._attributejson === null ? [] : returndata[0]._attributejson;
+                this.Keyvallist = returndata[0]._keydatajson === null ? [] : returndata[0]._keydatajson;
+                this.saleslist = returndata[0]._salesjson === null ? [] : returndata[0]._salesjson;
+                this.purchaselist = returndata[0]._purchasejson === null ? [] : returndata[0]._purchasejson;
+                this.supplist = returndata[0]._supplierjson === null ? [] : returndata[0]._supplierjson;
 
 
                 if (_uploadedfile != null) {
@@ -716,7 +635,7 @@ declare var $: any;
         this.skucode = "";
         this.saleslist = [];
         this.purchaselist = [];
-        this.attrlist = [];
+        this.attribute.attrlist = [];
         this.Keyvallist = [];
         this.supplist = [];
         this.barcode = "";
@@ -727,9 +646,9 @@ declare var $: any;
     //Create Json String in Attribute
     private CreatejsonAttribute() {
         var attrlist = [];
-        if (this.attrlist.length > 0) {
-            for (let item of this.attrlist) {
-                attrlist.push({ "id": item.attrid })
+        if (this.attribute.attrlist.length > 0) {
+            for (let item of this.attribute.attrlist) {
+                attrlist.push({ "id": item.value });
             }
             return attrlist;
         }
@@ -798,12 +717,12 @@ declare var $: any;
         var ledgerjson = [];
         ledgerjson.push({
             "autoid": 0,
-            "wareid":1, //this.CreatejsonWarehouse(),
+            "wareid": 1, //this.CreatejsonWarehouse(),
             "typ": "OB",
-            "rate":0,
+            "rate": 0,
             "qty": 0,
-            "amt":0,
-            "itemid":1,
+            "amt": 0,
+            "itemid": 1,
             "outward": 0,
             "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
@@ -927,6 +846,7 @@ declare var $: any;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
             $(".itemname").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {

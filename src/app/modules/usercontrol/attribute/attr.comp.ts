@@ -13,12 +13,14 @@ declare var $: any;
     providers: [AttributeService]
 })
 
+
+
 export class AttributeComp implements OnInit, OnDestroy {
     //Local Veriable 
-    @Input() attrparam: string = "";
-    @Input() labelname: string = "";
-    @Input() attrtype: string = "";
-    @Input() attrlist: any = [];
+    attrparam: any = [];
+    labelname: string = "Attribute";
+    attrtype: string = "multiattr";
+    attrlist: any = [];
     attrname: any = "";
     attrid: number = 0;
     Duplicateflag: boolean = false;
@@ -26,6 +28,8 @@ export class AttributeComp implements OnInit, OnDestroy {
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+
+
 
     constructor(private _adrbookservice: AttributeService, private _commonservice: CommonService,
         private _msg: MessageService, private _userService: UserService) {
@@ -40,7 +44,7 @@ export class AttributeComp implements OnInit, OnDestroy {
             "search": that.attrname,
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
-            "filter": that.attrparam,
+            "filter": that.attrparam.join(),
             "createdby": that.loginUser.login
         }).subscribe(data => {
             $(".attr").autocomplete({
@@ -69,14 +73,14 @@ export class AttributeComp implements OnInit, OnDestroy {
     AttributeAdd() {
         if (this.attrid > 0) {
             this.Duplicateflag = true;
-            if (this.attrlist.length > 0) {
-                for (var i = 0; i < this.attrlist.length; i++) {
-                    if (this.attrlist[i].attrname == this.attrname) {
-                        this.Duplicateflag = false;
-                        break;
-                    }
-                }
-            }
+            // if (this.attrlist.length > 0) {
+            //     for (var i = 0; i < this.attrlist.length; i++) {
+            //         if (this.attrlist[i].attrname == this.attrname) {
+            //             this.Duplicateflag = false;
+            //             break;
+            //         }
+            //     }
+            // }
             if (this.Duplicateflag == true) {
                 this.attrlist.push({
                     'attrname': this.attrname,
@@ -123,3 +127,4 @@ export class AttributeComp implements OnInit, OnDestroy {
     ngOnDestroy() {
     }
 }
+

@@ -8,6 +8,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -48,6 +49,9 @@ declare var commonfun: any;
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
 
+    @ViewChild('attribute')
+    attribute: AttributeComp;
+
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
@@ -85,9 +89,11 @@ declare var commonfun: any;
             }
         });
 
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
         }, 0);
+
+        this.attribute.attrparam = ["item_attr"];
     }
 
     //File Upload Start 
@@ -113,7 +119,6 @@ declare var commonfun: any;
     //Edit Transpoter 
     EditTranspoter(id) {
         var that = this;
-
         that.transpoter_service.getTranspoter({
             "cmpid": that.loginUser.cmpid,
             "flag": "Edit",
@@ -132,6 +137,7 @@ declare var commonfun: any;
             that.remark = _Transdata[0].remark;
             that.remark = _Transdata[0].remark;
             that.isactive = _Transdata[0].isactive;
+            that.attribute.attrlist = result.data[0][0]._attributejson == null ? [] : result.data[0][0]._attributejson;
 
             if (_uploadedfile != null) {
                 that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
@@ -151,6 +157,15 @@ declare var commonfun: any;
             //Done
         })
     }
+    createattrjson() {
+        var attrid = [];
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
+                attrid.push({ "id": items.value });
+            }
+            return attrid;
+        }
+    }
 
     paramterjson() {
         var param = {
@@ -159,6 +174,7 @@ declare var commonfun: any;
             "transname": this.transname,
             "desc": this.desc,
             "adr": this.adrbookid,
+            "attr": this.createattrjson(),
             "suppdoc": this.suppdoc,
             "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
@@ -177,8 +193,15 @@ declare var commonfun: any;
         this.transname = "";
         this.desc = "";
         this.remark = "";
-        this.editmode = false;
+        this.attribute.attrlist = [];
         this.addressBook.ClearArray();
+    }
+
+    Attr() {
+        setTimeout(function() {
+            $(".attr").val("");
+            $(".attr").focus();
+        }, 0);
     }
 
     //Add Top Buttons Add Edit And Save
@@ -210,7 +233,10 @@ declare var commonfun: any;
                     this.clearcontrol();
                     $(".code").removeAttr('disabled', 'disabled');
                     $(".code").focus();
-                    this._router.navigate(['master/transpoter']);
+                    if (this.editmode) {
+                        this._router.navigate(['master/transpoter']);
+                    }
+                    this.editmode = false;
                     return;
                 }
             }, err => {
