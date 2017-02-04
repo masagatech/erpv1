@@ -6,9 +6,11 @@ import { DNService } from '../../../../_service/debitnote/dn-service' /* add ref
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for view employee */
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
+import { AutoNumericComp } from '../../../usercontrol/autonumeric';
 
 declare var $: any;
 
@@ -25,8 +27,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
     dnid: number = 0;
     dnacid: number = 0;
     dnacname: string = "";
-    dramt: any = "";
     narration: string = "";
+    isactive: boolean = false;
     uploadedFiles: any = [];
     suppdoc: any = [];
 
@@ -36,8 +38,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
     newdnid: any = 0;
     newacid: any = 0;
     newacname: string = "";
-    newdramt: any = "";
-    newcramt: any = "";
 
     counter: any;
     title: string = "";
@@ -49,13 +49,26 @@ export class AddDebitNote implements OnInit, OnDestroy {
     @ViewChild("dndate")
     dndate: CalendarComp;
 
+    @ViewChild("dramt")
+    dramt: AutoNumericComp;
+
+    @ViewChild("cramt")
+    cramt: AutoNumericComp;
+
+    @ViewChild("newcramt")
+    newcramt: AutoNumericComp;
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _dnservice: DNService, private _commonservice: CommonService, private _userService: UserService,
+        private _dnservice: DNService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
+    }
+
+    getValue() {
+        alert(this.dramt.getValue());
     }
 
     setAuditDate() {
@@ -118,6 +131,14 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
+            var debitamt = parseInt(this.dramt.getValue());
+            var creditamt = this.TotalCreditAmt();
+
+            if (debitamt !== creditamt) {
+                this._msg.Show(messageType.error, "Error", "Total Debit Amount and Total Credit Amount not Same !!!");
+                return;
+            }
+
             this.saveDNData();
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
@@ -132,13 +153,15 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     isDuplicateacid() {
-        for (var i = 0; i < this.dnRowData.length; i++) {
-            var field = this.dnRowData[i];
+        var that = this;
 
-            if (field.acid == this.newacid) {
-                alert("Duplicate Account not Allowed");
-                this.newacid = "";
-                this.newacname = "";
+        for (var i = 0; i < that.dnRowData.length; i++) {
+            var field = that.dnRowData[i];
+
+            if (field.acid == that.newacid) {
+                that._msg.Show(messageType.info, "Info", "Duplicate Account not Allowed");
+                that.newacid = "";
+                that.newacname = "";
                 return true;
             }
         }
@@ -146,18 +169,29 @@ export class AddDebitNote implements OnInit, OnDestroy {
         return false;
     }
 
+    TotalCreditAmt() {
+        var CreditAmtTotal = 0;
+
+        for (var i = 0; i < this.dnRowData.length; i++) {
+            var items = this.dnRowData[i];
+            CreditAmtTotal += parseInt(items.cramt);
+        }
+
+        return CreditAmtTotal;
+    }
+
     private NewRowAdd() {
         var that = this;
 
-        if (this.newacname == "" || this.newacname == null) {
-            alert("Please Enter Account Name");
+        if (this.newacname == "") {
+            that._msg.Show(messageType.info, "Info", "Please Enter Account Name");
             return;
         }
 
-        if (this.newcramt == "" || this.newcramt == null) {
-            alert("Please Enter Credit");
-            return;
-        }
+        // if (this.newcramt == null) {
+        //     that._msg.Show(messageType.info, "Info", "Please Enter Credit");
+        //     return;
+        // }
 
         //Duplicate items Check
         this.duplicateacid = this.isDuplicateacid();
@@ -169,16 +203,16 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 "dnid": 0,
                 'acid': that.newacid,
                 'acname': that.newacname,
-                'cramt': that.newcramt,
+                'cramt': that.newcramt.getValue(),
                 "cmpid": that.loginUser.cmpid,
                 "fy": that.loginUser.fy,
-                "docdate": "" + that.dndate.getDate() + ""
+                "docdate": that.dndate.getDate()
             });
 
             this.counter++;
             this.newacid = "";
             this.newacname = "";
-            this.newcramt = "";
+            this.newcramt.empty();
         }
     }
 
@@ -234,11 +268,12 @@ export class AddDebitNote implements OnInit, OnDestroy {
             var date = new Date(_dndata[0].docdate);
             that.dndate.setDate(date);
 
-            that.dramt = _dndata[0].dramt;
+            that.dramt.setValue(_dndata[0].dramt);
             that.narration = _dndata[0].narration;
+            that.isactive = _dndata[0].isactive;
 
-            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            that.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
 
             that.getDNDetailsByID(_dndata[0].docno);
         }, err => {
@@ -249,9 +284,14 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     getDNDetailsByID(pdocno: number) {
+        var that = this;
+
         this._dnservice.getDebitNote({ "flag": "details", "docno": pdocno }).subscribe(data => {
-            this.dnRowData = data.data;
-            console.log(this.dnRowData);
+            that.dnRowData = data.data;
+
+            for (var i = 0; i < that.dnRowData.length; i++) {
+                that.cramt = that.dnRowData[i].cramt;
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -282,28 +322,29 @@ export class AddDebitNote implements OnInit, OnDestroy {
             "fy": that.loginUser.fy,
             "docdate": that.dndate.getDate(),
             "acid": that.dnacid,
-            "dramt": that.dramt,
+            "dramt": that.dramt.getValue(),
             "narration": that.narration,
             "uidcode": that.loginUser.login,
             "suppdoc": that.suppdoc,
-            "dndetails": that.dnRowData
+            "dndetails": that.dnRowData,
+            "isactive": that.isactive
         }
 
         that.duplicateacid = that.isDuplicateacid();
-        console.log(that.duplicateacid);
 
         if (that.duplicateacid == false) {
             that._dnservice.saveDebitNote(saveDN).subscribe(data => {
                 var dataResult = data.data;
 
                 if (dataResult[0].funsave_debitnote.msgid != "-1") {
-                    alert(dataResult[0].funsave_debitnote.msg);
+                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_debitnote.msg);
                     that._router.navigate(['/accounts/debitnote']);
                 }
                 else {
-                    alert("Error");
+                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_debitnote.msg);
                 }
             }, err => {
+                that._msg.Show(messageType.error, "Error", err);
                 console.log(err);
             }, () => {
                 // console.log("Complete");

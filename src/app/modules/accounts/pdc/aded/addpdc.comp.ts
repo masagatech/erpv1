@@ -1,18 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for customer */
 import { PDCService } from '../../../../_service/pdc/pdc-service' /* add reference for emp */
 import { Router, ActivatedRoute } from '@angular/router';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
+import { AutoNumericComp } from '../../../usercontrol/autonumeric';
 
 declare var $: any;
 
 @Component({
     templateUrl: 'addpdc.comp.html',
-    providers: [CommonService, PDCService]
+    providers: [CommonService, PDCService, ALSService]
 })
 
 export class AddPDC implements OnInit, OnDestroy {
@@ -22,12 +26,11 @@ export class AddPDC implements OnInit, OnDestroy {
     pdcid: number = 0;
     acid: number = 0;
     acname: string = "";
-    amount: any = "";
     bankname: string = "";
     chequeno: string = "";
-    chequedate: any = "";
     pdctype: string = "";
     narration: string = "";
+    isactive: boolean = false;
 
     module: string = "";
     suppdoc: any = [];
@@ -37,18 +40,100 @@ export class AddPDC implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+
+    @ViewChild("chequedate")
+    chequedate: CalendarComp;
+
+    @ViewChild("amount")
+    amount: AutoNumericComp;
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _userService: UserService, private _pdcservice: PDCService) {
+        private _commonservice: CommonService, private _userService: UserService, private _pdcservice: PDCService, private _msg: MessageService,
+        private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
-        
+
         this.module = "PDC";
         this.getPDCType();
     }
 
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "pdc", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.chequedate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ngOnInit() {
+        this.chequedate.initialize(this.loginUser);
+        this.chequedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.title = "Edit Post Dated Cheque";
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.pdcid = params['id'];
+                this.getPDCById(this.pdcid);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+            }
+            else {
+                this.title = "Add Post Dated Cheque";
+
+                var date = new Date();
+                this.chequedate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.savePDCData();
+        } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
     getPDCType() {
-        this._commonservice.getMOM({ "group": "PDC Type" }).subscribe(data => {
+        this._commonservice.getMOM({ "group": "pdctype" }).subscribe(data => {
             this.pdctypedt = data.data;
         }, err => {
             console.log("Error");
@@ -57,10 +142,27 @@ export class AddPDC implements OnInit, OnDestroy {
         })
     }
 
+    existCustAuto() {
+        var that = this;
+
+        that._commonservice.getAutoData({
+            "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.acname
+        }).subscribe(data => {
+            if (data.data.length === 0) {
+                that._msg.Show(messageType.info, "info", "This party not exists !!!");
+                that.acname = "";
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     getCustAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "customer", "search": that.acname }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.acname }).subscribe(data => {
             $(".acname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -107,27 +209,29 @@ export class AddPDC implements OnInit, OnDestroy {
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
             "acid": that.acid,
-            "amount": that.amount,
+            "amount": that.amount.getValue(),
             "bankname": that.bankname,
             "chequeno": that.chequeno,
-            "chequedate": that.chequedate,
+            "chequedate": that.chequedate.getDate(),
             "pdctype": that.pdctype,
             "narration": that.narration,
             "suppdoc": that.suppdoc,
-            "uidcode": that.loginUser.login
+            "uidcode": that.loginUser.login,
+            "isactive": that.isactive
         }
 
         that._pdcservice.savePDCDetails(savepdc).subscribe(data => {
             var dataResult = data.data;
 
             if (dataResult[0].funsave_pdc.msgid != "-1") {
-                alert(dataResult[0].funsave_pdc.msg);
+                that._msg.Show(messageType.success, "Success", dataResult[0].funsave_pdc.msg);
                 that._router.navigate(['/accounts/pdc']);
             }
             else {
-                alert("Error");
+                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_pdc.msg);
             }
         }, err => {
+            that._msg.Show(messageType.error, "Error", err);
             console.log(err);
         }, () => {
             // console.log("Complete");
@@ -140,89 +244,29 @@ export class AddPDC implements OnInit, OnDestroy {
         var that = this;
 
         that._pdcservice.getPDCDetails({ "flag": "id", "pdcid": id }).subscribe(data => {
+            debugger;
             var pdcdata = data.data;
 
             that.pdcid = pdcdata[0].pdcid;
             that.pdctype = pdcdata[0].pdctype;
             that.acid = pdcdata[0].acid;
             that.acname = pdcdata[0].acname;
-            that.chequedate = pdcdata[0].chequedate;
-            that.amount = pdcdata[0].amount;
+
+            var date = new Date(pdcdata[0].chequedate);
+            that.chequedate.setDate(date);
+
+            that.amount.setValue(pdcdata[0].amount);
             that.bankname = pdcdata[0].bankname;
             that.chequeno = pdcdata[0].chequeno;
             that.narration = pdcdata[0].narration;
-            that.uploadedFiles = pdcdata[0].suppdoc == null ? [] : pdcdata[0].uploadedfile;
-            that.suppdoc = pdcdata[0].suppdoc == null ? [] : pdcdata[0].suppdoc;
+            that.isactive = pdcdata[0].isactive;
+            that.uploadedFiles = pdcdata[0].suppdoc.length === 0 ? [] : pdcdata[0].uploadedfile;
+            that.suppdoc = pdcdata[0].suppdoc.length === 0 ? [] : pdcdata[0].suppdoc;
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.title = "Edit Post Dated Cheque";
-
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.pdcid = params['id'];
-                this.getPDCById(this.pdcid);
-
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Add Post Dated Cheque";
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
-            }
-        });
-
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            // Doc Date 
-
-            $(".chequedate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".chequedate").datepicker('setDate', today);
-        }, 0);
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.savePDCData();
-        } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
     }
 
     ngOnDestroy() {

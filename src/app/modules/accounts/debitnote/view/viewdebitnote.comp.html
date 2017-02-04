@@ -2,27 +2,28 @@
 	<table class="table table-striped table-bordered table-hover">
 		<thead>
 			<tr>
-				<th colspan="4"></th>
+				<th colspan="3"></th>
 				<th width="200px" class="text-right">
 					<b>Total :</b>
 				</th>
-				<th width="120px" class="text-right">
-					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat}}</b>
+				<th width="100px" class="text-right">
+					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</th>
-				<th width="120px" class="text-right">
-					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat}}</b>
+				<th width="100px" class="text-right">
+					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</th>
 				<th></th>
+				<th width="45px"></th>
 			</tr>
 			<tr>
-				<th></th>
-				<th width="80px">Doc No</th>
-				<th width="110px">Doc Date</th>
-				<th width="100px">A/C Code</th>
+				<th width="20px"></th>
+				<th width="100px">Doc No</th>
+				<th width="100px">Doc Date</th>
 				<th width="200px">A/C Name</th>
-				<th width="120px" class="text-right">Dr. Amt</th>
-				<th width="120px" class="text-right">Cr. Amt</th>
+				<th width="100px" class="text-right">Dr. Amt</th>
+				<th width="100px" class="text-right">Cr. Amt</th>
 				<th>Narration</th>
+				<th width="45px"></th>
 			</tr>
 		</thead>
 		<tbody *ngFor="let row of viewDebitNoteDT">
@@ -33,50 +34,50 @@
 					</button>
 				</td>
 				<td>
-					<a role="button" (click)="openDNDetails(row)">{{row.docno}}</a>
+					{{row.docno}}
 				</td>
 				<td>
 					{{row.docdate}}
 				</td>
 				<td>
-					{{row.acid}}
-				</td>
-				<td>
 					{{row.acname}}
 				</td>
 				<td class="text-right">
-					{{row.totdramt | currency:loginUser._globsettings.numberformat}}
+					{{row.totdramt | currency:loginUser._globsettings.numberformat:true}}
 				</td>
 				<td class="text-right">
-					{{row.totcramt | currency:loginUser._globsettings.numberformat}}
+					{{row.totcramt | currency:loginUser._globsettings.numberformat:true}}
 				</td>
 				<td rowspan="3">
 					{{row.issh == 1 ? row.narration : row.smallnarr}}
+				</td>
+				<td>
+					<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm fa fa-arrow-right"></button>
 				</td>
 			</tr>
 			<tr [style.display]="row.issh == 0?'none':''">
 				<td></td>
 				<td></td>
 				<td></td>
-				<td colspan="4">
+				<td colspan="3">
 					<table class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th width="90px">A/C Code</th>
-								<th width="200px">A/C Name</th>
-								<th width="120px" class="text-right">Dr. Amt</th>
+								<th>A/C Name</th>
+								<th width="100px" class="text-right">Dr. Amt</th>
 								<th width="110px" class="text-right">Cr. Amt</th>
 							</tr>
 						</thead>
-						<tbody *ngFor="let drow of row.Details">
+						<tbody *ngFor="let drow of row.details">
 							<tr class="textTop">
-								<td>{{drow.acid}}</td>
 								<td>{{drow.acname}}</td>
-								<td class="text-right">{{drow.dramt | currency:loginUser._globsettings.numberformat}}</td>
-								<td class="text-right">{{drow.cramt | currency:loginUser._globsettings.numberformat}}</td>
+								<td class="text-right">{{drow.dramt | currency:loginUser._globsettings.numberformat:true}}</td>
+								<td class="text-right">{{drow.cramt | currency:loginUser._globsettings.numberformat:true}}</td>
 							</tr>
 						</tbody>
 					</table>
+				</td>
+				<td>
 				</td>
 			</tr>
 		</tbody>
@@ -88,12 +89,13 @@
 					<b>Total :</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat}}</b>
+					<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</td>
 				<td class="text-right">
-					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat}}</b>
+					<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
 				</td>
-				<td></td>
+				<td>
+				</td>
 			</tr>
 		</tfoot>
 	</table>

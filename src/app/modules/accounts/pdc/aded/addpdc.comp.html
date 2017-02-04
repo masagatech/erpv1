@@ -34,25 +34,20 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="control-label">Party Name</label>
-                    <input type="text" [(ngModel)]="acname" class="acname form-control" (keyup)="getCustAuto(this)" />
+                    <input type="text" [(ngModel)]="acname" class="acname form-control" (keyup)="getCustAuto(this)" (keydown.tab)="existCustAuto()" />
                 </div>
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Cheque Date</label>
-							<div class="controls">
-								<div class="input-group" tabindex="2">
-									<input id="date-picker-3" type="text" class="date-picker form-control chequedate" [(ngModel)]="chequedate" />
-									<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-								</div>
-							</div>
+                            <calendar #chequedate [name]="'chequedate'"></calendar>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Amount</label>
-                            <input type="number" [(ngModel)]="amount" class="form-control" />
+                            <autonumeric #amount [name]="'amount'"></autonumeric>
                         </div>
                     </div>
                 </div>
@@ -76,6 +71,9 @@
                 <div class="form-group">
                     <label class="control-label">Narration</label>
                     <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <p-checkbox [(ngModel)]="isactive" name="chkIsActive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
                 </div>
             </div>
         </div>

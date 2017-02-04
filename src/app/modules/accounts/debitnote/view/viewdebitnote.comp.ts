@@ -4,7 +4,8 @@ import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { DNService } from '../../../../_service/debitnote/dn-service'; /* add reference for view debitnote */
 import { UserService } from '../../../../_service/user/user-service'; /* add reference for view user */
-
+import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,14 +15,14 @@ import { Router } from '@angular/router';
 
 export class ViewDebitNote implements OnInit, OnDestroy {
     title: any;
-    loginUser: any;
-
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    loginUser: LoginUserModel;
 
-    viewDebitNoteDT: any[] = [];
+    viewDebitNoteDT: any = [];
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _dnservice: DNService, private _userService: UserService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _dnservice: DNService,
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getDNDetails();
     }
@@ -33,7 +34,8 @@ export class ViewDebitNote implements OnInit, OnDestroy {
         }).subscribe(data => {
             this.viewDebitNoteDT = data.data;
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -46,7 +48,8 @@ export class ViewDebitNote implements OnInit, OnDestroy {
                 this._dnservice.getDebitNote({ "flag": "details", "docno": row.docno }).subscribe(data => {
                     row.details = data.data;
                 }, err => {
-                    console.log("Error");
+                    this._msg.Show(messageType.error, "Error", err);
+                    console.log(err);
                 }, () => {
                     // console.log("Complete");
                 })
@@ -61,7 +64,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
         for (var i = 0; i < this.viewDebitNoteDT.length; i++) {
             var items = this.viewDebitNoteDT[i];
-            DebitAmtTotal += parseInt(items.TotalDebitAmount);
+            DebitAmtTotal += parseInt(items.totdramt);
         }
 
         return DebitAmtTotal;
@@ -72,7 +75,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
         for (var i = 0; i < this.viewDebitNoteDT.length; i++) {
             var items = this.viewDebitNoteDT[i];
-            CreditAmtTotal += parseInt(items.TotalCreditAmount);
+            CreditAmtTotal += parseInt(items.totcramt);
         }
 
         return CreditAmtTotal;
@@ -81,6 +84,9 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     openDNDetails(row) {
         if (!row.IsLocked) {
             this._router.navigate(['/accounts/debitnote/edit', row.dnid]);
+        }
+        else {
+            this._msg.Show(messageType.info, "Info", "This Debi Note is Locked");
         }
     }
 

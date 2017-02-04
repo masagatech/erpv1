@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataListModule } from 'primeng/primeng';
+import { DataListModule, CheckboxModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 
 @Component({
@@ -43,7 +43,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataListModule, CalendarModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+        DataListModule, CheckboxModule, CalendarModule],
     declarations: [
         AddJV,
         ViewJV,
