@@ -1,0 +1,13 @@
+<div class="table-responsive">
+	<p-dataTable #dt [value]="materaillist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+		[(selection)]="selectedRB1" expandableRows="true">
+		<p-column field="mcode" header="Code" [style]="{'width':'50px','text-align':'left'}">
+			<template let-row="rowData" pTemplate type="body">
+				<a role="button" (click)="EditItem(row)">{{row.mcode}}</a>
+			</template>
+		</p-column>
+		<p-column field="mname" header="Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="uom" header="UOM" [style]="{'width':'50px','text-align':'left'}"></p-column>
+		<p-column field="descrip" header="Description" [style]="{'width':'150px','text-align':'left'}"></p-column>
+	</p-dataTable>
+</div>

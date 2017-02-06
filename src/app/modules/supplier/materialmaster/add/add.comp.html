@@ -1,0 +1,44 @@
+<form id="formid">
+	<div class="panel panel-theme">
+		<div class="panel-body">
+			<div class="col-md-9">
+				<div class="col-md-3">
+					<div class='form-group'>
+						<label>Code</label>
+						<input type="text" validate="" class="form-control code" maxlength="10" tabindex="1" name="code" [(ngModel)]="code">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class='form-group'>
+						<label>Name</label>
+						<input type="text" validate="" class="form-control name" tabindex="1" name="name" [(ngModel)]="name">
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="col-md-3">
+					<div class='form-group'>
+						<label>Uom</label>
+						<select class="form-control" tabindex="3" name="uom" [(ngModel)]="uom">
+							<option *ngFor="let items of uomlist"  [value]="items.id">
+							{{items.val}}
+							</option>
+					</select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class='form-group'>
+						<label>Description</label>
+						<textarea [(ngModel)]="description" tabindex="4" class="form-control medium-text-box" name="description" cols="75" autocomplete='off'
+							rows="2"></textarea>
+					</div>
+				</div>
+				<div class="col-md-9" *ngIf="editmode">
+					<div class="col-md-3">
+						<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>

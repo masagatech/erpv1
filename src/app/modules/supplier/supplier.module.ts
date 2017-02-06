@@ -17,10 +17,6 @@ import { payview } from '../supplier/payment/view/payview.comp';                
 import { expadd } from '../supplier/exp/add/expadd.comp';                            //Exp Add
 import { expview } from '../supplier/exp/view/expview.comp';                         //Exp View
 
-// import { itemadd } from '../supplier/itemsmaster/add/itemadd.comp';                            //item Add
-// import { itemview } from '../supplier/itemsmaster/view/itemview.comp';                         //item View
-
-
 
 import { supplierdetailsview } from '../supplier/supplierdetails/supplierdetails.comp';                         //Exp View
 
@@ -52,10 +48,11 @@ const routerConfig = [
           { path: 'payedit/:id', component: payadd, canActivateChid: [AuthGuard], },
           { path: 'payview', component: payview, canActivateChid: [AuthGuard], },
 
-          // //Supplier Item Master
-          // { path: 'itemadd', component: itemadd, canActivateChid: [AuthGuard], },
-          // { path: 'itemedit/:id', component: itemadd, canActivateChid: [AuthGuard], },
-          // { path: 'itemview', component: itemview, canActivateChid: [AuthGuard], },
+          {
+            path: 'material', loadChildren: () => System.import('./materialmaster').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           {
             path: 'itemsmaster', loadChildren: () => System.import('./itemsmaster').then((comp: any) => {
