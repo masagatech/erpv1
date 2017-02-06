@@ -5,13 +5,13 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Item Code</label>
-						<input type="text" class="form-control itemcode" tabindex="1" maxlength="10" [(ngModel)]="itemcode">
+						<input type="text" class="form-control itemcode" validate="" tabindex="1" maxlength="10" [(ngModel)]="itemcode">
 					</div>
 				</div>
 				<div class="col-md-4">
 					<div class='form-group'>
 						<label>Item Name</label>
-						<input type="text" class="form-control itemname" tabindex="2" [(ngModel)]="itemname">
+						<input type="text" class="form-control itemname" validate="" tabindex="2" [(ngModel)]="itemname">
 					</div>
 				</div>
 				<div class="col-md-2">
@@ -25,7 +25,7 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>UoM</label>
-						<select [(ngModel)]="UoM" class="form-control uom" tabindex="4">
+						<select [(ngModel)]="UoM" class="form-control uom" validate="" tabindex="4">
 						<option *ngFor="let row of UoMlist" [value]="row.id">
 							{{row.val}}
 					    </option>
@@ -35,7 +35,7 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Shelf Life</label>
-						<select [(ngModel)]="shelf" class="form-control sheft" tabindex="5">
+						<select [(ngModel)]="shelf" class="form-control sheft" validate="" tabindex="5">
 						<option *ngFor="let row of shelflifelist" [value]="row.id">
 							{{row.val}}
 					    </option>
@@ -63,7 +63,11 @@
 					</div>
 				</div>
 			</div>
-
+			<div class="col-md-10" *ngIf="editmode">
+				<div class="col-md-4">
+					<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

@@ -87,7 +87,7 @@ declare var $: any;
         if (val != "") {
             this.wareServies.getwarehouseTransfer({
                 "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fyid,
+                "fy": this.loginUser.fy,
                 "flag": "salesdrop",
                 "itemsid": val,
                 "warehouse": this.fromwareid,
@@ -123,7 +123,7 @@ declare var $: any;
             "type": "warehouseTrasnfer",
             "search": arg == 0 ? me.NewItemsName : me.itemsname,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "warehouse": this.fromwareid,
             "createdby": this.loginUser.login
         }).subscribe(data => {
@@ -165,7 +165,7 @@ declare var $: any;
             "type": "warehouse",
             "search": _me.fromwarname,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".from").autocomplete({
                 source: data.data,
@@ -196,7 +196,7 @@ declare var $: any;
             "type": "warehouse",
             "search": _me.Towarname,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid
+            "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".to").autocomplete({
                 source: data.data,
@@ -317,7 +317,7 @@ declare var $: any;
         this.wareServies.getwarehouseTransfer({
             "flag": "edit",
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "docno": docno
         }).subscribe(result => {
@@ -352,7 +352,7 @@ declare var $: any;
             "toid": that.Towarid,
             "remark": that.rem,
             "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fyid,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "warehousedetails": this.createItemsjson()
         }

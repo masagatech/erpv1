@@ -47,7 +47,6 @@ declare var $: any;
             "to": to,
             "createdby": this.loginUser.login
         }).subscribe(result => {
-            console.log(result);
             that.totalRecords = result.data[1][0].recordstotal;
             that.vendorlist = result.data[0];
 

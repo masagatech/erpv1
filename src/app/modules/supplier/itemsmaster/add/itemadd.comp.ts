@@ -12,6 +12,7 @@ import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'itemadd.comp.html',
     providers: [ItemAddService, CommonService]
@@ -56,6 +57,8 @@ declare var $: any;
     Duplicateflag: boolean = false;
     private subscribeParameters: any;
     barcode: any = "";
+    editmode: boolean = false;
+    isactive: boolean = false;
 
     //user details
     loginUser: LoginUserModel;
@@ -102,7 +105,14 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
+
         this.attribute.attrparam = ["item_attr"];
+
+
     }
 
     attrtab() {
@@ -137,6 +147,7 @@ declare var $: any;
     checkalllead() {
         if (this.allload.otherdropdwn) {
             if (this._editid > 0) {
+                debugger;
                 this.EditItems(this._editid);
             }
 
@@ -575,45 +586,35 @@ declare var $: any;
         this.itemsaddServies.EditItem(
             this.EditParamJson()
         ).subscribe(result => {
-            var returndata = result.data;
-            if (returndata.length > 0) {
-
-                var _custdata = returndata[0]._custdata;
-                var _uploadedfile = returndata[0]._uploadedfile;
-                var _suppdoc = returndata[0]._suppdoc;
-                this.itemcode = returndata[0].itemcode;
-                this.itemname = returndata[0].itemname;
-                this.skucode = returndata[0].skucode;
-                this.UoM = returndata[0].uom;
-                this.shelf = returndata[0].shelflife;
-                this.itemsdesc = returndata[0].itemdesc;
-                this.itemsremark = returndata[0].itemremark;
-                this.attribute.attrlist = returndata[0]._attributejson === null ? [] : returndata[0]._attributejson;
-                this.Keyvallist = returndata[0]._keydatajson === null ? [] : returndata[0]._keydatajson;
-                this.saleslist = returndata[0]._salesjson === null ? [] : returndata[0]._salesjson;
-                this.purchaselist = returndata[0]._purchasejson === null ? [] : returndata[0]._purchasejson;
-                this.supplist = returndata[0]._supplierjson === null ? [] : returndata[0]._supplierjson;
-
-
-                if (_uploadedfile != null) {
-                    that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-                    that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            console.log(result.data[0][0]);
+            var returndata = result.data[0][0];
+            that.uploadedFiles = returndata._uploadedfile === null ? [] : returndata._uploadedfile;
+            that.suppdoc = returndata._docfile === null ? [] : returndata._docfile;
+            that.itemcode = returndata.itemcode;
+            that.itemname = returndata.itemname;
+            that.isactive = returndata.isactive;
+            that.skucode = returndata.skucode;
+            that.UoM = returndata.uom;
+            that.shelf = returndata.shelflife;
+            that.itemsdesc = returndata.itemdesc;
+            that.itemsremark = returndata.itemremark;
+            that.attribute.attrlist = returndata._attributejson === null ? [] : returndata._attributejson;
+            that.Keyvallist = returndata._keydatajson === null ? [] : returndata._keydatajson;
+            that.saleslist = returndata._salesjson === null ? [] : returndata._salesjson;
+            that.purchaselist = returndata._purchasejson === null ? [] : returndata._purchasejson;
+            that.supplist = returndata._supplierjson === null ? [] : returndata._supplierjson;
+            that.editmode = true;
+            //Warehouse check edit mode
+            if (that.warehouselist.length > 0) {
+                // setTimeout(function () {
+                var wareedit = returndata.warehouse;
+                for (var j = 0; j <= wareedit.length - 1; j++) {
+                    var chk = that.warehouselist.find(a => a.id === wareedit[j].id);
+                    chk.Warechk = true;
                 }
+                // }, 100)
+            }
 
-                //Warehouse check edit mode
-                if (that.warehouselist.length > 0) {
-                    // setTimeout(function () {
-                    var wareedit = returndata[0].warehouse;
-                    for (var j = 0; j <= wareedit.length - 1; j++) {
-                        var chk = that.warehouselist.find(a => a.id === wareedit[j].id);
-                        chk.Warechk = true;
-                    }
-                    // }, 100)
-                }
-            }
-            else {
-                //lentgh 0
-            }
 
         }, err => {
             console.log(err);
@@ -638,6 +639,7 @@ declare var $: any;
         this.attribute.attrlist = [];
         this.Keyvallist = [];
         this.supplist = [];
+        this.uploadedFiles = [];
         this.barcode = "";
         $('.itemcode').removeAttr('disabled');
         $('.itemcode').focus();
@@ -745,6 +747,7 @@ declare var $: any;
             "skucode": this.skucode,
             "barcode": this.barcode,
             "uom": this.UoM,
+            "isactive": this.isactive,
             "shelflife": this.shelf,
             "itemremark": this.itemsremark,
             "keydata": this.Createjsonkeydata(),
@@ -765,24 +768,10 @@ declare var $: any;
             this._router.navigate(['supplier/itemsmaster']);
         }
         if (evt === "save") {
-            if (this.itemcode == "") {
-                this._msg.Show(messageType.info, "info", "Please enter item code");
-                $(".itemcode").focus();
-                return;
-            }
-            if (this.itemname == "") {
-                this._msg.Show(messageType.info, "info", "Please enter item name");
-                $(".itemname").focus();
-                return;
-            }
-            if (this.UoM == "") {
-                this._msg.Show(messageType.info, "info", "Please select unit of measurement");
-                $(".uom").focus();
-                return;
-            }
-            if (this.shelf == "") {
-                this._msg.Show(messageType.info, "info", "Please select shelf life");
-                $(".sheft").focus();
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
                 return;
             }
             if (this.saleslist.length == 0) {
@@ -826,6 +815,14 @@ declare var $: any;
                 if (dataset[0].funsave_itemsmaster.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data Save Succssfully Document");
                     this.ClearControll();
+                    if (this.editmode == true) {
+                        this._router.navigate(['supplier/itemsmaster']);
+                    }
+                    else {
+                        this.getAllDropdown();
+                        this.editmode = false;
+                    }
+
                 }
                 else {
                     console.log('Error');
@@ -835,7 +832,7 @@ declare var $: any;
             }, err => {
                 console.log('Error');
             }, () => {
-                this.getAllDropdown();
+
             });
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {

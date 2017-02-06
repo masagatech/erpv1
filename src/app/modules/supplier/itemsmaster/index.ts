@@ -6,6 +6,8 @@ import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { itemadd } from './add/itemadd.comp';                            //item Add
 import { itemview } from './view/itemview.comp';                         //item View
 
+import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
+
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -40,7 +42,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule
+        , CheckboxModule],
     declarations: [
         itemadd,
         itemview,
