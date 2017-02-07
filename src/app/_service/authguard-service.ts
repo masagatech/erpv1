@@ -6,9 +6,12 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
+import { BreadCrumbProp } from '../_model/bread_crumb'
+
 @Injectable()
 export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
-  constructor(private authser: AuthenticationService, private _userService: UserService, private _router: Router) {
+  constructor(private authser: AuthenticationService, private _userService: UserService,
+    private _router: Router) {
 
   }
 
@@ -26,7 +29,6 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
 
   private checkFun(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     //check route info
-
     var routeconfig = route.data;
     var checks = this.authser.checkCredentials();
     var that = this;
@@ -58,7 +60,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
             });
           } else {
             that._router.navigate(['login']);
-             observer.next(true);
+            observer.next(true);
           }
         }, checks);
       } else {
@@ -69,6 +71,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
     }).first();
   }
 
+  
   private checkMenuAccess(route: ActivatedRouteSnapshot, state: RouterStateSnapshot, userdetails, callback) {
     var segments = state.url;
     var maindata = route.children[0].data;
@@ -78,7 +81,6 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
 
     if (maindata.hasOwnProperty("module")) {
       var modname = maindata["module"];
-
       for (var i = 0; i <= submenudetails.length - 1; i++) {
         var menumatch = submenudetails[i].data;
 
@@ -90,7 +92,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
               "uid": userdetails.uid, "cmpid": userdetails.cmpid, "fy": userdetails.fy,
               "ptype": menumatch["module"], "smtype": menumatch["submodule"], "actcd": menumatch["rights"]
             };
-
+          
             this.authser.checkmenuaccess(params).subscribe(d => {
               if (d.data) {
                 if (d.data[0].access) {
@@ -117,39 +119,4 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
       return;
     }
   }
-
-  // private getSession(callback, checks) {
-  //   this.authser.loginsession({ "base": "_sid", "sid": checks.sessionid }).subscribe(d => {
-  //     if (d) {
-  //       if (d.status) {
-  //         let usrobj = d.data;
-  //         let userDetails = usrobj[0];
-
-  //         if (userDetails.status) {
-  //           this._userService.setUsers(userDetails);
-  //           if (userDetails.cmpid != 0 && userDetails.fy != 0) {
-  //             // propr user
-  //           } else if (userDetails.errcode === "chpwd") {
-  //             this._router.navigate(['/changepwd']);
-  //           } else {
-  //             this._router.navigate(['/usersettings/defaultcompandfy']);
-  //           }
-  //         } else {
-  //           this._router.navigate(['login']);
-  //           console.log("user status false");
-  //         }
-  //       } else {
-  //         this._router.navigate(['login']);
-  //         console.log("data status false");
-  //       }
-  //     } else {
-  //       this._router.navigate(['login']);
-  //     }
-  //     callback("success")
-  //   }, err => {
-  //     this._router.navigate(['login']);
-  //     console.log(err);
-  //     callback("failed")
-  //   });
-  // }
 }
