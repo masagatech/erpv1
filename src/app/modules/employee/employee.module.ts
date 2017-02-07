@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { DynamicTabModule } from '../usercontrol/dynamictab';
 import { AddDynamicTabModule } from '../usercontrol/adddynamictab';
+import { CalendarModule } from '../usercontrol/calendar';
+import { NumTextModule } from '../usercontrol/numtext';
 
 const routerConfig = [
   {
@@ -35,7 +37,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DynamicTabModule, AddDynamicTabModule],
+  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+    DynamicTabModule, AddDynamicTabModule, CalendarModule, NumTextModule],
   declarations: [
     ViewEmployee,
     EmployeeAddEdit,

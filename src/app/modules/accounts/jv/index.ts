@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DataListModule, CheckboxModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -44,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, CheckboxModule, CalendarModule],
+        DataListModule, CheckboxModule, CalendarModule, NumTextModule],
     declarations: [
         AddJV,
         ViewJV,

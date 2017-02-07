@@ -21,11 +21,11 @@
                     <div class="col-md-4">
                         <div class="form-group" align="center">
                             <select [(ngModel)]="pdctype" name="pdctype" id="pdctype" class="form-control">
-                            <option [value]="">Select PDC Type</option>
-                            <option *ngFor="let row of pdctypedt" [value]="row.key">	
-                                {{row.val}}
-                            </option>
-                        </select>
+                                <option [value]="">Select PDC Type</option>
+                                <option *ngFor="let row of pdctypedt" [value]="row.key">	
+                                    {{row.val}}
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Amount</label>
-                            <autonumeric #amount [name]="'amount'"></autonumeric>
+                            <numtext name="amount" [(ngModel)]="amount"></numtext>
                         </div>
                     </div>
                 </div>

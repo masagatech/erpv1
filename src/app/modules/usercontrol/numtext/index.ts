@@ -1,4 +1,4 @@
-import { NgModule, Component, forwardRef, OnInit, Input, OnChanges } from '@angular/core';
+import { NgModule, Component, forwardRef, OnInit, AfterViewInit, Input, OnChanges } from '@angular/core';
 // import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -19,11 +19,11 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
 };
 
 export const autoNumericOptionsEuro = {
-    digitGroupSeparator: '.',
-    decimalCharacter: ',',
+    digitGroupSeparator: ',',
+    decimalCharacter: '.',
     decimalCharacterAlternative: '.',
-    currencySymbol: '\u202f€',
-    currencySymbolPlacement: 's',
+    currencySymbol: '\u202f$',
+    currencySymbolPlacement: 'p',
     roundingMethod: 'U',
 };
 //get accessor
@@ -36,15 +36,19 @@ export const autoNumericOptionsEuro = {
 
 export class NumTextComp implements OnInit, ControlValueAccessor {
     //The internal data model
+    @Input() css: string = "";
     private innerValue: any = '';
-    private id: any = "numtext_" + (new Date().valueOf()).toString();
+    
+    @Input()
+    id: any = "numtext_" + (new Date().valueOf()).toString();
+
     //Placeholders for the callbacks which are later providesd
     //by the Control Value Accessor
+
     private onTouchedCallback: () => void = noop;
     private onChangeCallback: (_: any) => void = noop;
 
     get value(): any {
-
         return this.innerValue;
     };
 
@@ -81,11 +85,15 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     }
 
     ngOnInit() {
+
+    }
+
+    ngAfterViewInit() {
         var that = this;
         setTimeout(function () {
             $("#" + that.id).autoNumeric('init', autoNumericOptionsEuro);
             that.updateModel();
-        }, 0);
+        }, 100);
     }
 
     // onKeyPress(e) {
@@ -97,7 +105,6 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
             var val = $("#" + this.id).autoNumeric('get');
             this.onChangeCallback(val == "" ? 0 : val);
         }
-
     }
 }
 

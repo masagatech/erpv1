@@ -38,7 +38,7 @@
 					{{row.designame}}
 				</td>
 				<td>
-					{{row.salary}}
+					{{row.salary | currency:loginUser._globsettings[0].numberformat:true}}
 				</td>
 				<td>
 					{{row.doj}}

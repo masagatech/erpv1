@@ -4,13 +4,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label class="control-label">Date</label>
-                    <!--<input type="date" [(ngModel)]="docdate" class="form-control" />-->
-                    <div class="controls">
-                        <div class="input-group" tabindex="2">
-                            <input id="date-picker-3" type="text" class="date-picker form-control docdate" [(ngModel)]="docdate" />
-                            <label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-                        </div>
-                    </div>
+                    <calendar #docdate [name]="'docdate'"></calendar>
                 </div>
             </div>
             <div class="col-md-9">

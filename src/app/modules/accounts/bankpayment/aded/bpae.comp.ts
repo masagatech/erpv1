@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -7,12 +7,13 @@ import { bankpaymentService } from "../../../../_service/bankpayment/aded/bankpa
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 @Component({
     templateUrl: 'bpae.comp.html',
-    providers: [bankpaymentService, CommonService]                         //Provides Add Service dcmaster-service.ts
-    //,AutoService
+    providers: [bankpaymentService, CommonService, ALSService]
 })
 
 export class bankpaymentaddedit implements OnInit, OnDestroy {
@@ -25,8 +26,8 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     BankPayId: any = 0;
     BankNamelist: any = [];
     Typelist: any = [];
-    CustName: any = "";
-    CustID: any = 0;
+    custname: any = "";
+    custid: any = 0;
     Bankid: any = 0;
     BankCode: any = '';
     Amount: any = 0;
@@ -37,7 +38,9 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
     Remark3: any = '';
     Refno: any = '';
     Type: any = 0;
-    Issuesdate: any;
+
+    @ViewChild("issuedate")
+    issuedate: CalendarComp;
 
     module: string = "";
     suppdoc: any = [];
@@ -47,19 +50,72 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private BankServies: bankpaymentService,
         private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _userService: UserService) {
+        private _userService: UserService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Bank Payment";
         this.getBankMasterDrop();
         this.getTypDrop();
     }
 
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "bpae", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.issuedate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ngOnInit() {
+        this.issuedate.initialize(this.loginUser);
+        this.issuedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        $(".bankpay").focus();
+
+        //Edit Mode
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.BankPayId = params['id'];
+                this.GetBankPayment(this.BankPayId);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+            }
+            else {
+                var date = new Date();
+                this.issuedate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+        });
+    }
+
     //CLear All Controll
 
     ClearControll() {
         this.Bankid = "";
-        this.Issuesdate = "";
-        this.CustName = "";
+        this.issuedate.setDate("");
+        this.custname = "";
         this.Refno = "";
         this.Type = "";
         this.Amount = "";
@@ -99,9 +155,11 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
             var _suppdoc = data.data[0]._suppdoc;
 
             this.Bankid = _bankpayment[0].bank;
-            this.Issuesdate = _bankpayment[0].issuedate;
-            this.CustID = _bankpayment[0].custid;
-            this.CustName = _bankpayment[0].partyname;
+
+            var _issuedate = new Date(_bankpayment[0].issuedate);
+            this.issuedate.setDate(_issuedate);
+            this.custid = _bankpayment[0].custid;
+            this.custname = _bankpayment[0].partyname;
             this.Refno = _bankpayment[0].refno;
             this.Type = _bankpayment[0].typ;
             this.ChequeNo = _bankpayment[0].cheqno;
@@ -125,9 +183,9 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
             "fy": this.loginUser.fy,
             "bankpayid": this.BankPayId,
             "refno": this.Refno,
-            "acid": this.CustID,
+            "acid": this.custid,
             "bankid": this.Bankid,
-            "issuedate": $('#Issuesdate').datepicker('getDate'),
+            "issuedate": this.issuedate.getDate(),
             "createdby": this.loginUser.login,
             "suppdoc": this.suppdoc,
             "typ": this.Type,
@@ -146,8 +204,8 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
 
     getAutoComplete(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": this.CustName }).subscribe(data => {
-            $(".Custcode").autocomplete({
+        this._autoservice.getAutoData({ "type": "customer", "cmpid": this.loginUser.cmpid, "search": this.custname }).subscribe(data => {
+            $(".custcode").autocomplete({
                 source: data.data,
                 width: 300,
                 max: 20,
@@ -158,8 +216,8 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.CustID = ui.item.value;
-                    me.CustName = ui.item.label;
+                    me.custid = ui.item.value;
+                    me.custname = ui.item.label;
                 }
             });
         }, err => {
@@ -197,48 +255,6 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
         });
     }
 
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        $(".bankpay").focus();
-
-        // setTimeout(function () {
-        //     var date = new Date();
-        //     var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-        //     //From Date 
-        //     $("#Issuesdate").datepicker({
-        //         dateFormat: "dd/mm/yy",
-        //         autoclose: true,
-        //         setDate: new Date()
-        //     });
-        //     $("#Issuesdate").datepicker('setDate', today);
-        // }, 0);
-
-        //Edit Mode
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.BankPayId = params['id'];
-                this.GetBankPayment(this.BankPayId);
-
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-            }
-        });
-    }
-
     //Any Button Click Event Add Edit And Save
 
     actionBarEvt(evt) {
@@ -247,11 +263,11 @@ export class bankpaymentaddedit implements OnInit, OnDestroy {
                 alert('Please Selected Bank');
                 return false;
             }
-            if ($('#Issuesdate').val() == "") {
+            if ($('#issuedate').val() == "") {
                 alert('Please Selected Issues Date');
                 return false;
             }
-            if (this.CustName == undefined || this.CustName == null) {
+            if (this.custname == undefined || this.custname == null) {
                 alert('Please Selected Account Code');
                 return false;
             }

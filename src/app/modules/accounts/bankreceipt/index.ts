@@ -7,6 +7,8 @@ import { bankreceiptview } from './view/brview.comp';      //Bank Bayment View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CalendarModule } from '../../usercontrol/calendar';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -29,9 +31,9 @@ const routerConfig = [
                 children: [
                     //Bank Payment Add Edit View
 
-                    { path: 'add', component: bankreceiptaddedit, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ar", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: bankreceiptaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"ar", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: bankreceiptview, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"ar", "rights": "view", "urlname": "/bankreceipt" } },
+                    { path: 'add', component: bankreceiptaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ar", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: bankreceiptaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ar", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: bankreceiptview, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ar", "rights": "view", "urlname": "/bankreceipt" } },
                 ]
             }
         ]
@@ -39,7 +41,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,
+        CalendarModule, NumTextModule],
     declarations: [
         bankreceiptaddedit,
         bankreceiptview,

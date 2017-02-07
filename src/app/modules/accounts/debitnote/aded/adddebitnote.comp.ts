@@ -10,7 +10,6 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
-import { AutoNumericComp } from '../../../usercontrol/autonumeric';
 
 declare var $: any;
 
@@ -29,6 +28,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
     dnacname: string = "";
     narration: string = "";
     isactive: boolean = false;
+    dramt: any = "";
+
     uploadedFiles: any = [];
     suppdoc: any = [];
 
@@ -38,6 +39,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     newdnid: any = 0;
     newacid: any = 0;
     newacname: string = "";
+    newcramt: any = "";
 
     counter: any;
     title: string = "";
@@ -49,15 +51,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
     @ViewChild("dndate")
     dndate: CalendarComp;
 
-    @ViewChild("dramt")
-    dramt: AutoNumericComp;
-
-    @ViewChild("cramt")
-    cramt: AutoNumericComp;
-
-    @ViewChild("newcramt")
-    newcramt: AutoNumericComp;
-
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -65,10 +58,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
-    }
-
-    getValue() {
-        alert(this.dramt.getValue());
     }
 
     setAuditDate() {
@@ -131,7 +120,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            var debitamt = parseInt(this.dramt.getValue());
+            var debitamt = this.dramt;
             var creditamt = this.TotalCreditAmt();
 
             if (debitamt !== creditamt) {
@@ -188,10 +177,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
             return;
         }
 
-        // if (this.newcramt == null) {
-        //     that._msg.Show(messageType.info, "Info", "Please Enter Credit");
-        //     return;
-        // }
+        if (this.newcramt == "") {
+            that._msg.Show(messageType.info, "Info", "Please Enter Credit");
+            return;
+        }
 
         //Duplicate items Check
         this.duplicateacid = this.isDuplicateacid();
@@ -203,7 +192,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 "dnid": 0,
                 'acid': that.newacid,
                 'acname': that.newacname,
-                'cramt': that.newcramt.getValue(),
+                'cramt': that.newcramt,
                 "cmpid": that.loginUser.cmpid,
                 "fy": that.loginUser.fy,
                 "docdate": that.dndate.getDate()
@@ -212,7 +201,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
             this.counter++;
             this.newacid = "";
             this.newacname = "";
-            this.newcramt.empty();
+            this.newcramt = "";
         }
     }
 
@@ -268,7 +257,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
             var date = new Date(_dndata[0].docdate);
             that.dndate.setDate(date);
 
-            that.dramt.setValue(_dndata[0].dramt);
+            that.dramt = _dndata[0].dramt;
             that.narration = _dndata[0].narration;
             that.isactive = _dndata[0].isactive;
 
@@ -288,10 +277,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
         this._dnservice.getDebitNote({ "flag": "details", "docno": pdocno }).subscribe(data => {
             that.dnRowData = data.data;
-
-            for (var i = 0; i < that.dnRowData.length; i++) {
-                that.cramt = that.dnRowData[i].cramt;
-            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -322,7 +307,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
             "fy": that.loginUser.fy,
             "docdate": that.dndate.getDate(),
             "acid": that.dnacid,
-            "dramt": that.dramt.getValue(),
+            "dramt": that.dramt,
             "narration": that.narration,
             "uidcode": that.loginUser.login,
             "suppdoc": that.suppdoc,

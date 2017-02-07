@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from "../../../../_model/action_buttons";
 import { Subscription } from "rxjs/Subscription";
@@ -7,13 +7,15 @@ import { RBService } from "../../../../_service/receiptbook/rb-service" /* add r
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for validate series no */
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
+import { ALSService } from '../../../../_service/auditlock/als-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 
 @Component({
     templateUrl: "addrb.comp.html",
-    providers: [RBService, CommonService]
+    providers: [RBService, CommonService, ALSService]
 })
 
 export class AddReceiptBook implements OnInit, OnDestroy {
@@ -26,7 +28,9 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     title: string = "";
 
     rbid: number = 0;
-    docdate: any = "";
+    
+    @ViewChild("docdate")
+    docdate: CalendarComp;
 
     newqty: number = 0;
     newseriesno: number = 0;
@@ -45,10 +49,49 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     rbRowData: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _rbservice: RBService, private _commonservice: CommonService, private _message: MessageService,
-        private _userService: UserService) {
+        private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService,
+        private _userService: UserService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Receipt Book";
+    }
+
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "rb", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.docdate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ngOnInit() {
+        this.docdate.initialize(this.loginUser);
+        this.docdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params["rbid"] !== undefined) {
+                this.title = "Receipt Book : Edit";
+                this.rbid = params["rbid"];
+                this.getRBDetailsByID(this.rbid);
+            }
+            else {
+                this.title = "Receipt Book : Add";
+            }
+        });
     }
 
     // add receipt book
@@ -82,7 +125,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                         "rbid": that.rbid,
                         "cmpid": that.loginUser.cmpid,
                         "fy": that.loginUser.fy,
-                        "docdate": that.docdate,
+                        "docdate": that.docdate.getDate(),
                         "seriesno": frmno++,
                         "noofpage": that.newnoofpage,
                         "qty": that.newqty,
@@ -94,7 +137,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
                 }
             }
             else {
-                alert(dataResult[0].status);
+                that._msg.Show(messageType.info, 'Info', dataResult[0].status);
             }
         }, err => {
             console.log(err);
@@ -116,11 +159,11 @@ export class AddReceiptBook implements OnInit, OnDestroy {
             var dataResult = data.data;
 
             if (dataResult[0].funsave_receiptbook.msgid != "-1") {
-                that._message.Show(messageType.success, 'Confirmed', dataResult[0].funsave_receiptbook.msg.toString());
+                that._msg.Show(messageType.success, 'Confirmed', dataResult[0].funsave_receiptbook.msg.toString());
                 that._router.navigate(["/inventory/receiptbook"]);
             }
             else {
-                alert("Error");
+                that._msg.Show(messageType.error, 'Error', dataResult[0].funsave_receiptbook.msg.toString());
             }
         }, err => {
             console.log(err);
@@ -150,42 +193,9 @@ export class AddReceiptBook implements OnInit, OnDestroy {
         })
     }
 
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params["rbid"] !== undefined) {
-                this.title = "Receipt Book : Edit";
-                this.rbid = params["rbid"];
-                this.getRBDetailsByID(this.rbid);
-            }
-            else {
-                this.title = "Receipt Book : Add";
-            }
-        });
-
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            // Doc Date 
-
-            $(".docdate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".docdate").datepicker('setDate', today);
-        }, 0);
-    }
-
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._message.confirm('Are you sure that you want to save?', () => {
+            this._msg.confirm('Are you sure that you want to save?', () => {
                 this.saveReceiptBook();
             });
         }

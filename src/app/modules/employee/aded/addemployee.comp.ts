@@ -13,6 +13,7 @@ import { MessageService, messageType } from '../../../_service/messages/message-
 import { AddrbookComp } from "../../usercontrol/addressbook/adrbook.comp";
 import { DynamicTabModule } from "../../usercontrol/dynamictab";
 import { AddDynamicTabComp } from "../../usercontrol/adddynamictab";
+import { CalendarComp } from '../../usercontrol/calendar';
 
 declare var $: any;
 declare var commonfun: any;
@@ -32,22 +33,15 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     fname: string = "";
     lname: string = "";
     emailid: string = "";
-    dob: string = "";
+
+    @ViewChild("dob")
+    dob: CalendarComp;
+
     gender: string = "";
     maritalstatus: string = "";
     bldgrp: string = "";
     familybg: string = "";
     healthdtls: string = "";
-
-    // mobileno: string = "";
-    // altmobileno: string = "";
-    // altemailid: string = "";
-    // country: string = "";
-    // state: string = "";
-    // city: string = "";
-    // pincode: string = "";
-    // addressline1: string = "";
-    // addressline2: string = "";
 
     cmpname: string = "";
     cmpemail: string = "";
@@ -56,7 +50,10 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     salary: any = "";
     salarymode: string = "";
     noticedays: number = 0;
-    doj: string = "";
+
+    @ViewChild("doj")
+    doj: CalendarComp;
+
     aboutus: string = "";
 
     pccid: number = 0;
@@ -123,7 +120,34 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     // Page Load
 
+    setDOB() {
+        this.dob.initialize(this.loginUser);
+
+        var date = new Date();
+        var agemin = date.getFullYear() - this.loginUser._globsettings[0].useragemin;
+        var agemax = date.getFullYear() - this.loginUser._globsettings[0].useragemax;
+        var dobfrom = new Date(agemax, date.getMonth(), date.getDate());
+        var dobto = new Date(agemin, date.getMonth(), date.getDate());
+
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        this.dob.setMinMaxDate("", today);
+    }
+
+    setDOJ() {
+        this.doj.initialize(this.loginUser);
+
+        var date = new Date();
+        var dojfrom = new Date(this.loginUser._regon);
+        var dojto = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        this.doj.setMinMaxDate("", today);
+    }
+
     ngOnInit() {
+        this.setDOB();
+        this.setDOJ();
+
         this.atttype = "Employee Attribute";
         this.setActionRights();
         this.setEmployeeFields();
@@ -406,6 +430,16 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         var allcc: any = [];
         var that = this;
 
+        if (that.adrbookid.length === 0) {
+            that._msg.Show(messageType.info, "Info", "Please select atleast one Contact Details");
+            return;
+        }
+
+        if (that.cclist.length === 0) {
+            that._msg.Show(messageType.info, "Info", "Please select atleast one Control Center");
+            return;
+        }
+
         primarycc.push({ "id": that.pccid });
 
         for (var i = 0; i < that.cclist.length; i++) {
@@ -419,7 +453,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "uid": that.uid,
 
             // personal
-            "dob": that.dob,
+            "dob": that.dob.getDate(),
             "gender": that.gender,
             "maritalstatus": that.maritalstatus,
             "bldgrp": that.bldgrp,
@@ -436,7 +470,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "salary": that.salary,
             "salarymode": that.salarymode,
             "noticedays": that.noticedays,
-            "doj": that.doj,
+            "doj": that.doj.getDate(),
 
             // about me
             "aboutus": that.aboutus,
@@ -446,8 +480,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             "uidcode": that.loginUser.login,
             "dynamicfields": that.tabListDT
         }
-
-        console.log(saveEmp);
 
         this._empservice.saveEmployee(saveEmp).subscribe(data => {
             var dataResult = data.data;
@@ -475,31 +507,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     setEmployeeFields() {
         var that = this;
 
-        setTimeout(function () {
-            commonfun.addrequire();
-
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            $(".dob").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".doj").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            that.subscribeParameters = that._routeParams.params.subscribe(params => {
-                if (params['empid'] === undefined) {
-                    $(".dob").datepicker('setDate', today);
-                    $(".doj").datepicker('setDate', today);
-                }
-            });
-        }, 0);
+        var date = new Date();
+        var defaultDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
         that.subscribeParameters = that._routeParams.params.subscribe(params => {
             if (params['empid'] !== undefined) {
@@ -514,25 +523,13 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     that.empid = EmpDetails[0].empid;
                     that.uid = EmpDetails[0].uid;
                     that.uname = EmpDetails[0].uname;
-                    that.dob = EmpDetails[0].dob;
+                    var dob = new Date(EmpDetails[0].dob);
+                    that.dob.setDate(dob);
                     that.gender = EmpDetails[0].gender;
                     that.maritalstatus = EmpDetails[0].maritalstatus;
                     that.bldgrp = EmpDetails[0].bldgrp;
                     that.familybg = EmpDetails[0].familybg;
                     that.healthdtls = EmpDetails[0].healthdtls;
-
-                    // that.attachfile = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-                    // that.uploadedFiles = EmpDetails[0].attachfile === null ? "" : EmpDetails[0].attachfile;
-
-                    // that.mobileno = EmpDetails[0].mobileno;
-                    // that.altmobileno = EmpDetails[0].altmobileno;
-                    // that.altemailid = EmpDetails[0].altemailid;
-                    // that.country = EmpDetails[0].country;
-                    // that.state = EmpDetails[0].state;
-                    // that.city = EmpDetails[0].city;
-                    // that.pincode = EmpDetails[0].pincode;
-                    // that.addressline1 = EmpDetails[0].addressline1;
-                    // that.addressline2 = EmpDetails[0].addressline2;
 
                     that.adrcsvid = "";
                     var addressdt = EmpDetails[0].address === null ? [] : EmpDetails[0].address;
@@ -551,7 +548,8 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     that.salarymode = EmpDetails[0].salarymode;
                     that.cmpemail = EmpDetails[0].cmpemail;
                     that.noticedays = EmpDetails[0].noticedays;
-                    that.doj = EmpDetails[0].doj;
+                    var doj = new Date(EmpDetails[0].doj);
+                    that.doj.setDate(doj);
                     that.pccid = EmpDetails[0].pctrlid;
                     that.cclist = SecondayCC;
                     that.tabListDT = dynFields;

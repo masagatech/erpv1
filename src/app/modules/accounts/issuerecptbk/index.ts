@@ -7,8 +7,10 @@ import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CalendarModule } from '../../usercontrol/calendar';
+import { NumTextModule } from '../../usercontrol/numtext';
 
-import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule, DataListModule, PanelModule],
+        DataTableModule, CalendarModule, NumTextModule],
     declarations: [
         AddRBI,
         ViewRBI,

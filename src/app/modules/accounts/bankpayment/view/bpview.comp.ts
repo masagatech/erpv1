@@ -1,17 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { bankpaymentViewService } from "../../../../_service/bankpayment/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'bpview.comp.html',
-    providers: [bankpaymentViewService] //Provides Add Service dcmaster-service.ts, AutoService
+    providers: [bankpaymentViewService, ALSService]
 })
 
 export class bankpaymentview implements OnInit, OnDestroy {
@@ -25,48 +28,62 @@ export class bankpaymentview implements OnInit, OnDestroy {
     BankNamelist: any = [];
     BankPaymentView: any = [];
     Bankid: any = 0;
-    FromDate: any = "";
-    ToDate: any = "";
     tableLength: any;
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private BankServies: bankpaymentViewService, private _userService: UserService) {
+    @ViewChild("fromdate")
+    fromdate: CalendarComp;
+
+    @ViewChild("todate")
+    todate: CalendarComp;
+
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankpaymentViewService,
+        private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getBankMasterDrop();
+    }
+
+    ngOnInit() {
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(new Date(this.loginUser.fyfrom));
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(new Date(this.loginUser.fyto));
+
+        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        this.tableLength = true;
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/accounts/bankpayment/add']);
+        }
     }
 
     //Open Edit Mode
 
     OpenEdit(row) {
         if (!row.IsLocked) {
-            this._router.navigate(['accounts/bankpayment/bpedit', row.id]);
+            this._router.navigate(['accounts/bankpayment/edit', row.id]);
         }
     }
 
     //Get Button Click Event
 
     GetBankPayment() {
-        this.FromDate = $('#FromDate').val();
-        this.ToDate = $("#ToDate").val();
         this.tableLength = true;
         this.BankPaymentView = [];
 
-        if (this.Bankid == undefined || this.Bankid == '') {
-            alert('Please Select Bank');
-            return false;
-        }
-        if (this.FromDate == undefined || this.FromDate == '' || this.ToDate == undefined || this.ToDate == '') {
-            alert('Please Select Date');
-            return false;
-        }
-
         this.BankServies.getBankPaymentView({
-            "cmpid": 1,
-            "fy": 5,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
             "flag": "",
             "bankid": this.Bankid,
-            "fromdate": $('#FromDate').datepicker('getDate'),
-            "todate": $('#ToDate').datepicker('getDate')
+            "fromdate": this.fromdate.getDate(),
+            "todate": this.todate.getDate()
         }).subscribe(PaymentDetails => {
             var dataset = PaymentDetails.data;
             if (dataset.length > 0) {
@@ -74,7 +91,7 @@ export class bankpaymentview implements OnInit, OnDestroy {
                 this.BankPaymentView = dataset;
             }
             else {
-                alert('No record found');
+                this._msg.Show(messageType.info, "Info", "No record found");
                 this.BankPaymentView = [];
                 this.tableLength = true;
                 return false;
@@ -135,54 +152,6 @@ export class bankpaymentview implements OnInit, OnDestroy {
                 total += parseInt(this.BankPaymentView[i].amount);
             }
             return total;
-        }
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.tableLength = true;
-
-        setTimeout(function () {
-            var date = new Date();
-            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', Fromtoday);
-
-            //To Date
-
-            $("#ToDate").datepicker({
-                dateFormat: 'dd/mm/yy',
-                minDate: 0,
-                setDate: new Date(),
-                autoclose: true
-            });
-            $("#ToDate").datepicker('setDate', Totoday);
-        }, 0);
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/accounts/bankpayment/add']);
-        }
-        if (evt === "save") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "edit") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "delete") {
-            alert("delete called");
         }
     }
 

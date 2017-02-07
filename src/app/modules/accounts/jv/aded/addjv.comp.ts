@@ -99,6 +99,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.jvmid = params['id'];
                 this.getJVDataById(this.jvmid);
 
+                $("#divJVAccount").children().prop('disabled', true);
                 $('input').prop('disabled', true);
                 $('select').prop('disabled', true);
                 $('textarea').prop('disabled', true);
@@ -112,6 +113,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
 
+                $("#divJVAccount").children().prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
@@ -145,6 +147,7 @@ export class AddJV implements OnInit, OnDestroy {
 
             this.saveJVData();
         } else if (evt === "edit") {
+            $('#divJVAccount').prop('disabled', false);
             $('input').prop('disabled', false);
             $('select').prop('disabled', false);
             $('textarea').prop('disabled', false);

@@ -7,6 +7,8 @@ import { bankpaymentview } from './view/bpview.comp';      //Bank Bayment View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CalendarModule } from '../../usercontrol/calendar';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -27,10 +29,10 @@ const routerConfig = [
                 path: '',
                 children: [
                     //Bank Payment Add Edit View
-                    
-                    { path: 'add', component: bankpaymentaddedit, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/add" }, },
-                    { path: 'edit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/edit" }, },
-                    { path: '', component: bankpaymentview, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/bankpayment" }, },
+
+                    { path: 'add', component: bankpaymentaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/add" }, },
+                    { path: 'edit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/edit" }, },
+                    { path: '', component: bankpaymentview, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/bankpayment" }, },
                 ]
             }
         ]
@@ -38,7 +40,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,
+        CalendarModule, NumTextModule],
     declarations: [
         bankpaymentaddedit,
         bankpaymentview,

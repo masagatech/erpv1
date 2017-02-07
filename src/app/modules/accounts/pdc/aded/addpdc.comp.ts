@@ -10,7 +10,6 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
-import { AutoNumericComp } from '../../../usercontrol/autonumeric';
 
 declare var $: any;
 
@@ -28,6 +27,7 @@ export class AddPDC implements OnInit, OnDestroy {
     acname: string = "";
     bankname: string = "";
     chequeno: string = "";
+    amount: any = "";
     pdctype: string = "";
     narration: string = "";
     isactive: boolean = false;
@@ -43,9 +43,6 @@ export class AddPDC implements OnInit, OnDestroy {
 
     @ViewChild("chequedate")
     chequedate: CalendarComp;
-
-    @ViewChild("amount")
-    amount: AutoNumericComp;
 
     private subscribeParameters: any;
 
@@ -209,7 +206,7 @@ export class AddPDC implements OnInit, OnDestroy {
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
             "acid": that.acid,
-            "amount": that.amount.getValue(),
+            "amount": that.amount,
             "bankname": that.bankname,
             "chequeno": that.chequeno,
             "chequedate": that.chequedate.getDate(),
@@ -244,24 +241,26 @@ export class AddPDC implements OnInit, OnDestroy {
         var that = this;
 
         that._pdcservice.getPDCDetails({ "flag": "id", "pdcid": id }).subscribe(data => {
-            debugger;
-            var pdcdata = data.data;
+            var _pdcdata = data.data[0]._pdcdata;
+            var _uploadedfile = data.data[0]._uploadedfile;
+            var _suppdoc = data.data[0]._suppdoc;
 
-            that.pdcid = pdcdata[0].pdcid;
-            that.pdctype = pdcdata[0].pdctype;
-            that.acid = pdcdata[0].acid;
-            that.acname = pdcdata[0].acname;
+            that.pdcid = _pdcdata[0].pdcid;
+            that.pdctype = _pdcdata[0].pdctype;
+            that.acid = _pdcdata[0].acid;
+            that.acname = _pdcdata[0].acname;
 
-            var date = new Date(pdcdata[0].chequedate);
+            var date = new Date(_pdcdata[0].chequedate);
             that.chequedate.setDate(date);
 
-            that.amount.setValue(pdcdata[0].amount);
-            that.bankname = pdcdata[0].bankname;
-            that.chequeno = pdcdata[0].chequeno;
-            that.narration = pdcdata[0].narration;
-            that.isactive = pdcdata[0].isactive;
-            that.uploadedFiles = pdcdata[0].suppdoc.length === 0 ? [] : pdcdata[0].uploadedfile;
-            that.suppdoc = pdcdata[0].suppdoc.length === 0 ? [] : pdcdata[0].suppdoc;
+            that.amount = _pdcdata[0].amount;
+            that.bankname = _pdcdata[0].bankname;
+            that.chequeno = _pdcdata[0].chequeno;
+            that.narration = _pdcdata[0].narration;
+            that.isactive = _pdcdata[0].isactive;
+
+            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
         }, err => {
             console.log("Error");
         }, () => {

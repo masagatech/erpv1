@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from "../../../../_model/action_buttons";
 import { Subscription } from "rxjs/Subscription";
@@ -8,12 +8,14 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for validate series no */
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 
 @Component({
     templateUrl: "addrbi.comp.html",
-    providers: [RBService, CommonService]
+    providers: [RBService, CommonService, ALSService]
 })
 
 export class AddRBI implements OnInit, OnDestroy {
@@ -30,7 +32,10 @@ export class AddRBI implements OnInit, OnDestroy {
     empid: number = 0;
     empname: string = "";
     docno: number = 0;
-    docdate: any = "";
+
+    @ViewChild("docdate")
+    docdate: CalendarComp;
+
     fromno: number = 0;
     tono: number = 0;
     narration: string = "";
@@ -45,13 +50,59 @@ export class AddRBI implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService,
-        private _userService: UserService) {
+        private _userService: UserService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
 
         this.module = "Receipt Book Issued";
         this.getLatestSeries();
-        this.setDefaultDate();
         this.BindReceiptBook();
+    }
+
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "rbi", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.docdate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ngOnInit() {
+        this.docdate.initialize(this.loginUser);
+        this.docdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params["irbid"] !== undefined) {
+                this.title = "Issued Receipt Book : Edit";
+                this.irbid = params["irbid"];
+                this.getRBIDetailsByID(this.irbid);
+            }
+            else {
+                this.title = "Issued Receipt Book : Add";
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this._msg.confirm('Are you sure that you want to save?', () => {
+                this.saveRBIDetails();
+            });
+        }
     }
 
     // get Auto Emp
@@ -89,7 +140,7 @@ export class AddRBI implements OnInit, OnDestroy {
     getLatestSeries() {
         var that = this;
 
-        that._commonservice.getOtherDetails({ "flag": "latestseries", "cmpid": "2", "fy": "7" }).subscribe(data => {
+        that._commonservice.getOtherDetails({ "flag": "latestseries", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy }).subscribe(data => {
             that.latestSeriesDT = data.data;
         });
     }
@@ -138,7 +189,7 @@ export class AddRBI implements OnInit, OnDestroy {
             that.empid = _rbidata[0].empid;
             that.empname = _rbidata[0].empname;
             that.docno = _rbidata[0].docno;
-            that.docdate = _rbidata[0].docdate;
+            that.docdate.setDate(_rbidata[0].docdate);
             that.fromno = _rbidata[0].fromno;
             that.tono = _rbidata[0].tono;
             that.narration = _rbidata[0].narration;
@@ -226,7 +277,7 @@ export class AddRBI implements OnInit, OnDestroy {
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
             "docno": this.docno,
-            "docdate": this.docdate,
+            "docdate": this.docdate.getDate(),
             "empid": this.empid,
             "rbid": this.rbid,
             "fromno": this.fromno,
@@ -251,46 +302,6 @@ export class AddRBI implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         });
-    }
-
-    // Set Default Date
-
-    setDefaultDate() {
-        var defaultdate = new Date();
-
-        var day = ("0" + defaultdate.getDate()).slice(-2);
-        var month = ("0" + (defaultdate.getMonth() + 1)).slice(-2);
-        var year = defaultdate.getFullYear();
-
-        var today = year + "-" + month + "-" + day;
-
-        this.docdate = today;
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params["irbid"] !== undefined) {
-                this.title = "Issued Receipt Book : Edit";
-                this.irbid = params["irbid"];
-                this.getRBIDetailsByID(this.irbid);
-            }
-            else {
-                this.title = "Issued Receipt Book : Add";
-            }
-        });
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this._msg.confirm('Are you sure that you want to save?', () => {
-                this.saveRBIDetails();
-            });
-        }
     }
 
     ngOnDestroy() {

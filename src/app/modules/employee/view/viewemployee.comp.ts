@@ -61,7 +61,6 @@ export class ViewEmployee implements OnInit, OnDestroy {
         var that = this;
 
         this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(employee => {
-            debugger;
             this.viewEmployeeDT = employee.data;
         }, err => {
             console.log("Error");
