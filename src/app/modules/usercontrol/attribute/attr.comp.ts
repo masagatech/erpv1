@@ -71,35 +71,37 @@ export class AttributeComp implements OnInit, OnDestroy {
 
     //Add Attribute 
     AttributeAdd() {
-        if (this.attrid > 0) {
-            this.Duplicateflag = true;
-            // if (this.attrlist.length > 0) {
-            //     for (var i = 0; i < this.attrlist.length; i++) {
-            //         if (this.attrlist[i].attrname == this.attrname) {
-            //             this.Duplicateflag = false;
-            //             break;
-            //         }
-            //     }
-            // }
-            if (this.Duplicateflag == true) {
-                this.attrlist.push({
-                    'attrname': this.attrname,
-                    'value': this.attrid
-                });
-                this.attrname = "";
-                $(".attr").focus();
+        if ($(".attr").val() != "") {
+            if (this.attrid > 0) {
+                this.Duplicateflag = true;
+                if (this.attrlist.length > 0) {
+                    for (var i = 0; i < this.attrlist.length; i++) {
+                        if (this.attrlist[i].attrname == this.attrname) {
+                            this.Duplicateflag = false;
+                            break;
+                        }
+                    }
+                }
+                if (this.Duplicateflag == true) {
+                    this.attrlist.push({
+                        'attrname': this.attrname,
+                        'value': this.attrid
+                    });
+                    this.attrname = "";
+                    $(".attr").focus();
+                }
+                else {
+                    this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                    $(".attr").focus();
+                    return;
+                }
+
             }
             else {
-                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
                 $(".attr").focus();
                 return;
             }
-
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-            $(".attr").focus();
-            return;
         }
     }
     //Remove  Attribute 

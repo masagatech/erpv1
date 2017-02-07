@@ -12,4 +12,7 @@ export class materialAddService {
     saveMaterialmaster(req: any) {
         return this._dataserver.post("savematerialMaster", req);
     }
+    getMaterialMaster(req: any) {
+        return this._dataserver.post("getmaterialMaster", req);
+    }
 }

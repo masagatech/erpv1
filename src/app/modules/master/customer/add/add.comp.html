@@ -68,7 +68,7 @@
 			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
-		<div class="tab-content" style="">
+		<div class="tab-content">
 			<div class="tab-pane active" id="adr">
 				<div class="row">
 					<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
@@ -133,7 +133,7 @@
 							<div class="panel-body">
 								<div class="col-md-4">
 									<div class='form-group'>
-										<label>Attribute</label>
+										<label>Item</label>
 										<input type="text" class="form-control disattr" tabindex="11" value="" [(ngModel)]="disattrname" (keyup)="getAutoCompletedisattr(this)"
 										/>
 									</div>
@@ -190,9 +190,6 @@
 					</div>
 				</div>
 			</div>
-			<!--<div class="tab-pane" id="dis">
-
-			</div>-->
 			<div class="tab-pane" id="sales">
 				<div class="row">
 					<div class="col-md-3">

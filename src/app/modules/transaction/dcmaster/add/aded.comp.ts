@@ -40,6 +40,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     Remark2: any = "";
     Remark3: any = "";
     DocNo: any = 0;
+
     //Declare Array Veriable
     Salesmanlist: any = [];                                   // Salesman Static veriable for dropdown
     OtherSalesmanlist: any = [];                              // SalesmanOther Static veriable for dropdown
@@ -71,9 +72,18 @@ export class dcADDEdit implements OnInit, OnDestroy {
     AddEdit: any = '';
     footer: any;
     private subscribeParameters: any;
+
+    //Customer Selected
+    addresslist: any = [];
+    disattrlist: any = [];
+    itemslist: any = [];
+    warehouselist: any = [];
+    daylist: any = [];
+    whdetailslist:any=[];
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+
 
 
     //, private _autoservice:AutoService
@@ -116,7 +126,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 setDate: new Date()
             });
             $("#delDate").datepicker('setDate', docdate);
-            $('.Custcode').focus();
+            $('.custname').focus();
         }, 0);
 
         //Edit Mode
@@ -214,7 +224,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 if (returndata[0].funsave_dcmaster.maxid > 0) {
                     alert("Data Save Succesfuly Document No: " + returndata[0].funsave_dcmaster.maxid)
                     this.ClearControll();
-                    $('.Custcode').focus();
+                    $('.custname').focus();
                 }
                 else {
                     console.log(returndata);
@@ -249,7 +259,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     $('textarea').removeAttr('disabled');
                     this.actionButton.find(a => a.id === "save").hide = false;
                     this.actionButton.find(a => a.id === "save").hide = false;
-                    $('.Custcode').focus();
+                    $('.custname').focus();
                 }
                 else {
                     console.log(dataset.Table[0].status)
@@ -311,7 +321,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
-            $(".Custcode").autocomplete({
+            $(".custname").autocomplete({
                 source: data.data,
                 width: 300,
                 max: 20,
@@ -379,20 +389,25 @@ export class dcADDEdit implements OnInit, OnDestroy {
     // //Selected Customer  Event
     CustomerSelected(val) {
         if (val != "") {
+            this.addresslist = [];
+            this.warehouselist = [];
+            this.Transpoterlist = [];
             this.custKey = val;
-            this.dcServies.getdropdwn({                     //User getdcdropdown
+            this.dcServies.getdcdetails({                   
                 "custid": val,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "flag": '',
                 "flag1": ''
-            }).subscribe(dropdetails => {
-                var dataset = dropdetails.data;                 //Return Data
-                this.Salesmanlist = dataset[0];
-                this.Transpoterlist = dataset[1];              //Return Data
-                this.BillAdr = dataset[2][0].adr;
-                this.shippAdr = dataset[2][0].adr;
+            }).subscribe(details => {
+                debugger;
+                var dataset = details.data;                 
+                this.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
+                this.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
+                this.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
+                this.Salesmanlist = dataset[0]._salesman === null ? [] : dataset[0]._salesman;
+                this.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
             }, err => {
                 console.log('Error');
             }, () => {

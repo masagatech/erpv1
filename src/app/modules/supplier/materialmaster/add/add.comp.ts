@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -7,6 +7,7 @@ import { materialAddService } from "../../../../_service/materialmaster/add/add-
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -31,6 +32,10 @@ declare var commonfun: any;
     editmode: boolean = false;
     private subscribeParameters: any;
 
+    @ViewChild('attribute')
+    attribute: AttributeComp;
+
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -41,7 +46,8 @@ declare var commonfun: any;
         private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _userService: UserService,
         private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
-        //applicable From
+
+
 
     }
     //Add Save Edit Delete Button
@@ -63,8 +69,8 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                // this.groupid = params['id'];
-                // this.Editgroup(this.groupid);
+                this.mid = params['id'];
+                this.Editrow(this.mid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -77,6 +83,7 @@ declare var commonfun: any;
             }
         });
         this.getuom();
+        this.attribute.attrparam = ["item_attr"];
     }
 
     //Get Uom Dropdown 
@@ -102,10 +109,47 @@ declare var commonfun: any;
         this.mid = 0;
         this.code = "";
         this.name = "";
+        this.uom = 0;
         this.description = "";
+        this.attribute.attrlist;
         $(".code").focus();
     }
 
+    Editrow(mid: number) {
+        var that = this;
+        that.materialAddServies.getMaterialMaster({
+            "cmpid": that.loginUser.cmpid,
+            "flag": "Edit",
+            "mid": that.mid,
+            "fy": that.loginUser.fy,
+            "createdby": that.loginUser.login
+        }).subscribe(result => {
+            var dataset = result.data[0];
+            debugger;
+            that.editmode = true;
+            that.isactive = dataset[0].isactive;
+            that.code = dataset[0].mcode;
+            that.name = dataset[0].mname;
+            that.uom = dataset[0].uom;
+            that.attribute.attrlist = dataset[0]._attr === null ? [] : dataset[0]._attr;
+            that.description = dataset[0].descrip;
+
+        }, err => {
+            console.log("Error");
+        }, () => {
+            'Final'
+        });
+    }
+
+    private CreatejsonAttribute() {
+        var attrlist = [];
+        if (this.attribute.attrlist.length > 0) {
+            for (let item of this.attribute.attrlist) {
+                attrlist.push({ "id": item.value });
+            }
+            return attrlist;
+        }
+    }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
@@ -127,19 +171,27 @@ declare var commonfun: any;
                 "mcode": this.code,
                 "mname": this.name,
                 "uom": this.uom,
-                "attr": [],
+                "isactive": this.isactive,
+                "attr": this.CreatejsonAttribute(),
                 "desc": this.description,
                 "remark1": "",
                 "remark2": "",
                 "remark3": []
             }).subscribe(data => {
-                console.log(data.funsave_materialmaster.msg);
-                if (data.funsave_materialmaster.maxid == -1) {
-                    this._msg.Show(messageType.error, "error", validateme.msglist);
+                console.log(data.data);
+                var dataset = data.data;
+                if (dataset[0].funsave_materialmaster.maxid == -1) {
+                    this._msg.Show(messageType.error, "error", dataset[0].funsave_materialmaster.msg);
+                    $(".code").focus();
                 }
-                if (data.funsave_materialmaster.maxid > 0) {
-                    this._msg.Show(messageType.error, "error", validateme.msglist);
+                if (dataset[0].funsave_materialmaster.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", dataset[0].funsave_materialmaster.msg);
+                    this.ClearControl();
                 }
+                if (this.editmode == true) {
+                    this._router.navigate(['supplier/material']);
+                }
+                this.editmode = false;
 
             }, err => {
                 console.log("Error");
@@ -151,12 +203,12 @@ declare var commonfun: any;
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
-            $(".groupcode").attr('disabled', 'disabled');
+            $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-            $(".groupName").focus();
+            $(".name").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");

@@ -66,9 +66,10 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.setActionButtons.setTitle("Transpoter");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".code").removeAttr('disabled', 'disabled');
+        $(".code").prop('disabled', false);
         $(".code").focus();
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
@@ -89,7 +90,7 @@ declare var commonfun: any;
             }
         });
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
         }, 0);
 
@@ -198,7 +199,7 @@ declare var commonfun: any;
     }
 
     Attr() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
         }, 0);
@@ -220,6 +221,7 @@ declare var commonfun: any;
                 this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
+            this.actionButton.find(a => a.id === "save").enabled = false;
             this.transpoter_service.saveTranspoter(
                 this.paramterjson()
             ).subscribe(result => {
@@ -231,7 +233,7 @@ declare var commonfun: any;
                 else if (result.data[0].funsave_transpoter.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data Save Successfully");
                     this.clearcontrol();
-                    $(".code").removeAttr('disabled', 'disabled');
+                    $(".code").prop('disabled', false);
                     $(".code").focus();
                     if (this.editmode) {
                         this._router.navigate(['master/transpoter']);
@@ -242,7 +244,7 @@ declare var commonfun: any;
             }, err => {
                 console.log("error");
             }, () => {
-                //Done
+                this.actionButton.find(a => a.id === "save").enabled = true;
             })
 
             this.actionButton.find(a => a.id === "save").hide = false;

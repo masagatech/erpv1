@@ -1,4 +1,4 @@
-<form id="formid">
+<!--<form id="formid">-->
 	<div class="panel panel-theme">
 		<div class="panel-body">
 			<div class="col-md-9">
@@ -33,12 +33,17 @@
 							rows="2"></textarea>
 					</div>
 				</div>
-				<div class="col-md-9" *ngIf="editmode">
-					<div class="col-md-3">
-						<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
-					</div>
+			</div>
+			<div class="col-md-9" *ngIf="editmode">
+				<div class="col-md-3">
+					<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
 				</div>
 			</div>
 		</div>
 	</div>
-</form>
+	<div class="panel panel-theme">
+		<div class="panel-body">
+			<attribute #attribute></attribute>
+		</div>
+	</div>
+<!--</form>-->

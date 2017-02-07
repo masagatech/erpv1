@@ -6,8 +6,8 @@ import { Router } from '@angular/router';
 export class dcmasterService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getdropdwn(req: any) {
-        return this._dataserver.post("getdcdropdetails", req);
+    getdcdetails(req: any) {
+        return this._dataserver.post("salesorderdetails", req);
     }
     getAutoCompleted(req: any) {
         return this._dataserver.post("GetCustomerAuto", req);

@@ -847,7 +847,7 @@ declare var commonfun: any;
         var warehouseid = [];
         for (let wareid of this.warehouselist) {
             if (wareid.Warechk == true) {
-                warehouseid.push({ "value": wareid.value });
+                warehouseid.push({ "id": wareid.value });
             }
         }
         return warehouseid;
