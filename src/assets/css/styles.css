@@ -392,6 +392,7 @@ fieldset[disabled] .btn-danger.active {
 
 .navbar {
     min-height: 24px !important;
+    box-shadow: -1px 1px 6px 0px #000;
 }
 
 .navbar-default {
@@ -842,7 +843,7 @@ label {
 }
 
 .topdocbar {
-    border-bottom: 1px solid #e4ded7;
+    /* border-bottom: 1px solid #424242; */
     min-height: 40px;
     position: fixed;
     left: 0;
@@ -850,10 +851,17 @@ label {
     top: 24px;
     padding-top: 8px;
     margin: auto;
-    background-color: #fff;
-    z-index: 101;
+    background-color: #424242;
+    /* z-index: 101; */
+    /* margin-left: 183px!important; */
+    box-shadow: 0px 1px 6px #000;
     /*padding-left: 15px;
     padding-right: 15px;*/
+}
+
+.topdocbar h3.title {
+    margin: 0px!important;
+    color: #ffffff;
 }
 
 .topdocbar .row {
@@ -908,6 +916,14 @@ label {
     display: inline-block;
     position: fixed;
     padding: 3px;
+    height: calc(100% - 63px);
+    overflow: auto;
+    background-color: #424242;
+    color: #fff!important;
+    margin-top: -6px;
+    padding-top: 23px;
+    box-shadow: inset -2px 0px 1px 0px #252525;
+    z-index: 99999;
 }
 
 #sidebar ul {
@@ -930,7 +946,6 @@ label {
 }
 
 #sidebar a {
-    color: rgba(0, 0, 0, 0.86);
     letter-spacing: .3px;
     font-size: 13px;
 }
@@ -942,6 +957,12 @@ label {
     margin-right: 4px;
     width: 14px;
     display: inline-block;
+}
+
+#sidebar a>span,
+#sidebar a>i {
+    font-size: 14px!important;
+    color: #fff;
 }
 
 
@@ -968,9 +989,11 @@ textarea {
 .min-text-box {
     min-height: 30px!important;
 }
+
 .medium-text-box {
-    min-height:70px!important;
+    min-height: 70px!important;
 }
+
 a {
     text-decoration: none;
 }
@@ -1025,8 +1048,8 @@ html select[disabled] {
     position: fixed;
     border-left: 3px #d1d8dd dashed;
     padding: 0px 5px;
-    height:100%;
-    overflow:auto;
+    height: 100%;
+    overflow: auto;
 }
 
 .sidepan h3 {
@@ -1058,13 +1081,14 @@ html select[disabled] {
 }
 
 .sidepan .col-md-2 {
-    width:100%!important;
+    width: 100%!important;
     text-align: right;
 }
 
 .sidepan .col-md-5 {
-    width:100%!important;
+    width: 100%!important;
 }
+
 
 /*.ui-fileupload-content {
     padding: 0 16px!important;
@@ -1078,57 +1102,66 @@ html select[disabled] {
     padding: 5px;
 }
 
-.form-group{
+.form-group {
     margin-bottom: 5px!important;
 }
+
 
 /* Input Tag Css */
 
 .bootstrap-tagsinput input {
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background-color: transparent;
-  padding: 0 6px;
-  margin: 0;
-  width: auto;
-  max-width: inherit;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background-color: transparent;
+    padding: 0 6px;
+    margin: 0;
+    width: auto;
+    max-width: inherit;
 }
+
 .bootstrap-tagsinput.form-control input::-moz-placeholder {
-  color: #777;
-  opacity: 1;
+    color: #777;
+    opacity: 1;
 }
+
 .bootstrap-tagsinput.form-control input:-ms-input-placeholder {
-  color: #777;
+    color: #777;
 }
+
 .bootstrap-tagsinput.form-control input::-webkit-input-placeholder {
-  color: #777;
+    color: #777;
 }
+
 .bootstrap-tagsinput input:focus {
-  border: none;
-  box-shadow: none;
+    border: none;
+    box-shadow: none;
 }
+
 .bootstrap-tagsinput .tag {
-  margin-right: 2px;
-  color: white;
+    margin-right: 2px;
+    color: white;
 }
+
 .bootstrap-tagsinput .tag [data-role="remove"] {
-  margin-left: 8px;
-  cursor: pointer;
+    margin-left: 8px;
+    cursor: pointer;
 }
+
 .bootstrap-tagsinput .tag [data-role="remove"]:after {
-  content: "x";
-  padding: 0px 2px;
+    content: "x";
+    padding: 0px 2px;
 }
+
 .bootstrap-tagsinput .tag [data-role="remove"]:hover {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .bootstrap-tagsinput .tag [data-role="remove"]:hover:active {
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
-
-.ui-growl-item{
+.ui-growl-item {
     color: #fff!important;
 }
 
@@ -1136,8 +1169,7 @@ html select[disabled] {
     z-index: 1065!important;
 }
 
-.require
-{
+.require {
     color: red;
 }
 

@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActionBtnProp } from '../../../../app/_model/action_buttons'
-import { SharedVariableService } from "../../../_service/sharedvariable-service";
-
+import { GlobalSharedVariableService } from "../../../_service/sharedvariableglobal-service";
+import { Subscription } from 'rxjs/Subscription';
 @Component({
     selector: '<topdocbar></topdocbar>',
     templateUrl: 'docbar.comp.html'
@@ -9,20 +9,26 @@ import { SharedVariableService } from "../../../_service/sharedvariable-service"
 
 
 
-export class DocBarComponent implements OnInit {
-    
+export class DocBarComponent implements OnInit, OnDestroy {
 
-    constructor(private setActionButtons: SharedVariableService) { 
+    breadCrumb: any = [];
+    subscription: Subscription;
+    constructor(private _sharedVariableGlobal: GlobalSharedVariableService) {
 
     }
-    
+
     @Input() Input_Actionbuttons: ActionBtnProp[] = [];
+    @Input() title: string = "";
 
     ngOnInit() {
-        
+
     }
     callnotify(id) {
-        this.setActionButtons.callActionButtonsEvent(id);
+        // this.setActionButtons.callActionButtonsEvent(id);
     }
-
+    ngOnDestroy() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
 }

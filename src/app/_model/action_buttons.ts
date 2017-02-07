@@ -16,3 +16,16 @@ export class ActionBtnProp {
     enabled: boolean
     hide: boolean
 }
+
+
+
+export class Details {
+    constructor(_type: string,
+        _details: any) {
+        this.type = _type;
+        this.details = _details;
+    }
+    type: string
+    details: any
+}
+
