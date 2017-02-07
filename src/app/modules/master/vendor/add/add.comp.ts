@@ -264,14 +264,23 @@ declare var commonfun: any;
             "createdby": this.loginUser.login
         }).subscribe(result => {
             that.editmode = true;
-            var _venddata = result.data[0][0]._venddata;
-            var _uploadedfile = result.data[0][0]._uploadedfile;
-            var _suppdoc = result.data[0][0]._suppdoc;
-            var _attr = result.data[0][0]._attrlist;
-            var _keyval = result.data[0][0]._keylist;
+            var finaldata = result.data[0][0];
+            var _venddata = finaldata._venddata;
+            var _uploadedfile = finaldata._uploadedfile;
+            var _suppdoc = finaldata._suppdoc;
+            var _attr = finaldata._attrlist;
+            var _keyval = finaldata._keylist;
+            var _parentname = finaldata._parentid === null ? [] : finaldata._parentid;
+            if (_parentname.length > 0) {
+                that.parentid = _parentname[0].pid;
+                that.parentcode = _parentname[0].pcode;
+                that.parentname = _parentname[0].pname;
+            }
+
             that.venid = _venddata[0].autoid;
             that.code = _venddata[0].code;
             that.vendor = _venddata[0].vendor;
+
             that.keyvallist = _keyval === null ? [] : _keyval;
             that.attribute.attrlist = _attr === null ? [] : _attr;
             that.debit = _venddata[0].debit;
@@ -463,6 +472,7 @@ declare var commonfun: any;
             "isactive": this.isactive,
             "createdby": this.loginUser.login,
             "adr": this.adrbookid,
+            "parentcode": this.parentcode,
             "ledgerparam": this.ledgerparam()
         }
         return param;

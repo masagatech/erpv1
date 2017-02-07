@@ -17,66 +17,17 @@
 		</div>
 	</div>
 </div>
-<table class="table table-striped table-bordered" [hidden]="TableHide">
-	<thead>
-		<tr>
-			<th class="col-sm-1">#</th>
-			<th class="col-sm-1">More</th>
-			<th class="col-xs-1">Item Code</th>
-			<th class="col-xs-3">Item Name</th>
-			<th class="col-xs-3">Sku Code</th>
-			<th class="col-xs-3">item Description</th>
-		</tr>
-	</thead>
-	<tbody *ngFor="let row of ItemDetails let i=index">
-		<tr>
-			<td><span>{{i+1}}</span></td>
-			<td>
-				<button (click)="expandDetails(row)">
-						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
-					</button>
-			</td>
-			<td> <a role="button" (click)="EditItem(row)">{{row.itemcode}}</a></td>
-			<td>{{row.itemname}}</td>
-			<td>{{row.skucode}}</td>
-			<td>{{row.itemdesc}}</td>
-		</tr>
-		<tr [style.display]="row.issh == 0?'none':''">
-			<td></td>
-			<td colspan="3">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th class="col-sm-1">#</th>
-							<th class="col-sm-4">Attribute</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let drow of row.attribute let x=index">
-							<td>{{x+1}}</td>
-							<td>{{drow.attname}}</td>
-						</tr>
-					</tbody>
-				</table>
-			</td>
-			<td colspan="3">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th class="col-sm-1">#</th>
-							<th class="col-sm-3">Title</th>
-							<th class="col-sm-3">Sale Price/rate</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let drow of row.saleprice let x=index">
-							<td>{{x+1}}</td>
-							<td>{{drow.titlesale}}</td>
-							<td>{{drow.sales}}</td>
-						</tr>
-					</tbody>
-				</table>
-			</td>
-		</tr>
-	</tbody>
-</table>
+
+<div class="table-responsive">
+	<p-dataTable #dt [value]="ItemDetails" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+		[(selection)]="selectedRB1" expandableRows="true">
+		<p-column field="itemcode" header="Item Code" [style]="{'width':'50px','text-align':'left'}">
+			<template let-row="rowData" pTemplate type="body">
+				<a role="button" (click)="EditItem(row)">{{row.itemcode}}</a>
+			</template>
+		</p-column>
+		<p-column field="itemname" header="Item Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="skucode" header="Sku Code" [style]="{'width':'50px','text-align':'left'}"></p-column>
+		<p-column field="itemdesc" header="item Description" [style]="{'width':'150px','text-align':'left'}"></p-column>
+	</p-dataTable>
+</div>

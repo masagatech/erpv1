@@ -3,30 +3,33 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { VendorviewService } from "../../../../_service/vendor/view/view-service";
-import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { materialViewService } from "../../../../_service/materialmaster/view/view-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
+
 declare var $: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [VendorviewService, CommonService]
+    providers: [materialViewService, CommonService]
     //,AutoService
-}) export class VenView implements OnInit, OnDestroy {
+}) export class materialView implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-    vendorlist: any = [];
+    materaillist: any = [];
     totalRecords: number = 0;
+
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private venViewServies: VendorviewService, private _autoservice: CommonService,
-        private _userService: UserService) {
+        private materialViewServies: materialViewService, private _autoservice: CommonService,
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -34,21 +37,23 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        $(".GroupName").focus();
     }
 
-    getVendor(from: number, to: number) {
+    getMaterialMaster(from: number, to: number) {
         var that = this;
-        that.venViewServies.getvendor({
+        that.materialViewServies.getMaterialMaster({
             "cmpid": this.loginUser.cmpid,
             "from": from,
             "to": to,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(result => {
             that.totalRecords = result.data[1][0].recordstotal;
-            that.vendorlist = result.data[0];
+            that.materaillist = result.data[0];
 
         }, err => {
             console.log("Error");
@@ -58,21 +63,21 @@ declare var $: any;
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getVendor(event.first, (event.first + event.rows));
+        this.getMaterialMaster(event.first, (event.first + event.rows));
     }
 
     EditItem(row) {
         if (!row.islocked) {
-            this._router.navigate(['master/vendor/edit', row.autoid]);
+            this._router.navigate(['/supplier/material/edit', row.autoid]);
         }
     }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/master/vendor/add']);
+            this._router.navigate(['/supplier/material/add']);
         }
-        if (evt === "save") {
+        else if (evt === "save") {
             //Save CLick Event
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
@@ -82,7 +87,6 @@ declare var $: any;
             alert("delete called");
         }
     }
-
 
     ngOnDestroy() {
         this.actionButton = [];

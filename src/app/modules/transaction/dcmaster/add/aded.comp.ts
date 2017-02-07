@@ -338,7 +338,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     getAutoCompleteProd(me: any, arg: number) {
         var _me = this;
         this._autoservice.getAutoData({
-            "type": "CatProdName",
+            "type": "product",
             "search": arg == 0 ? me.NewItemsName : me.ItemsName,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,

@@ -8,8 +8,9 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataListModule, FileUploadModule } from 'primeng/primeng';
+import { DataListModule, CheckboxModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
+import { AutoNumericModule } from '../../usercontrol/autonumeric';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -33,9 +34,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddDebitNote, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"dn", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"dn", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: ViewDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"dn", "rights": "view", "urlname": "/debitnote" } },
+                    { path: 'add', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "view", "urlname": "/debitnote" } },
                 ]
             }
         ]
@@ -43,7 +44,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataListModule, CalendarModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+        DataListModule, CheckboxModule, CalendarModule, AutoNumericModule],
     declarations: [
         AddDebitNote,
         ViewDebitNote,

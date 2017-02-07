@@ -8,7 +8,9 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataListModule, FileUploadModule, CalendarModule } from 'primeng/primeng';
+import { DataListModule, CheckboxModule } from 'primeng/primeng';
+import { CalendarModule } from '../../usercontrol/calendar';
+import { AutoNumericModule } from '../../usercontrol/autonumeric';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -32,9 +34,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddPDC, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"pdc", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"pdc", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: ViewPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule":"pdc", "rights": "view", "urlname": "/pdc" } },
+                    { path: 'add', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "view", "urlname": "/pdc" } },
                 ]
             }
         ]
@@ -43,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, FileUploadModule, CalendarModule],
+        DataListModule, CheckboxModule, CalendarModule, AutoNumericModule],
     declarations: [
         AddPDC,
         ViewPDC,

@@ -1,50 +1,53 @@
-<div class='form-row col-md-12'>
-	<div class="col-md-8">
-		<div class="panel panel-theme">
-			<div class="panel-body">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Attribute Name</th>
-							<th>Attribute Group</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								<span>#</span>
-							</td>
-							<td>
-								<span class="hide">{{attid}}</span><input type="text" class="form-control" tabindex="1" id="attnam" [(ngModel)]="attName"
-								/>
-							</td>
-							<td>
-								<select [(ngModel)]="attrgrp" class="form-control" tabindex="2">
-									<option *ngFor="let row of attributegrouplist" [value]="row.id+':'+row.key">
-											{{row.val}}
-									</option>
-								</select>
-							</td>
-							<td class="col-md-2 text-center">
-								<button type="button" class="btn btn-theme btn-sm" text="Add" tabindex="3" (click)="NewRowAdd()">
-									<i class="fa fa-save"></i></button>
-								<button type="button" class="btn btn-theme btn-sm" text="claer" tabindex="4" (click)="ClearRow()">
-									<i class="fa fa-eraser"></i></button>
-							</td>
-						</tr>
-						<tr *ngFor="let item of addNewAttr let i=index">
-							<td><span>{{i+1}}</span><span class="hide">{{item.autoid}}</span></td>
-							<td (click)="editrow(item)"><span>{{item.atname}}</span></td>
-							<td>{{item.momval}}</td>
-							<td class="text-center">
-								<input type="checkbox" [(ngModel)]="item.val" name="checkdel" binary="true" (ngModelChange)="DeleteRow(item)" />
-							</td>
-						</tr>
-					</tbody>
-				</table>
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-4">
+			<div class="form-group">
+				<label>Attribute Name</label>
+				<input type="text" class="form-control" tabindex="1" validate="" id="attnam" [(ngModel)]="attName" />
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="form-group">
+				<label>Attribute Group</label>
+				<select [(ngModel)]="attrgrp" class="form-control" tabindex="2">
+			<option *ngFor="let row of attributegrouplist" [value]="row.id+':'+row.key">
+				{{row.val}}
+			</option>
+		</select>
+			</div>
+		</div>
+		<div class="col-md-1 text-center">
+			<div class="form-group">
+				<label>Active</label>
+				<div>
+					<p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-2">
+			<div class="form-group">
+				<label></label>
+				<button type="button" class="btn btn-theme btn-sm" text="Add" tabindex="3" (click)="NewRowAdd()">
+			<i class="fa fa-plus"></i></button>
+				<button type="button" class="btn btn-theme btn-sm" text="claer" tabindex="4" (click)="ClearRow()">
+			<i class="fa fa-trash"></i></button>
 			</div>
 		</div>
 	</div>
+</div>
+<div class="table-responsive">
+	<p-dataTable #dt [value]="addNewAttr" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+		[(selection)]="selectedRB1" expandableRows="true">
+		<p-column field="atname" header="Attribute Name" [style]="{'width':'83px','text-align':'left'}">
+			<template let-row="rowData" pTemplate type="body">
+				<a role="button" (click)="editrow(row)">{{row.atname}}</a>
+			</template>
+		</p-column>
+		<p-column field="momval" header="Attribute Group" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="val" header="Action" [style]="{'width':'20px','text-align':'center'}">
+			<template let-row="rowData" pTemplate type="body">
+				<p-checkbox [(ngModel)]="row.val" binary="true" [disabled]="true"></p-checkbox>
+			</template>
+		</p-column>
+	</p-dataTable>
 </div>

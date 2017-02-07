@@ -1189,9 +1189,14 @@ declare var commonfun: any;
                     $(".code").focus();
                     if (this.issh == 1) {
                         this._router.navigate(['master/customer']);
+
+                    }
+                    else {
+                        this.getcustomerdrop();
+                        this.issh = 0;
                     }
 
-                    this.issh = 0;
+
                 }
             }, err => {
                 console.log("Error");

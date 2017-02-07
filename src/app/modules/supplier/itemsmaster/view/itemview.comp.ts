@@ -7,6 +7,7 @@ import { ItemViewService } from "../../../../_service/itemmaster/view/itemview-s
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
@@ -21,10 +22,9 @@ declare var $: any;
 
     itemsName: any = "";
     itemsid: any = 0;
-    FromDate: any = "";
-    ToDate: any = "";
     ItemDetails: any = [];
-    TableHide: boolean = true;
+    totalRecords: number = 0;
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -71,29 +71,27 @@ declare var $: any;
         })
     }
 
-    getItemsMaster() {
+    getItemsMaster(from: number, to: number) {
         if ($(".items").val() == "") {
             this.itemsid = "";
         }
-        this.FromDate = $("#FromDate").val();
-        this.ToDate = $("#ToDate").val();
         this.itemViewServies.getItemsMaster({
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
             "flag": "",
-            "itemsid": this.itemsid,
-            "fromdate": this.FromDate,
-            "todate": this.ToDate
+            "from": from,
+            "to": to,
+            "itemsid": this.itemsid
         }).subscribe(details => {
             var dataset = details.data;
+            console.log(dataset);
             if (dataset.length > 0) {
-                this.ItemDetails = dataset;
-                this.TableHide = false;
+                this.totalRecords = dataset[1][0].recordstotal;
+                this.ItemDetails = dataset[0];
             }
             else {
                 this.ItemDetails = [];
-                this.TableHide = true;
                 this._msg.Show(messageType.info, "info", "Record not found");
                 $(".Items").focus();
             }
@@ -105,6 +103,11 @@ declare var $: any;
         });
     }
 
+    //Pagination Grid View 
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getItemsMaster(event.first, (event.first + event.rows));
+    }
+
     //Edit Row
     EditItem(row) {
         if (!row.islocked) {
@@ -113,31 +116,31 @@ declare var $: any;
     }
 
     //More Button Click
-    expandDetails(row) {
-        row.attribute = [];
-        row.saleprice = [];
-        if (row.issh == 0) {
-            row.issh = 1;
-            if (row.attribute.length === 0) {
-                this.itemViewServies.getItemsMaster({
-                    "flag": "Details",
-                    "itemsid": row.itemsid,
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy
-                }).subscribe(data => {
-                    var dataset = data.data;
-                    row.attribute = dataset[0]._attributejson;
-                    row.saleprice = dataset[0]._salesjson;
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
-        } else {
-            row.issh = 0;
-        }
-    }
+    // expandDetails(row) {
+    //     row.attribute = [];
+    //     row.saleprice = [];
+    //     if (row.issh == 0) {
+    //         row.issh = 1;
+    //         if (row.attribute.length === 0) {
+    //             this.itemViewServies.getItemsMaster({
+    //                 "flag": "Details",
+    //                 "itemsid": row.itemsid,
+    //                 "cmpid": this.loginUser.cmpid,
+    //                 "fy": this.loginUser.fy
+    //             }).subscribe(data => {
+    //                 var dataset = data.data;
+    //                 row.attribute = dataset[0]._attributejson;
+    //                 row.saleprice = dataset[0]._salesjson;
+    //             }, err => {
+    //                 console.log("Error");
+    //             }, () => {
+    //                 // console.log("Complete");
+    //             })
+    //         }
+    //     } else {
+    //         row.issh = 0;
+    //     }
+    // }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {

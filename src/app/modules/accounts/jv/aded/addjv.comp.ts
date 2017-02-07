@@ -26,6 +26,7 @@ export class AddJV implements OnInit, OnDestroy {
     jvmid: number = 0;
     docdate: any = "";
     narration: string = "";
+    isactive: boolean = false;
 
     module: string = "";
     suppdoc: any = [];
@@ -56,7 +57,6 @@ export class AddJV implements OnInit, OnDestroy {
         private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
-
         this.module = "JV";
     }
 
@@ -129,6 +129,11 @@ export class AddJV implements OnInit, OnDestroy {
                 this._msg.Show(messageType.info, "info", "No save! There is no change!");
                 return;
             };
+
+            if (this.TotalDebitAmt() !== this.TotalCreditAmt()) {
+                this._msg.Show(messageType.error, "Error", "Total Debit Amount and Total Credit Amount not Same !!!");
+                return;
+            }
 
             var validateme = commonfun.validate();
 
@@ -368,6 +373,7 @@ export class AddJV implements OnInit, OnDestroy {
             var date = new Date(_jvdata[0].docdate);
             that.jvdate.setDate(date);
             that.narration = _jvdata[0].narration;
+            that.isactive = _jvdata[0].isactive;
 
             that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
             that.suppdoc = _suppdoc == null ? [] : _suppdoc;
@@ -423,6 +429,7 @@ export class AddJV implements OnInit, OnDestroy {
                 "suppdoc": that.suppdoc.length === 0 ? null : that.suppdoc,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login,
+                "isactive": that.isactive,
                 "jvdetails": that.jvRowData
             }
 

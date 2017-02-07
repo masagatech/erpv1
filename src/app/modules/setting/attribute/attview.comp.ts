@@ -7,6 +7,7 @@ import { attributeService } from "../../../_service/attribute/attr-service";
 import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 
 declare var $: any;
@@ -28,6 +29,8 @@ declare var commonfun: any;
     attrgrp: any = 0;
     key: any = "";
     keyid: number = 0;
+    totalRecords: number = 0;
+    isactive: boolean = false;
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -45,7 +48,6 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.getAttribute();
         this.getattributegroup();
         $("#attnam").focus();
         setTimeout(function () {
@@ -55,7 +57,9 @@ declare var commonfun: any;
 
     getattributegroup() {
         var that = this;
-        this._commonservice.getMOM({ "group": "attrgrp" }).subscribe(data => {
+        this._commonservice.getMOM({
+            "group": "attrgrp",
+        }).subscribe(data => {
             that.attributegrouplist = data.data;
         }, err => {
             console.log("Error");
@@ -78,7 +82,6 @@ declare var commonfun: any;
     }
 
     jsonparam() {
-        console.log(this.attrgrp);
         var Param = {
             "flag": "at",
             "cmpid": this.loginUser.cmpid,
@@ -87,8 +90,8 @@ declare var commonfun: any;
             "parent": 0,
             "attid": this.attid,
             "attname": this.attName,
-            "attgroup": this.attrgrp.split(':')[0],
-            "attkey": this.attrgrp.split(':')[1],
+            "attgroup": this.attrgrp === 0 ? 0 : this.attrgrp.split(':')[0],
+            "attkey": this.attrgrp === 0 ? "all_attr" : this.attrgrp.split(':')[1],
             "createdby": this.loginUser.login,
             "remark1": "",
             "remark2": "",
@@ -97,24 +100,37 @@ declare var commonfun: any;
         return Param;
     }
 
-    getAttribute() {
+    getAttribute(from: number, to: number) {
         this.attributeServies.attget({
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
-            "fy": this.loginUser.login
+            "fy": this.loginUser.login,
+            "from": from,
+            "to": to,
         }).subscribe(result => {
-            this.addNewAttr = result.data;
-
+            var resultdata = result.data;
+            this.totalRecords = resultdata[1];
+            this.addNewAttr = resultdata[0];
         })
     }
 
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getAttribute(event.first, (event.first + event.rows));
+    }
+
     private NewRowAdd() {
-        if(this.attName=="")
-        {
-             this._msg.Show(messageType.error, "error", "Attribute required");
-             $("#attnam").focus();
-             return;
+        var validateme = commonfun.validate();
+        if (!validateme.status) {
+            this._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
         }
+
+        // if (this.attName == "") {
+        //     this._msg.Show(messageType.error, "error", "Attribute required");
+        //     $("#attnam").focus();
+        //     return;
+        // }
         this.attributeServies.attsave(
             this.jsonparam()
         ).subscribe(result => {
@@ -137,7 +153,7 @@ declare var commonfun: any;
                 this.attName = "";
                 this.attrgrp = "";
                 $("#attnam").focus();
-                this.getAttribute();
+
             }
             else {
                 console.log("Error");
@@ -156,6 +172,7 @@ declare var commonfun: any;
             this.attid = row.autoid;
             this.attName = row.atname;
             this.attrgrp = row.id + ':' + row.key;
+            this.isactive = row.val;
             $("#attnam").focus();
         }
     }

@@ -3,7 +3,7 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { JVService } from '../../../../_service/jv/jv-service' /* add reference for view employee */
-import { UserService } from '../../../../_service/user/user-service';
+import { UserService } from '../../../../_service/user/user-service'; /* add reference for view user */
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ export class ViewJV implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    viewJVDT: any[] = [];
+    viewJVDT: any = [];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _jvservice: JVService,
         private _userService: UserService, private _msg: MessageService) {
