@@ -6,7 +6,7 @@
 					<div class="col-md-4">
 						<div class='form-group'>
 							<label>Bank</label>
-							<select class="form-control bankname" [(ngModel)]="BankCode">
+							<select class="form-control" [(ngModel)]="Bankid">
 								<option *ngFor="let items of BankNamelist" tabindex="1" [value]="items.value">
 									{{items.label}}
 								</option>
@@ -16,30 +16,19 @@
 					<div class="col-md-3">
 						<div class='form-group'>
 							<label>From Date</label>
-							<div class="controls">
-								<div class="input-group">
-									<input id="date-picker-3" id="FromDate" type="text" tabindex="2" class="date-picker form-control" [(ngModel)]="FromDate"
-									/>
-									<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-								</div>
-							</div>
+							<calendar #fromdate [name]="'fromdate'"></calendar>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class='form-group'>
 							<label>To Date</label>
-							<div class="controls">
-								<div class="input-group date">
-									<input id="date-picker-4" id="ToDate" type="text" tabindex="3" class="date-picker form-control" [(ngModel)]="ToDate" />
-									<label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-								</div>
-							</div>
+							<calendar #todate [name]="'todate'"></calendar>
 						</div>
 					</div>
 					<div class="col-md-1">
 						<div class='form-group'>
 							<label>Action</label>
-							<button type="button" tabindex="4" class="btn btn-primary" (click)="GetBankRecepit()">Get</button>
+							<button type="button" tabindex="4" class="btn btn-theme btn-sm" (click)="GetBankRecepit()">Get</button>
 						</div>
 					</div>
 				</div>

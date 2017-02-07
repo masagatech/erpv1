@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { bankreceiptViewService } from "../../../../_service/bankreceipt/view/bankview-service";  //Service Add Refrence Bankpay-service.ts
 import { Router } from '@angular/router';
 import { UserService } from '../../../../_service/user/user-service';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
 
@@ -26,23 +28,56 @@ export class bankreceiptview implements OnInit, OnDestroy {
     BankreId: any = 0;
     BankNamelist: any = [];
     BankRecepitView: any = [];
-    BankCode: any = "";
-    FromDate: any = "";
-    ToDate: any = "";
+    bankid: number = 0;
+
+    @ViewChild("fromdate")
+    fromdate: CalendarComp;
+
+    @ViewChild("todate")
+    todate: CalendarComp;
+
     tableLength: any;
 
     //constructor
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankreceiptViewService, private _userService: UserService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private BankServies: bankreceiptViewService,
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getBankMasterDrop();
+    }
+
+    // Document Ready
+
+    ngOnInit() {
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(new Date(this.loginUser.fyfrom));
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(new Date(this.loginUser.fyto));
+
+        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        this.tableLength = true;
+
+        $(".bankname").focus();
+    }
+
+    //Any Button Click Event
+
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/accounts/bankreceipt/add']);
+        }
     }
 
     //Open Edit Mode
 
     OpenEdit(row) {
         if (!row.islocked) {
-            this._router.navigate(['/accounts/bankreceipt/add', row.id]);
+            this._router.navigate(['/accounts/bankreceipt/edit', row.id]);
         }
     }
 
@@ -88,26 +123,16 @@ export class bankreceiptview implements OnInit, OnDestroy {
     //Bind Bank Receipt Table
 
     GetBankRecepit() {
-        this.FromDate = $('#FromDate').val();
-        this.ToDate = $("#ToDate").val();
         this.tableLength = true;
         this.BankRecepitView = [];
-        if (this.BankCode == undefined || this.BankCode == '') {
-            alert('Please Select Bank');
-            return false;
-        }
-        if (this.FromDate == undefined || this.FromDate == '' || this.ToDate == undefined || this.ToDate == '') {
-            alert('Please Select Date');
-            return false;
-        }
 
         this.BankServies.getBankRecieptView({
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
-            "bankid": this.BankCode,
+            "bankid": this.bankid,
             "flag": "",
-            "fromdate": $('#FromDate').datepicker('getDate'),
-            "todate": $('#ToDate').datepicker('getDate')
+            "fromdate": this.fromdate.getDate(),
+            "todate": this.todate.getDate()
         }).subscribe(RecepitDetails => {
             var dataset = RecepitDetails.data;
             if (dataset.length > 0) {
@@ -115,7 +140,7 @@ export class bankreceiptview implements OnInit, OnDestroy {
                 this.BankRecepitView = dataset;
             }
             else {
-                alert('No record found');
+                this._msg.Show(messageType.info, "Info", "No record found");
                 this.BankRecepitView = [];
                 this.tableLength = true;
                 return false;
@@ -139,62 +164,6 @@ export class bankreceiptview implements OnInit, OnDestroy {
 
             return total;
         }
-    }
-
-    //Any Button Click Event
-
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/accounts/bankreceipt/braded']);
-        }
-        if (evt === "save") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "edit") {
-            // alert("edit called");
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
-    // Document Ready
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.tableLength = true;
-
-        $(".bankname").focus();
-
-        setTimeout(function () {
-            var date = new Date();
-            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $("#FromDate").datepicker('setDate', Fromtoday);
-
-            //To Date
-
-            $("#ToDate").datepicker({
-                dateFormat: 'dd/mm/yy',
-                minDate: 0,
-                setDate: new Date(),
-                autoclose: true
-            });
-            $("#ToDate").datepicker('setDate', Totoday);
-        }, 0);
     }
 
     ngOnDestroy() {

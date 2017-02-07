@@ -4,7 +4,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="control-label">Issued Date</label>
-                    <input type="date" [(ngModel)]="docdate" class="form-control" />
+                    <calendar #docdate [name]="'docdate'"></calendar>
                 </div>
 
                 <div class="form-group">
@@ -27,14 +27,13 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">From No</label>
-                            <input type="number" [(ngModel)]="fromno" class="form-control text-right" (keyup)="getToNoOnKey()" (keydown.tab)="getToNoOnTab()"
-                            />
+                            <numtext name="fromno" [(ngModel)]="fromno" (keyup)="getToNoOnKey()" (keyup.enter)="getToNoOnTab()"></numtext>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">To No</label>
-                            <input type="number" [(ngModel)]="tono" class="form-control text-right" disabled />
+                            <input type="text" name="tono" [(ngModel)]="tono" class="form-control text-right" disabled />
                         </div>
                     </div>
                 </div>
@@ -118,8 +117,8 @@
         </div>
     </div>
 
-	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-		(onComplete)="onUploadComplete($event)"></fileupload>
+    <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+        (onComplete)="onUploadComplete($event)"></fileupload>
 
     <div class="panel panel-theme">
         <div class="panel-heading">

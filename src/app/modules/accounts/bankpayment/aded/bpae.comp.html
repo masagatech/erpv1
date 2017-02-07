@@ -18,20 +18,14 @@
 				</div>
 				<div class="col-xs-6">
 					<label>Issue Date</label>
-					<!--<input type="date" class="form-control" tabindex="2" value="" [(ngModel)]="Issuesdate" />-->
-					<div class="controls">
-						<div class="input-group" tabindex="2">
-							<input id="date-picker-3" id="Issuesdate" type="text" class="date-picker form-control" [(ngModel)]="Issuesdate" />
-							<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-						</div>
-					</div>
+					<calendar #issuedate [name]="'issuedate'"></calendar>
 				</div>
 			</div>
 			<div class='form-row col-md-12'>
 				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Account Code</label>
-						<input type="text=" class="form-control Custcode" tabindex="3" value="" [(ngModel)]="CustName" (keyup)="getAutoComplete(this)"
+						<input type="text=" class="form-control custcode" tabindex="3" value="" [(ngModel)]="custname" (keyup)="getAutoComplete(this)"
 						/>
 					</div>
 				</div>

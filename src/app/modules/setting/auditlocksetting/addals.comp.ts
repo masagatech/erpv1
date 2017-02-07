@@ -87,7 +87,7 @@ export class ALSAddEdit implements OnInit, OnDestroy {
         if (row.issh == 0) {
             row.issh = 1;
             if (row.details.length === 0) {
-                this._alsservice.getAuditLockSetting({ "flag": "details" }).subscribe(data => {
+                this._alsservice.getAuditLockSetting({ "flag": "details", "alsid": row.alsid }).subscribe(data => {
                     row.details = data.data;
                 }, err => {
                     console.log("Error");
@@ -114,7 +114,7 @@ export class ALSAddEdit implements OnInit, OnDestroy {
                     "alaid": 0,
                     "dispnm": field.dispcd,
                     "auditdt": field.lockdate,
-                    //"prevauditdate": field.currlockdate == null ? "" : field.currlockdate,
+                    "prevauditdt": field.currlockdate,
                     "fy": that.loginUser.fy,
                     "cmpid": that.loginUser.cmpid,
                     "uidcode": that.loginUser.login,
