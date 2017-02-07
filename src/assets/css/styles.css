@@ -1183,8 +1183,3 @@ html select[disabled] {
     margin-right: 2px;
     box-shadow: 0px 0px 1px 0px #8c8c8c;
 }
-    
-.tab-content
-{
-    min-height: 200px;
-}
