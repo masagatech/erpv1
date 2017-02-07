@@ -4,6 +4,8 @@ import { UserService } from "../_service/user/user-service"
 import { AuthGuard } from "../_service/authguard-service"
 import { DataService } from '../_service/dataconnect'
 
+
+
 @NgModule({})
 export class SharedModule {
     static forRoot(): ModuleWithProviders {
@@ -29,13 +31,13 @@ export class ActionBarModule {
 
 import { MessageService } from "../_service/messages/message-service";
 import { ConfirmationService } from 'primeng/primeng';
-
+import { GlobalSharedVariableService } from '../_service/sharedvariableglobal-service'
 @NgModule({})
 export class GlobalShared {
     static forRoot(): ModuleWithProviders {
         return {
             ngModule: GlobalShared,
-            providers: [MessageService, ConfirmationService]
+            providers: [MessageService, ConfirmationService, GlobalSharedVariableService]
         };
     }
 }
