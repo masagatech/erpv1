@@ -853,7 +853,7 @@ label {
     padding-top: 8px;
     margin: auto;
     background-color: #424242;
-    /* z-index: 101; */
+    z-index: 101;
     /* margin-left: 183px!important; */
     box-shadow: 0px 1px 6px #000;
     /*padding-left: 15px;
@@ -924,7 +924,7 @@ label {
     margin-top: -6px;
     padding-top: 23px;
     box-shadow: inset -2px 0px 1px 0px #252525;
-    z-index: 99999;
+    z-index: 999;
 }
 
 #sidebar ul {
@@ -1185,17 +1185,21 @@ html select[disabled] {
     box-shadow: 0px 0px 1px 0px #8c8c8c;
 }
 
-.inlinetextbox{
+.inlinetextbox {
     border: 0;
     background-color: transparent;
     box-shadow: none;
 }
 
-.inlinetextbox:focus{
+.inlinetextbox:focus {
     background-color: #fff;
     background-image: none;
     border: 1px solid #d1d8dd;
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+.tab-content {
+    min-height: 200px;
 }
