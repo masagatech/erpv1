@@ -4,6 +4,8 @@ import { Observable } from 'rxjs/Observable';
 import { ActionBtnProp, Details } from '../../app/_model/action_buttons'
 import { LoginUser } from '../../app/_model/user_model'
 
+declare var browserConf: any;
+
 @Injectable()
 export class SharedVariableService {
 
@@ -28,14 +30,20 @@ export class SharedVariableService {
 
     //action buttons
     setActionButtons(actionButtons: ActionBtnProp[]) {
-        
+
         var _d = new Details("buttons", actionButtons);
         this.topBarEventSource.next(_d);
     }
     //action buttons
     setTitle(title: string) {
+
         var _d = new Details("title", title);
         this.topBarEventSource.next(_d);
+        try {
+            browserConf.setTitle(title);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     callActionButtonsEvent(evt: string) {

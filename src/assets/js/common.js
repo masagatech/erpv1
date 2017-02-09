@@ -19,7 +19,7 @@ function findJSON(obj, key, val, brek) {
 }
 
 commonfun.addrequire = function addrequire() {
-    $("[validate]").each(function () {
+    $("[validate]").each(function() {
         $(this).siblings("label").remove("span").append("&nbsp;<span class='require'>*</span>");
     });
 }
@@ -28,7 +28,7 @@ commonfun.validate = function validate() {
     var valisValid = true;
     var result = [];
     var msglist = "";
-    $("[validate]").each(function () {
+    $("[validate]").each(function() {
         if ($(this).is("input") || $(this).is("textarea")) {
             if ($(this).val().trim() === "") {
                 valisValid = false;
@@ -45,4 +45,10 @@ commonfun.validate = function validate() {
     });
 
     return { "status": valisValid, "data": result, "msglist": msglist };
+}
+
+
+var browserConf = {};
+browserConf.setTitle = function(title) {
+    document.title = title;
 }

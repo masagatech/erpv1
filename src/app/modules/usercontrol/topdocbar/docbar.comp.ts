@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActionBtnProp } from '../../../../app/_model/action_buttons'
 import { SharedVariableService } from "../../../_service/sharedvariable-service";
+
 import { Subscription } from 'rxjs/Subscription';
 @Component({
     selector: '<topdocbar></topdocbar>',

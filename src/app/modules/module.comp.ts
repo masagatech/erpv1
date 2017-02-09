@@ -21,6 +21,7 @@ export class ModuleComponent implements OnDestroy {
             if (event instanceof NavigationStart) {
                 // console.log("nav start");
                 //this.ActionButtons = [];
+                this.setActionButtons.setTitle(".....");
                 this.slimLoadingBarService.progress = 30;
                 this.slimLoadingBarService.start(() => {
                     //console.log('Loading complete');
