@@ -18,14 +18,8 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
     multi: true
 };
 
-export const autoNumericOptionsEuro = {
-    digitGroupSeparator: ',',
-    decimalCharacter: '.',
-    decimalCharacterAlternative: '.',
-    currencySymbol: '\u202f$',
-    currencySymbolPlacement: 'p',
-    roundingMethod: 'U',
-};
+
+
 //get accessor
 
 @Component({
@@ -35,15 +29,38 @@ export const autoNumericOptionsEuro = {
 })
 
 export class NumTextComp implements OnInit, ControlValueAccessor {
+
+
+
     //The internal data model
+    @Input() iscurrency: boolean = true;
+    @Input() allowdecimal: boolean = false;
+    @Input() decimals: number = 2;
     @Input() css: string = "";
+    @Input() min: string = "-9999999999999";
+    @Input() max: string = "9999999999999";
+    @Input() grpseperator: string = ",";
+
+    decimalsArry: any = ["", ".9", ".99", ".999", ".9999", ".99999", ".999999", ".9999999"];
+
     private innerValue: any = '';
-    
-    @Input()
-    id: any = "numtext_" + (new Date().valueOf()).toString();
+
+    @Input() id: any = "numtext_" + (new Date().valueOf()).toString();
 
     //Placeholders for the callbacks which are later providesd
     //by the Control Value Accessor
+
+    autoNumericOptionsEuro: any = {
+        digitGroupSeparator: ',',
+        decimalCharacter: '.',
+        decimalCharacterAlternative: '.',
+        currencySymbol: '\u202f$',
+        currencySymbolPlacement: 'p',
+        roundingMethod: 'U',
+        minimumValue: "-9999999999999.99",
+        maximumValue: "9999999999999.99"
+    };
+
 
     private onTouchedCallback: () => void = noop;
     private onChangeCallback: (_: any) => void = noop;
@@ -91,7 +108,16 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     ngAfterViewInit() {
         var that = this;
         setTimeout(function () {
-            $("#" + that.id).autoNumeric('init', autoNumericOptionsEuro);
+            that.autoNumericOptionsEuro.minimumValue = parseFloat(that.min) > 0.1 ? "0" : that.min;
+            that.autoNumericOptionsEuro.maximumValue = that.max + that.decimalsArry[that.decimals];
+            if (that.iscurrency) {
+                $("#" + that.id).autoNumeric('init', that.autoNumericOptionsEuro);
+            }
+            else {
+                that.autoNumericOptionsEuro.digitGroupSeparator = that.grpseperator;
+                that.autoNumericOptionsEuro.currencySymbol = '';
+                $("#" + that.id).autoNumeric('init', that.autoNumericOptionsEuro);
+            }
             that.updateModel();
         }, 100);
     }
@@ -101,9 +127,11 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     // }
 
     updateModel() {
-        if ($("#" + this.id).autoNumeric()) {
-            var val = $("#" + this.id).autoNumeric('get');
-            this.onChangeCallback(val == "" ? 0 : val);
+        var that = this;
+
+        if ($("#" + that.id).autoNumeric()) {
+            var val = $("#" + that.id).autoNumeric('get');
+            that.onChangeCallback(val == "" ? 0 : val);
         }
     }
 }

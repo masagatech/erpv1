@@ -21,7 +21,7 @@ declare var $: any;
 export class AddDebitNote implements OnInit, OnDestroy {
     viewCustomerDT: any[] = [];
     loginUser: LoginUserModel;
-    duplicateacid: Boolean = true;
+    duplicateaccount: Boolean = true;
 
     dnid: number = 0;
     dnacid: number = 0;
@@ -78,6 +78,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.setActionButtons.setTitle("Debit Note");
         this.dndate.initialize(this.loginUser);
         this.dndate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -120,7 +121,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            var debitamt = this.dramt;
+            var debitamt = parseInt(this.dramt);
             var creditamt = this.TotalCreditAmt();
 
             if (debitamt !== creditamt) {
@@ -141,7 +142,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         }
     }
 
-    isDuplicateacid() {
+    isDuplicateAccount() {
         var that = this;
 
         for (var i = 0; i < that.dnRowData.length; i++) {
@@ -160,9 +161,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     TotalCreditAmt() {
         var CreditAmtTotal = 0;
+        var dnRow = this.dnRowData.filter(a => a.isactive === true);
 
-        for (var i = 0; i < this.dnRowData.length; i++) {
-            var items = this.dnRowData[i];
+        for (var i = 0; i < dnRow.length; i++) {
+            var items = dnRow[i];
             CreditAmtTotal += parseInt(items.cramt);
         }
 
@@ -172,22 +174,24 @@ export class AddDebitNote implements OnInit, OnDestroy {
     private NewRowAdd() {
         var that = this;
 
-        if (this.newacname == "") {
+        // Validation
+
+        if (that.newacname == "") {
             that._msg.Show(messageType.info, "Info", "Please Enter Account Name");
             return;
         }
 
-        if (this.newcramt == "") {
+        if (that.newcramt == "") {
             that._msg.Show(messageType.info, "Info", "Please Enter Credit");
             return;
         }
 
-        //Duplicate items Check
-        this.duplicateacid = this.isDuplicateacid();
+        // Duplicate items Check
+        that.duplicateaccount = that.isDuplicateAccount();
 
-        //Add New Row
-        if (this.duplicateacid == false) {
-            this.dnRowData.push({
+        // Add New Row
+        if (that.duplicateaccount == false) {
+            that.dnRowData.push({
                 'counter': that.counter,
                 "dnid": 0,
                 'acid': that.newacid,
@@ -195,14 +199,21 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 'cramt': that.newcramt,
                 "cmpid": that.loginUser.cmpid,
                 "fy": that.loginUser.fy,
-                "docdate": that.dndate.getDate()
+                "docdate": that.dndate.getDate(),
+                "isactive": true
             });
 
-            this.counter++;
-            this.newacid = "";
-            this.newacname = "";
-            this.newcramt = "";
+            that.counter++;
+            that.newacid = "";
+            that.newacname = "";
+            that.newcramt = "";
+
+            $(".accname").focus();
         }
+    }
+
+    DeleteRow(row) {
+        row.isactive = false;
     }
 
     getAutoComplete(me: any, arg: number) {
@@ -308,16 +319,15 @@ export class AddDebitNote implements OnInit, OnDestroy {
             "docdate": that.dndate.getDate(),
             "acid": that.dnacid,
             "dramt": that.dramt,
-            "narration": that.narration,
             "uidcode": that.loginUser.login,
             "suppdoc": that.suppdoc,
-            "dndetails": that.dnRowData,
-            "isactive": that.isactive
+            "isactive": that.isactive,
+            "dndetails": that.dnRowData
         }
 
-        that.duplicateacid = that.isDuplicateacid();
+        that.duplicateaccount = that.isDuplicateAccount();
 
-        if (that.duplicateacid == false) {
+        if (that.duplicateaccount == false) {
             that._dnservice.saveDebitNote(saveDN).subscribe(data => {
                 var dataResult = data.data;
 

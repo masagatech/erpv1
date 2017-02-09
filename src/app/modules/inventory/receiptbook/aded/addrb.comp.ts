@@ -73,6 +73,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.setActionButtons.setTitle("Receipt Book");
         this.docdate.initialize(this.loginUser);
         this.docdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();

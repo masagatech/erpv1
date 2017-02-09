@@ -9,7 +9,6 @@ import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FileUploadModule } from 'primeng/primeng';
 
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 
@@ -45,7 +44,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule, FileUploadModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule],
     declarations: [
         AddMOM,
         ViewMOM,

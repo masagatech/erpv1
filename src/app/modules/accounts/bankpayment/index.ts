@@ -2,11 +2,12 @@ import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-import { bankpaymentaddedit } from './aded/bpae.comp';     //Bank Payment
-import { bankpaymentview } from './view/bpview.comp';      //Bank Bayment View
+import { AddEditBankPayment } from './aded/bpae.comp';     //Bank Payment
+import { ViewBankPayment } from './view/bpview.comp';      //Bank Bayment View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -30,9 +31,9 @@ const routerConfig = [
                 children: [
                     //Bank Payment Add Edit View
 
-                    { path: 'add', component: bankpaymentaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/add" }, },
-                    { path: 'edit/:id', component: bankpaymentaddedit, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/edit" }, },
-                    { path: '', component: bankpaymentview, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/bankpayment" }, },
+                    { path: 'add', component: AddEditBankPayment, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/add" }, },
+                    { path: 'edit/:id', component: AddEditBankPayment, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/edit" }, },
+                    { path: '', component: ViewBankPayment, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "ap", "rights": "add", "urlname": "/bankpayment" }, },
                 ]
             }
         ]
@@ -41,10 +42,10 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,
-        CalendarModule, NumTextModule],
+        CalendarModule, NumTextModule, DataTableModule, DataListModule, CheckboxModule],
     declarations: [
-        bankpaymentaddedit,
-        bankpaymentview,
+        AddEditBankPayment,
+        ViewBankPayment,
         BankPaymentComp
     ],
     providers: [AuthGuard]

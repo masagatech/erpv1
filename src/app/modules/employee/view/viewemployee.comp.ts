@@ -6,8 +6,8 @@ import { EmpService } from '../../../_service/employee/emp-service' /* add refer
 import { ValidationService } from '../../../_service/validation/valid-service';
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
-
 import { Router } from '@angular/router';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
     templateUrl: 'viewemployee.comp.html',
@@ -29,11 +29,11 @@ export class ViewEmployee implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
 
     viewEmployeeDT: any = [];
+    totalRecords: number = 0;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _empservice: EmpService,
         private _userservice: UserService, private _validservice: ValidationService) {
         this.loginUser = this._userservice.getUser();
-        this.getEmployeeData();
     }
 
     ngOnInit() {
@@ -57,16 +57,21 @@ export class ViewEmployee implements OnInit, OnDestroy {
         console.log(this.autoEmpName);
     }
 
-    getEmployeeData() {
+    getEmployeeData(from: number, to: number) {
         var that = this;
 
-        this._empservice.getEmployee({ "flag": "all", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(employee => {
-            this.viewEmployeeDT = employee.data;
+        that._empservice.getEmployee({ "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "from": from, "to": to }).subscribe(employee => {
+            that.totalRecords = employee.data[1].recordstotal;
+            that.viewEmployeeDT = employee.data[0];
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
         })
+    }
+
+    loadEmpGrid(event: LazyLoadEvent) {
+        this.getEmployeeData(event.first, (event.first + event.rows));
     }
 
     expandDetails(row) {

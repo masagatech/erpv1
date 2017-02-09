@@ -124,11 +124,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.dob.initialize(this.loginUser);
 
         var date = new Date();
-        var agemin = date.getFullYear() - this.loginUser._globsettings[0].useragemin;
-        var agemax = date.getFullYear() - this.loginUser._globsettings[0].useragemax;
-        var dobfrom = new Date(agemax, date.getMonth(), date.getDate());
-        var dobto = new Date(agemin, date.getMonth(), date.getDate());
-
         var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         this.dob.setMinMaxDate("", today);
     }
@@ -137,9 +132,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.doj.initialize(this.loginUser);
 
         var date = new Date();
-        var dojfrom = new Date(this.loginUser._regon);
-        var dojto = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
         var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         this.doj.setMinMaxDate("", today);
     }
@@ -329,7 +321,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // Get Control Center Drop Down
 
     fillCtrlCenterDDL() {
-        this._commonservice.getAutoData({ "type": "ccddl", "cmpid": this.loginUser.cmpid }).subscribe(data => {
+        this._commonservice.getAutoData({ "type": "ccddl", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
             this.ctrlcenterDT = data.data;
         }, err => {
             console.log("Error");
@@ -343,7 +335,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     getCtrlCenterAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "ccauto", "search": that.sccname }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "ccauto", "search": that.sccname, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy }).subscribe(data => {
             $(".ccname").autocomplete({
                 source: data.data,
                 width: 300,

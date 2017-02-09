@@ -1,105 +1,72 @@
-<!--<div class="input-group stylish-input-group">
-	<input type="text" class="form-control" placeholder="Search" [(ngModel)]="EmpName" (keyup)="filterEmployeeData()" />
-	<span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-</div>-->
-
-<div class="table-responsive" *ngIf="viewEmployeeDT.length" >
-	<table class="table table-striped table-bordered table-hover">
-		<thead>
-			<tr>
-				<th width="10px"></th>
-				<th width="100px">Emp Code</th>
-				<th>Full Name</th>
-				<th width="150px">Company Email</th>
-				<th width="100px">Department</th>
-				<th width="100px">Designation</th>
-				<th width="100px">Salary</th>
-				<th width="150px">Joining Date</th>
-			</tr>
-		</thead>
-		<tbody *ngFor="let row of viewEmployeeDT">
-			<tr>
-				<td>
-					<button (click)="expandDetails(row)">{{row.issh == 1 ? "-" : "+"}}</button>
-				</td>
-				<td>
-					{{row.ucode}}
-				</td>
-				<td>
-					{{row.fullname}}
-				</td>
-				<td>
-					{{row.cmpemail}}
-				</td>
-				<td>
-					{{row.deptname}}
-				</td>
-				<td>
-					{{row.designame}}
-				</td>
-				<td>
-					{{row.salary | currency:loginUser._globsettings[0].numberformat:true}}
-				</td>
-				<td>
-					{{row.doj}}
-				</td>
-			</tr>
-			<tr [style.display]="row.issh == 0?'none':''">
-				<td></td>
-				<td></td>
-				<td colspan="4">
-					<table class="table table-striped table-bordered table-hover">
-						<tbody *ngFor="let drow of row.details">
-							<tr>
-								<td width="30px" rowspan="3">
-									<img src="http://localhost:3000/images/photopath/{{drow.PhotoPath}}" width="60" height="60" />
-								</td>
-								<td>
-									<b>Email : </b>
-								</td>
-								<td colspan="3">
-									{{drow.emailid}}
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<b>Mobile : </b>
-								</td>
-								<td>
-									{{drow.mobileno}}
-								</td>
-								<td>
-									<b>Birth Date : </b>
-								</td>
-								<td>
-									{{drow.dob}}
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<b>Gender : </b>
-								</td>
-								<td>
-									{{drow.gender}}
-								</td>
-								<td>
-									<b>Marital Status : </b>
-								</td>
-								<td>
-									{{drow.maritalstatus}}
-								</td>
-							</tr>
-							<tr>
-								<td colspan="5">
-									<button class="btn btn-theme btn-sm" (click)="openEmployeeDetails(row)">More</button>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</td>
-				<td></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
+<div class="table-responsive">
+	<p-dataTable #dt [value]="viewEmployeeDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadEmpGrid($event)"
+		expandableRows="true">
+		<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+		<p-column field="ucode" header="Emp Code" [style]="{'width':'100px','text-align':'left'}"></p-column>
+		<p-column field="fullname" header="Full Name" [style]="{'text-align':'left'}"></p-column>
+		<p-column field="cmpemail" header="Company Email" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="deptname" header="Department" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="designame" header="Designation" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column header="Salary" [style]="{'width':'150px','text-align':'left'}">
+			<template let-row="rowData" pTemplate type="body">
+				{{row.salary | currency:loginUser._globsettings.numberformat:true}}
+			</template>
+		</p-column>
+		<p-column field="doj" header="Joining Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<template let-row>
+			<table class="table table-striped table-bordered table-hover">
+				<tbody>
+					<tr>
+						<td width="100px" rowspan="3">
+							<img src="assets/img/photopath/{{row.attachfile}}" onerror="this.src='assets/img/photopath/default.jpg';" width="60" height="60"
+							/>
+						</td>
+						<td width="150px">
+							<b>Email : </b>
+						</td>
+						<td>
+							{{row.emailid}}
+						</td>
+						<td width="150px">
+						</td>
+						<td>
+						</td>
+					</tr>
+					<tr>
+						<td width="150px">
+							<b>Mobile : </b>
+						</td>
+						<td>
+							{{row.mobileno}}
+						</td>
+						<td width="150px">
+							<b>Birth Date : </b>
+						</td>
+						<td>
+							{{row.dob}}
+						</td>
+					</tr>
+					<tr>
+						<td width="150px">
+							<b>Gender : </b>
+						</td>
+						<td>
+							{{row.gender}}
+						</td>
+						<td width="150px">
+							<b>Marital Status : </b>
+						</td>
+						<td>
+							{{row.maritalstatus}}
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5" align="right">
+							<button class="btn btn-theme btn-sm" (click)="openEmployeeDetails(row)">More</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</template>
+	</p-dataTable>
 </div>

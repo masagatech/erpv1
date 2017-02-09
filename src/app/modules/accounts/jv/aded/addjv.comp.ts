@@ -78,6 +78,7 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.setActionButtons.setTitle("Journal Voucher");
         this.jvdate.initialize(this.loginUser);
         this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -182,9 +183,10 @@ export class AddJV implements OnInit, OnDestroy {
 
     TotalDebitAmt() {
         var DebitAmtTotal = 0;
+        var jvRowDr = this.jvRowData.filter(a => a.isactive === true);
 
-        for (var i = 0; i < this.jvRowData.length; i++) {
-            var items = this.jvRowData[i];
+        for (var i = 0; i < jvRowDr.length; i++) {
+            var items = jvRowDr[i];
             DebitAmtTotal += parseInt(items.dramt);
         }
 
@@ -193,9 +195,10 @@ export class AddJV implements OnInit, OnDestroy {
 
     TotalCreditAmt() {
         var CreditAmtTotal = 0;
+        var jvRowCr = this.jvRowData.filter(a => a.isactive === true);
 
-        for (var i = 0; i < this.jvRowData.length; i++) {
-            var items = this.jvRowData[i];
+        for (var i = 0; i < jvRowCr.length; i++) {
+            var items = jvRowCr[i];
             CreditAmtTotal += parseInt(items.cramt);
         }
 
@@ -203,102 +206,44 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     private NewRowAdd() {
+        var that = this;
+
         // Validation
 
-        if (this.newacname == "") {
-            this._msg.Show(messageType.error, "Error", "Please Enter Account Name");
-            return;
-        }
-
-        if (this.newdramt === "") {
-            this._msg.Show(messageType.error, "Error", "Please Enter Debit Amount");
-            return;
-        }
-
-        if (this.newcramt === "") {
-            this._msg.Show(messageType.error, "Error", "Please Enter Credit Amount");
+        if (that.newacname == "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Account Name");
             return;
         }
 
         // Duplicate items Check
-        this.duplicateaccount = this.isDuplicateAccount();
+        that.duplicateaccount = that.isDuplicateAccount();
 
         // Add New Row
-        if (this.duplicateaccount === false) {
-            this.jvRowData.push({
-                'counter': this.counter,
-                'jvdid': this.newjvdid,
-                'acid': this.newacid,
-                'acname': this.newacname,
-                'dramt': this.newdramt,
-                'cramt': this.newcramt
+        if (that.duplicateaccount === false) {
+            that.jvRowData.push({
+                'counter': that.counter,
+                'jvdid': that.newjvdid,
+                'acid': that.newacid,
+                'acname': that.newacname,
+                'dramt': that.newdramt,
+                'cramt': that.newcramt,
+                "isactive": true
             });
 
-            this.counter++;
-            this.newjvdid = 0;
-            this.newacid = 0;
-            this.newacname = "";
-            this.newdramt = "";
-            this.newcramt = "";
-            var that = this;
-
-            // setTimeout(function () {
-            //     that.bindAutoComplete();
-            // }, 0);
+            that.counter++;
+            that.newjvdid = 0;
+            that.newacid = 0;
+            that.newacname = "";
+            that.newdramt = "";
+            that.newcramt = "";
 
             $(".accname").focus();
         }
     }
 
     deleteJVRow(row) {
-        this.jvRowData.splice(this.jvRowData.indexOf(row), 1);
+        row.isactive = false;
     }
-
-    // account details
-
-    // bindAutoComplete() {
-    //     var that = this;
-
-    //     $(".accname").each(function () {
-
-    //         if ($(this).attr("added")) {
-    //             return;
-    //         }
-    //         $(this).attr("added", "1");
-    //         $(this).autocomplete({
-    //             source: function (request, response) {
-    //                 that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": request.term }).subscribe(data => {
-    //                     response($.map(data.data, function (item) {
-    //                         return {
-    //                             label: item.label,
-    //                             value: item.label,
-    //                             "iid": item.value
-    //                         }
-    //                     }));
-    //                 }, err => {
-    //                     console.log("Error");
-    //                 }, () => {
-    //                     // console.log("Complete");
-    //                 })
-    //             },
-    //             width: 300,
-    //             max: 20,
-    //             delay: 100,
-    //             minLength: 0,
-    //             autoFocus: true,
-    //             cacheLength: 1,
-    //             scroll: true,
-    //             highlight: false,
-    //             select: function (event, ui) {
-    //                 event.preventDefault();
-    //                 $(event.target).val(ui.item.label);
-    //                 console.log(ui.item.iid)
-    //                 $(event.target).trigger('input');
-
-    //             }
-    //         });
-    //     })
-    // }
 
     getAutoComplete(me: any, arg: number) {
         var that = this;
@@ -421,24 +366,29 @@ export class AddJV implements OnInit, OnDestroy {
     saveJVData() {
         var that = this;
 
-        if (that.jvRowData.length > 0) {
-            var saveJV = {
-                "jvmid": that.jvmid,
-                "loginsessionid": that.loginUser._sessiondetails.sessionid,
-                "uid": that.loginUser.uid,
-                "fy": that.loginUser.fy,
-                "cmpid": that.loginUser.cmpid,
-                "docdate": that.jvdate.getDate(),
-                "suppdoc": that.suppdoc.length === 0 ? null : that.suppdoc,
-                "narration": that.narration,
-                "uidcode": that.loginUser.login,
-                "isactive": that.isactive,
-                "jvdetails": that.jvRowData
-            }
+        if (that.jvRowData.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Account Details");
+        }
 
+        var saveJV = {
+            "jvmid": that.jvmid,
+            "loginsessionid": that.loginUser._sessiondetails.sessionid,
+            "uid": that.loginUser.uid,
+            "fy": that.loginUser.fy,
+            "cmpid": that.loginUser.cmpid,
+            "docdate": that.jvdate.getDate(),
+            "suppdoc": that.suppdoc.length === 0 ? null : that.suppdoc,
+            "narration": that.narration,
+            "uidcode": that.loginUser.login,
+            "isactive": that.isactive,
+            "jvdetails": that.jvRowData
+        }
+
+        that.duplicateaccount = that.isDuplicateAccount();
+
+        if (that.duplicateaccount == false) {
             that._jvservice.saveJVDetails(saveJV).subscribe(data => {
                 var dataResult = data.data;
-                console.log(dataResult);
 
                 if (dataResult[0].funsave_jv.msgid != "-1") {
                     that._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
@@ -454,10 +404,6 @@ export class AddJV implements OnInit, OnDestroy {
                 // console.log("Complete");
             });
         }
-        else {
-            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Account Details");
-            $(".accname").focus();
-        }
     }
 
     removeFileUpload() {
@@ -469,3 +415,50 @@ export class AddJV implements OnInit, OnDestroy {
         console.log('ngOnDestroy');
     }
 }
+
+
+// account details
+
+// bindAutoComplete() {
+//     var that = this;
+
+//     $(".accname").each(function () {
+
+//         if ($(this).attr("added")) {
+//             return;
+//         }
+//         $(this).attr("added", "1");
+//         $(this).autocomplete({
+//             source: function (request, response) {
+//                 that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": request.term }).subscribe(data => {
+//                     response($.map(data.data, function (item) {
+//                         return {
+//                             label: item.label,
+//                             value: item.label,
+//                             "iid": item.value
+//                         }
+//                     }));
+//                 }, err => {
+//                     console.log("Error");
+//                 }, () => {
+//                     // console.log("Complete");
+//                 })
+//             },
+//             width: 300,
+//             max: 20,
+//             delay: 100,
+//             minLength: 0,
+//             autoFocus: true,
+//             cacheLength: 1,
+//             scroll: true,
+//             highlight: false,
+//             select: function (event, ui) {
+//                 event.preventDefault();
+//                 $(event.target).val(ui.item.label);
+//                 console.log(ui.item.iid)
+//                 $(event.target).trigger('input');
+
+//             }
+//         });
+//     })
+// }

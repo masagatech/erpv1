@@ -18,20 +18,20 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Series No</label>
-                            <input type="number" [(ngModel)]="newseriesno" class="form-control text-right" />
+                            <numtext name="newdramt" [(ngModel)]="newseriesno" [iscurrency]="false" [min]="0" [decimals]="5" [grpseperator]="','"></numtext>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Quantity</label>
-                            <input type="number" [(ngModel)]="newqty" class="form-control text-right" />
+                            <numtext name="newqty" [(ngModel)]="newqty" [iscurrency]="false" [min]="0" [grpseperator]=""></numtext>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">No of Page</label>
-                            <input type="number" [(ngModel)]="newnoofpage" class="form-control text-right" (keyup.enter)="addRBRow()" (keydown.tab)="addRBRow()"
-                            />
+                            <numtext name="newnoofpage" [(ngModel)]="newnoofpage" [iscurrency]="false" [min]="0" [grpseperator]="" (keyup.enter)="addRBRow()"
+                                (keydown.tab)="addRBRow()"></numtext>
                         </div>
                     </div>
                 </div>

@@ -1,10 +1,6 @@
 <form id="frmDebitNote">
 	<div class="middlepan">
 		<div class="panel panel-theme">
-			<div class="panel-heading">
-				<h3 class="panel-title">Add Debit Note</h3>
-			</div>
-
 			<div class="panel-body">
 				<div class="col-md-12">
 					<div class="row">
@@ -47,19 +43,19 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr *ngFor="let row of dnRowData let i=index">
+						<tr *ngFor="let row of dnRowData | filterBy: {isactive: true}; let i=index;">
 							<td class="textalign">
-								{{i+1}}
+								{{ i + 1 }}
 							</td>
 							<td>
 								<input type="text" name="acname{{i+1}}" [(ngModel)]="row.acname" class="accname form-control" (keyup)="getAutoComplete(row, 1)"
 								/>
 							</td>
 							<td class="textalign">
-								<numtext name="cramt{{i+1}}" [(ngModel)]="row.cramt"></numtext>
+								<numtext id="{{'cramt'+i+1}}" name="cramt{{i+1}}" [(ngModel)]="row.cramt"></numtext>
 							</td>
 							<td>
-								<button type="button" name="btnRemove" class="btn btn-theme fa fa-trash" (click)="NewRowAdd()"></button>
+								<button type="button" name="btnRemove" class="btn btn-theme fa fa-trash" (click)="DeleteRow(row)"></button>
 							</td>
 						</tr>
 					</tbody>
