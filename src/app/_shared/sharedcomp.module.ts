@@ -8,11 +8,12 @@ import { AttributeComp } from '../modules/usercontrol/attribute/attr.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FileUploadModule, GrowlModule, DialogModule } from 'primeng/primeng';
+import { FilterByPipe } from '../_pipe/filterby.pipe';
 
 @NgModule({
     imports: [RouterModule, FormsModule, CommonModule, FileUploadModule, GrowlModule, DialogModule],
-    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp],
-    exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp]
+    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe],
+    exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe]
 })
 
 export class SharedComponentModule { }
