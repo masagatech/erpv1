@@ -29,7 +29,7 @@ export class UserControlHeadComp implements OnInit {
     //   return;
     // }
 
-  
+
 
     //set user name 
     this.loginUserName = this.loginUser.fullname;
@@ -48,15 +48,15 @@ export class UserControlHeadComp implements OnInit {
 
       for (var i = 0; i <= this.menuhead.length - 1; i++) {
         var _parentMenu = this.parentMenus.filter(item => item.mid === this.menuhead[i].mid);
-
         for (var j = 0; j <= _parentMenu.length - 1; j++) {
+          _parentMenu[j].subsub = null;
           _parentMenu[j].subsub = this.subMenu.filter(subitem => subitem.parentid === _parentMenu[j].parentid);
         }
-
+        this.menuhead[i].sub = null;
         this.menuhead[i].sub = _parentMenu;
 
-        $('.dropdown-submenu > a').submenupicker();
       }
+      $('.dropdown-submenu > a').submenupicker();
     }, err => {
 
     }, () => {
