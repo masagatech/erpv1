@@ -7,26 +7,27 @@ import { ContrService } from "../../../../_service/contrcenter/contr-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
-
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 declare var commonfun: any;
+
 @Component({
     templateUrl: 'add.comp.html',
     providers: [ContrService, CommonService]
+})
 
-}) export class contradd implements OnInit, OnDestroy {
+export class contradd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     autoid: any = 0;
-    centername: any = "";
-    profit: any = "";
-    cost: any = "";
+    ctrlname: any = "";
+    profitcode: any = "";
+    costcode: any = "";
     empid: any = 0;
     empname: any = "";
-    remark: any = "";
+    narration: any = "";
     editmode: boolean = false;
     isactive: boolean = false;
     private subscribeParameters: any;
@@ -42,6 +43,7 @@ declare var commonfun: any;
         private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
+
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
@@ -50,10 +52,13 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".centername").focus();
+
+        $(".ctrlname").focus();
+
         setTimeout(function () {
             commonfun.addrequire();
         }, 0);
+
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -65,7 +70,6 @@ declare var commonfun: any;
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
-
             }
             else {
                 this.actionButton.find(a => a.id === "save").hide = false;
@@ -83,14 +87,14 @@ declare var commonfun: any;
         }).subscribe(result => {
             var dataset = result.data;
             this.editmode = true;
-            this.centername = dataset[0][0].ctrlname;
-            this.profit = dataset[0][0].profitctr;
-            this.cost = dataset[0][0].costctr;
+            this.ctrlname = dataset[0][0].ctrlname;
+            this.profitcode = dataset[0][0].profitctr;
+            this.costcode = dataset[0][0].costctr;
             this.empid = dataset[0][0].empid;
             this.empname = dataset[0][0].person;
-            this.remark = dataset[0][0].remark;
+            this.narration = dataset[0][0].narration;
             this.isactive = dataset[0][0].isactive;
-            $(".centername").focus();
+            $(".ctrlname").focus();
         }, err => {
             console.log("Error");
         }, () => {
@@ -98,10 +102,11 @@ declare var commonfun: any;
         });
     }
 
-    getAutoCompleteEmp(me: any) {
+    getPersonAuto(me: any) {
         var that = this;
         this._autoservice.getAutoData({
-            "type": "userwithcode", "search": that.empname,
+            "type": "userwithcode",
+            "search": that.empname,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
@@ -129,27 +134,29 @@ declare var commonfun: any;
     }
 
     ClearControll() {
-        this.centername = "";
-        this.profit = "";
-        this.cost = "";
+        this.ctrlname = "";
+        this.profitcode = "";
+        this.costcode = "";
         this.empname = "";
         this.empid = 0;
         this.editmode = false;
-        this.remark = "";
+        this.narration = "";
     }
 
     paramjson() {
         var param = {
-            "centername": this.centername,
-            "profitcode": this.profit,
             "ctrlid": this.autoid,
-            "costcode": this.cost,
-            "empid": this.empid,
-            "isactive":this.isactive,
             "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "ctrlname": this.ctrlname,
+            "profitcode": this.profitcode,
+            "costcode": this.costcode,
+            "empid": this.empid,
+            "isactive": this.isactive,
             "createdby": this.loginUser.login,
-            "remark": this.remark
+            "narration": this.narration
         }
+
         return param;
     }
 
@@ -161,24 +168,25 @@ declare var commonfun: any;
         }
         if (evt === "save") {
             var validateme = commonfun.validate();
+
             if (!validateme.status) {
                 this._msg.Show(messageType.error, "error", validateme.msglist);
                 validateme.data[0].input.focus();
                 return;
             }
-            this.ctrlServies.saveCtrlcenter(
-                this.paramjson()
-            ).subscribe(result => {
+
+            this.ctrlServies.saveCtrlcenter(this.paramjson()).subscribe(result => {
                 var dataset = result.data;
+
                 if (dataset[0].funsave_ctrlcenter.maxid == -1) {
                     this._msg.Show(messageType.info, "info", "Center Name already exists");
-                    $(".centername").focus();
+                    $(".ctrlname").focus();
                     return;
                 }
                 if (dataset[0].funsave_ctrlcenter.maxid > 0) {
                     this._msg.Show(messageType.success, "success", "Data Save Successfully");
                     this.ClearControll();
-                    $(".centername").focus();
+                    $(".ctrlname").focus();
                     return;
                 }
                 else {
@@ -194,13 +202,11 @@ declare var commonfun: any;
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
+
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-            $(".centername").focus();
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
+
+            $(".ctrlname").focus();
         } else if (evt === "delete") {
             alert("delete called");
         }
