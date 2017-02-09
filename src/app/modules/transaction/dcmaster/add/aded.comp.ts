@@ -6,6 +6,8 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -71,6 +73,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     NewItemsid: any = 0;
     AddEdit: any = '';
     footer: any;
+    wareid: number = 0;
     private subscribeParameters: any;
 
     //Customer Selected
@@ -79,7 +82,13 @@ export class dcADDEdit implements OnInit, OnDestroy {
     itemslist: any = [];
     warehouselist: any = [];
     daylist: any = [];
-    whdetailslist:any=[];
+    whdetailslist: any = [];
+
+    //File Upload
+    suppdoc: any = [];
+    module: string = "";
+    uploadedFiles: any = [];
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -89,7 +98,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //, private _autoservice:AutoService
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private dcServies: dcmasterService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _userService: UserService) {
+        private _routeParams: ActivatedRoute, private _userService: UserService, private _msg: MessageService) {
         this.newAddRow = [];
         this.counter = 0;
         this.totalQty = 0;
@@ -103,10 +112,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        //Hide Show And Flage Add Edit
-        this.AddEdit = 'add'
         this.footer = true;
         setTimeout(function () {
             var date = new Date();
@@ -150,7 +158,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
         });
     }
 
+    loadRBIGrid(event: LazyLoadEvent) {
 
+    }
 
     //Clear All Controll
     private ClearControll() {
@@ -346,10 +356,12 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
+        debugger;
         var _me = this;
         this._autoservice.getAutoData({
-            "type": "product",
-            "search": arg == 0 ? me.NewItemsName : me.ItemsName,
+            "type": "productwithwh",
+            "whid": this.wareid,
+            "search": arg == 0 ? me.NewItemsName : me.itemsname,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
@@ -369,20 +381,17 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
-                        _me.ItemsSelected(me.Itemsid);
+                        _me.ItemsSelected(me.Itemsid, arg, me.counter);
                     } else {
                         me.NewItemsName = ui.item.label;
                         me.Itemsid = ui.item.value;
-                        _me.ItemsSelected(me.Itemsid);
+                        _me.ItemsSelected(me.Itemsid, arg, me.counter);
                     }
-                    //   me.ItemsKey = ui.item.label;
-                    //  _me.ItemsSelected(me.ItemsID);
                 }
             });
         }, err => {
             console.log("Error");
         }, () => {
-            // console.log("Complete");
         })
     }
 
@@ -393,7 +402,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.warehouselist = [];
             this.Transpoterlist = [];
             this.custKey = val;
-            this.dcServies.getdcdetails({                   
+            this.dcServies.getdcdetails({
                 "custid": val,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
@@ -401,8 +410,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "flag": '',
                 "flag1": ''
             }).subscribe(details => {
-                debugger;
-                var dataset = details.data;                 
+                var dataset = details.data;
                 this.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
                 this.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
                 this.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
@@ -418,40 +426,33 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
 
     // //Selected Items
-    ItemsSelected(val) {
-        debugger;
-        if (val != "") {
+    ItemsSelected(val: number, falg: number, counter: number) {
+        if (val != 0) {
             this.dcServies.getItemsAutoCompleted({
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "itemsid": val,
                 "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
-                console.log(itemsdata.data);
                 var ItemsResult = itemsdata.data;
-
-                // if (this.newAddRow.length == 0) {
-                //     this.AddEdit = 'add'
-                // }
-                // if (this.AddEdit === 'add') {
-                this.qty = 1;
-                this.Dis = ItemsResult[0].dis;
-                this.Rate = ItemsResult[0].salerate;
-                this.Amount = ItemsResult[0].dcamt;
-                //this.ItemsfilteredList = [];
-                //  }
-                // else {
-                //     for (var i = 0; i < this.newAddRow.length; i++) {
-                //         if (this.newAddRow[i].counter === this.AddEdit) {
-                //             this.newAddRow[i].Qty = 1;
-                //             this.newAddRow[i].Dis = ItemsResult[0].Discount;
-                //             this.newAddRow[i].Rate = ItemsResult[0].MRPRate;
-                //             this.newAddRow[i].Amount = ItemsResult[0].Amount;
-                //             break;
-                //         }
-                //     }
-
-                //}
+                debugger;
+                if (falg === 0) {
+                    this.qty = 1;
+                    this.Dis = ItemsResult[0].dis;
+                    this.Rate = ItemsResult[0].salerate;
+                    this.Amount = ItemsResult[0].dcamt;
+                }
+                else {
+                    for (var i = 0; i < this.newAddRow.length; i++) {
+                        if (this.newAddRow[i].counter === counter) {
+                            this.newAddRow[i].qty = 1;
+                            this.newAddRow[i].Dis = ItemsResult[0].dis;
+                            this.newAddRow[i].Rate = ItemsResult[0].rate;
+                            this.newAddRow[i].Amount = ItemsResult[0].amount;
+                            break;
+                        }
+                    }
+                }
             }, err => {
                 console.log("Error");
             }, () => {
@@ -462,50 +463,58 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Add New Row
     private NewRowAdd() {
-        if (this.itemsname == '' || this.itemsname == undefined) {
-            alert('Please Enter items Name');
-            return;
-        }
-        if (this.qty == '' || this.qty == undefined) {
-            alert('Please Enter Quntity');
-            return;
-        }
-        if (this.Dis > 100) {
-            alert('Please Valid Discount')
-            return;
-        }
-        this.Duplicateflag = true;
-        for (var i = 0; i < this.newAddRow.length; i++) {
-            if (this.newAddRow[i].ItemsName == this.itemsname) {
-                this.Duplicateflag = false;
-                break;
+        try {
+            if (this.wareid === 0) {
+                this._msg.Show(messageType.error, "error", "Please Select Warehouse");
+                return;
+            }
+            if (this.itemsname == '' || this.itemsname == undefined) {
+                this._msg.Show(messageType.error, "error", "Please Enter items Name");
+                return;
+            }
+            if (this.qty == '' || this.qty == undefined) {
+                this._msg.Show(messageType.error, "error", "Please Enter Quntity");
+                return;
+            }
+            if (this.Dis > 100) {
+                this._msg.Show(messageType.error, "error", "Please Valid Discount");
+                return;
+            }
+            this.Duplicateflag = true;
+            for (var i = 0; i < this.newAddRow.length; i++) {
+                if (this.newAddRow[i].ItemsName == this.itemsname) {
+                    this.Duplicateflag = false;
+                    break;
+                }
+            }
+            if (this.Duplicateflag == true) {
+                this.newAddRow.push({
+                    "autoid": 0,
+                    'itemsname': this.itemsname,
+                    "itemsid": this.itemsid,
+                    'qty': this.qty,
+                    'rate': this.Rate,
+                    'dis': this.Dis == "" ? "0" : this.Dis,
+                    'amount': this.Amount,
+                    'counter': this.counter
+                });
+
+                this.counter++;
+                this.itemsname = "";
+                this.NewItemsName = "";
+                this.qty = "";
+                this.Rate = "";
+                this.Dis = "";
+                this.Amount = "";
+                $("#foot_custname").focus();
+            }
+            else {
+                this._msg.Show(messageType.error, "error", "Duplicate Item");
+                return;
             }
         }
-        if (this.Duplicateflag == true) {
-            debugger;
-            this.newAddRow.push({
-                "autoid": 0,
-                'itemsname': this.itemsname,
-                "itemsid": this.itemsid,
-                'qty': this.qty,
-                'rate': this.Rate,
-                'dis': this.Dis == "" ? "0" : this.Dis,
-                'amount': this.Amount,
-                'counter': this.counter
-            });
-
-            this.counter++;
-            this.itemsname = "";
-            this.NewItemsName = "";
-            this.qty = "";
-            this.Rate = "";
-            this.Dis = "";
-            this.Amount = "";
-            $("#foot_custname").focus();
-        }
-        else {
-            alert('Duplicate Item');
-            return;
+        catch (e) {
+            this._msg.Show(messageType.error, "error", e);
         }
 
     }

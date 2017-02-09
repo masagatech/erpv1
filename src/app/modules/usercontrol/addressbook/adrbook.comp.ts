@@ -43,6 +43,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+    codefalg: boolean = false;
 
     constructor(private _adrbookservice: AdrBookService, private _commonservice: CommonService,
         private _msg: MessageService, private _userService: UserService) {
@@ -69,14 +70,19 @@ export class AddrbookComp implements OnInit, OnDestroy {
         })
     }
 
+    Addbookclick() {
+         this.ClearControll();
+        setTimeout(function () {
+            $(".firstnam").focus();
+        }, 500);
+    }
+
     AddBook(code) {
         var that = this;
         if (code != "") {
             that.adrid = 0;
-            that.ClearControll();
-            setTimeout(function () {
-                $(".firstnam").focus();
-            }, 500);
+            that.codefalg = true;
+            that.accode = code;
         }
     }
 
@@ -205,9 +211,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
 
     Parameter() {
         var that = this;
-        if (this.addrbooklist.length > 0) {
-
-        }
         var Param = {
             "adrid": that.adrid,
             "firstnam": that.firstnam,
@@ -235,6 +238,8 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
+        debugger;
+        console.log(Param);
         return Param;
     }
 
@@ -260,13 +265,14 @@ export class AddrbookComp implements OnInit, OnDestroy {
             $(".email").focus();
             return;
         }
+
         that._adrbookservice.saveAdrBook(
             that.Parameter()
         ).subscribe(result => {
             var dataset = result.data;
             if (dataset[0].funsave_addressbook.maxid > 0) {
                 var adridmaxid = dataset[0].funsave_addressbook.maxid;
-                that._msg.Show(messageType.success, "success", "Data save successfully");
+                //that._msg.Show(messageType.success, "success", "Data save successfully");
                 $('#myModal').modal('hide');
                 that.getAddress(adridmaxid);
                 var vid = that.addrbooklist.filter(item => item.id);

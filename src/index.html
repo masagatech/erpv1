@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html 🆖>
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -12,9 +12,14 @@
 
     <meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
     <script src="/assets/js/jquery.min.js"></script>
-    <script src="/assets/js/common.js"></script>
     <script src="/assets/js/bootstrap.min.js"></script>
     <script src="/assets/js/moment.min.js"></script>
+    <script src="/assets/js/jquery-ui.js"></script>
+    <script src="/assets/js/autoNumeric.min.js"></script>
+    <script src="/assets/js/submenu.js"></script>
+    <script src="/assets/js/common.js"></script>
+
+
     <% if (webpackConfig.htmlElements.headTags) { %>
         <!-- Configured Head Tags  -->
         <%= webpackConfig.htmlElements.headTags %>
@@ -81,8 +86,7 @@
                 loadjscssfile('/assets/css/styles.css', 'css', function() {
                     loadjscssfile('/assets/css/customstyle.css', 'css', function() {
                         loadjscssfile('/assets/css/primeng.min.css', 'css', function() {
-                            loadjscssfile('/assets/css/jquery-ui.css', 'css', function() {
-                            });
+                            loadjscssfile('/assets/css/jquery-ui.css', 'css', function() {});
                         });
                     });
                 });
@@ -90,18 +94,17 @@
         });
 
         //loadjscssfile('/assets/js/jquery.min.js', 'js', function() {
-            //loadjscssfile('/assets/js/bootstrap.min.js', 'js', function() {
-                //loadjscssfile('/assets/js/jquery.datatable.js', 'js', function() {
-                    loadjscssfile('/assets/js/submenu.js', 'js', function() {
-                        loadjscssfile('/assets/js/jquery-ui.js', 'js', function() {
-                              loadjscssfile('/assets/js/common.js', 'js', function() {
-                                    loadjscssfile('/assets/js/autoNumeric.min.js', 'js', function() {                                  
-                                    });
-                              });
-                        });
-                   });
-                //});
-            //});
+        //loadjscssfile('/assets/js/bootstrap.min.js', 'js', function() {
+        //loadjscssfile('/assets/js/jquery.datatable.js', 'js', function() {
+        // loadjscssfile('/assets/js/submenu.js', 'js', function() {
+        //loadjscssfile('/assets/js/jquery-ui.js', 'js', function() {
+        //  loadjscssfile('/assets/js/common.js', 'js', function() {
+        //      loadjscssfile('/assets/js/autoNumeric.min.js', 'js', function() {});
+        // });
+        //});
+        //});
+        //});
+        //});
         //});
     </script>
 
