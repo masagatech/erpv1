@@ -1,16 +1,16 @@
-<div class="col-md-4" style="height:150px;">
+<div class="col-md-2" style="height:150px;">
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<h3 class="panel-title">New Address
 			</h3>
 		</div>
 		<div class="panel-body text-center" style="height:100px;overflow:hidden;padding-bottom:5px">
-			<button type="button" class="btn btn-theme btn-lg" data-toggle="modal" (click)="AddBook()" data-target="#myModal"><i class="fa fa-plus fa-3x"></i></button>
+			<button type="button" class="btn btn-theme btn-lg" data-toggle="modal" (click)="Addbookclick()" data-target="#myModal" [disabled]="!codefalg"><i class="fa fa-plus fa-3x"></i></button>
 		</div>
 	</div>
 </div>
 
-<div class="col-md-4" style="height:150px;" *ngFor="let item of addrbooklist">
+<div class="col-md-3" style="height:150px;" *ngFor="let item of addrbooklist">
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<h3 class="panel-title text-right"><i title="Primary Address" class="fa fa-check pull-left" *ngIf="item.isprimary"></i><span class="pull-left">{{item.firstnam}} {{item.middlenam}}</span><button class="btn btn-theme btn-xs"

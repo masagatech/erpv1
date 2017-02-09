@@ -27,15 +27,14 @@ declare var commonfun: any;
     warehousename: any = "";
     warehouseid: any = 0;
     remark: any = "";
-    opedate: any = "";
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
 
     //Calendor
-    @ViewChild("jvdate")
-    jvdate: CalendarComp;
+    @ViewChild("openstock")
+    openstock: CalendarComp;
 
     private subscribeParameters: any;
 
@@ -55,7 +54,7 @@ declare var commonfun: any;
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
             if (lockdate != "")
-                that.jvdate.setMinMaxDate(new Date(lockdate), null);
+                that.openstock.setMinMaxDate(new Date(lockdate), null);
         }, err => {
             console.log("Error");
         }, () => {
@@ -65,15 +64,17 @@ declare var commonfun: any;
 
     //Add Save Edit Delete Button
     ngOnInit() {
-        this.jvdate.initialize(this.loginUser);
-        this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.openstock.initialize(this.loginUser);
+        this.openstock.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Opening Stock");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".ware").focus();
 
@@ -97,8 +98,8 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                // this.docno = params['id'];
-                // this.editMode(this.docno);
+                this.warehouseid = params['id'];
+                this.editMode(this.warehouseid);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -107,7 +108,7 @@ declare var commonfun: any;
             }
             else {
                 var date = new Date();
-                this.jvdate.setDate(date);
+                this.openstock.setDate(date);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
@@ -127,7 +128,7 @@ declare var commonfun: any;
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
                 if (ItemsResult.length > 0) {
-                    this.Openinglist = ItemsResult;
+                    this.Openinglist = ItemsResult[1];
                 }
             }, err => {
                 console.log("Error");
@@ -139,7 +140,11 @@ declare var commonfun: any;
 
     getAutoCompleteWare(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({ "type": "warehouse", "search": _me.warehousename, "cmpid": _me.loginUser.cmpid }).subscribe(data => {
+        this._autoservice.getAutoData({
+            "type": "warehouse",
+            "search": _me.warehousename,
+            "cmpid": _me.loginUser.cmpid
+        }).subscribe(data => {
             $(".ware").autocomplete({
                 source: data.data,
                 width: 300,
@@ -163,10 +168,35 @@ declare var commonfun: any;
         })
     }
 
+    editMode(whid: number) {
+        this.opeingServies.getopeningstock({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "flag": "wardetails",
+            "wareid": whid,
+            "createdby": this.loginUser.login
+        }).subscribe(itemsdata => {
+            var ItemsResult = itemsdata.data;
+            if (ItemsResult.length > 0) {
+                this.warehouseid = ItemsResult[0][0].autoid;
+                this.warehousename = ItemsResult[0][0].whname;
+                this.remark = ItemsResult[0][0].remark;
+                this.openstock.setDate(new Date(ItemsResult[0][0].opendate));
+                this.Openinglist = ItemsResult[1];
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            //console.log("Done");
+        });
+    }
+
     ratechange(row: any = []) {
         debugger;
+        var culamt = 0;
         if (row.qty > 0) {
-            row.amt = row.qty * row.ratename.split(':')[1];
+            culamt = +row.qty * +row.ratename.split(':')[1];
+            row.amt = culamt.toFixed(2);
         }
         else {
             row.amt = "";
@@ -187,14 +217,13 @@ declare var commonfun: any;
                     "amt": item.amt,
                     "rem": item.remark,
                     "wareid": that.warehouseid,
-                    "opedate": $('#opedate').datepicker('getDate'),
+                    "opedate": this.openstock.getDate(),
                     "remark": that.remark,
                     "fy": that.loginUser.fy,
                     "cmpid": that.loginUser.cmpid,
                     "createdby": that.loginUser.login
                 })
             }
-
         }
         return opestock;
     }
@@ -219,6 +248,9 @@ declare var commonfun: any;
         if (evt === "back") {
             this._router.navigate(['warehouse/openingbal']);
         }
+        if (evt === "clear") {
+            this.ClearControll();
+        }
         if (evt === "save") {
             var validateme = commonfun.validate();
             if (!validateme.status) {
@@ -226,21 +258,25 @@ declare var commonfun: any;
                 validateme.data[0].input.focus();
                 return;
             }
-            this.opeingServies.saveopeningstock(
-                this.Paramter()
-            ).subscribe(result => {
-                if (result.data[0].funsave_wareopeningstock.maxid > 0) {
-                    alert("Data Save Successfully");
-                    this.ClearControll();
-                }
-                else {
-                    console.log(result.data[0]);
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //console.log("Done");
-            });
+            try {
+                this.opeingServies.saveopeningstock(
+                    this.Paramter()
+                ).subscribe(result => {
+                    if (result.data[0].funsave_wareopeningstock.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", result.data[0].funsave_wareopeningstock.msg);
+                        this.ClearControll();
+                    }
+                    else {
+                        console.log(result.data[0]);
+                    }
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //console.log("Done");
+                });
+            } catch (e) {
+                this._msg.Show(messageType.error, "error", e);
+            }
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             this.actionButton.find(a => a.id === "save").hide = false;

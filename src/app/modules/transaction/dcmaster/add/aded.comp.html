@@ -1,7 +1,17 @@
+<style>
+	table.tableNoborder td {
+		border: 0!important;
+		padding: 2px!important;
+	}
+	
+	.ui-datatable-footer.ui-widget-header {
+		padding: 2px 0px !important;
+	}
+</style>
 <div class="middlepan">
 	<div class="panel panel-theme">
 		<div class="panel-body">
-			<div class='form-row col-md-12'>
+			<div class='col-md-12'>
 				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Customer</label>
@@ -35,65 +45,73 @@
 						</div>
 					</div>
 				</div>
+				<div class="col-md-6">
+					<div class='form-group'>
+						<label>Warehouse</label>
+						<select class="form-control" [(ngModel)]="wareid" tabindex="6">
+								<option *ngFor="let items of warehouselist" [value]="items.val">
+									{{items.label}}
+								</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class='form-group'>
+						<label>Salesman</label>
+						<select class="form-control" [(ngModel)]="salesid" tabindex="5">
+								<option *ngFor="let items of Salesmanlist" [value]="items.val">
+									{{items.label}}
+								</option>
+						</select>
+					</div>
+				</div>
 			</div>
 			<div class="col-md-12">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Item</th>
-							<th class="textalign">Qty</th>
-							<th class="textalign">Rate</th>
-							<th class="textalign">Dis</th>
-							<th class="textalign">Amount</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let item of newAddRow let i=index" (click)=rowclick(item.counter)>
-							<td><span>{{i+1}}</span><span class="hide">{{item.DcDelid}}</span></td>
-							<td> <input type="text" class="form-control ProdName" autocomplete='off' value="" [(ngModel)]="item.itemsname" (keyup)="getAutoCompleteProd(item,1)"
-								/></td>
-							<td><input type="text" class="form-control textalign" [(ngModel)]="item.qty" (keyup)="ConfirmQtyEdit(item.counter,item.qty)"
-									(keyup.enter)="setFocus()" /></td>
-							<td><input type="text" class="form-control textalign" [(ngModel)]="item.rate" readonly="true" /></td>
-							<td><input type="text" class="form-control textalign" [(ngModel)]="item.dis" readonly="true" /></td>
-							<td><input type="text" class="form-control textalign" [(ngModel)]="item.amount" readonly="true" /></td>
-							<td>
-								<button class="btn btn-danger" (click)="DeleteRow(item.counter,item.DcDelid)"><i class="fa fa-trash"></i></button>
-							</td>
-						</tr>
-						<tr>
-							<td>#</td>
-							<td class="col-md-5">
-								<input type="text" id="foot_custname" class="form-control ProdName" autocomplete='off' value="" [(ngModel)]="NewItemsName"
-									(keyup)="getAutoCompleteProd(this,0)" />
-							</td>
-							<td class="col-md-1"><input type="text" class="form-control textalign" value="" [(ngModel)]="Qty" (keyup)="ConfirmQty(Qty)" (keyup.enter)="NewRowAdd()"
-								/></td>
-							<td class="col-md-1"><input type="text" class="form-control textalign" value="" [(ngModel)]="Rate" /></td>
-							<td class="col-md-1"><input type="text" class="form-control textalign" value="" [(ngModel)]="Dis" (keyup)="ConfirmQty(Dis)" /></td>
-							<td class="col-md-2"><input type="text" class="form-control textalign" value="" [(ngModel)]="Amount" (keydown.enter)="NewRowAdd()" /></td>
-							<td class="col-md-2"><button type="button" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
-						</tr>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td></td>
-							<td><b>Grand Total</b></td>
-							<td class="textalign"><b>
-						{{TotalQty()}}
-						</b></td>
-							<td></td>
-							<td></td>
-							<td class="textalign"><b>
-						{{TotalAmount()}}
-						</b></td>
-							<td></td>
-						</tr>
+				<div class="table-responsive">
+					<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+						expandableRows="true">
+						<p-column header="Item" footerTemplate="true" [style]="{'width':'150px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<input type="text" class="form-control ProdName inlinetextbox" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
+									autocomplete='off' value="" />
+							</template>
+						</p-column>
+						<p-column header="Qty" [style]="{'width':'50px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<input type="number" class="form-control text-right inlinetextbox" [(ngModel)]="row.qty" autocomplete='off' value="" />
+							</template>
+						</p-column>
+						<p-column header="Rate" [style]="{'width':'50px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext name="rate" css="inlinetextbox" [(ngModel)]="row.rate"></numtext>
+							</template>
+						</p-column>
+						<p-column field="dis" header="Dis" [style]="{'width':'50px','text-align':'left'}"></p-column>
+						<p-column field="amount" header="Amount" [style]="{'width':'50px','text-align':'left'}"></p-column>
+						<p-column header="Action" [style]="{'width':'30px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-theme btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash"></i></button>
+							</template>
+						</p-column>
+						<footer>
+							<table class="tableNoborder">
+								<tbody>
+									<tr>
+										<td style="width:150px;"><input type="text" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
+												autocomplete='off' value="" /></td>
+										<td style="width:50px;"><input type="text" class="form-control qty" [(ngModel)]="qty" autocomplete='off' value="" /></td>
+										<td style="width:50px;"><input type="text" class="form-control rate" [(ngModel)]="Rate" autocomplete='off' value="" /></td>
+										<td style="width:50px;"><input type="text" class="form-control dis" [(ngModel)]="Dis" autocomplete='off' value="" /></td>
+										<td style="width:50px;"><input type="text" class="form-control amt" [(ngModel)]="Amount" autocomplete='off' value="" /></td>
+										<td style="width:30px;"><button type="button" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
+									</tr>
+								</tbody>
+							</table>
 
-					</tfoot>
-				</table>
+						</footer>
+					</p-dataTable>
+
+				</div>
 			</div>
 		</div>
 	</div>
@@ -101,11 +119,7 @@
 		<div class="panel-body">
 			<ul class="nav nav-tabs">
 				<li class="active"><a data-target="#itemdis" role="button" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>
-				<li><a data-target="#tax" role="button" data-toggle="tab"><i class="fa fa-money" aria-hidden="true"></i> Tax</a></li>
-				<li><a data-target="#wh" role="button" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
 				<li><a data-target="#trans" role="button" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
-				<li><a data-target="#other" role="button" data-toggle="tab"><i class="fa fa-user-secret" aria-hidden="true"></i> Other</a></li>
-				<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane" id="itemdis">
@@ -171,40 +185,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="tab-pane" id="wh">
-					<div class="row">
-						<div class="col-md-8">
-							<div class="col-md-5">
-								<div class='form-group'>
-									<label>Warehouse</label>
-									<select class="form-control" [(ngModel)]="Traspoter" tabindex="6">
-								<option *ngFor="let items of warehouselist" [value]="items.val">
-									{{items.label}}
-								</option>
-						</select>
-								</div>
-							</div>
-						</div>
-						<table class="table table-striped table-bordered" *ngIf="whdetailslist.length">
-							<thead>
-								<tr>
-									<th>#</th>
-									<th class="col-sm-5">Items Name</th>
-									<th class="col-sm-3">Qty</th>
-									<th class="col-sm-1">Available</th>
-								</tr>
-							</thead>
-							<tbody *ngFor="let row of whdetailslist let i=index">
-								<tr>
-									<td><span>{{i+1}}</span></td>
-									<td>{{row.itemsname}}</td>
-									<td>{{row.qty}}</td>
-									<td>{{row.avb}}</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
 				<div class="tab-pane" id="trans">
 					<div class='form-group'>
 						<label>Transpoter</label>
@@ -215,42 +195,6 @@
 						</select>
 					</div>
 
-				</div>
-				<div class="tab-pane" id="tax">
-					Tax
-				</div>
-				<div class="tab-pane" id="other">
-					<div class="row">
-						<div class="col-md-8">
-							<div class="col-md-5">
-								<div class='form-group'>
-									<label>Salesman</label>
-									<select class="form-control" [(ngModel)]="salesid" tabindex="5">
-								<option *ngFor="let items of Salesmanlist" [value]="items.val">
-									{{items.label}}
-								</option>
-						</select>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class='form-group'>
-									<label>Credit Days</label>
-									<select class="form-control" [(ngModel)]="dayval" tabindex="5">
-										<option *ngFor="let items of daylist" [value]="items.val">
-											{{items.label}}
-										</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-8">
-
-						</div>
-					</div>
-
-				</div>
-				<div class="tab-pane" id="docup">
-					File Upload
 				</div>
 			</div>
 		</div>
@@ -264,6 +208,7 @@
 				<h3 class="panel-title">Customer Address</h3>
 			</a>
 		</div>
+		<span *ngIf="!addresslist.length">No customer selected</span>
 		<div id="Personal" class="panel-collapse collapse in">
 			<div class="panel-body">
 				<div *ngFor="let items of addresslist">
@@ -271,7 +216,7 @@
 					<span>{{items.email}}</span>
 					<span>{{items.mob}}</span>
 				</div>
-				<a role="button" class="pull-right">Change Address</a>
+				<a role="button" class="pull-right" *ngIf="addresslist.length">Change Address</a>
 			</div>
 		</div>
 	</div>
@@ -302,7 +247,10 @@
 			</a>
 		</div>
 		<div id="Personal" class="panel-collapse collapse in">
-			<div class="panel-body"></div>
+			<div class="panel-body">
+			</div>
 		</div>
 	</div>
+	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+		(onComplete)="onUploadComplete($event)"></fileupload>
 </div>

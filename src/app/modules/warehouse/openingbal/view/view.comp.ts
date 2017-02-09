@@ -5,6 +5,9 @@ import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
 import { WarViewOpbal } from "../../../../_service/wareopeningbal/view/view-service";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -19,13 +22,20 @@ declare var $: any;
 
     // local veriable 
     Openinglist: any = [];
+    totalRecords: number = 0;
+
+    //user details
+    loginUser: LoginUserModel;
+    loginUserName: string;
 
 
     private subscribeParameters: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private wareServies: WarViewOpbal, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService,
+        private _userService: UserService) { //Inherit Service
+        this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
     ngOnInit() {
@@ -34,17 +44,22 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Opening Stock");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.getopeningBal();
     }
 
-    getopeningBal() {
+    getopeningBal(from: number, to: number) {
         this.wareServies.getopeningstock({
             "flag": "",
-            "cmpid": 1,
-            "fy": 5
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "from": from,
+            "to": to,
         }).subscribe(result => {
-            this.Openinglist = result.data;
+            this.Openinglist = result.data[0];
+            this.totalRecords = result.data[1];
+
         }, err => {
             console.log("Error");
         }, () => {
@@ -52,9 +67,18 @@ declare var $: any;
         });
     }
 
-    EditItem(row: any = []) {
-        console.log(row);
+    EditItem(dt, event) {
+        var data = event.data;
+        if (!data.islocked) {
+            this._router.navigate(['warehouse/openingbal/edit', data.wareid]);
+        }
     }
+
+    //Pagination Grid View 
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getopeningBal(event.first, (event.first + event.rows));
+    }
+
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {

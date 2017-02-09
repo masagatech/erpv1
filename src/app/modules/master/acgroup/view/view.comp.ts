@@ -67,7 +67,6 @@ declare var $: any;
             var dataset = result.data;
             if (dataset.length > 0) {
                 this.acgrouplist = dataset;
-                console.log(dataset);
             }
             else {
                 $(".GroupName").focus();

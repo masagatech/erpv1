@@ -4,11 +4,13 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
 import { dcADDEdit } from './add/aded.comp';
-import { dcview } from './view/adedview.comp'; 
+import { dcview } from './view/adedview.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -40,7 +42,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
+        CommonModule, DataTableModule, NumTextModule],
     declarations: [
         dcADDEdit,
         dcview,

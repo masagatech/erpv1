@@ -167,8 +167,8 @@ declare var commonfun: any;
 
     //Get Code Blur Event
     Getcode() {
-        this.addressBook.AddBook(this.code);
         this.accode = this.code;
+        this.addressBook.AddBook(this.code);
         this.adrbookid = [];
     }
 
@@ -830,7 +830,7 @@ declare var commonfun: any;
             if (that.warehouselist.length > 0) {
                 var wareedit = _custdata[0].warehouseid;
                 for (var j = 0; j <= wareedit.length - 1; j++) {
-                    var chk = that.warehouselist.find(a => a.value === wareedit[j].value);
+                    var chk = that.warehouselist.find(a => a.value === wareedit[j].id);
                     chk.Warechk = true;
                 }
             }
@@ -947,7 +947,7 @@ declare var commonfun: any;
             "type": "ccauto",
             "search": that.ctrlname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
+            "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".ctrl").autocomplete({
