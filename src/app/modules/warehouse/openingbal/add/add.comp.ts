@@ -127,6 +127,7 @@ declare var commonfun: any;
                 "createdby": this.loginUser.login
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data;
+                console.log(ItemsResult);
                 if (ItemsResult.length > 0) {
                     this.Openinglist = ItemsResult[1];
                 }
@@ -192,9 +193,9 @@ declare var commonfun: any;
     }
 
     ratechange(row: any = []) {
-        debugger;
         var culamt = 0;
-        if (row.qty > 0) {
+        debugger;
+        if (row.qty > 0 && row.ratename != undefined) {
             culamt = +row.qty * +row.ratename.split(':')[1];
             row.amt = culamt.toFixed(2);
         }
@@ -211,7 +212,8 @@ declare var commonfun: any;
                 opestock.push({
                     "autoid": item.autoid,
                     "itemid": item.value,
-                    "rate": item.ratename.split(':')[0],
+                    "rate": item.ratename.split(':')[1],
+                    "rateid":item.ratename.split(':')[0],
                     "qty": item.qty,
                     "typ": "OB",
                     "amt": item.amt,
@@ -284,6 +286,7 @@ declare var commonfun: any;
             alert("delete called");
         }
     }
+
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
