@@ -40,7 +40,11 @@
 							{{row.val}}
 					    </option>
 							</select></td>
-						<td><input type="text" class="form-control textalign" (ngModelChange)="ratechange(item)" [(ngModel)]="item.qty" /></td>
+						<td>
+							<numtext [iscurrency]="false" (keyup)="ratechange(item)" [(ngModel)]="item.qty"></numtext>
+							<!--<input type="text" class="form-control" (keyup)="ratechange(item)" [(ngModel)]="item.qty" />-->
+
+						</td>
 						<td class="textalign">{{item.amt}}</td>
 						<td><input type="text" class="form-control" [(ngModel)]="item.remark" /></td>
 						<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(item)"><i class="fa fa-trash"></i></button></td>

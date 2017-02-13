@@ -42,6 +42,7 @@ declare var $: any;
     ratelist: any = [];
     ratelistnew: any = [];
     newrate: any = "";
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -59,6 +60,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.setActionButtons.setTitle("Warehouse Transfer");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".from").focus();
@@ -80,6 +82,27 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+
+        // Check this Ledger True And false
+        this.checkLedger();
+    }
+
+    //Check Ledger Table 
+    checkLedger() {
+        this.wareServies.getwarehouseTransfer({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "keyname": "is_wh_transfer",
+            "flag1": "",
+            "createdby": this.loginUser.login
+        }).subscribe(itemsdata => {
+            var ItemsResult = itemsdata.data;
+            console.log(ItemsResult);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            //console.log("Done");
+        });
     }
 
     // //Selected Items
@@ -97,7 +120,6 @@ declare var $: any;
                 this.amt = ItemsResult[0].amt;
                 this.remark = ItemsResult[0].itemremark;
                 this.qty = ItemsResult[0].qty;
-                //this.ratelistnew=ItemsResult[0].rate;
                 if (flag == 1) {
                     //this.ratelist = ItemsResult[0].sales;
                     this.ratelistnew = ItemsResult[0]._ratejosn;
@@ -262,7 +284,7 @@ declare var $: any;
                     'itemsname': that.itemsname,
                     "itemsid": that.itemsid,
                     'qty': that.qty,
-                    'rate': that.rate,
+                    'rate': that.ratelistnew,
                     'amt': that.amt,
                     'remark': that.remark,
                     'counter': that.counter
@@ -272,7 +294,8 @@ declare var $: any;
                 that.newAddRow.push({
                     "autoid": 0,
                     'itemsname': that.NewItemsName,
-                    "itemsid": that.NewItemsid,
+                    'itemsid': that.NewItemsid,
+                    'ratelist': that.ratelistnew,
                     'rate': that.newrate,
                     'amt': that.amt,
                     'qty': that.qty,
@@ -344,6 +367,41 @@ declare var $: any;
         return itemjson;
     }
 
+    //Create Ledger Json 
+    ledgerInsert() {
+        var ledgertransfe = [];
+        for (let item of this.newAddRow) {
+            ledgertransfe.push({
+                "autoid": 0,
+                "wareid": this.fromwareid,
+                "typ": 'TR',
+                "itemid": item.itemsid,
+                "rate": item.rate,
+                "amt": item.amt,
+                "outward": item.qty,
+                "qty": 0,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            })
+            ledgertransfe.push({
+                "autoid": 0,
+                "wareid": this.Towarid,
+                "typ": 'TR',
+                "itemid": item.itemsid,
+                "rate": item.rate,
+                "amt": item.amt,
+                "qty": item.qty,
+                "outward": 0,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            })
+        }
+        return ledgertransfe;
+    }
+
+    //Save Paramter Json
     paramsjson() {
         var that = this;
         var param = {
@@ -354,11 +412,13 @@ declare var $: any;
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
-            "warehousedetails": this.createItemsjson()
+            "warehousedetails": this.createItemsjson(),
+            "ledgertransfe": this.ledgerInsert()
         }
         return param;
     }
 
+    //Clear Control
     ClearControl() {
         this.fromwarname = "";
         this.fromwareid = 0;
@@ -378,30 +438,34 @@ declare var $: any;
         //Save Button Click 
         if (evt === "save") {
             if (that.fromwarname == "") {
-                this._msg.Show(messageType.info, "info", "Please Enetr From Warehouse");
+                this._msg.Show(messageType.info, "info", "Please Enter From Warehouse");
                 $(".from").focus();
                 return;
             }
             if (that.Towarname == "") {
-                this._msg.Show(messageType.info, "info", "Please Enetr To Warehouse");
+                this._msg.Show(messageType.info, "info", "Please Enter To Warehouse");
                 $(".to").focus();
                 return;
             }
+
             that.wareServies.saveWarehouse(
                 that.paramsjson()
             ).subscribe(result => {
-                if (result.data[0].funsave_warehousetransfer.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg);
-                    $(".from").focus();
-                    this.ClearControl();
-                    return;
+                try {
+                    if (result.data[0].funsave_warehousetransfer.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg);
+                        $(".from").focus();
+                        this.ClearControl();
+                        return;
+                    }
+                } catch (e) {
+                    this._msg.Show(messageType.error, "error", e.message);
                 }
             }, err => {
                 console.log("Error");
             }, () => {
                 //Completed
             })
-
 
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {

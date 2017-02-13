@@ -58,6 +58,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Account Group");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".groupcode").removeAttr('disabled', 'disabled');
         $(".groupcode").focus();
@@ -208,6 +209,7 @@ declare var commonfun: any;
             "remark2": "remark2",
             "remark3": []
         }
+        console.log(Param);
         return Param;
 
     }
@@ -225,26 +227,31 @@ declare var commonfun: any;
                 validateme.data[0].input.focus();
                 return;
             }
+            this.actionButton.find(a => a.id === "save").enabled = false;
             this.acgroupServies.acGroupSave(
                 this.JsonParam()
             ).subscribe(result => {
-                var dataset = result.data;
-                if (dataset[0].funsave_acgroup.maxid === "exists") {
-                    this._msg.Show(messageType.info, "info", dataset[0].funsave_acgroup.msg);
-                    this.ClearControll();
-                    return;
+                try {
+                    var dataset = result.data;
+                    if (dataset[0].funsave_acgroup.maxid === "exists") {
+                        this._msg.Show(messageType.info, "info", dataset[0].funsave_acgroup.msg);
+                        return;
+                    }
+                    if (dataset[0].funsave_acgroup.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", dataset[0].funsave_acgroup.msg);
+                        $(".code").removeAttr('disabled', 'disabled');
+                        this.ClearControll();
+
+                        if (this.groupid > 0) {
+                            this._router.navigate(['master/acgroup']);
+                        }
+                        this.actionButton.find(a => a.id === "save").enabled = true;
+                        return;
+                    }
+                } catch (e) {
+                    this._msg.Show(messageType.error, "error", e.message);
                 }
-                if (dataset[0].funsave_acgroup.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", dataset[0].funsave_acgroup.msg);
-                    $(".code").removeAttr('disabled', 'disabled');
-                    this.ClearControll();
-                    this._router.navigate(['master/acgroup']);
-                    return;
-                }
-                else {
-                    alert('Save Error');
-                    return;
-                }
+
             }, err => {
                 console.log("Error");
             }, () => {

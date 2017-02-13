@@ -44,7 +44,7 @@
 						</td>
 						<td>
 							<select [(ngModel)]="item.rate" class="form-control">
-						<option *ngFor="let row of ratelist" [value]="row.id">
+						<option *ngFor="let row of item.ratelist" [value]="row.id">
 							{{row.val}}
 					    </option>
 							</select>

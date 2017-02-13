@@ -29,4 +29,7 @@ export class CommonService {
     getOtherDetails(req: any) {
         return this._dataserver.post("getOtherDetails", req)
     }
+    getisproceed(req: any) {
+        return this._dataserver.post("getisproceed", req)
+    }
 }
