@@ -7,6 +7,7 @@ import { CompService } from '../../../../_service/company/comp-service' /* add r
 import { UserService } from '../../../../_service/user/user-service' /* add reference for user */
 import { FYService } from '../../../../_service/fy/fy-service' /* add reference for fy */
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LazyLoadEvent, DataTable, DataList, DataGrid, Panel, Dialog } from 'primeng/primeng';
 
@@ -52,7 +53,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _commonservice: CommonService, private _compservice: CompService, private _fyservice: FYService,
-        private _userservice: UserService) {
+        private _userservice: UserService, private _msg: MessageService) {
         this.loginUser = this._userservice.getUser();
     }
 
@@ -64,6 +65,8 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['uid'] !== undefined) {
+                this.setActionButtons.setTitle("Setting > User Rights > Edit");
+
                 this.title = "Edit User Rights";
 
                 this.uid = params['uid'];
@@ -73,6 +76,8 @@ export class AddUserRights implements OnInit, OnDestroy {
                 //this.getUserRightsById(params['uid']);
             }
             else {
+                this.setActionButtons.setTitle("Setting > User Rights");
+
                 setTimeout(function () {
                     $("#uname").focus();
                 }, 0);
@@ -80,6 +85,12 @@ export class AddUserRights implements OnInit, OnDestroy {
                 this.title = "Add User Rights";
             }
         });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveUserRights();
+        }
     }
 
     getUserAuto(me: any) {
@@ -219,23 +230,24 @@ export class AddUserRights implements OnInit, OnDestroy {
         }
 
         if (this.uid == "") {
-            alert("Please Enter User");
+            that._msg.Show(messageType.info, "Info", "Please Enter User");
         }
         else if (this.fy == 0) {
-            alert("Please Select Financial Year");
+            that._msg.Show(messageType.info, "Info", "Please Select Financial Year");
         }
         else {
             this._userservice.saveUserRights(saveUR).subscribe(data => {
                 var dataResult = data.data;
 
                 if (dataResult[0].funsave_userrights.msgid != "-1") {
-                    alert(dataResult[0].funsave_userrights.msg);
+                    that._msg.Show(messageType.info, "Info", dataResult[0].funsave_userrights.msg);
                     this._router.navigate(['/setting/userrights']);
                 }
                 else {
-                    alert("Error");
+                    that._msg.Show(messageType.info, "Info", dataResult[0].funsave_userrights.msg);
                 }
             }, err => {
+                that._msg.Show(messageType.info, "Info", err);
                 console.log(err);
             }, () => {
                 // console.log("Complete");
@@ -246,20 +258,20 @@ export class AddUserRights implements OnInit, OnDestroy {
     allCheck: boolean = false;
 
     private selectAndDeselectAllCheckboxes() {
-        if (this.allCheck == true) {
-            $(".allcheckboxes input[type=checkbox]").prop('checked', false);
+        if ($("#menus").is(':checked')) {
+            $(".allcheckboxes input[type=checkbox]").prop('checked', true);
         }
         else {
-            $(".allcheckboxes input[type=checkbox]").prop('checked', true);
+            $(".allcheckboxes input[type=checkbox]").prop('checked', false);
         }
     }
 
     private selectAndDeselectMenuWiseCheckboxes(row) {
-        if (row.IsMenuCheck == true) {
-            $("#M" + row.menuid + " input[type=checkbox]").prop('checked', false);
+        if ($("#" + row.menuid).is(':checked')) {
+            $("#M" + row.menuid + " input[type=checkbox]").prop('checked', true);
         }
         else {
-            $("#M" + row.menuid + " input[type=checkbox]").prop('checked', true);
+            $("#M" + row.menuid + " input[type=checkbox]").prop('checked', false);
         }
     }
 
@@ -294,8 +306,13 @@ export class AddUserRights implements OnInit, OnDestroy {
                             if (actrights != null) {
                                 for (var j = 0; j <= actrights.length - 1; j++) {
                                     $("#M" + menuitem.menuid).find("#" + menuitem.menuid + actrights[j]).prop('checked', true);
-                                    //$(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', true);
                                 }
+                                $(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', true);
+                                $("#menus").prop('checked', true);
+                            }
+                            else {
+                                $(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', false);
+                                $("#menus").prop('checked', false);
                             }
                         }
                     }
@@ -306,12 +323,6 @@ export class AddUserRights implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveUserRights();
-        }
     }
 
     ngOnDestroy() {

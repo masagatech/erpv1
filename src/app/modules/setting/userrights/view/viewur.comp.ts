@@ -6,6 +6,7 @@ import { UserService } from '../../../../_service/user/user-service' /* add refe
 import { FYService } from '../../../../_service/fy/fy-service' /* add reference for fy */
 import { LoginUserModel } from '../../../../_model/user_model';
 import { Router } from '@angular/router';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
     templateUrl: 'viewur.comp.html',
@@ -18,30 +19,26 @@ export class ViewUserRights implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     viewUserDT: any[];
+    totalRecords: number = 0;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _userservice: UserService) {
         this.loginUser = this._userservice.getUser();
-        this.getUserRights();
     }
 
     ngOnInit() {
+        this.setActionButtons.setTitle("Setting > User Rights");
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    getUserRights() {
+    getUserRights(from: number, to: number) {
         this._userservice.getUserRights({
-            "flag": "view",
-            "uid": 1,
-            "cmpid": 2,
-            "fy": 7
-            // "uid": this.loginUser.uid,
-            // "cmpid": this.loginUser.cmpid,
-            // "fy": this.loginUser.fy
-        }).subscribe(data => {
-            this.viewUserDT = data.data;
-            console.log(this.viewUserDT);
+            "flag": "view", "uid": 1, "cmpid": 1, "fy": 1, "from": from, "to": to
+            // "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+        }).subscribe(userrights => {
+            this.totalRecords = userrights.data[1].recordstotal;
+            this.viewUserDT = userrights.data[0];
         }, err => {
             console.log("Error");
         }, () => {
@@ -49,13 +46,17 @@ export class ViewUserRights implements OnInit, OnDestroy {
         })
     }
 
-    viewUserRights(row) {
-        if (row.isopenur == 0) {
-            row.isopenur = 1;
-        } else {
-            row.isopenur = 0;
-        }
+    loadURGrid(event: LazyLoadEvent) {
+        this.getUserRights(event.first, (event.first + event.rows));
     }
+
+    // viewUserRights(row) {
+    //     if (row.isopenur == 0) {
+    //         row.isopenur = 1;
+    //     } else {
+    //         row.isopenur = 0;
+    //     }
+    // }
 
     openUserRights(row) {
         this._router.navigate(['/setting/userrights/edit', row.UserID]);

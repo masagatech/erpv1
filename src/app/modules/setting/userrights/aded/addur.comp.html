@@ -84,8 +84,7 @@
 									<div class="row">
 										<div class="panel panel-theme">
 											<div class="panel-heading">
-												<input id="menus" name="menus" type="checkbox" [(ngModel)]="allCheck" (change)="selectAndDeselectAllCheckboxes()" />&nbsp;Select
-												All
+												<input id="menus" name="menus" type="checkbox" (change)="selectAndDeselectAllCheckboxes()" />&nbsp;Select All
 											</div>
 											<div class="panel-body">
 												<div *ngFor="let row of selectedCompany.menudetails | groupBy:'pname'; let i = index;">
@@ -93,10 +92,10 @@
 														<h3 class="panel-title">{{row.key}}</h3>
 													</div>
 													<div class="panel-body">
-														<div class="col-md-12" *ngFor="let drow of row.value" class="allcheckboxes">
+														<div class="col-md-12 allcheckboxes" *ngFor="let drow of row.value">
 															<div class="row">
 																<div class="col-md-4">
-																	<input id="{{drow.menuid}}" name="menu{{i + 1}}" [(ngModel)]="drow.IsMenuCheck" type="checkbox" value="{{drow.menuid}}" (change)="selectAndDeselectMenuWiseCheckboxes(row)"
+																	<input id="{{drow.menuid}}" name="menu{{i + 1}}" type="checkbox" value="{{drow.menuid}}" (change)="selectAndDeselectMenuWiseCheckboxes(drow)"
 																	/>&nbsp;{{drow.menuname}}
 																</div>
 																<div class="col-md-8" id="M{{drow.menuid}}">
