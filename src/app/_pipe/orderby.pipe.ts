@@ -1,5 +1,4 @@
-import { Pipe } from "angular2/core";
-import { Todo } from './todo';
+import { Pipe } from "@angular/core";
 
 @Pipe({
   name: "orderBy"
