@@ -46,12 +46,7 @@ const routerConfig = [
               return comp.default;
             }),
           },
-
-          {
-            path: 'expensebudget', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
-              return comp.default;
-            }),
-          },
+          
           {
             path: 'transpoter', loadChildren: () => System.import('./transpoter').then((comp: any) => {
               return comp.default;

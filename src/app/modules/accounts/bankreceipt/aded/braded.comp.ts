@@ -116,7 +116,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Accounts > Bank Receipt > Add");
+                this.setActionButtons.setTitle("Bank Receipt > Add");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -131,7 +131,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Accounts > Bank Receipt > Edit");
+                this.setActionButtons.setTitle("Bank Receipt > Edit");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -146,7 +146,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("Accounts > Bank Receipt > Details");
+                this.setActionButtons.setTitle("Bank Receipt > Details");
 
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);

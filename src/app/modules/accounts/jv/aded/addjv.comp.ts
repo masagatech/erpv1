@@ -40,7 +40,6 @@ export class AddJV implements OnInit, OnDestroy {
     newacname: string = "";
     newdramt: any = "";
     newcramt: any = "";
-    newdetnarr: string = "";
     counter: any;
     title: string = "";
 
@@ -100,7 +99,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Accounts > Journal Voucher > Add");
+                this.setActionButtons.setTitle("Journal Voucher > Add");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -115,7 +114,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Accounts > Journal Voucher > Edit");
+                this.setActionButtons.setTitle("Journal Voucher > Edit");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -130,7 +129,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("Accounts > Journal Voucher > Details");
+                this.setActionButtons.setTitle("Journal Voucher > Details");
 
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);

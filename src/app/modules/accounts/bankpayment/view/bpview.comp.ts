@@ -56,7 +56,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     // Document Ready
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Accounts > Bank Payment");
+        this.setActionButtons.setTitle("Bank Payment");
         // this.fromdate.initialize(this.loginUser);
         // this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         // this.fromdate.setDate(new Date(this.loginUser.fyfrom));

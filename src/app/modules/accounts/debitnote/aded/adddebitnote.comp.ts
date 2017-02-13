@@ -116,7 +116,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Accounts > Debit Note > Add");
+                this.setActionButtons.setTitle("Debit Note > Add");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -131,7 +131,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Accounts > Debit Note > Edit");
+                this.setActionButtons.setTitle("Debit Note > Edit");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -146,7 +146,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("Accounts > Debit Note > Details");
+                this.setActionButtons.setTitle("Debit Note > Details");
 
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);
