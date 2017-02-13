@@ -12,7 +12,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label">Company</label>
-                        <select [(ngModel)]="cmpid" tabindex="1" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
+                        <select [(ngModel)]="cmpid" tabindex="1" id="ddlcmp" class="form-control" (ngModelChange)="getFYDetails(cmpid)">
                             <option value="0">-- Select Company --</option>
                             <option *ngFor="let row of CompanyDetails" [value]="row.cmpid">
                                 {{row.cmpname}}

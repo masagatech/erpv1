@@ -838,7 +838,7 @@ submenu nav a {
 }
 
 label {
-    font-weight: normal!important;
+    font-weight: 500!important;
     color: #8D99A6;
     font-size: 12px;
     /*margin-bottom: 5px;*/
@@ -947,6 +947,14 @@ label {
     text-decoration: none;
     display: block;
     padding: 6px 0px 6px 4px;
+    margin-right: 3px;
+}
+
+.overflowMenu {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 #sidebar ul li a:hover {

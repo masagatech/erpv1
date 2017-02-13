@@ -11,6 +11,7 @@ export class LoginUser {
 export interface LoginUserModel {
   uid: number;
   cmpid: number;
+  cmpname:string;
   fy: number;
   fyfrom: any;
   fyto: any;
