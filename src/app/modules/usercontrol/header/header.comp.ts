@@ -20,6 +20,7 @@ export class UserControlHeadComp implements OnInit {
   subMenu: any;
   loginUser: LoginUserModel;
   loginUserName: string;
+  compName: string;
 
   constructor(private _authservice: AuthenticationService, private _userService: UserService, private _router: Router) {
     //get login user details 
@@ -33,7 +34,7 @@ export class UserControlHeadComp implements OnInit {
 
     //set user name 
     this.loginUserName = this.loginUser.fullname;
-
+    this.compName = this.loginUser.cmpname;
     //get menues according to loggedin user
 
     // this.loginUser.uid

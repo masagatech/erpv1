@@ -7,6 +7,8 @@ import { LoginUserModel } from '../../../../_model/user_model';
 
 import { Router } from '@angular/router';
 
+declare var $:any;
+
 @Component({
     templateUrl: 'defcmpfy.comp.html',
     providers: [CompService, FYService]
@@ -83,7 +85,7 @@ export class DefCmpFyComp implements OnInit {
         var that = this;
         this.loginUser.cmpid = this.cmpid;
         this.loginUser.fy = this.fy;
-        
+        this.loginUser.cmpname = $("#ddlcmp option:selected").text();
         this.loginUser.fyfrom = that.FYDetails.find(d => d.fyid == that.fy).fromdt;
         this.loginUser.fyto = that.FYDetails.find(d => d.fyid == that.fy).todt;
         var settings = [{ "key": "fy", "value": this.fy }, { "key": "cmpid", "value": this.cmpid }];
