@@ -118,7 +118,8 @@ export class ALSAddEdit implements OnInit, OnDestroy {
                     "fy": that.loginUser.fy,
                     "cmpid": that.loginUser.cmpid,
                     "uidcode": that.loginUser.login,
-                    "remarks": that.remarks
+                    "remarks": that.remarks,
+                    "frmdt": that.loginUser.fyfrom
                 });
             }
         }
