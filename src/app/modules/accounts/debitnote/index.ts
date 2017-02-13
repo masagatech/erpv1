@@ -35,6 +35,7 @@ const routerConfig = [
                 path: '',
                 children: [
                     { path: 'add', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "add", "urlname": "/add" } },
+                    { path: 'details/:id', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "edit", "urlname": "/edit" } },
                     { path: 'edit/:id', component: AddDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: ViewDebitNote, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "dn", "rights": "view", "urlname": "/debitnote" } },
                 ]

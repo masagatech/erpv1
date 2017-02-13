@@ -55,6 +55,13 @@ export class AddReceiptBook implements OnInit, OnDestroy {
         this.module = "Receipt Book";
     }
 
+    resetReceiptBook() {
+        var date = new Date();
+        this.docdate.setDate(date);
+        this.narration = "";
+        this.rbRowData = [];
+    }
+
     setAuditDate() {
         var that = this;
 
@@ -91,6 +98,8 @@ export class AddReceiptBook implements OnInit, OnDestroy {
             }
             else {
                 this.title = "Receipt Book : Add";
+                this.rbid = 0;
+                this.resetReceiptBook();
             }
         });
     }

@@ -47,7 +47,13 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     suppdoc: any = [];
     uploadedFiles: any = [];
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     private subscribeParameters: any;
+
+    // On Page Load
 
     constructor(private setActionButtons: SharedVariableService, private _bpservice: BankPaymentService,
         private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -56,7 +62,13 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.module = "Bank Payment";
         this.getBankMasterDrop();
         this.getTypDrop();
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
+
+    // On Pre Render
 
     setAuditDate() {
         var that = this;
@@ -76,7 +88,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("A/C Payble");
         this.issuedate.initialize(this.loginUser);
         this.issuedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -84,6 +95,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
+
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
@@ -91,25 +104,70 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
+            if (this.isadd) {
+                this.setActionButtons.setTitle("Accounts > A/C Payble > Add");
 
-                this.autoid = params['id'];
-                this.GetBankPayment(this.autoid);
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $(".bankpay").focus();
 
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
                 var date = new Date();
                 this.issuedate.setDate(date);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+            }
+            else if (this.isedit) {
+                this.setActionButtons.setTitle("Accounts > A/C Payble > Edit");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $(".bankpay").focus();
+
+                this.autoid = params['id'];
+                this.GetBankPayment(this.autoid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = false;
+            }
+            else {
+                this.setActionButtons.setTitle("Accounts > A/C Payble > Details");
+
+                $('button').prop('disabled', true);
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
+
+                this.autoid = params['id'];
+                this.GetBankPayment(this.autoid);
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+                this.actionButton.find(a => a.id === "delete").hide = false;
             }
         });
+    }
+
+    //Any Button Click Event Add Edit And Save
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveBankPayment(true);
+        } else if (evt === "edit") {
+            this._router.navigate(['/accounts/bankpayment/edit/', this.autoid]);
+        } else if (evt === "delete") {
+            this._msg.confirm('Are you sure that you want to delete?', () => {
+                this.saveBankPayment(false);
+            });
+        } else if (evt === "back") {
+            this._router.navigate(['/accounts/bankpayment']);
+        }
     }
 
     // Clear All Fields
@@ -224,7 +282,20 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
     //Send Paramter In Save Method
 
-    ParamJson() {
+    saveBankPayment(isactive) {
+        // if (this.bankid == 0) {
+        //     this._msg.Show(messageType.info, "Info", "Please Select Bank");
+        //     return false;
+        // }
+        if (this.issuedate.setDate("")) {
+            this._msg.Show(messageType.info, "Info", "Please Enter Issues Date");
+            return false;
+        }
+        if (this.custname == undefined || this.custname == null) {
+            this._msg.Show(messageType.info, "Info", "Please Enter Account");
+            return false;
+        }
+
         var Param = {
             "autoid": this.autoid,
             "cmpid": this.loginUser.cmpid,
@@ -239,56 +310,26 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             "typ": this.typ,
             "amount": this.amount,
             "cheqno": this.cheqno,
-            "narration": this.narration
+            "narration": this.narration,
+            "isactive": isactive
         }
 
-        return Param;
-    }
+        this._bpservice.saveBankPayment(Param).subscribe(result => {
+            var dataResult = result.data;
 
-    //Any Button Click Event Add Edit And Save
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            if (this.bankid == undefined || this.bankid == null) {
-                this._msg.Show(messageType.info, "Info", "Please Selected Bank");
-                return false;
+            if (dataResult[0].funsave_bankpayment.msgid == "1") {
+                this._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankpayment.msg);
+                this._router.navigate(['/accounts/bankpayment']);
             }
-            if ($('#issuedate').val() == "") {
-                this._msg.Show(messageType.info, "Info", "Please Selected Issues Date");
-                return false;
+            else {
+                this._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankpayment.msg);
             }
-            if (this.custname == undefined || this.custname == null) {
-                this._msg.Show(messageType.info, "Info", "Please Selected Account Code");
-                return false;
-            }
-
-            this._bpservice.saveBankPayment(this.ParamJson()).subscribe(result => {
-                var dataResult = result.data;
-
-                if (dataResult[0].funsave_bankpayment.msgid == "1") {
-                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankpayment.msg);
-                    this._router.navigate(['/accounts/bankpayment']);
-                }
-                else {
-                    this._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankpayment.msg);
-                }
-            }, err => {
-                this._msg.Show(messageType.error, "Error", err);
-                console.log(err);
-            }, () => {
-                //Complete
-            })
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-            $(".bankpay").focus();
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
+        }, err => {
+            this._msg.Show(messageType.error, "Error", err);
+            console.log(err);
+        }, () => {
+            //Complete
+        })
     }
 
     ngOnDestroy() {

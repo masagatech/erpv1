@@ -80,6 +80,7 @@ export class AddPDC implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -90,6 +91,7 @@ export class AddPDC implements OnInit, OnDestroy {
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
+                this.actionButton.find(a => a.id === "delete").hide = true;
 
                 this.pdcid = params['id'];
                 this.getPDCById(this.pdcid);
@@ -106,6 +108,7 @@ export class AddPDC implements OnInit, OnDestroy {
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
 
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');
@@ -126,6 +129,8 @@ export class AddPDC implements OnInit, OnDestroy {
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
+        } else if (evt === "back") {
+            this._router.navigate(['/accounts/jv']);
         }
     }
 

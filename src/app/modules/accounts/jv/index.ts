@@ -35,6 +35,7 @@ const routerConfig = [
                 path: '',
                 children: [
                     { path: 'add', component: AddJV, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "jv", "rights": "add", "urlname": "/add" } },
+                    { path: 'details/:id', component: AddJV, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "jv", "rights": "edit", "urlname": "/edit" } },
                     { path: 'edit/:id', component: AddJV, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "jv", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: ViewJV, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "jv", "rights": "view", "urlname": "/jv" } },
                 ]

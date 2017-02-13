@@ -1,41 +1,45 @@
-<div class='form'>
-	<table class="table table-striped table-bordered">
-		<tr>
-			<td>
-				<div class='form-group col-md-12'>
-					<div class="col-md-4">
-						<div class='form-group'>
-							<label>Bank</label>
-							<select class="form-control" [(ngModel)]="bankid">
-								<option *ngFor="let items of banknameListDT" tabindex="1" [value]="items.value">
-									{{items.label}}
-								</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>From Date</label>
-							<calendar #fromdate [name]="'fromdate'"></calendar>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>To Date</label>
-							<calendar #todate [name]="'todate'"></calendar>
-						</div>
-					</div>
-					<div class="col-md-1">
-						<div class='form-group'>
-							<label>Action</label>
-							<button type="button" class="btn btn-thme btn-sm" (click)="GetBankPayment()">Get</button>
-						</div>
-					</div>
-				</div>
-			</td>
-		</tr>
-	</table>
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Bank</label>
+				<select class="form-control" [(ngModel)]="bankid">
+					<option *ngFor="let items of banknameListDT" tabindex="1" [value]="items.value">
+						{{items.label}}
+					</option>
+				</select>
+			</div>
+		</div>
+		<!--<div class="col-md-3">
+			<div class="form-group">
+				<label>From Date</label>
+				<calendar #fromdate [name]="'fromdate'"></calendar>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>To Date</label>
+				<calendar #todate [name]="'todate'"></calendar>
+			</div>
+		</div>-->
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Status</label>
+				<select class="form-control" [(ngModel)]="status">
+					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class="form-group">
+				<label>Action</label>
+				<button type="button" class="btn btn-thme btn-sm" (click)="searchBankPayment(dt)">Get</button>
+			</div>
+		</div>
+	</div>
+</div>
 
+<div class="col-md-12">
 	<div class="table-responsive">
 		<p-dataTable #dt [value]="bankpaymentDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
 			(onLazyLoad)="loadBPGrid($event)" expandableRows="true">
@@ -46,7 +50,7 @@
 			<p-column field="cheqno" header="Cheque No" [style]="{'width':'150px','text-align':'left'}"></p-column>
 			<p-column header="Amount" [style]="{'width':'150px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					{{row.amount | currency:loginUser._globsettings.numberformat:true}}
+					{{row.amount | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
 			<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">

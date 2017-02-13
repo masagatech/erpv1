@@ -1,91 +1,89 @@
 <div class="middlepan">
 	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<h3 class="panel-title">Bank Receipt Add</h3>
-		</div>
 		<div class="panel-body">
-			<div class='form-row col-md-12'>
-				<div class="col-md-6">
-					<div class='form-group'>
-						<label>Account Code</label>
-						<input type="text=" class="form-control Custcode" tabindex="1" value="" [(ngModel)]="CustName" (keyup)="getAutoComplete(this)"
-						/>
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Account Code</label>
+							<input type="text" class="form-control custcode" tabindex="1" value="" [(ngModel)]="acname" (keyup)="getAutoComplete(this)"
+							/>
+						</div>
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class='form-group'>
-						<label>Bank</label>
-						<select class="form-control bankname" [(ngModel)]="BankName">
-							<option *ngFor="let items of BankNamelist" tabindex="2" [value]="items.value">
-								{{items.label}}
-							</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class='form-row col-md-12'>
-				<div class="col-xs-6">
-					<label>Deposit Date</label>
-					<div class="controls">
-						<div class="input-group" tabindex="3">
-							<input id="date-picker-3" id="DepDate" type="text" class="date-picker form-control" [(ngModel)]="DepDate" />
-							<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Bank</label>
+							<select class="form-control bankname" [(ngModel)]="bankid">
+								<option *ngFor="let items of banknamelistDT" tabindex="2" [value]="items.value">
+									{{items.label}}
+								</option>
+							</select>
 						</div>
 					</div>
 				</div>
-				<div class="col-md-6">
-					<div class='form-group'>
-						<label>Reference No</label>
-						<input type="text=" class="form-control" tabindex="4" value="" [(ngModel)]=Refno />
+			</div>
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-md-6">
+						<label>Deposit Date</label>
+						<calendar class="depdate" #depdate [name]="'depdate'" tabindex="3"></calendar>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Reference No</label>
+							<input type="text=" class="form-control" tabindex="4" value="" [(ngModel)]="refno" />
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class='form-row col-md-12'>
-				<div class="col-md-2">
-					<div class='form-group'>
-						<label>Type</label>
-						<select class="form-control" [(ngModel)]="TypeName" tabindex="5">
-							<option *ngFor="let items of Typelist" [value]="items.value">
-								{{items.label}}
-							</option>
-						</select>
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Type</label>
+							<select class="form-control" [(ngModel)]="typ" tabindex="5">
+								<option *ngFor="let items of typelistDT" [value]="items.value">
+									{{items.label}}
+								</option>
+							</select>
+						</div>
 					</div>
-				</div>
-				<div class="col-md-2">
-					<div class='form-group card required'>
-						<label>Amount</label>
-						<input type="number" tabindex="6" [(ngModel)]="Amount" class="form-control" value="" />
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Amount</label>
+							<numtext name="amount" [(ngModel)]="amount" tabindex="6"></numtext>
+						</div>
 					</div>
-				</div>
-				<div class="col-md-2">
-					<div class='form-group'>
-						<label>Cheque No</label>
-						<input type="text" class="form-control" tabindex="7" [(ngModel)]="ChequeNo" />
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Cheque No</label>
+							<input type="text" class="form-control" tabindex="7" [(ngModel)]="cheqno" />
+						</div>
 					</div>
-				</div>
-				<div class="col-md-6">
-					<div class='form-group'>
-						<label>Naration</label>
-						<textarea [(ngModel)]="Naration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3" cols="75"></textarea>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Narration</label>
+							<textarea [(ngModel)]="narration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3" cols="75"></textarea>
+						</div>
 					</div>
 				</div>
 			</div>
-			<!--<div class='form-row col-md-12'>
+			<!--<div class="col-md-12">
 				<div class="col-md-6">
-					<div class='form-group'>
+					<div class="form-group">
 						<label>Remark1</label>
 						<textarea [(ngModel)]="Remark1" class="areatextbox" tabindex="9" autocomplete='off' rows="3" cols="81"></textarea>
 					</div>
 				</div>
 				<div class="col-md-6">
-					<div class='form-group'>
+					<div class="form-group">
 						<label>Remark2</label>
 						<textarea [(ngModel)]="Remark2" class="areatextbox" tabindex="10" autocomplete='off' rows="3" cols="81"></textarea>
 					</div>
 				</div>
 			</div>
-			<div class='form-row col-md-12'>
-				<div class='form-group'>
+			<div class="col-md-12">
+				<div class="form-group">
 					<label>Remark3</label>
 					<textarea [(ngModel)]="Remark3" class="areatextbox" tabindex="11" autocomplete='off' rows="3"></textarea>
 				</div>

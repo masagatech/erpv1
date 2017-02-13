@@ -24,7 +24,7 @@
 								<label class="control-label">Narration</label>
 								<textarea name="narration" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
 							</div>
-							<div class="form-group">
+							<div class="form-group" style="display:none;">
 								<p-checkbox [(ngModel)]="isactive" name="chkIsActive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
 							</div>
 						</div>
@@ -79,7 +79,7 @@
 								<b>Total :</b>
 							</td>
 							<td class="text-right">
-								<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
+								<b>{{TotalCreditAmt() | currency:loginUser._globsettings.currency:true}}</b>
 							</td>
 							<td class="text-right">
 							</td>

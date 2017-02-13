@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
@@ -7,6 +7,7 @@ import { UserService } from '../../../../_service/user/user-service'; /* add ref
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router } from '@angular/router';
+import { CalendarComp } from '../../../usercontrol/calendar';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
@@ -23,29 +24,73 @@ export class ViewJV implements OnInit, OnDestroy {
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
 
+    rangewise: string = "";
+    fromno: any = "";
+    tono: any = "";
+    status: string = "";
+
+    statusDT: any = [];
+
+    @ViewChild("fromdate")
+    fromdate: CalendarComp;
+
+    @ViewChild("todate")
+    todate: CalendarComp;
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _jvservice: JVService,
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
+        this.fillStatusDropDown();
+        this.resetJVFields();
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Journal Voucher");
+        this.setActionButtons.setTitle("Accounts > Journal Voucher");
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/accounts/jv/add']);
+        }
+    }
+
+    fillStatusDropDown() {
+        var that = this;
+
+        this._userService.getMenuDetails({
+            "flag": "trashrights", "ptype": "accs", "mtype": "jv",
+            "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+        }).subscribe(data => {
+            that.statusDT = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        });
+    }
+
+    resetJVFields() {
+        this.rangewise = "docrange";
+        this.fromno = "";
+        this.tono = "";
+        this.status = "true";
+    }
+
     getJVDetails(from: number, to: number) {
         var that = this;
 
-        this._jvservice.getJVDetails({
-            "flag": "docrange", "fromdocno": "1", "todocno": "100",
-            "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "from": from, "to": to
+        that._jvservice.getJVDetails({
+            "flag": "docrange", "fromdocno": parseInt(that.fromno), "todocno": parseInt(that.tono),
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
+            "from": from, "to": to, "isactive": that.status
         }).subscribe(jv => {
             that.totalRecords = jv.data[1][0].recordstotal;
             that.viewJVDT = jv.data[0];
         }, err => {
-            this._msg.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
             console.log(err);
         }, () => {
             // console.log("Complete");
@@ -54,6 +99,33 @@ export class ViewJV implements OnInit, OnDestroy {
 
     loadJVGrid(event: LazyLoadEvent) {
         this.getJVDetails(event.first, (event.first + event.rows));
+    }
+
+    searchJV(dt: DataTable) {
+        // if (this.rangewise == "docrange") {
+
+        // }
+        // if (this.rangewise == "daterange") {
+        //     if (this.fromdate.setDate("")) {
+        //         this._msg.Show(messageType.info, "Info", "Please select From Date");
+        //         return;
+        //     }
+        //     if (this.todate.setDate("")) {
+        //         this._msg.Show(messageType.info, "Info", "Please select To Date");
+        //         return;
+        //     }
+        // }
+
+        if (this.fromno == "") {
+            this._msg.Show(messageType.info, "Info", "Please select From No");
+            return;
+        }
+        if (this.tono == "") {
+            this._msg.Show(messageType.info, "Info", "Please select To No");
+            return;
+        }
+
+        dt.reset();
     }
 
     expandDetails(dt, event) {
@@ -103,17 +175,14 @@ export class ViewJV implements OnInit, OnDestroy {
     }
 
     openJVDetails(row) {
-        if (!row.islocked) {
-            this._router.navigate(['/accounts/jv/edit', row.jvmid]);
-        }
-        else {
+        if (row.islocked) {
             this._msg.Show(messageType.info, "Info", "This JV is Locked");
         }
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/accounts/jv/add']);
+        else if (!row.isactive) {
+            this._msg.Show(messageType.info, "Info", "This JV is Deleted");
+        }
+        else {
+            this._router.navigate(['/accounts/jv/details', row.jvmid]);
         }
     }
 

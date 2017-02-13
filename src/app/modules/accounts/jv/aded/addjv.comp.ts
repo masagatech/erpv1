@@ -51,6 +51,10 @@ export class AddJV implements OnInit, OnDestroy {
     @ViewChild("jvdate")
     jvdate: CalendarComp;
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
@@ -58,6 +62,10 @@ export class AddJV implements OnInit, OnDestroy {
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "JV";
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
 
     setAuditDate() {
@@ -78,7 +86,6 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Journal Voucher");
         this.jvdate.initialize(this.loginUser);
         this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -86,38 +93,56 @@ export class AddJV implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.title = "Edit Journal Voucher";
+            if (this.isadd) {
+                this.setActionButtons.setTitle("Accounts > Journal Voucher > Add");
 
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.jvmid = params['id'];
-                this.getJVDataById(this.jvmid);
-
-                $("#divJVAccount").children().prop('disabled', true);
-                $('input').prop('disabled', true);
-                $('select').prop('disabled', true);
-                $('textarea').prop('disabled', true);
-            }
-            else {
-                this.title = "Add Journal Voucher";
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
 
                 var date = new Date();
                 this.jvdate.setDate(date);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+            }
+            else if (this.isedit) {
+                this.setActionButtons.setTitle("Accounts > Journal Voucher > Edit");
 
-                $("#divJVAccount").children().prop('disabled', false);
+                $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
+
+                this.jvmid = params['id'];
+                this.getJVDataById(this.jvmid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = false;
+            }
+            else {
+                this.setActionButtons.setTitle("Accounts > Journal Voucher > Details");
+
+                $('button').prop('disabled', true);
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
+
+                this.jvmid = params['id'];
+                this.getJVDataById(this.jvmid);
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+                this.actionButton.find(a => a.id === "delete").hide = false;
             }
         });
     }
@@ -128,36 +153,15 @@ export class AddJV implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            if (this.isFormChange()) {
-                this._msg.Show(messageType.info, "info", "No save! There is no change!");
-                return;
-            };
-
-            if (this.TotalDebitAmt() !== this.TotalCreditAmt()) {
-                this._msg.Show(messageType.error, "Error", "Total Debit Amount and Total Credit Amount not Same !!!");
-                return;
-            }
-
-            var validateme = commonfun.validate();
-
-            if (!validateme.status) {
-                this._msg.Show(messageType.error, "error", validateme.msglist);
-                validateme.data[0].input.focus();
-                return;
-            }
-
-            this.saveJVData();
+            this.saveJVData(true);
         } else if (evt === "edit") {
-            $('#divJVAccount').prop('disabled', false);
-            $('input').prop('disabled', false);
-            $('select').prop('disabled', false);
-            $('textarea').prop('disabled', false);
-
-            this.formvals = $("#frmjv").serialize();
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
+            this._router.navigate(['/accounts/jv/edit/', this.jvmid]);
         } else if (evt === "delete") {
-            alert("delete called");
+            this._msg.confirm('Are you sure that you want to delete?', () => {
+                this.saveJVData(false);
+            });
+        } else if (evt === "back") {
+            this._router.navigate(['/accounts/jv']);
         }
     }
 
@@ -259,7 +263,7 @@ export class AddJV implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     if (arg === 1) {
                         me.acname = ui.item.label;
                         me.acid = ui.item.value;
@@ -313,6 +317,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "jvmid": pjvmid }).subscribe(data => {
             var _jvdata = data.data[0]._jvdata;
+            var _jvdetails = data.data[0]._jvdetails;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
 
@@ -323,10 +328,10 @@ export class AddJV implements OnInit, OnDestroy {
             that.narration = _jvdata[0].narration;
             that.isactive = _jvdata[0].isactive;
 
+            that.jvRowData = _jvdetails;
+
             that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
             that.suppdoc = _suppdoc == null ? [] : _suppdoc;
-
-            that.getJVDetailsByJVID(pjvmid);
         }, err => {
             console.log("Error");
         }, () => {
@@ -363,8 +368,26 @@ export class AddJV implements OnInit, OnDestroy {
         that.actionButton.find(a => a.id === "save").enabled = true;
     }
 
-    saveJVData() {
+    saveJVData(isactive: boolean) {
         var that = this;
+
+        if (that.isFormChange()) {
+            that._msg.Show(messageType.info, "info", "No save! There is no change!");
+            return;
+        };
+
+        if (that.TotalDebitAmt() !== that.TotalCreditAmt()) {
+            that._msg.Show(messageType.error, "Error", "Total Debit Amount and Total Credit Amount not Same !!!");
+            return;
+        }
+
+        var validateme = commonfun.validate();
+
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
 
         if (that.jvRowData.length === 0) {
             that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Account Details");
@@ -380,7 +403,7 @@ export class AddJV implements OnInit, OnDestroy {
             "suppdoc": that.suppdoc.length === 0 ? null : that.suppdoc,
             "narration": that.narration,
             "uidcode": that.loginUser.login,
-            "isactive": that.isactive,
+            "isactive": isactive,
             "jvdetails": that.jvRowData
         }
 

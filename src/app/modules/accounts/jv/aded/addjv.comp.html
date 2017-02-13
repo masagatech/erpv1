@@ -9,7 +9,7 @@
 								<label class="control-label">JV Date</label>
 								<calendar #jvdate [name]="'jvdate'"></calendar>
 							</div>
-							<div class="form-group">
+							<div class="form-group" style="display:none;">
 								<p-checkbox [(ngModel)]="isactive" name="chkIsActive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
 							</div>
 						</div>
@@ -23,7 +23,7 @@
 				</div>
 			</div>
 
-			<div id="divJVAccount" class="panel-body">
+			<div class="panel-body">
 				<table class="table table-striped table-bordered">
 					<thead>
 						<tr>
@@ -77,10 +77,10 @@
 								<b>Total :</b>
 							</td>
 							<td class="text-right">
-								<b>{{TotalDebitAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
+								<b>{{TotalDebitAmt() | currency:loginUser._globsettings.currency:true}}</b>
 							</td>
 							<td class="text-right">
-								<b>{{TotalCreditAmt() | currency:loginUser._globsettings.numberformat:true}}</b>
+								<b>{{TotalCreditAmt() | currency:loginUser._globsettings.currency:true}}</b>
 							</td>
 							<td></td>
 						</tr>

@@ -1,46 +1,109 @@
-<div class="table-responsive">
-	<p-dataTable #dt [value]="viewDebitNoteDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
-		(onLazyLoad)="loadDebitNoteGrid($event)" expandableRows="true">
-		<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-		<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
-		<p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
-		<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-		<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				{{row.totdramt | currency:loginUser._globsettings.numberformat:true}}
-			</template>
-		</p-column>
-		<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				{{row.totcramt | currency:loginUser._globsettings.numberformat:true}}
-			</template>
-		</p-column>
-		<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				{{row.issh == 1 ? row.narration : row.smallnarr}}
-			</template>
-		</p-column>
-		<p-column [style]="{'width':'45px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm">
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-3">
+			<!--<div class="form-group">
+				<label>Range Wise</label>
+				<select class="form-control" [(ngModel)]="rangewise">
+					<option [value]="'docrange'">Doc Range</option>
+					<option [value]="'daterange'">Date Range</option>
+				</select>
+			</div>-->
+		</div>
+		<!--<div class="col-md-5">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>From Date</label>
+						<calendar #fromdate [name]="'fromdate'"></calendar>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>To Date</label>
+						<calendar #todate [name]="'todate'"></calendar>
+					</div>
+				</div>
+			</div>
+		</div>-->
+		<div class="col-md-5">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>From No</label>
+						<numtext name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>To No</label>
+						<numtext name="tono" [(ngModel)]="tono" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Status</label>
+				<select class="form-control" [(ngModel)]="status">
+					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class="form-group">
+				<label>Action</label>
+				<button type="button" class="btn btn-thme btn-sm" (click)="searchDebitNote(dt)">Get</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="viewDebitNoteDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
+			(onLazyLoad)="loadDebitNoteGrid($event)" expandableRows="true">
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					{{row.totdramt | currency:loginUser._globsettings.currency:true}}
+				</template>
+			</p-column>
+			<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					{{row.totcramt | currency:loginUser._globsettings.currency:true}}
+				</template>
+			</p-column>
+			<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					{{row.issh == 1 ? row.narration : row.smallnarr}}
+				</template>
+			</p-column>
+			<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column [style]="{'width':'45px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm">
 					<i class="fa fa-arrow-right"></i>
 				</button>
+				</template>
+			</p-column>
+			<template let-row>
+				<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
+					<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+					<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
+						<template let-drow="rowData" pTemplate type="body">
+							{{drow.dramt | currency:loginUser._globsettings.currency:true}}
+						</template>
+					</p-column>
+					<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
+						<template let-drow="rowData" pTemplate type="body">
+							{{drow.cramt | currency:loginUser._globsettings.currency:true}}
+						</template>
+					</p-column>
+				</p-dataTable>
 			</template>
-		</p-column>
-		<template let-row>
-			<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
-				<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-				<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
-					<template let-drow="rowData" pTemplate type="body">
-						{{drow.dramt | currency:loginUser._globsettings.numberformat:true}}
-					</template>
-				</p-column>
-				<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
-					<template let-drow="rowData" pTemplate type="body">
-						{{drow.cramt | currency:loginUser._globsettings.numberformat:true}}
-					</template>
-				</p-column>
-			</p-dataTable>
-		</template>
-	</p-dataTable>
+		</p-dataTable>
+	</div>
 </div>

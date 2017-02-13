@@ -123,8 +123,7 @@ declare var commonfun: any;
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "cust";
-
-
+        
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -356,7 +355,6 @@ declare var commonfun: any;
         $(".trans").focus();
     }
 
-
     //Add Attribute Items
     Additems() {
         if (this.itemsid > 0) {
@@ -390,15 +388,12 @@ declare var commonfun: any;
                 $(".itemsname").focus();
                 return;
             }
-
         }
         else {
             this._msg.Show(messageType.info, "info", "Please enter valid items name");
             $(".itemsname").focus();
             return;
         }
-
-
     }
 
     getAutoCompleteSales(me: any) {

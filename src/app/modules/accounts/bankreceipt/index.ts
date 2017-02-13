@@ -7,6 +7,7 @@ import { bankreceiptview } from './view/brview.comp';      //Bank Bayment View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -42,7 +43,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,
-        CalendarModule, NumTextModule],
+        DataTableModule, CalendarModule, NumTextModule],
     declarations: [
         bankreceiptaddedit,
         bankreceiptview,

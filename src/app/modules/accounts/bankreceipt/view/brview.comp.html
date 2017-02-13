@@ -1,107 +1,139 @@
-<div class='form'>
-	<table class="table table-striped table-bordered">
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="form-group">
+				<label>Bank</label>
+				<select class="form-control" [(ngModel)]="bankid">
+					<option *ngFor="let items of bnaknamelistDTDT" tabindex="1" [value]="items.value">
+						{{items.label}}
+					</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>From Date</label>
+				<calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>To Date</label>
+				<calendar #todate [name]="'todate'" tabindex="3"></calendar>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class="form-group">
+				<label>Action</label>
+				<button type="button" tabindex="4" class="btn btn-theme btn-sm" (click)="searchBankRecepit(dt)">Get</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="bnakreceiptDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
+			(onLazyLoad)="loadBankReceiptGrid($event)" expandableRows="true">
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="partyname" header="Party" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="typ" header="Type" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="cheqno" header="Cheque No" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column header="Amount" [style]="{'width':'150px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					{{row.amount | currency:loginUser._globsettings.currency:true}}
+				</template>
+			</p-column>
+			<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					{{row.issh == 1 ? row.narration : row.smallnarr}}
+				</template>
+			</p-column>
+			<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column [style]="{'width':'45px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm">
+					<i class="fa fa-arrow-right"></i>
+				</button>
+				</template>
+			</p-column>
+			<template let-row>
+				<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
+					<p-column field="refno" header="Reference No" [style]="{'width':'150px','text-align':'left'}"></p-column>
+					<p-column field="code" header="Code" [style]="{'width':'150px','text-align':'left'}"></p-column>
+				</p-dataTable>
+			</template>
+		</p-dataTable>
+	</div>
+</div>
+
+<!--<table class="table table-striped table-bordered" data-toggle="table" [hidden]="tableLength">
+	<thead>
+		<tr>
+			<th colspan="5"></th>
+			<th><b>Total</b></th>
+			<th class="textboxRight"><b>{{TotalAmount()| number}}</b></th>
+			<th></th>
+		</tr>
+		<tr>
+			<th></th>
+			<th class="col-xs-1" data-field="Doc" data-sortable="true">Doc</th>
+			<th class="col-xs-2" data-field="Date" data-sortable="true">Date</th>
+			<th class="col-xs-3">Party</th>
+			<th class="col-xs-1">Type</th>
+			<th class="col-xs-1">Cheque</th>
+			<th class="col-xs-1">Debit</th>
+			<th class="col-xs-4">Narration</th>
+		</tr>
+	</thead>
+	<tbody *ngFor="let row of bnakreceiptDT">
 		<tr>
 			<td>
-				<div class='form-group col-md-12'>
-					<div class="col-md-4">
-						<div class='form-group'>
-							<label>Bank</label>
-							<select class="form-control" [(ngModel)]="Bankid">
-								<option *ngFor="let items of BankNamelist" tabindex="1" [value]="items.value">
-									{{items.label}}
-								</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>From Date</label>
-							<calendar #fromdate [name]="'fromdate'"></calendar>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>To Date</label>
-							<calendar #todate [name]="'todate'"></calendar>
-						</div>
-					</div>
-					<div class="col-md-1">
-						<div class='form-group'>
-							<label>Action</label>
-							<button type="button" tabindex="4" class="btn btn-theme btn-sm" (click)="GetBankRecepit()">Get</button>
-						</div>
-					</div>
-				</div>
-			</td>
-		</tr>
-
-	</table>
-	<table class="table table-striped table-bordered" data-toggle="table" [hidden]="tableLength">
-		<thead>
-			<tr>
-				<th colspan="5"></th>
-				<th><b>Total</b></th>
-				<th class="textboxRight"><b>{{TotalAmount()| number}}</b></th>
-				<th></th>
-			</tr>
-			<tr>
-				<th></th>
-				<th class="col-xs-1" data-field="Doc" data-sortable="true">Doc</th>
-				<th class="col-xs-2" data-field="Date" data-sortable="true">Date</th>
-				<th class="col-xs-3">Party</th>
-				<th class="col-xs-1">Type</th>
-				<th class="col-xs-1">Cheque</th>
-				<th class="col-xs-1">Debit</th>
-				<th class="col-xs-4">Narration</th>
-			</tr>
-		</thead>
-		<tbody *ngFor="let row of BankRecepitView">
-			<tr>
-				<td>
-					<button (click)="expandDetails(row)">
+				<button (click)="expandDetails(row)">
 						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
 					</button>
-				</td>
-				<td>
-					<a role="button" (click)="OpenEdit(row)">{{row.id}}</a>
-				</td>
-				<td>{{row.depdate}}</td>
-				<td>{{row.partyname}}</td>
-				<td>{{row.typ}}</td>
-				<td>{{row.cheqno}}</td>
-				<td class="textboxRight">{{row.amount | number}}</td>
-				<td rowspan="2">
-					{{row.issh == 1 ? row.naration : row.small}}
-				</td>
-			</tr>
-			<tr [style.display]="row.issh == 0?'none':''">
-				<td></td>
-				<td></td>
-				<td colspan="5">
-					<table class="table table-striped table-bordered">
-						<thead>
-							<tr>
-								<th>Refrnce No</th>
-								<th>Account Code</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr *ngFor="let drow of row.Details">
-								<td>{{drow.refno}}</td>
-								<td>{{drow.code}}</td>
-							</tr>
-						</tbody>
-					</table>
-					<td>
-			</tr>
-		</tbody>
-		<tfoot>
-			<tr>
-				<td colspan="5"></td>
-				<td><b>Total</b></td>
-				<td class="textboxRight"><b>{{TotalAmount()| number}}</b></td>
-				<td></td>
-			</tr>
-		</tfoot>
-	</table>
-</div>
+			</td>
+			<td>
+				<a role="button" (click)="OpenEdit(row)">{{row.id}}</a>
+			</td>
+			<td>{{row.depdate}}</td>
+			<td>{{row.partyname}}</td>
+			<td>{{row.typ}}</td>
+			<td>{{row.cheqno}}</td>
+			<td class="textboxRight">{{row.amount | number}}</td>
+			<td rowspan="2">
+				{{row.issh == 1 ? row.naration : row.small}}
+			</td>
+		</tr>
+		<tr [style.display]="row.issh == 0?'none':''">
+			<td></td>
+			<td></td>
+			<td colspan="5">
+				<table class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>Refrnce No</th>
+							<th>Account Code</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let drow of row.Details">
+							<td>{{drow.refno}}</td>
+							<td>{{drow.code}}</td>
+						</tr>
+					</tbody>
+				</table>
+			<td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="5"></td>
+			<td><b>Total</b></td>
+			<td class="textboxRight"><b>{{TotalAmount()| number}}</b></td>
+			<td></td>
+		</tr>
+	</tfoot>
+</table>-->

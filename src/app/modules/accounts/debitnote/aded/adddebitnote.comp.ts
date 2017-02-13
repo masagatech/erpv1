@@ -24,6 +24,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     duplicateaccount: Boolean = true;
 
     dnid: number = 0;
+    docno: number = 0;
     dnacid: number = 0;
     dnacname: string = "";
     narration: string = "";
@@ -41,7 +42,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     newacname: string = "";
     newcramt: any = "";
 
-    counter: any;
+    counter: any = 0;
     title: string = "";
     module: string = "";
 
@@ -51,13 +52,33 @@ export class AddDebitNote implements OnInit, OnDestroy {
     @ViewChild("dndate")
     dndate: CalendarComp;
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     private subscribeParameters: any;
+
+    //Page Load
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _dnservice: DNService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
+    }
+
+    resetDebitNote() {
+        this.dnacid = 0;
+        var date = new Date();
+        this.dndate.setDate(date);
+        this.dramt = "";
+        this.narration = "";
+        this.isactive = true;
+        this.dnRowData = [];
     }
 
     setAuditDate() {
@@ -68,6 +89,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
+
             if (lockdate != "")
                 that.dndate.setMinMaxDate(new Date(lockdate), null);
         }, err => {
@@ -77,8 +99,9 @@ export class AddDebitNote implements OnInit, OnDestroy {
         })
     }
 
+    //Document Ready
+
     ngOnInit() {
-        this.setActionButtons.setTitle("Debit Note");
         this.dndate.initialize(this.loginUser);
         this.dndate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -86,64 +109,84 @@ export class AddDebitNote implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.title = "Edit Debit Note";
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
+            if (this.isadd) {
+                this.setActionButtons.setTitle("Accounts > Debit Note > Add");
 
-                this.dnid = params['id'];
-                this.getDNDataByID(this.dnid);
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
 
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-            }
-            else {
-                this.title = "Add Debit Note";
-
-                var date = new Date();
-                this.dndate.setDate(date);
+                this.docno = 0;
+                this.resetDebitNote();
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+            }
+            else if (this.isedit) {
+                this.setActionButtons.setTitle("Accounts > Debit Note > Edit");
 
-                $('input').removeAttr('disabled');
-                $('select').removeAttr('disabled');
-                $('textarea').removeAttr('disabled');
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+
+                this.docno = params['id'];
+                this.getDNDataByID(this.docno);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = false;
+            }
+            else {
+                this.setActionButtons.setTitle("Accounts > Debit Note > Details");
+
+                $('button').prop('disabled', true);
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
+
+                this.docno = params['id'];
+                this.getDNDataByID(this.docno);
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+                this.actionButton.find(a => a.id === "delete").hide = false;
             }
         });
     }
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            var debitamt = parseInt(this.dramt);
-            var creditamt = this.TotalCreditAmt();
-
-            if (debitamt !== creditamt) {
-                this._msg.Show(messageType.error, "Error", "Total Debit Amount and Total Credit Amount not Same !!!");
-                return;
-            }
-
-            this.saveDNData();
+            this.saveDNData(true);
         } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
+            this._router.navigate(['/accounts/debitnote/edit/', this.docno]);
         } else if (evt === "delete") {
-            alert("delete called");
+            this._msg.confirm('Are you sure that you want to delete?', () => {
+                this.saveDNData(false);
+            });
+        } else if (evt === "back") {
+            this._router.navigate(['/accounts/debitnote']);
         }
     }
 
     isDuplicateAccount() {
         var that = this;
+
+        if (that.dnacid == that.newacid) {
+            that._msg.Show(messageType.info, "Info", "Debit Account and Credit Account Not Same");
+            that.newacid = "";
+            that.newacname = "";
+            that.newcramt = "";
+            return true;
+        }
 
         for (var i = 0; i < that.dnRowData.length; i++) {
             var field = that.dnRowData[i];
@@ -253,11 +296,12 @@ export class AddDebitNote implements OnInit, OnDestroy {
         })
     }
 
-    getDNDataByID(pdnid: number) {
+    getDNDataByID(pdocno: number) {
         var that = this;
 
-        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "dnid": pdnid }).subscribe(data => {
+        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "docno": pdocno }).subscribe(data => {
             var _dndata = data.data[0]._dndata;
+            var _dndetails = data.data[0]._dndetails;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
 
@@ -272,22 +316,12 @@ export class AddDebitNote implements OnInit, OnDestroy {
             that.narration = _dndata[0].narration;
             that.isactive = _dndata[0].isactive;
 
+            that.dnRowData = _dndetails;
+
             that.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
             that.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
 
-            that.getDNDetailsByID(_dndata[0].docno);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    getDNDetailsByID(pdocno: number) {
-        var that = this;
-
-        this._dnservice.getDebitNote({ "flag": "details", "docno": pdocno }).subscribe(data => {
-            that.dnRowData = data.data;
+            //that.getDNDetailsByID(_dndata[0].docno);
         }, err => {
             console.log("Error");
         }, () => {
@@ -309,8 +343,16 @@ export class AddDebitNote implements OnInit, OnDestroy {
         that.actionButton.find(a => a.id === "save").enabled = true;
     }
 
-    saveDNData() {
+    saveDNData(isactive: boolean) {
         var that = this;
+
+        var debitamt = parseInt(that.dramt);
+        var creditamt = that.TotalCreditAmt();
+
+        if (debitamt !== creditamt) {
+            that._msg.Show(messageType.error, "Error", "Total Debit Amount and Total Credit Amount not Same !!!");
+            return;
+        }
 
         var saveDN = {
             "dnid": that.dnid,
@@ -320,8 +362,9 @@ export class AddDebitNote implements OnInit, OnDestroy {
             "acid": that.dnacid,
             "dramt": that.dramt,
             "uidcode": that.loginUser.login,
+            "narration": that.narration,
             "suppdoc": that.suppdoc,
-            "isactive": that.isactive,
+            "isactive": isactive,
             "dndetails": that.dnRowData
         }
 

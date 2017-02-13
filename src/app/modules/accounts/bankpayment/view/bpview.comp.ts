@@ -28,7 +28,11 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     BankPayId: any = 0;
     banknameListDT: any = [];
     bankpaymentDT: any = [];
+
     bankid: any = 0;
+    status: string = "";
+    statusDT: any = [];
+
     tableLength: any;
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
@@ -45,18 +49,21 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.getBankMasterDrop();
+        this.fillStatusDropDown();
+        this.resetBPFields();
     }
 
     // Document Ready
 
     ngOnInit() {
-        this.fromdate.initialize(this.loginUser);
-        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.fromdate.setDate(new Date(this.loginUser.fyfrom));
+        this.setActionButtons.setTitle("Accounts > Bank Payment");
+        // this.fromdate.initialize(this.loginUser);
+        // this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        // this.fromdate.setDate(new Date(this.loginUser.fyfrom));
 
-        this.todate.initialize(this.loginUser);
-        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.todate.setDate(new Date(this.loginUser.fyto));
+        // this.todate.initialize(this.loginUser);
+        // this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        // this.todate.setDate(new Date(this.loginUser.fyto));
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
@@ -70,43 +77,63 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         }
     }
 
+    fillStatusDropDown() {
+        var that = this;
+
+        this._userService.getMenuDetails({
+            "flag": "trashrights", "ptype": "accs", "mtype": "jv",
+            "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+        }).subscribe(data => {
+            that.statusDT = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        });
+    }
+
+    resetBPFields() {
+        this.bankid = 0;
+        this.status = "true";
+    }
+
     // Open Edit Mode
     OpenBPDetails(row) {
-        if (!row.IsLocked) {
-            this._router.navigate(['accounts/bankpayment/edit', row.autoid]);
+        if (row.islocked) {
+            this._msg.Show(messageType.info, "Info", "This Bank Payment is Locked");
+        }
+        else if (!row.isactive) {
+            this._msg.Show(messageType.info, "Info", "This Bank Payment is Deleted");
         }
         else {
-            this._msg.Show(messageType.info, "Info", "This Bank Payment is Locked");
+            this._router.navigate(['/accounts/bankpayment/details', row.autoid]);
         }
     }
 
     // Get Button Click Event
     GetBankPayment(from: number, to: number) {
-        this.tableLength = true;
-        this.bankpaymentDT = [];
+        var that = this;
+
+        that.tableLength = true;
+        that.bankpaymentDT = [];
 
         var params = {
-            "flag": "all",
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "bankid": this.bankid,
-            // "fromdate": this.fromdate.getDate(),
-            // "todate": this.todate.getDate(),
-            "from": from,
-            "to": to
+            "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
+            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
+            "from": from, "to": to, "isactive": that.status
         }
 
-        this._bpservice.getBankPayment(params).subscribe(bankpayment => {
-            this.totalRecords = bankpayment.data[1].recordstotal;
+        that._bpservice.getBankPayment(params).subscribe(bankpayment => {
+            that.totalRecords = bankpayment.data[1].recordstotal;
 
             if (bankpayment.data[0].length > 0) {
-                this.tableLength = false;
-                this.bankpaymentDT = bankpayment.data[0];
+                that.tableLength = false;
+                that.bankpaymentDT = bankpayment.data[0];
             }
             else {
-                this._msg.Show(messageType.info, "Info", "No record found");
-                this.bankpaymentDT = [];
-                this.tableLength = true;
+                that._msg.Show(messageType.info, "Info", "No records found");
+                that.bankpaymentDT = [];
+                that.tableLength = true;
                 return false;
             }
         }, err => {
@@ -134,6 +161,33 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         });
     }
 
+    searchBankPayment(dt: DataTable) {
+        // if (this.rangewise == "docrange") {
+
+        // }
+        // if (this.rangewise == "daterange") {
+        //     if (this.fromdate.setDate("")) {
+        //         this._msg.Show(messageType.info, "Info", "Please select From Date");
+        //         return;
+        //     }
+        //     if (this.todate.setDate("")) {
+        //         this._msg.Show(messageType.info, "Info", "Please select To Date");
+        //         return;
+        //     }
+        // }
+
+        // if (this.fromdate.setDate("")) {
+        //     this._msg.Show(messageType.info, "Info", "Please Enter From Date");
+        //     return;
+        // }
+        // if (this.todate.setDate("")) {
+        //     this._msg.Show(messageType.info, "Info", "Please Enter To Date");
+        //     return;
+        // }
+
+        dt.reset();
+    }
+
     // Button Click
     expandDetails(dt, event) {
         var that = this;
@@ -146,6 +200,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
             }).subscribe(details => {
                 that.totalDetailsRecords = details.data[1][0].recordstotal;
                 row.details = details.data[0];
+                
+                dt.toggleRow(event.data);
             }, err => {
                 console.log("Error");
             }, () => {
