@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class CompService {
-    constructor(private _dataserver: DataService, private _router: Router) { }
+    constructor(private _dataserver: DataService, private _router: Router) {
+
+    }
 
     getCompany(req: any) {
         return this._dataserver.post("getCompany", req)
@@ -12,9 +14,5 @@ export class CompService {
 
     saveCompany(req: any) {
         return this._dataserver.post("saveCompany", req)
-    }
-
-    saveCompanyFYMap(req: any) {
-        return this._dataserver.post("saveCompanyFYMap", req)
     }
 }
