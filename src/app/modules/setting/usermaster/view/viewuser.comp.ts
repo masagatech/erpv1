@@ -38,7 +38,7 @@ export class ViewUser implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Setting > User Master");
+        this.setActionButtons.setTitle("User Master");
         this.title = "View User";
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));

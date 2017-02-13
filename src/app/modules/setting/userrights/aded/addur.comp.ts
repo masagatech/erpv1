@@ -65,7 +65,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['uid'] !== undefined) {
-                this.setActionButtons.setTitle("Setting > User Rights > Edit");
+                this.setActionButtons.setTitle("User Rights > Edit");
 
                 this.title = "Edit User Rights";
 
@@ -76,7 +76,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 //this.getUserRightsById(params['uid']);
             }
             else {
-                this.setActionButtons.setTitle("Setting > User Rights");
+                this.setActionButtons.setTitle("User Rights");
 
                 setTimeout(function () {
                     $("#uname").focus();

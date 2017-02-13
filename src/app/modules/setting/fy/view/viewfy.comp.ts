@@ -32,7 +32,7 @@ export class ViewFY implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Setting > Financial Year");
+        this.setActionButtons.setTitle("Financial Year");
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
