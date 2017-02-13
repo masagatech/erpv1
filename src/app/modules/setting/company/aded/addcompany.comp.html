@@ -212,7 +212,7 @@
 														{{row.val}}
 													</td>
 													<td *ngIf="row.ctrlflds.length">
-														<select name="key" [(ngModel)]="key" class="form-control">
+														<select name="key" [(ngModel)]="row.key" class="form-control">
 															<!--<option [value]="'0'">-- Select {{row.val}} --</option>-->
 															<option *ngFor="let drow of row.ctrlflds" [value]="drow.key">
 																{{drow.val}}
