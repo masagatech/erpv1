@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 
 @Component({
@@ -33,9 +33,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddFY, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"fy", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: AddFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"fy", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: ViewFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"fy", "rights": "view", "urlname": "/fy" } },
+                    { path: 'add', component: AddFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "fy", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "fy", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewFY, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "fy", "rights": "view", "urlname": "/fy" } },
                 ]
             }
         ]
@@ -43,7 +43,7 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, CheckboxModule, CalendarModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule, CheckboxModule, CalendarModule],
     declarations: [
         AddFY,
         ViewFY,

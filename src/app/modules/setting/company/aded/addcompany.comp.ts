@@ -12,6 +12,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { DynamicTabModule } from "../../../usercontrol/dynamictab";
 import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 declare var $: any;
 
@@ -63,6 +64,9 @@ export class AddCompany implements OnInit, OnDestroy {
     currencyDT: any = [];
     settingsDT: any = [];
 
+    @ViewChild('attribute')
+    attribute: AttributeComp;
+
     // tab panel
     @ViewChild('tabpanel')
     tabpanel: AddDynamicTabComp;
@@ -94,10 +98,10 @@ export class AddCompany implements OnInit, OnDestroy {
     ngOnInit() {
         this.setActionButtons.setTitle("Company");
 
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -131,9 +135,21 @@ export class AddCompany implements OnInit, OnDestroy {
                 $('textarea').removeAttr('disabled');
             }
         });
+
+        this.attribute.attrparam = ["compinfo_attr"];
     }
 
     // add, edit, delete button
+
+    createattrjson() {
+        var attrid = [];
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
+                attrid.push({ "id": items.value });
+            }
+            return attrid;
+        }
+    }
 
     actionBarEvt(evt) {
         if (evt === "save") {
@@ -270,6 +286,7 @@ export class AddCompany implements OnInit, OnDestroy {
             "uidcode": that.loginUser.login,
             "isactive": that.isactive,
             "dynamicfields": that.tabListDT,
+            "attr": that.createattrjson(),
             "global": that.global
         }
 
@@ -327,6 +344,7 @@ export class AddCompany implements OnInit, OnDestroy {
             that.state = company[0].state;
             that.city = company[0].city;
             that.pincode = company[0].pincode;
+            that.attribute.attrlist = data.data[0]._attributejson == null ? [] : data.data[0]._attributejson;
             that.isactive = company[0].isactive;
             that.tabListDT = dynFields;
 
@@ -345,10 +363,10 @@ export class AddCompany implements OnInit, OnDestroy {
             //     }
             // }
 
-            
+
             //that.settingsDT = globalFields[0].settings;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
