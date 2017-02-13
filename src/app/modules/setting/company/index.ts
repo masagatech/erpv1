@@ -4,7 +4,8 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { AddCompany } from './aded/addcompany.comp';
 import { ViewCompany } from './view/viewcompany.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-import { ActionBarModule } from '../../../_shared/shared.module'
+import { ActionBarModule } from '../../../_shared/shared.module';
+import { OrderByPipe } from '../../../_pipe/orderby.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -49,7 +50,8 @@ const routerConfig = [
     declarations: [
         AddCompany,
         ViewCompany,
-        CompanyComp
+        CompanyComp,
+        OrderByPipe
     ],
     providers: [AuthGuard]
 })

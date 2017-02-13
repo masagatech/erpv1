@@ -45,6 +45,10 @@ export class AddCompany implements OnInit, OnDestroy {
     address: string = "";
     isactive: boolean = false;
 
+    dateformat: string = "";
+    currency: string = "";
+    global: any = [];
+
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
@@ -55,6 +59,9 @@ export class AddCompany implements OnInit, OnDestroy {
     desigDT: any = [];
     cmptypeDT: any = [];
     countryDT: any = [];
+    dateformatDT: any = [];
+    currencyDT: any = [];
+    settingsDT: any = [];
 
     // tab panel
     @ViewChild('tabpanel')
@@ -85,9 +92,12 @@ export class AddCompany implements OnInit, OnDestroy {
     // Page Load
 
     ngOnInit() {
+        this.setActionButtons.setTitle("Company");
+
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -141,6 +151,8 @@ export class AddCompany implements OnInit, OnDestroy {
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
+        } else if (evt === "back") {
+            this._router.navigate(['/setting/company']);
         }
     }
 
@@ -151,21 +163,49 @@ export class AddCompany implements OnInit, OnDestroy {
             var d = data.data;
 
             // BIND Industries TO DROPDOWN
-            this.industriesDT = d.filter(a => a.group === "industries");
+            this.industriesDT = d.filter(a => a.stype === "industries");
 
             // BIND Designation TO DROPDOWN
-            this.desigDT = d.filter(a => a.group === "desig");
+            this.desigDT = d.filter(a => a.stype === "desig");
 
             // BIND Company Type TO DROPDOWN
-            this.cmptypeDT = d.filter(a => a.group === "cmptype");
+            this.cmptypeDT = d.filter(a => a.stype === "cmptype");
 
             // BIND Country TO DROPDOWN
-            this.countryDT = d.filter(a => a.group === "country");
+            this.countryDT = d.filter(a => a.stype === "country");
+
+            // BIND Date Format TO DROPDOWN
+            this.dateformatDT = d.filter(a => a.stype === "dateformat");
+
+            // BIND Date Format TO DROPDOWN
+            this.currencyDT = d.filter(a => a.stype === "currency");
         }, err => {
             console.log("Error");
         }, () => {
             console.log("Complete");
         })
+    }
+
+    // Fill Settings Grid
+
+    fillSettingsGrid() {
+        this._compservice.getCompany({ "flag": "settings", "stype": this.currency }).subscribe(data => {
+            this.settingsDT = data.data;
+            //this.settingsDT[0].key = this.settingsDT[0].ctrlflds[0].key;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            console.log("Complete");
+        })
+    }
+
+    //Attribute Tab Click Event
+
+    Attr() {
+        setTimeout(function () {
+            $(".attr").val("");
+            $(".attr").focus();
+        }, 0);
     }
 
     // Tab Panel
@@ -185,33 +225,55 @@ export class AddCompany implements OnInit, OnDestroy {
     // Save Company
 
     saveCompanyData() {
-        var savecmp = {
-            "cmpid": this.cmpid,
-            "cmpcode": this.cmpcode,
-            "cmpname": this.cmpname,
-            "cmpdesc": this.cmpdesc,
-            "remarks": this.remarks,
-            "industries": this.industries,
-            "cmptype": this.cmptype,
-            "cmplogo": this.cmplogo,
+        var that = this;
+        var settings: any = [];
+        var stype: string = "";
+        var skey: string = "";
+        var jsonval: string = "";
 
-            "contactperson": this.contactperson,
-            "desigid": this.desigid,
-            "emailid": this.emailid,
-            "altemailid": this.altemailid,
-            "mobileno": this.mobileno,
-            "altmobileno": this.altmobileno,
-            "address": this.address,
-            "country": this.country,
-            "state": this.state,
-            "city": this.city,
-            "pincode": this.pincode,
-            "uidcode": this.loginUser.login,
-            "isactive": this.isactive,
-            "dynamicfields": this.tabListDT
+        //monthpriceDT.push(JSON.parse("{" + jsonval.substring(0, jsonval.length - 1) + "}"));
+
+        for (var i = 0; i < that.settingsDT.length; i++) {
+            for (var j = 0; j < that.settingsDT[i].ctrlflds.length; j++) {
+                stype = that.settingsDT[i].ctrlflds[j].stype;
+                skey = that.settingsDT[i].ctrlflds[j].key;
+
+                jsonval += '"' + stype.trim() + '":  "' + skey + '",';
+            }
         }
 
-        this._compservice.saveCompany(savecmp).subscribe(data => {
+        settings.push(JSON.parse("{" + jsonval.substring(0, jsonval.length - 1) + "}"));
+
+        that.global.push({ "dateformat": that.dateformat, "currency": that.currency, "settings": settings });
+
+        var savecmp = {
+            "cmpid": that.cmpid,
+            "cmpcode": that.cmpcode,
+            "cmpname": that.cmpname,
+            "cmpdesc": that.cmpdesc,
+            "remarks": that.remarks,
+            "industries": that.industries,
+            "cmptype": that.cmptype,
+            "cmplogo": that.cmplogo,
+
+            "contactperson": that.contactperson,
+            "desigid": that.desigid,
+            "emailid": that.emailid,
+            "altemailid": that.altemailid,
+            "mobileno": that.mobileno,
+            "altmobileno": that.altmobileno,
+            "address": that.address,
+            "country": that.country,
+            "state": that.state,
+            "city": that.city,
+            "pincode": that.pincode,
+            "uidcode": that.loginUser.login,
+            "isactive": that.isactive,
+            "dynamicfields": that.tabListDT,
+            "global": that.global
+        }
+
+        that._compservice.saveCompany(savecmp).subscribe(data => {
             var dataResult = data.data;
             console.log(dataResult);
 
@@ -219,15 +281,15 @@ export class AddCompany implements OnInit, OnDestroy {
                 var msg = dataResult[0].funsave_company.msg;
                 var parentid = dataResult[0].funsave_company.keyid;
 
-                this._msg.Show(messageType.success, "Success", msg);
-                this._router.navigate(['/setting/company']);
+                that._msg.Show(messageType.success, "Success", msg);
+                that._router.navigate(['/setting/company']);
             }
             else {
-                this._msg.Show(messageType.error, "Error", msg);
+                that._msg.Show(messageType.error, "Error", msg);
             }
         }, err => {
+            that._msg.Show(messageType.error, "Error", err);
             console.log(err);
-            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         });
@@ -236,34 +298,55 @@ export class AddCompany implements OnInit, OnDestroy {
     // Get Company
 
     getCompanyById(pcmpid: any) {
-        this._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
+        var that = this;
+
+        that._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
             var company = data.data[0]._cmpdata;
             var dynFields = data.data[0]._dynfields === null ? [] : data.data[0]._dynfields;
+            var globalFields = data.data[0]._global === null ? [] : data.data[0]._global;
 
             console.log(company);
 
-            this.cmpid = company[0].cmpid;
-            this.cmpcode = company[0].cmpcode;
-            this.cmpname = company[0].cmpname;
-            this.cmpdesc = company[0].cmpdesc;
-            this.remarks = company[0].remarks;
-            this.cmptype = company[0].cmptype;
-            this.industries = company[0].industries;
-            this.cmplogo = company[0].cmplogo;
+            that.cmpid = company[0].cmpid;
+            that.cmpcode = company[0].cmpcode;
+            that.cmpname = company[0].cmpname;
+            that.cmpdesc = company[0].cmpdesc;
+            that.remarks = company[0].remarks;
+            that.cmptype = company[0].cmptype;
+            that.industries = company[0].industries;
+            that.cmplogo = company[0].cmplogo;
 
-            this.contactperson = company[0].contactperson;
-            this.desigid = company[0].desigid;
-            this.emailid = company[0].emailid;
-            this.altemailid = company[0].altemailid;
-            this.mobileno = company[0].mobileno;
-            this.altmobileno = company[0].altmobileno;
-            this.address = company[0].address;
-            this.country = company[0].country;
-            this.state = company[0].state;
-            this.city = company[0].city;
-            this.pincode = company[0].pincode;
-            this.isactive = company[0].isactive;
-            this.tabListDT = dynFields;
+            that.contactperson = company[0].contactperson;
+            that.desigid = company[0].desigid;
+            that.emailid = company[0].emailid;
+            that.altemailid = company[0].altemailid;
+            that.mobileno = company[0].mobileno;
+            that.altmobileno = company[0].altmobileno;
+            that.address = company[0].address;
+            that.country = company[0].country;
+            that.state = company[0].state;
+            that.city = company[0].city;
+            that.pincode = company[0].pincode;
+            that.isactive = company[0].isactive;
+            that.tabListDT = dynFields;
+
+            that.dateformat = globalFields[0].dateformat;
+            that.currency = globalFields[0].currency;
+
+            console.log(globalFields);
+            that.fillSettingsGrid();
+
+            // for (var i = 0; i < globalFields.length; i++) {
+            //     for (var j = 0; j < globalFields[i].settings.length; j++) {
+            //         globalFields[i].key = globalFields[i].settings[j].currencySymbol;
+
+            //         // stype = that.settingsDT[i].ctrlflds[j].stype;
+            //         // skey = that.settingsDT[i].ctrlflds[j].key;
+            //     }
+            // }
+
+            
+            //that.settingsDT = globalFields[0].settings;
         }, err => {
             console.log("Error");
         }, () => {
