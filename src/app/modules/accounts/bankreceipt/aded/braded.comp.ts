@@ -182,7 +182,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     // Get And Fill Edit Mode
 
     GetBankReceipt(pautoid) {
-        this._nrService.getBankReceiptView({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
+        this._nrService.getBankReceipt({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;

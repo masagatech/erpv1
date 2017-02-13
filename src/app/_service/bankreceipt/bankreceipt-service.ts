@@ -16,7 +16,7 @@ export class BankReceiptService {
         return this._dataserver.post("getBankReceipt", req);
     }
 
-    saveBankReciept(req: any) {
-        return this._dataserver.post("saveBankReciept", req);
+    saveBankReceipt(req: any) {
+        return this._dataserver.post("saveBankReceipt", req);
     }
 }
