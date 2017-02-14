@@ -45,7 +45,7 @@ export class ViewJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Accounts > Journal Voucher");
+        this.setActionButtons.setTitle("Journal Voucher");
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));

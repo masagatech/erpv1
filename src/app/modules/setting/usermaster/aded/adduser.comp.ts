@@ -58,7 +58,7 @@ export class AddUser implements OnInit, OnDestroy {
 
         that.subscribeParameters = that._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                that.setActionButtons.setTitle("Setting > User Master > Edit");
+                that.setActionButtons.setTitle("User Master > Edit");
                 that.actionButton.find(a => a.id === "save").hide = true;
                 that.actionButton.find(a => a.id === "edit").hide = false;
 
@@ -71,7 +71,7 @@ export class AddUser implements OnInit, OnDestroy {
                 that.isviscpwd = 'N';
             }
             else {
-                that.setActionButtons.setTitle("Setting > User Master > Add");
+                that.setActionButtons.setTitle("User Master > Add");
                 that.actionButton.find(a => a.id === "save").hide = false;
                 that.actionButton.find(a => a.id === "edit").hide = true;
 

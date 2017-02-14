@@ -719,7 +719,7 @@ declare var commonfun: any;
         var ledgerjson = [];
         ledgerjson.push({
             "autoid": 0,
-            "wareid": 1, //this.CreatejsonWarehouse(),
+            "wareid": 1,
             "typ": "OB",
             "rate": 0,
             "qty": 0,

@@ -27,14 +27,14 @@ const routerConfig = [
         path: '',
         component: ExpenseBudgetComp,
         canActivate: [AuthGuard],
-        data: { "module": "coa" },
+        data: { "module": "bdg" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: '', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard],  data: { "module": "coa", "submodule":"eb", "rights": "add", "urlname": "" }},
-                    { path: 'edit/:id', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule":"eb", "rights": "edit", "urlname": "/edit" } },
-                    //{ path: '', component: ViewExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule":"eb", "rights": "view", "urlname": "/expensebudget" } },
+                    { path: '', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"eb", "rights": "add", "urlname": "" }},
+                    { path: 'edit/:id', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"eb", "rights": "edit", "urlname": "/edit" } },
+                    //{ path: '', component: ViewExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"eb", "rights": "view", "urlname": "/expensebudget" } },
                 ]
             }
         ]

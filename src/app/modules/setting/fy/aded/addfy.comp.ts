@@ -64,7 +64,7 @@ export class AddFY implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                this.setActionButtons.setTitle("Setting > Financial Year > Add");
+                this.setActionButtons.setTitle("Financial Year > Add");
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
@@ -74,7 +74,7 @@ export class AddFY implements OnInit, OnDestroy {
                 $('select').attr('disabled', 'disabled');
             }
             else {
-                this.setActionButtons.setTitle("Setting > Financial Year > Edit");
+                this.setActionButtons.setTitle("Financial Year > Edit");
                 setTimeout(function () {
                     $("#FromDate").focus();
                 }, 0);

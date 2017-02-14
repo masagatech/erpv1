@@ -27,6 +27,11 @@ const routerConfig =
                             })
                         },
                         {
+                            path: 'budget', loadChildren: () => System.import('./budget/budget.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
+                        {
                             path: 'setting', loadChildren: () => System.import('./setting/setting.module').then((comp: any) => {
                                 return comp.default;
                             })

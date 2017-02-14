@@ -105,7 +105,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Accounts > A/C Payble > Add");
+                this.setActionButtons.setTitle("A/C Payble > Add");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -121,7 +121,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Accounts > A/C Payble > Edit");
+                this.setActionButtons.setTitle("A/C Payble > Edit");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -137,7 +137,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("Accounts > A/C Payble > Details");
+                this.setActionButtons.setTitle("A/C Payble > Details");
 
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);

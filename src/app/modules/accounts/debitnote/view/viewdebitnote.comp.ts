@@ -55,7 +55,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
         // this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         // this.todate.setDate(new Date(this.loginUser.fyto));
 
-        this.setActionButtons.setTitle("Accounts > Debit Note");
+        this.setActionButtons.setTitle("Debit Note");
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);

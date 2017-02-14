@@ -199,9 +199,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     }
 
                     if (that.isadd) {
-                        that.title = "Add Employee";
-                        //$('div *').prop('disabled', false);
-
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -212,9 +209,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else if (that.isedit) {
-                        that.title = "Edit Employee";
-                        //$('div *').prop('disabled', false);
-
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);

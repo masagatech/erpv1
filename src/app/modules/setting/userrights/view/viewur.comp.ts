@@ -26,7 +26,7 @@ export class ViewUserRights implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Setting > User Rights");
+        this.setActionButtons.setTitle("User Rights");
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));

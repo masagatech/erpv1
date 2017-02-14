@@ -9,7 +9,7 @@
 		<p-column field="designame" header="Designation" [style]="{'width':'150px','text-align':'left'}"></p-column>
 		<p-column header="Salary" [style]="{'width':'150px','text-align':'left'}">
 			<template let-row="rowData" pTemplate type="body">
-				{{row.salary | currency:loginUser._globsettings.numberformat:true}}
+				{{row.salary | currency:loginUser._globsettings.currency:true}}
 			</template>
 		</p-column>
 		<p-column field="doj" header="Joining Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
