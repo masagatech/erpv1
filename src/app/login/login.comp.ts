@@ -6,7 +6,8 @@ import { UserReq, LoginUserModel } from '../_model/user_model';
 import { Router } from '@angular/router';
 
 @Component({
-    templateUrl: 'login.comp.html'
+    templateUrl: 'login.comp.html',
+    styleUrls:['../../assets/css/login.css']
 })
 
 export class LoginComp implements OnInit {

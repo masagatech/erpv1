@@ -11,6 +11,7 @@
     </title>
 
     <meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/assets/js/bootstrap.min.js"></script>
     <script src="/assets/js/moment.min.js"></script>
@@ -31,11 +32,6 @@
 </head>
 
 <body>
-    <div class="container-full">
-        <app>
-            Loading...
-        </app>
-    </div>
     <script>
         function loadjscssfile(filename, filetype, callback) {
             if (filetype == "js") { //if filename is a external JavaScript file
@@ -81,19 +77,19 @@
             }
         }
 
-        loadjscssfile('/assets/css/bootstrap.min.css', 'css', function() {
-            loadjscssfile('/assets/css/font-awesome.min.css', 'css', function() {
-                loadjscssfile('/assets/css/styles.css', 'css', function() {
-                    loadjscssfile('/assets/css/customstyle.css', 'css', function() {
-                        loadjscssfile('/assets/css/primeng.min.css', 'css', function() {
-                            loadjscssfile('/assets/css/jquery-ui.css', 'css', function() {});
 
-                            loadjscssfile('/assets/theme/brown.css', 'css', function() {});
-                        });
+        loadjscssfile('/assets/css/font-awesome.min.css', 'css', function() {
+            loadjscssfile('/assets/css/styles.css', 'css', function() {
+                loadjscssfile('/assets/css/customstyle.css', 'css', function() {
+                    loadjscssfile('/assets/css/primeng.min.css', 'css', function() {
+                        loadjscssfile('/assets/css/jquery-ui.css', 'css', function() {});
+
+
                     });
                 });
             });
         });
+
 
         //loadjscssfile('/assets/js/jquery.min.js', 'js', function() {
         //loadjscssfile('/assets/js/bootstrap.min.js', 'js', function() {
@@ -109,6 +105,16 @@
         //});
         //});
     </script>
+    <div class="container-full">
+        <app>
+            <div class="progress" style="width: 250px;position: absolute;z-index: 9999;left: 0;right: 0;margin: auto;top: 45%; bottom: auto;">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                    App Initializing...
+                </div>
+            </div>
+        </app>
+    </div>
+
 
     <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
         <script src="/webpack-dev-server.js"></script>

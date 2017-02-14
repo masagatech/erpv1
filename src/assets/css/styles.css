@@ -736,10 +736,6 @@ ul.dropdown-menu {
     background-repeat: repeat-x;
 }
 
-#loginbox {
-    /*background-color: rgba(255, 255, 255, .8);*/
-}
-
 .well {
     background-image: -webkit-linear-gradient(top, #e8e8e8 0%, #f5f5f5 100%);
     background-image: -o-linear-gradient(top, #e8e8e8 0%, #f5f5f5 100%);
@@ -957,10 +953,11 @@ label {
     white-space: nowrap;
 }
 
-#sidebar ul li a:hover {
-    background-color: #fff;
-    border-left-color: #fff;
-    color: #000;
+#sidebar ul li a:hover,
+a.active {
+    background-color: #e7e7e7;
+    border-left-color: #e7e7e7;
+    color: #000!important;
 }
 
 #sidebar a {
@@ -977,8 +974,7 @@ label {
     display: inline-block;
 }
 
-#sidebar a>span,
-#sidebar a>i {
+#sidebar a {
     font-size: 14px!important;
     color: #fff;
 }
@@ -1319,4 +1315,17 @@ html select[disabled] {
 
 .row {
     margin: 0px!important;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #E0E0E0;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #F3F3F3;
 }

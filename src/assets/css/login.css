@@ -1,0 +1,47 @@
+.background {
+    background-color: #455a64!important;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+}
+
+#loginbox {
+    /*background-color: rgba(255, 255, 255, .8);*/
+    width: 445px;
+    margin: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 80px;
+    z-index: 99999999;
+}
+
+.panel-login-heading>.panel-title {
+    font-size: 24px;
+    height: 44px;
+    color: #fff;
+}
+
+.panel-theme {
+    height: 400px;
+    border-radius: 0px;
+    padding: 50px;
+}
+
+.input-group {
+    display: block!important;
+}
+
+input.email,
+input.password {
+    border-radius: 0px!important;
+    padding: 16px;
+}
+
+.title {
+    font-size: 19px;
+    position: absolute;
+    top: 83px;
+    left: 49px;
+}

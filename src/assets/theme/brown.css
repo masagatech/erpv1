@@ -63,10 +63,11 @@
     background-color: #795548!important;
 }
 
-#sidebar ul li a:hover {
-    background-color: #795548;
-    border-left-color: #795548;
-    color: #ffffff;
+#sidebar ul li a:hover,
+a.active {
+    background-color: #795548!important;
+    border-left-color: #795548!important;
+    color: #ffffff!important;
 }
 
 .btn-theme {
