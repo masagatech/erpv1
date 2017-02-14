@@ -1,0 +1,41 @@
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-3">
+		</div>
+		<div class="col-md-5">
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Status</label>
+				<select class="form-control" [(ngModel)]="status">
+					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class="form-group">
+				<label>&nbsp;</label>
+				<button type="button" class="btn btn-thme btn-sm" (click)="searchInitiateDetails(dt)">Get</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="viewInitiateDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadInitiateGrid($event)">
+			<p-column field="btitle" header="Title" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column field="bobj" header="Objective" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="frmdt" header="From Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="todt" header="To Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="fyname" header="FY" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column [style]="{'width':'60px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					<button type="button" (click)="openInitiate(row)" class="btn btn-theme btn-sm">
+						<i class="fa fa-arrow-right"></i>
+					</button>
+				</template>
+			</p-column>
+		</p-dataTable>
+	</div>
+</div>

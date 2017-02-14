@@ -32,9 +32,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: '', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"eb", "rights": "add", "urlname": "" }},
-                    { path: 'edit/:id', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"eb", "rights": "edit", "urlname": "/edit" } },
-                    //{ path: '', component: ViewExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"eb", "rights": "view", "urlname": "/expensebudget" } },
+                    { path: '', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"sf", "rights": "add", "urlname": "" }},
+                    { path: 'edit/:id', component: AddExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"sf", "rights": "edit", "urlname": "/edit" } },
+                    //{ path: '', component: ViewExpenseBudgetComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"sf", "rights": "view", "urlname": "/expensebudget" } },
                 ]
             }
         ]

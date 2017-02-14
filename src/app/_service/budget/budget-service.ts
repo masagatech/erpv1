@@ -6,11 +6,33 @@ import { Router } from '@angular/router';
 export class BudgetService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getBudget(req: any) {
-        return this._dataserver.post("getBudget", req)
+    // Initiate
+
+    getInitiate(req: any) {
+        return this._dataserver.post("getInitiate", req)
     }
 
-    saveBudget(req: any) {
-        return this._dataserver.post("saveBudget", req)
+    saveInitiate(req: any) {
+        return this._dataserver.post("saveInitiate", req)
+    }
+
+    // Committee
+
+    getCommittee(req: any) {
+        return this._dataserver.post("getCommittee", req)
+    }
+
+    saveCommittee(req: any) {
+        return this._dataserver.post("saveCommittee", req)
+    }
+
+    // Ownership
+
+    getOwnership(req: any) {
+        return this._dataserver.post("getOwnership", req)
+    }
+
+    saveOwnership(req: any) {
+        return this._dataserver.post("saveOwnership", req)
     }
 }

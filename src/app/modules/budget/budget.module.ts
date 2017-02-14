@@ -18,12 +18,17 @@ const routerConfig = [
         path: '',
         children: [
           {
-            path: 'budgetinitiate', loadChildren: () => System.import('./budgetinitiate').then((comp: any) => {
+            path: 'initiate', loadChildren: () => System.import('./initiate').then((comp: any) => {
               return comp.default;
             }),
           },
           {
-            path: 'expensebudget', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
+            path: 'committee', loadChildren: () => System.import('./committee').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          {
+            path: 'startforecasting', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
               return comp.default;
             }),
           },
