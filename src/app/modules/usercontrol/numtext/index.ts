@@ -49,7 +49,7 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
 
     @Input() iscurrency: boolean = true;
     @Input() allowdecimal: boolean = false;
-    @Input() decimals: number = this._userservice.getUser()._globsettings[0].settings[0].decimals;
+    @Input() decimals: number = this._userservice.getUser()._globsettings[0].decimals;
     @Input() css: string = "";
     @Input() min: string = "-9999999999999";
     @Input() max: string = "9999999999999";
@@ -81,11 +81,11 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     }
 
     autoNumericOptionsEuro: any = {
-        digitGroupSeparator: this._userservice.getUser()._globsettings[0].settings[0].digitGroupSeparator,
-        decimalCharacter: this._userservice.getUser()._globsettings[0].settings[0].decimalCharacter,
-        decimalCharacterAlternative: this._userservice.getUser()._globsettings[0].settings[0].decimalCharacter,
-        currencySymbol: this._userservice.getUser()._globsettings[0].settings[0].currencySymbol,
-        currencySymbolPlacement: this._userservice.getUser()._globsettings[0].settings[0].currencySymbolPlacement,
+        digitGroupSeparator: this._userservice.getUser()._globsettings[0].thsep,
+        decimalCharacter: this._userservice.getUser()._globsettings[0].decsep,
+        decimalCharacterAlternative: this._userservice.getUser()._globsettings[0].thsep,
+        currencySymbol: this._userservice.getUser()._globsettings[0].currsym,
+        currencySymbolPlacement: this._userservice.getUser()._globsettings[0].currsymplace,
         
         roundingMethod: 'U',
         minimumValue: "-9999999999999.99",
