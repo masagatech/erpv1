@@ -537,5 +537,6 @@ declare var commonfun: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

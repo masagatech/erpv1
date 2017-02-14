@@ -265,8 +265,6 @@ declare var commonfun: any;
             $('textarea').removeAttr('disabled');
             $(".groupcode").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".groupName").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
@@ -278,5 +276,6 @@ declare var commonfun: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

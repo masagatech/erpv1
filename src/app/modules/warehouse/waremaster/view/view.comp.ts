@@ -97,5 +97,6 @@ declare var $: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }
