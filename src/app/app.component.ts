@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs/Subscription';
 @Component({
   selector: 'app',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: [],
+  styleUrls: ['../assets/theme/blue.css'],
   template: `<router-outlet></router-outlet>
    <p-growl [class]="'zin2000'" [value]="messagestack"></p-growl>
    <p-confirmDialog width="425"></p-confirmDialog>`
