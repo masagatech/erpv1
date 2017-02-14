@@ -2,12 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
+import { Router } from '@angular/router';
 import { UserService } from '../../../../_service/user/user-service'; /* add reference for view user */
 import { LoginUserModel } from '../../../../_model/user_model';
 import { FYService } from '../../../../_service/fy/fy-service' /* add reference for view FY */
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
-
-import { Router } from '@angular/router';
 
 @Component({
     templateUrl: 'viewfy.comp.html',
