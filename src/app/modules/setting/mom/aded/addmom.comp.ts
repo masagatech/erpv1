@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for MOM */
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
@@ -16,6 +18,7 @@ declare var $: any;
 export class AddMOM implements OnInit, OnDestroy {
     title: any;
     validSuccess: Boolean = true;
+    loginUser: LoginUserModel;
 
     momid: number = 0;
     groupdt: any = [];
@@ -29,7 +32,8 @@ export class AddMOM implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
-        private _commonservice: CommonService, private _message: MessageService) {
+        private _commonservice: CommonService, private _userService: UserService, private _message: MessageService) {
+        this.loginUser = this._userService.getUser();
         this.getMOMGroup();
     }
 
@@ -47,32 +51,33 @@ export class AddMOM implements OnInit, OnDestroy {
 
     saveMOMDetails() {
         var that = this;
-        debugger;
 
         var saveMOM = {
             "id": that.momid,
             "group": that.group,
             "key": that.key,
             "val": that.val,
-            "createdby": "1:vivek",
-            "updatedby": "1:vivek"
+            "uidcode": that.loginUser.login
         }
 
         if (that.validSuccess) {
             that._commonservice.saveMOM(saveMOM).subscribe(data => {
-                var dataResult = data.data;
-                console.log(dataResult);
+                try {
+                    var dataResult = data.data;
 
-                if (dataResult[0].funsave_mom.doc == "1") {
-                    //alert(dataResult[0].funsave_mom.msg);
-                    that._message.Show(messageType.success, 'Confirmed', dataResult[0].funsave_mom.msg.toString());
-                    that._router.navigate(['/setting/masterofmaster']);
+                    if (dataResult[0].funsave_mom.doc == "1") {
+                        that._message.Show(messageType.success, 'Confirmed', dataResult[0].funsave_mom.msg.toString());
+                        that._router.navigate(['/setting/masterofmaster']);
+                    }
+                    else if (dataResult[0].funsave_mom.doc == "-1") {
+                        that._message.Show(messageType.info, 'Info', dataResult[0].funsave_mom.msg.toString());
+                    }
+                    else {
+                        that._message.Show(messageType.error, 'Error', dataResult[0].funsave_mom.msg.toString());
+                    }
                 }
-                else if (dataResult[0].funsave_mom.doc == "-1") {
-                    that._message.Show(messageType.info, 'Info', dataResult[0].funsave_mom.msg.toString());
-                }
-                else {
-                    that._message.Show(messageType.error, 'Error', "Error");
+                catch (e) {
+                    that._message.Show(messageType.error, 'Error', e.message);
                 }
             }, err => {
                 that._message.Show(messageType.error, 'Error', err);
@@ -121,6 +126,9 @@ export class AddMOM implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.setActionButtons.setTitle("Master of Master");
+
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
