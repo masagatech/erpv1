@@ -7,6 +7,7 @@ import { WarehouseViewService } from "../../../../_service/warehouse/view/view-s
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -30,7 +31,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private warehouseServies: WarehouseViewService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _userService: UserService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -40,27 +41,34 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Warehouse Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
 
+
     getWarehouse(from: number, to: number) {
         var that = this;
-        that.warehouseServies.getwarehouse({
-            "cmpid": this.loginUser.cmpid,
-            "from": from,
-            "to": to,
-            "flag":""
-        }).subscribe(result => {
-            var dataset = result.data;
-            that.totalRecords = dataset[1][0].recordstotal;
-            //total row
-            that.Warehaouselist = dataset[0];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+        try {
+            that.warehouseServies.getwarehouse({
+                "cmpid": this.loginUser.cmpid,
+                "from": from,
+                "to": to,
+                "flag": ""
+            }).subscribe(result => {
+                var dataset = result.data;
+                that.totalRecords = dataset[1][0].recordstotal;
+                //total row
+                that.Warehaouselist = dataset[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            that._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -89,5 +97,6 @@ declare var $: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

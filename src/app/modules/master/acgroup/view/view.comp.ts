@@ -30,7 +30,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private acgroupServies: acgroupview, private _autoservice: CommonService,
-        private _userService: UserService,private _msg: MessageService ) {
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -61,24 +61,29 @@ declare var $: any;
 
     //Get Edit And View
     getAccountGroupView() {
-        this.acgroupServies.acGroupView(
-            this.jsonPram()
-        ).subscribe(result => {
-            var dataset = result.data;
-            if (dataset.length > 0) {
-                this.acgrouplist = dataset;
-            }
-            else {
-                $(".GroupName").focus();
-                return;
-            }
+        try {
+            this.acgroupServies.acGroupView(
+                this.jsonPram()
+            ).subscribe(result => {
+                var dataset = result.data;
+                if (dataset.length > 0) {
+                    this.acgrouplist = dataset;
+                }
+                else {
+                    $(".GroupName").focus();
+                    return;
+                }
 
-        }, err => {
-            console.log("Error");
+            }, err => {
+                console.log("Error");
 
-        }, () => {
-            //Done
-        });
+            }, () => {
+                //Done
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //More Button Click Event
@@ -167,5 +172,6 @@ declare var $: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

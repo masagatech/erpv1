@@ -7,10 +7,12 @@ import { warTransferAddService } from "../../../../_service/wartransfer/add/add-
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
     providers: [warTransferAddService, CommonService]                         //Provides Add Service
@@ -42,6 +44,7 @@ declare var $: any;
     ratelist: any = [];
     ratelistnew: any = [];
     newrate: any = "";
+    isproceed: boolean = false;
 
     //user details
     loginUser: LoginUserModel;
@@ -85,57 +88,74 @@ declare var $: any;
 
         // Check this Ledger True And false
         this.checkLedger();
+
+        setTimeout(function () {
+            commonfun.addrequire();
+        }, 0);
     }
 
     //Check Ledger Table 
     checkLedger() {
-        this.wareServies.getwarehouseTransfer({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "keyname": "is_wh_transfer",
-            "flag1": "",
-            "createdby": this.loginUser.login
-        }).subscribe(itemsdata => {
-            var ItemsResult = itemsdata.data;
-            console.log(ItemsResult);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //console.log("Done");
-        });
-    }
-
-    // //Selected Items
-    ItemsSelected(val, flag) {
-        if (val != "") {
-            this.wareServies.getwarehouseTransfer({
+        try {
+            this._autoservice.getisproceed({
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
-                "flag": "salesdrop",
-                "itemsid": val,
-                "warehouse": this.fromwareid,
+                "keyname": "is_wh_transfer",
+                "flag1": "",
                 "createdby": this.loginUser.login
-            }).subscribe(itemsdata => {
-                var ItemsResult = itemsdata.data;
-                this.amt = ItemsResult[0].amt;
-                this.remark = ItemsResult[0].itemremark;
-                this.qty = ItemsResult[0].qty;
-                if (flag == 1) {
-                    //this.ratelist = ItemsResult[0].sales;
-                    this.ratelistnew = ItemsResult[0]._ratejosn;
-                }
-                else {
-                    //this.ratelistnew = ItemsResult[0].sales;
-                    this.ratelistnew = ItemsResult[0]._ratejosn;
-                }
-                //this.newrate = ItemsResult[0].rate;
-                //}
+            }).subscribe(isproceed => {
+                var returnval = isproceed.data;
+                this.isproceed = returnval[0].val;
             }, err => {
                 console.log("Error");
             }, () => {
                 //console.log("Done");
             });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
+    }
+
+    loadRBIGrid(event: LazyLoadEvent) {
+
+    }
+
+    // //Selected Items
+    ItemsSelected(val, flag) {
+        try {
+
+            if (val != "") {
+                this.wareServies.getwarehouseTransfer({
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "flag": "salesdrop",
+                    "itemsid": val,
+                    "warehouse": this.fromwareid,
+                    "createdby": this.loginUser.login
+                }).subscribe(itemsdata => {
+                    var ItemsResult = itemsdata.data;
+                    this.amt = ItemsResult[0].amt;
+                    this.remark = ItemsResult[0].itemremark;
+                    this.qty = ItemsResult[0].qty;
+                    if (flag == 1) {
+                        this.ratelistnew = ItemsResult[0]._ratejosn;
+                    }
+                    else {
+                        this.ratelistnew = ItemsResult[0]._ratejosn;
+                        this.newrate = ItemsResult[0].rate;
+                    }
+                    //}
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //console.log("Done");
+                });
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //AutoCompletd Product Name
@@ -163,12 +183,16 @@ declare var $: any;
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
+                        //if (this.isproceed == true) {
                         _me.ItemsSelected(me.Itemsid, 1);
+                        // }
                         me.editadd = 1;
                     } else {
                         me.NewItemsName = ui.item.label;
                         me.NewItemsid = ui.item.value;
+                        // if (this.isproceed == true) {
                         _me.ItemsSelected(me.NewItemsid, 0);
+                        //  }
                         me.editadd = 0;
                     }
                 }
@@ -245,95 +269,107 @@ declare var $: any;
     //Add New Row
     private NewRowAdd() {
         var that = this;
+        var validateme = commonfun.validate();
+        if (!validateme.status) {
+            this._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
         if (that.editadd == 1) {
             if (that.itemsname == '' || that.itemsname == undefined) {
-                this._msg.Show(messageType.info, "info", "Please Enter items Name");
+                that._msg.Show(messageType.info, "info", "Please Enter items Name");
                 return;
             }
         }
         else {
             if (that.NewItemsName == '' || that.NewItemsName == undefined) {
-                this._msg.Show(messageType.info, "info", "Please Enter items Name");
+                that._msg.Show(messageType.info, "info", "Please Enter items Name");
                 $(".ProdName").focus();
                 return;
             }
         }
 
-        if (this.fromwarname == this.Towarname) {
-            this._msg.Show(messageType.info, "info", "Warehouse from and to same");
-            $(".to").focus();
-            return;
-        }
-
         if (that.qty == 0 || that.qty == undefined) {
-            this._msg.Show(messageType.info, "info", "Please Enter Quntity");
+            that._msg.Show(messageType.info, "info", "Please Enter Quntity");
             $(".qty").focus();
             return;
         }
-        that.Duplicateflag = true;
-        for (var i = 0; i < that.newAddRow.length; i++) {
-            if (that.newAddRow[i].itemsname == that.NewItemsName) {
-                that.Duplicateflag = false;
-                break;
+
+        try {
+            that.Duplicateflag = true;
+            for (var i = 0; i < that.newAddRow.length; i++) {
+                if (that.newAddRow[i].itemsname == that.NewItemsName) {
+                    that.Duplicateflag = false;
+                    break;
+                }
             }
-        }
-        if (that.Duplicateflag == true) {
-            if (that.editadd == 1) {
-                that.newAddRow.push({
-                    "autoid": 0,
-                    'itemsname': that.itemsname,
-                    "itemsid": that.itemsid,
-                    'qty': that.qty,
-                    'rate': that.ratelistnew,
-                    'amt': that.amt,
-                    'remark': that.remark,
-                    'counter': that.counter
-                });
+            if (that.Duplicateflag == true) {
+                if (that.editadd == 1) {
+                    that.newAddRow.push({
+                        "autoid": 0,
+                        'itemsname': that.itemsname,
+                        "itemsid": that.itemsid,
+                        'qty': that.qty,
+                        'rate': that.ratelistnew,
+                        'amt': that.amt,
+                        'remark': that.remark,
+                        'counter': that.counter
+                    });
+                }
+                else {
+                    that.newAddRow.push({
+                        "autoid": 0,
+                        'itemsname': that.NewItemsName,
+                        'itemsid': that.NewItemsid,
+                        'ratelist': that.ratelistnew,
+                        'id': that.newrate,
+                        'amt': that.amt,
+                        'qty': that.qty,
+                        'remark': that.remark,
+                        'counter': that.counter
+                    });
+                }
+
+                that.counter++;
+                that.itemsname = "";
+                that.NewItemsName = "";
+                that.qty = 0;
+                that.newrate = 0;
+                that.amt = "";
+                that.remark = "";
+                $("#foot_custname").focus();
             }
             else {
-                that.newAddRow.push({
-                    "autoid": 0,
-                    'itemsname': that.NewItemsName,
-                    'itemsid': that.NewItemsid,
-                    'ratelist': that.ratelistnew,
-                    'rate': that.newrate,
-                    'amt': that.amt,
-                    'qty': that.qty,
-                    'remark': that.remark,
-                    'counter': that.counter
-                });
+                this._msg.Show(messageType.info, "info", "Duplicate Items");
+                return;
             }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
 
-            that.counter++;
-            that.itemsname = "";
-            that.NewItemsName = "";
-            that.qty = 0;
-            that.newrate = 0;
-            that.amt = "";
-            that.remark = "";
-            $("#foot_custname").focus();
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Duplicate Items");
-            return;
-        }
+
 
     }
 
     //Delete Row 
     private DeleteRow(item) {
-        var index = -1;
-        for (var i = 0; i < this.newAddRow.length; i++) {
-            if (this.newAddRow[i].counter === item.counter) {
-                index = i;
-                break;
+        try {
+            var index = -1;
+            for (var i = 0; i < this.newAddRow.length; i++) {
+                if (this.newAddRow[i].counter === item.counter) {
+                    index = i;
+                    break;
+                }
             }
+            if (index === -1) {
+                console.log("Wrong Delete Entry");
+            }
+            this.newAddRow.splice(index, 1);
+            $("#foot_custname").focus();
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.newAddRow.splice(index, 1);
-        $("#foot_custname").focus();
+
     }
 
     editMode(docno) {
@@ -369,52 +405,61 @@ declare var $: any;
 
     //Create Ledger Json 
     ledgerInsert() {
-        var ledgertransfe = [];
-        for (let item of this.newAddRow) {
-            ledgertransfe.push({
-                "autoid": 0,
-                "wareid": this.fromwareid,
-                "typ": 'TR',
-                "itemid": item.itemsid,
-                "rate": item.rate,
-                "amt": item.amt,
-                "outward": item.qty,
-                "qty": 0,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            })
-            ledgertransfe.push({
-                "autoid": 0,
-                "wareid": this.Towarid,
-                "typ": 'TR',
-                "itemid": item.itemsid,
-                "rate": item.rate,
-                "amt": item.amt,
-                "qty": item.qty,
-                "outward": 0,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            })
+        try {
+            var ledgertransfe = [];
+            for (let item of this.newAddRow) {
+                ledgertransfe.push({
+                    "autoid": 0,
+                    "wareid": this.fromwareid,
+                    "typ": 'TR',
+                    "itemid": item.id,
+                    "rate": item.ratelist[0].val,
+                    "amt": item.amt,
+                    "outward": item.qty,
+                    "inword": 0,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "createdby": this.loginUser.login
+                })
+                ledgertransfe.push({
+                    "autoid": 0,
+                    "wareid": this.Towarid,
+                    "typ": 'TR',
+                    "itemid": item.id,
+                    "rate": item.ratelist[0].val,
+                    "amt": item.amt,
+                    "inword": item.qty,
+                    "outward": 0,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "createdby": this.loginUser.login
+                })
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
         return ledgertransfe;
     }
 
     //Save Paramter Json
     paramsjson() {
-        var that = this;
-        var param = {
-            "docno": that.docno,
-            "fromid": that.fromwareid,
-            "toid": that.Towarid,
-            "remark": that.rem,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "warehousedetails": this.createItemsjson(),
-            "ledgertransfe": this.ledgerInsert()
+        try {
+            var that = this;
+            var param = {
+                "docno": that.docno,
+                "fromid": that.fromwareid,
+                "toid": that.Towarid,
+                "remark": that.rem,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "warehousedetails": this.createItemsjson(),
+                "ledgertransfe": this.ledgerInsert()
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
         return param;
     }
 
@@ -428,6 +473,18 @@ declare var $: any;
         this.rem = "";
     }
 
+    calculationQty(qty: any, rate: any = []) {
+        debugger;
+        var culamt = 0;
+        if (qty != "") {
+            culamt = +qty * +rate[0].val;
+            this.amt = culamt.toFixed(2);
+        }
+        else {
+            this.amt = "";
+        }
+    }
+
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         var that = this;
@@ -437,17 +494,12 @@ declare var $: any;
         }
         //Save Button Click 
         if (evt === "save") {
-            if (that.fromwarname == "") {
-                this._msg.Show(messageType.info, "info", "Please Enter From Warehouse");
-                $(".from").focus();
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
                 return;
             }
-            if (that.Towarname == "") {
-                this._msg.Show(messageType.info, "info", "Please Enter To Warehouse");
-                $(".to").focus();
-                return;
-            }
-
             that.wareServies.saveWarehouse(
                 that.paramsjson()
             ).subscribe(result => {
@@ -485,5 +537,6 @@ declare var $: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }
