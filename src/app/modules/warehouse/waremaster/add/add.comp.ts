@@ -66,6 +66,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Warehouse Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".code").focus();
 
@@ -94,53 +95,63 @@ declare var commonfun: any;
 
     //attribute list Add Div
     AttributeAdd() {
-        if (this.attrid > 0) {
-            this.Duplicateflag = true;
-            if (this.attrlist.length > 0) {
-                for (var i = 0; i < this.attrlist.length; i++) {
-                    if (this.attrlist[i].attrname == this.attrname) {
-                        this.Duplicateflag = false;
-                        break;
+        try {
+            if (this.attrid > 0) {
+                this.Duplicateflag = true;
+                if (this.attrlist.length > 0) {
+                    for (var i = 0; i < this.attrlist.length; i++) {
+                        if (this.attrlist[i].attrname == this.attrname) {
+                            this.Duplicateflag = false;
+                            break;
+                        }
                     }
                 }
-            }
-            if (this.Duplicateflag == true) {
-                this.attrlist.push({
-                    'attrname': this.attrname,
-                    'value': this.attrid
-                });
-                this.attrname = "";
-                $(".attr").focus();
+                if (this.Duplicateflag == true) {
+                    this.attrlist.push({
+                        'attrname': this.attrname,
+                        'value': this.attrid
+                    });
+                    this.attrname = "";
+                    $(".attr").focus();
+                }
+                else {
+                    this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                    $(".attr").focus();
+                    return;
+                }
+
             }
             else {
-                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
                 $(".attr").focus();
                 return;
             }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
 
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-            $(".attr").focus();
-            return;
-        }
 
     }
 
     //Remove Attribute
     Removeattr(row) {
-        var index = -1;
-        for (var i = 0; i < this.attrlist.length; i++) {
-            if (this.attrlist[i].value === row.value) {
-                index = i;
-                break;
+        try {
+            var index = -1;
+            for (var i = 0; i < this.attrlist.length; i++) {
+                if (this.attrlist[i].value === row.value) {
+                    index = i;
+                    break;
+                }
             }
+            if (index === -1) {
+                console.log("Wrong Delete Entry");
+            }
+            this.attrlist.splice(index, 1);
+            $(".attr").focus();
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.attrlist.splice(index, 1);
-        $(".attr").focus();
+
     }
 
     createattrjson() {
@@ -188,36 +199,41 @@ declare var commonfun: any;
 
     EditItem(wareid) {
         var that = this;
-        that.wareServies.getwarehouse({
-            "cmpid": that.loginUser.cmpid,
-            "wareid": wareid,
-            "flag": "Edit"
-        }).subscribe(result => {
-            var dataset = result.data;
-            var _uploadedfile = dataset[0][0]._uploadedfile;
-            var _suppdoc = dataset[0][0]._suppdoc;
-            this.editmode = true;
-            that.name = dataset[0][0].nam;
-            that.code = dataset[0][0].code;
-            that.remark = dataset[0][0].remark;
-            that.isactive = dataset[0][0].isactive;
-            that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
+        try {
+            that.wareServies.getwarehouse({
+                "cmpid": that.loginUser.cmpid,
+                "wareid": wareid,
+                "flag": "Edit"
+            }).subscribe(result => {
+                var dataset = result.data;
+                var _uploadedfile = dataset[0][0]._uploadedfile;
+                var _suppdoc = dataset[0][0]._suppdoc;
+                this.editmode = true;
+                that.name = dataset[0][0].nam;
+                that.code = dataset[0][0].code;
+                that.remark = dataset[0][0].remark;
+                that.isactive = dataset[0][0].isactive;
+                that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
 
-            if (_uploadedfile != null) {
-                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
-            }
-            that.adrcsvid = "";
-            for (let items of dataset[0][0].adr) {
-                that.adrcsvid += items.adrid + ',';
-            }
-            that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+                if (_uploadedfile != null) {
+                    that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                    that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+                }
+                that.adrcsvid = "";
+                for (let items of dataset[0][0].adr) {
+                    that.adrcsvid += items.adrid + ',';
+                }
+                that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
 
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            that._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //File Upload Start 
@@ -260,18 +276,22 @@ declare var commonfun: any;
     }
 
     paramterjson() {
-        var param = {
-            "wareid": this.wareid,
-            "name": this.name,
-            "code": this.code,
-            "remark": this.remark,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "isactive": this.isactive,
-            "attr": this.createattrjson(),
-            "adrid": this.adrbookid,
-            "suppdoc": this.suppdoc
+        try {
+            var param = {
+                "wareid": this.wareid,
+                "name": this.name,
+                "code": this.code,
+                "remark": this.remark,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "isactive": this.isactive,
+                "attr": this.createattrjson(),
+                "adrid": this.adrbookid,
+                "suppdoc": this.suppdoc
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
         return param;
     }
@@ -288,35 +308,38 @@ declare var commonfun: any;
                 validateme.data[0].input.focus();
                 return;
             }
-            if (this.adrbookid.length == 0) {
-                this._msg.Show(messageType.error, "error", "Please enter contact address");
-                return;
+            try {
+                if (this.adrbookid.length == 0) {
+                    this._msg.Show(messageType.error, "error", "Please enter contact address");
+                    return;
+                }
+                if (this.adrbookid.length > 0) {
+                    this.wareServies.save(
+                        this.paramterjson()
+                    ).subscribe(result => {
+                        var dataset = result.data;
+                        if (dataset[0].funsave_warehouse.maxid == -1) {
+                            this._msg.Show(messageType.info, "info", "Warehouse already exists");
+                            $(".code").focus();
+                            return;
+                        }
+                        if (dataset[0].funsave_warehouse.maxid > 0) {
+                            this._msg.Show(messageType.success, "success", "Data Save Successfully");
+                            this.Clearcontroll();
+                        }
+                    }, err => {
+                        console.log("Error");
+                    }, () => {
+                        // console.log("Complete");
+                    });
+                }
+                else {
+                    this._msg.Show(messageType.info, "into", "Please enter warehouse address");
+                    return;
+                }
+            } catch (e) {
+                this._msg.Show(messageType.error, "error", e.message);
             }
-            if (this.adrbookid.length > 0) {
-                this.wareServies.save(
-                    this.paramterjson()
-                ).subscribe(result => {
-                    var dataset = result.data;
-                    if (dataset[0].funsave_warehouse.maxid == -1) {
-                        this._msg.Show(messageType.info, "info", "Warehouse already exists");
-                        $(".code").focus();
-                        return;
-                    }
-                    if (dataset[0].funsave_warehouse.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", "Data Save Successfully");
-                        this.Clearcontroll();
-                    }
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                });
-            }
-            else {
-                this._msg.Show(messageType.info, "into", "Please enter warehouse address");
-                return;
-            }
-
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');

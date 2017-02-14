@@ -1,13 +1,3 @@
-<style>
-	table.tableNoborder td {
-		border: 0!important;
-		padding: 2px!important;
-	}
-	
-	.ui-datatable-footer.ui-widget-header {
-		padding: 2px 0px !important;
-	}
-</style>
 <div class="middlepan">
 	<div class="panel panel-theme">
 		<div class="panel-body">
@@ -69,26 +59,26 @@
 			<div class="col-md-12">
 				<div class="table-responsive">
 					<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
-						expandableRows="true">
-						<p-column header="Item" footerTemplate="true" [style]="{'width':'150px','text-align':'left'}">
+						expandableRows="true" [responsive]="true">
+						<p-column header="Item" footerTemplate="true" [style]="{'text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<input type="text" class="form-control ProdName inlinetextbox" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
 									autocomplete='off' value="" />
 							</template>
 						</p-column>
-						<p-column header="Qty" [style]="{'width':'50px','text-align':'left'}">
+						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<input type="number" class="form-control text-right inlinetextbox" [(ngModel)]="row.qty" autocomplete='off' value="" />
 							</template>
 						</p-column>
-						<p-column header="Rate" [style]="{'width':'50px','text-align':'left'}">
+						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<numtext name="rate" css="inlinetextbox" [(ngModel)]="row.rate"></numtext>
 							</template>
 						</p-column>
-						<p-column field="dis" header="Dis" [style]="{'width':'50px','text-align':'left'}"></p-column>
-						<p-column field="amount" header="Amount" [style]="{'width':'50px','text-align':'left'}"></p-column>
-						<p-column header="Action" [style]="{'width':'30px','text-align':'left'}">
+						<p-column field="dis" header="Dis" [style]="{'width':'120px','text-align':'left'}"></p-column>
+						<p-column field="amount" header="Amount" [style]="{'width':'120px','text-align':'left'}"></p-column>
+						<p-column header="Action" [style]="{'width':'80px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<button class="btn btn-theme btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash"></i></button>
 							</template>
@@ -97,13 +87,13 @@
 							<table class="tableNoborder">
 								<tbody>
 									<tr>
-										<td style="width:150px;"><input type="text" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
+										<td><input type="text" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
 												autocomplete='off' value="" /></td>
-										<td style="width:50px;"><input type="text" class="form-control qty" [(ngModel)]="qty" autocomplete='off' value="" /></td>
-										<td style="width:50px;"><input type="text" class="form-control rate" [(ngModel)]="Rate" autocomplete='off' value="" /></td>
-										<td style="width:50px;"><input type="text" class="form-control dis" [(ngModel)]="Dis" autocomplete='off' value="" /></td>
-										<td style="width:50px;"><input type="text" class="form-control amt" [(ngModel)]="Amount" autocomplete='off' value="" /></td>
-										<td style="width:30px;"><button type="button" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
+										<td style="width:120px;"><input type="text" class="form-control qty" [(ngModel)]="qty" autocomplete='off' value="" /></td>
+										<td style="width:120px;"><input type="text" class="form-control rate" [(ngModel)]="Rate" autocomplete='off' value="" /></td>
+										<td style="width:120px;"><input type="text" class="form-control dis" [(ngModel)]="Dis" autocomplete='off' value="" /></td>
+										<td style="width:120px;"><input type="text" class="form-control amt" [(ngModel)]="Amount" autocomplete='off' value="" /></td>
+										<td style="width:80px;"><button type="button" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
 									</tr>
 								</tbody>
 							</table>

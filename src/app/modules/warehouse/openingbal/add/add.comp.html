@@ -4,7 +4,7 @@
 			<div class="col-md-5">
 				<div class='form-group'>
 					<label>Warehouse</label>
-					<input type="text" class="form-control ware" tabindex="1" validate="" [(ngModel)]="warehousename" (keyup)="getAutoCompleteWare(this)">
+					<input type="text" validate="" class="form-control ware" tabindex="1" validate="" [(ngModel)]="warehousename" (keyup)="getAutoCompleteWare(this)">
 				</div>
 			</div>
 			<div class="col-md-3">
@@ -19,38 +19,46 @@
 					<textarea class="form-control medium-text-box" tabindex="3" [(ngModel)]="remark"></textarea>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered" *ngIf="Openinglist.length">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th class="col-md-4">Items Name</th>
-						<th class="col-md-2">Rate</th>
-						<th class="col-md-2">Qty</th>
-						<th class="col-md-2">Amount</th>
-						<th class="col-md-3">Remark</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let item of Openinglist let i=index">
-						<td><span>{{i+1}}</span></td>
-						<td>{{item.itemname}}</td>
-						<td><select [(ngModel)]="item.ratename" class="form-control" (ngModelChange)="ratechange(item)" class="form-control">
-						<option *ngFor="let row of item.rate" [value]="row.id+':'+row.val">
+			<div class="col-md-10" *ngIf="Openinglist.length > 0">
+				<div class="table-responsive">
+					<p-dataTable #dt [value]="Openinglist" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+						expandableRows="true">
+						<p-column header="Item" [style]="{'text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<label>{{row.itemname}}</label>
+							</template>
+						</p-column>
+						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<select [(ngModel)]="row.id" class="form-control" (ngModelChange)="ratechange(item)" class="form-control">
+						<option *ngFor="let row of row.rate" [value]="row.id">
 							{{row.val}}
 					    </option>
-							</select></td>
-						<td>
-							<numtext [iscurrency]="false" (keyup)="ratechange(item)" [(ngModel)]="item.qty"></numtext>
-							<!--<input type="text" class="form-control" (keyup)="ratechange(item)" [(ngModel)]="item.qty" />-->
-
-						</td>
-						<td class="textalign">{{item.amt}}</td>
-						<td><input type="text" class="form-control" [(ngModel)]="item.remark" /></td>
-						<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(item)"><i class="fa fa-trash"></i></button></td>
-					</tr>
-				</tbody>
-			</table>
+							</select>
+							</template>
+						</p-column>
+						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="false" (keyup)="ratechange(row)" [(ngModel)]="row.qty"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="false" css="inlinetextbox" [disabled]="true" [(ngModel)]="row.amt"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Remark" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<input type="text" class="form-control" [(ngModel)]="row.remark" />
+							</template>
+						</p-column>
+						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+							</template>
+						</p-column>
+					</p-dataTable>
+				</div>
+			</div>
 		</div>
 	</div>
-</div>

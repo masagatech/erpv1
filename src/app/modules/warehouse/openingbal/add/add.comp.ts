@@ -9,6 +9,7 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -44,6 +45,8 @@ declare var commonfun: any;
         , private _userService: UserService, private _alsservice: ALSService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
+
+
 
     setAuditDate() {
         var that = this;
@@ -91,8 +94,6 @@ declare var commonfun: any;
             commonfun.addrequire();
         }, 0);
 
-
-
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -117,26 +118,43 @@ declare var commonfun: any;
     }
 
     ItemsSelected(val: number) {
-        this.Openinglist = [];
-        if (val != 0) {
-            this.opeingServies.getopeningstock({
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "flag": "wardetails",
-                "wareid": val,
-                "createdby": this.loginUser.login
-            }).subscribe(itemsdata => {
-                var ItemsResult = itemsdata.data;
-                console.log(ItemsResult);
-                if (ItemsResult.length > 0) {
-                    this.Openinglist = ItemsResult[1];
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //console.log("Done");
-            });
+        try {
+            this.Openinglist = [];
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+            if (val != 0) {
+                this.opeingServies.getopeningstock({
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "flag": "wardetails",
+                    "wareid": val,
+                    "createdby": this.loginUser.login
+                }).subscribe(itemsdata => {
+                    var ItemsResult = itemsdata.data;
+                    console.log(ItemsResult);
+                    if (ItemsResult[0].length > 0) {
+                        this.Openinglist = ItemsResult[0];
+                    }
+                    else {
+                        this.Openinglist = ItemsResult[1];
+                    }
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //console.log("Done");
+                });
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
+    }
+
+    loadRBIGrid(event: LazyLoadEvent) {
     }
 
     getAutoCompleteWare(me: any) {
@@ -194,9 +212,9 @@ declare var commonfun: any;
 
     ratechange(row: any = []) {
         var culamt = 0;
-        debugger;
-        if (row.qty > 0 && row.ratename != undefined) {
-            culamt = +row.qty * +row.ratename.split(':')[1];
+        var rateval = row.rate.filter(item => item.id == row.id);
+        if (row.qty != "") {
+            culamt = +row.qty * +row.rate[0].val;
             row.amt = culamt.toFixed(2);
         }
         else {
@@ -206,27 +224,33 @@ declare var commonfun: any;
 
     tablejson() {
         var that = this;
-        var opestock = [];
-        for (let item of that.Openinglist) {
-            if (item.qty != "") {
-                opestock.push({
-                    "autoid": item.autoid,
-                    "itemid": item.value,
-                    "rate": item.ratename.split(':')[1],
-                    "rateid":item.ratename.split(':')[0],
-                    "qty": item.qty,
-                    "typ": "OB",
-                    "amt": item.amt,
-                    "rem": item.remark,
-                    "wareid": that.warehouseid,
-                    "opedate": this.openstock.getDate(),
-                    "remark": that.remark,
-                    "fy": that.loginUser.fy,
-                    "cmpid": that.loginUser.cmpid,
-                    "createdby": that.loginUser.login
-                })
+        try {
+            var opestock = [];
+            for (let item of that.Openinglist) {
+                if (item.qty != "") {
+                    opestock.push({
+                        "autoid": item.ledgerid === null ? 0 : item.ledgerid,
+                        "itemid": item.value,
+                        "rateid": item.rate[0].id,
+                        "rate": item.rate[0].val,
+                        "inword": item.qty,
+                        "outward": 0,
+                        "typ": "OB",
+                        "amt": item.amt,
+                        "rem": item.remark,
+                        "wareid": that.warehouseid,
+                        "opedate": this.openstock.getDate(),
+                        "remark": that.remark,
+                        "fy": that.loginUser.fy,
+                        "cmpid": that.loginUser.cmpid,
+                        "createdby": that.loginUser.login
+                    })
+                }
             }
+        } catch (e) {
+            that._msg.Show(messageType.error, "error", e.message);
         }
+
         return opestock;
     }
 
@@ -245,6 +269,25 @@ declare var commonfun: any;
         $(".ware").focus();
     }
 
+    //Delete Row 
+    private DeleteRow(item) {
+        try {
+            var index = -1;
+            for (var i = 0; i < this.Openinglist.length; i++) {
+                if (this.Openinglist[i].itemname === item.itemname) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index === -1) {
+                console.log("Wrong Delete Entry");
+            }
+            this.Openinglist.splice(index, 1);
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
+    }
 
     actionBarEvt(evt) {
         if (evt === "back") {
@@ -254,13 +297,13 @@ declare var commonfun: any;
             this.ClearControll();
         }
         if (evt === "save") {
-            var validateme = commonfun.validate();
-            if (!validateme.status) {
-                this._msg.Show(messageType.error, "error", validateme.msglist);
-                validateme.data[0].input.focus();
-                return;
-            }
             try {
+                var validateme = commonfun.validate();
+                if (!validateme.status) {
+                    this._msg.Show(messageType.error, "error", validateme.msglist);
+                    validateme.data[0].input.focus();
+                    return;
+                }
                 this.opeingServies.saveopeningstock(
                     this.Paramter()
                 ).subscribe(result => {
