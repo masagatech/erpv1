@@ -861,6 +861,10 @@ label {
 .topdocbar h3.title {
     margin: 0px!important;
     color: #ffffff;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 20px;
+    padding-top: 2px;
 }
 
 .topdocbar .row {
@@ -980,7 +984,7 @@ a.active {
 }
 
 .navbar-header {
-    width: 165px!important;
+    min-width: 165px!important;
 }
 
 
@@ -1328,4 +1332,17 @@ html select[disabled] {
 
 ::-webkit-scrollbar-track {
     background-color: #F3F3F3;
+}
+
+table.tableNoborder td {
+    border: 0!important;
+    padding: 2px!important;
+}
+
+.ui-datatable-footer {
+    padding: 5px 0px!important;
+}
+
+.ui-datatable-footer.ui-widget-header {
+    padding: 2px 0px !important;
 }
