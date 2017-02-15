@@ -68,11 +68,10 @@ declare var commonfun: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Warehouse Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".code").removeAttr('disabled', 'disabled');
-        $(".code").focus();
-
         setTimeout(function () {
             commonfun.addrequire();
+
+            $(".code").focus();
         }, 0);
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -85,6 +84,7 @@ declare var commonfun: any;
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
+
 
             }
             else {
@@ -215,7 +215,7 @@ declare var commonfun: any;
                 that.remark = dataset[0][0].remark;
                 that.isactive = dataset[0][0].isactive;
                 that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
-
+                //that.adrbookid = dataset[0][0].adr;
                 if (_uploadedfile != null) {
                     that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
                     that.suppdoc = _suppdoc == null ? [] : _suppdoc;
@@ -326,7 +326,13 @@ declare var commonfun: any;
                         }
                         if (dataset[0].funsave_warehouse.maxid > 0) {
                             this._msg.Show(messageType.success, "success", "Data Save Successfully");
-                            this.Clearcontroll();
+                            if (this.editmode == true) {
+                                this._router.navigate(['warehouse/warehouse']);
+                            }
+                            else {
+                                $(".code").removeAttr('disabled', 'disabled');
+                                this.Clearcontroll();
+                            }
                         }
                     }, err => {
                         console.log("Error");
@@ -349,7 +355,8 @@ declare var commonfun: any;
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".code").attr('disabled', 'disabled');
-            this.Getcode();
+            this.addressBook.AddBook(this.code);
+            this.accode = this.code;
             $(".warehouse").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {

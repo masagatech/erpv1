@@ -51,12 +51,12 @@
 						</p-column>
 						<p-column header="A" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<label class="text-right">{{row.asfora}}</label>
+								<numlabel [iscurrency]="false" css="inlinetextbox" [value]="asfora"></numlabel>
 							</template>
 						</p-column>
 						<p-column header="B" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<label class="text-right">{{row.asforb}}</label>
+								<numlabel [iscurrency]="false"  css="inlinetextbox" [value]="asforb"></numlabel>
 							</template>
 						</p-column>
 						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
@@ -85,10 +85,12 @@
 											<numtext [iscurrency]="true" tabindex="7" (keyup.enter)="NewRowAdd()" [(ngModel)]="amt"></numtext>
 										</td>
 										<td style="width:120px;vertical-align: top;">
-											<label class="inlinetextbox">{{asfora}}</label>
+											<label>{{asfora}}</label>
+											<numlabel [iscurrency]="false" id="asfora" css="inlinetextbox" [value]="asfora"></numlabel>
 										</td>
 										<td style="width:120px;vertical-align: top;">
-											<label class="inlinetextbox">{{asforb}}</label>
+											<label>{{asforb}}</label>
+											<numlabel [iscurrency]="false" id="asforb" css="inlinetextbox" [value]="asforb"></numlabel>
 										</td>
 										<td style="width:80px;vertical-align: top;">
 											<button type="button" class="btn btn-theme btn-sm" tabindex="10" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button>
