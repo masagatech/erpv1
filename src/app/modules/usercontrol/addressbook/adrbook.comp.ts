@@ -260,12 +260,6 @@ export class AddrbookComp implements OnInit, OnDestroy {
             $(".prymob").focus();
             return;
         }
-        if ($(".email").val() == "") {
-            that._msg.Show(messageType.error, "error", "Email *");
-            $(".email").focus();
-            return;
-        }
-
         that._adrbookservice.saveAdrBook(
             that.Parameter()
         ).subscribe(result => {
