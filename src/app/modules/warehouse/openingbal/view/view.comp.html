@@ -2,14 +2,11 @@
     <p-dataTable #dt [value]="Openinglist" [lazy]="true" [rows]="10" [paginator]="true"
      [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"  (onRowClick)="EditItem(dt, $event)"
         [(selection)]="selectedRB1" expandableRows="true">
-        <p-column field="warename" header="Code / warehouse name" [style]="{'width':'100px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				<a role="button" (click)="EditItem(row)">{{row.warename}}</a>
-            </template>
-		</p-column>
-        <p-column field="opedate" header="ope. date" [style]="{'width':'30px','text-align':'left'}"></p-column>
-        <p-column field="itemcount" header="item count" [style]="{'width':'30px','text-align':'left'}"></p-column>
-        <p-column field="qtytoal" header="Qty Total" [style]="{'width':'30px','text-align':'left'}"></p-column>
+        <p-column field="code" header="Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
+        <p-column field="warename" header="Warehouse name" [style]="{'width':'100px','text-align':'left'}"></p-column>
+        <p-column field="opedate" header="Op . date" [style]="{'width':'30px','text-align':'left'}"></p-column>
+        <p-column field="itemcount" header="Items count" [style]="{'width':'30px','text-align':'left'}"></p-column>
+        <p-column field="qtytoal" header="Total qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
         <p-column field="remark" header="Remark" [style]="{'width':'50px','text-align':'left'}"></p-column>
     </p-dataTable>
 </div>

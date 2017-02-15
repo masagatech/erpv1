@@ -81,7 +81,7 @@ declare var commonfun: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".ware").focus();
 
-        setTimeout(function () {
+        setTimeout(function() {
             var date = new Date();
             var opeingdate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
             $("#opedate").datepicker({
@@ -174,7 +174,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.warehouseid = ui.item.value;
                     me.warehousename = ui.item.label;
                     me.ItemsSelected(me.warehouseid);
@@ -197,7 +197,7 @@ declare var commonfun: any;
         }).subscribe(itemsdata => {
             var ItemsResult = itemsdata.data;
             if (ItemsResult.length > 0) {
-                this.warehouseid = ItemsResult[0][0].autoid;
+                this.warehouseid = ItemsResult[0][0].whid;
                 this.warehousename = ItemsResult[0][0].whname;
                 this.remark = ItemsResult[0][0].remark;
                 this.openstock.setDate(new Date(ItemsResult[0][0].opendate));
@@ -211,14 +211,16 @@ declare var commonfun: any;
     }
 
     ratechange(row: any = []) {
-        var culamt = 0;
-        var rateval = row.rate.filter(item => item.id == row.id);
-        if (row.qty != "") {
-            culamt = +row.qty * +row.rate[0].val;
-            row.amt = culamt.toFixed(2);
-        }
-        else {
-            row.amt = "";
+        if (row.id != undefined) {
+            var culamt = 0;
+            var rateval = row.rate.filter(item => item.id == row.id);
+            if (row.qty != "") {
+                culamt = +row.qty * +row.rate[0].val;
+                row.amt = culamt.toFixed(2);
+            }
+            else {
+                row.amt = "";
+            }
         }
     }
 
@@ -226,10 +228,12 @@ declare var commonfun: any;
         var that = this;
         try {
             var opestock = [];
+            debugger;
             for (let item of that.Openinglist) {
                 if (item.qty != "") {
                     opestock.push({
-                        "autoid": item.ledgerid === null ? 0 : item.ledgerid,
+                        "autoid": item.autoid === null ? 0 : item.autoid,
+                        "ledger": item.ledger === null ? 0 : item.ledger,
                         "itemid": item.value,
                         "rateid": item.rate[0].id,
                         "rate": item.rate[0].val,

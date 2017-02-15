@@ -1,100 +1,155 @@
-<div class="panel panel-theme">
-	<div class="panel-body">
-		<div class="col-md-5">
-			<div class='form-group'>
-				<label>From</label>
-				<input type="text" class="form-control from"  validate="" tabindex="1" [(ngModel)]="fromwarname" (keyup)="getAutoCompleteWareFrom(this)">
+<div class="middlepan">
+	<div class="panel panel-theme">
+		<div class="panel-body">
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>From A</label>
+					<input type="text" class="form-control from" validate="" tabindex="1" [(ngModel)]="fromwarname" (keyup)="getAutoCompleteWareFrom(this)">
+				</div>
 			</div>
-		</div>
-		<div class="col-md-5">
-			<div class='form-group'>
-				<label>To</label>
-				<input type="text" class="form-control to"  validate="" tabindex="2" [(ngModel)]="Towarname" (keyup)="getAutoCompleteWareTO(this)" />
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>To B</label>
+					<input type="text" class="form-control to" validate="" tabindex="2" [(ngModel)]="Towarname" (keyup)="getAutoCompleteWareTO(this)"
+					/>
+				</div>
 			</div>
-		</div>
-		<div class="col-md-10">
-			<div class='form-group'>
-				<label>Remark</label>
-				<input type="text" class="form-control remark" tabindex="3" [(ngModel)]="rem">
+			<div class="col-md-12">
+				<div class='form-group'>
+					<label>Remark</label>
+					<input type="text" class="form-control remark" tabindex="3" [(ngModel)]="rem">
+				</div>
 			</div>
-		</div>
-		<div class="col-md-10">
-			<div class="table-responsive">
-				<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
-					expandableRows="true">
-					<p-column header="Item" [style]="{'text-align':'left'}">
-						<template let-col let-row="rowData" pTemplate="editor">
-							<input type="text" class="form-control ProdName inlinetextbox" autocomplete='off' value="" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
-							/>
-						</template>
-					</p-column>
-					<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
-						<template let-col let-row="rowData" pTemplate="editor">
-							<!--<input type="text" class="form-control textalign" [(ngModel)]="row.qty" />-->
-							<numtext [iscurrency]="false" css="inlinetextbox" [(ngModel)]="row.qty"></numtext>
-						</template>
-					</p-column>
-					<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
-						<template let-col let-row="rowData" pTemplate="editor">
-							<!--<numtext name="rate" css="inlinetextbox" [(ngModel)]="row.rate"></numtext>-->
-							<select [(ngModel)]="row.id" class="form-control inlinetextbox">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+						expandableRows="true">
+						<p-column header="Item" [style]="{'text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<input type="text" class="form-control ProdName inlinetextbox" autocomplete='off' value="" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
+								/>
+							</template>
+						</p-column>
+						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="false" css="inlinetextbox" (keyup)="calculationRow(row)" [(ngModel)]="row.qty"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<select [(ngModel)]="row.id" class="form-control inlinetextbox" (keyup)="calculationRow(row)">
 							<option *ngFor="let row of row.ratelist" [value]="row.id">
 								{{row.val}}
 							</option>
 					  </select>
-						</template>
-					</p-column>
-					<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
-						<template let-col let-row="rowData" pTemplate="editor">
-							<!--<input type="text" class="form-control textalign" [(ngModel)]="row.amt" />-->
-							<numtext [iscurrency]="true" css="inlinetextbox" [(ngModel)]="row.amt"></numtext>
-						</template>
-					</p-column>
-					<p-column header="Remark" [style]="{'width':'120px','text-align':'left'}">
-						<template let-col let-row="rowData" pTemplate="editor">
-							<input type="text" class="form-control inlinetextbox" [(ngModel)]="row.remark" />
-						</template>
-					</p-column>
-					<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
-						<template let-col let-row="rowData" pTemplate="editor">
-							<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
-						</template>
-					</p-column>
-					<footer>
-						<table class="tableNoborder">
-							<tbody>
-								<tr>
-									<td>
-										<input type="text" id="foot_custname" class="form-control ProdName" tabindex="4" (keyup.enter)="NewRowAdd()" autocomplete='off' value="" [(ngModel)]="NewItemsName"
-											(keyup)="getAutoCompleteProd(this,0)" autocomplete='off' value="" />
-									</td>
-									<td style="width:120px;">
-										<!--<input type="text" class="form-control textalign qty" value="" tabindex="5" [(ngModel)]="qty" (keyup.enter)="NewRowAdd()" />-->
-										<numtext [iscurrency]="false" (keyup.enter)="NewRowAdd()" tabindex="5" [(ngModel)]="qty"></numtext>
-									</td>
-									<td style="width:120px;">
-										<select [(ngModel)]="newrate" class="form-control"  tabindex="6">
-												<option *ngFor="let row of ratelistnew" [value]="row.val">
+							</template>
+						</p-column>
+						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="true" css="inlinetextbox" [(ngModel)]="row.amt"></numtext>
+							</template>
+						</p-column>
+						<p-column header="A" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<label class="text-right">{{row.asfora}}</label>
+							</template>
+						</p-column>
+						<p-column header="B" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<label class="text-right">{{row.asforb}}</label>
+							</template>
+						</p-column>
+						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+							</template>
+						</p-column>
+						<footer>
+							<table class="tableNoborder" style="height: 60px">
+								<tbody>
+									<tr>
+										<td style="vertical-align: top;">
+											<input type="text" id="foot_custname" class="form-control ProdName" tabindex="4" (keyup.enter)="NewRowAdd()" autocomplete='off'
+												value="" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)" autocomplete='off' value="" />
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<numtext [iscurrency]="false" (keyup.enter)="NewRowAdd()" (keyup)="calculationQty(qty,newrate)" tabindex="5" [(ngModel)]="qty"></numtext>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<select [(ngModel)]="newrate" class="form-control" (ngModelChange)="calculationQty(qty,newrate)" tabindex="6">
+												<option *ngFor="let row of ratelistnew" [value]="row.id">
 													{{row.val}}
 					    						</option>
 										</select></td>
-									<td style="width:120px;">
-										<!--<input type="text" class="form-control textalign amt" value="" tabindex="7" [(ngModel)]="amt" />-->
-										<numtext [iscurrency]="true" tabindex="7" (keyup.enter)="NewRowAdd()" [(ngModel)]="amt"></numtext>
-									</td>
-									<td style="width:120px;">
-										<input type="text" class="form-control" value="" tabindex="8" [(ngModel)]="remark" (keyup.enter)="NewRowAdd()" />
-									</td>
-									<td style="width:80px;">
-										<button type="button" class="btn btn-theme btn-sm" tabindex="9" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-
-					</footer>
-				</p-dataTable>
-
+										<td style="width:120px;vertical-align: top;">
+											<numtext [iscurrency]="true" tabindex="7" (keyup.enter)="NewRowAdd()" [(ngModel)]="amt"></numtext>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<label class="inlinetextbox">{{asfora}}</label>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<label class="inlinetextbox">{{asforb}}</label>
+										</td>
+										<td style="width:80px;vertical-align: top;">
+											<button type="button" class="btn btn-theme btn-sm" tabindex="10" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</footer>
+					</p-dataTable>
+				</div>
 			</div>
 		</div>
 	</div>
+</div>
+<div class="sidepan">
+	<!--widgit-->
+
+	<div class="panel panel-theme hide">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
+	</div>
+	<div class="panel panel-theme hide">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
+	</div>
+	<div class="panel panel-theme hide">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+			</div>
+		</div>
+	</div>
+	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+		(onComplete)="onUploadComplete($event)"></fileupload>
+		
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Record</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<a role="button" class="pull-right">No Record Found</a>
+			</div>
+		</div>
+	</div>
+</div>

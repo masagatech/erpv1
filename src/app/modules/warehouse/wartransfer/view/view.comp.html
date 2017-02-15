@@ -1,56 +1,15 @@
-<div class="panel panel-theme">
-	<div class="panel-body">
-		<div class='form-group col-md-12'>
-			<div class="col-md-4">
-				<div class='form-group'>
-					<label>Warehouse</label>
-					<input type="text=" class="form-control ware" tabindex="1" value="" [(ngModel)]="warename" (keyup)="getwarehouse(this)" />
-				</div>
-			</div>
-			<div class="col-md-1">
-				<div class='form-group'>
-					<label>Action</label>
-					<button type="button" class="btn btn-primary" tabindex="4" (click)="getWarehouse()">Get</button>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="table-responsive">
+    <p-dataTable #dt [value]="warehousedetails" [lazy]="true" [rows]="10" [paginator]="true"
+     [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"  (onRowClick)="EditItem(dt, $event)"
+        [(selection)]="selectedRB1" expandableRows="true">
+        <p-column field="docno" header="Doc No" [style]="{'width':'20px','text-align':'left'}">
+			<template let-row="rowData" pTemplate type="body">
+				<a role="button" (click)="EditItem(row)">{{row.docno}}</a>
+            </template>
+		</p-column>
+        <p-column field="fromware" header="From Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
+        <p-column field="toware" header="To Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
+        <p-column field="qty" header="Total Qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
+        <p-column field="remark" header="Remark" [style]="{'width':'50px','text-align':'left'}"></p-column>
+    </p-dataTable>
 </div>
-<table class="table table-striped table-bordered" [hidden]="TableHide">
-	<thead>
-		<tr>
-			<th>#</th>
-			<th class="col-sm-1">Doc No</th>
-			<th class="col-xs-3">From Warehouse</th>
-			<th class="col-xs-3">To Warehouse</th>
-			<th class="col-xs-1">Total Qty</th>
-			<th class="col-xs-3">Remark</th>
-		</tr>
-	</thead>
-	<tbody *ngFor="let row of warehousedetails let i=index">
-		<tr>
-			<td><span>{{i+1}}</span></td>
-			<td> <a role="button" (click)="EditItem(row)">{{row.docno}}</a></td>
-			<td>{{row.fromware}}</td>
-			<td>{{row.toware}}</td>
-			<td>{{row.qty}}</td>
-			<td>{{row.remark}}</td>
-		</tr>
-		<tr [style.display]="row.issh == 0?'none':''">
-			<td></td>
-			<td colspan="3">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th class="col-sm-1">#</th>
-							<th class="col-sm-4">Details</th>
-						</tr>
-					</thead>
-					<tbody>
-
-					</tbody>
-				</table>
-			</td>
-		</tr>
-	</tbody>
-</table>

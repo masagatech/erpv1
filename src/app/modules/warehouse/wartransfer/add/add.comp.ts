@@ -44,7 +44,17 @@ declare var commonfun: any;
     ratelist: any = [];
     ratelistnew: any = [];
     newrate: any = "";
-    isproceed: boolean = false;
+    isproceed: any = "false";
+    isnavigate: any = "false";
+    totalqty: any = 0;
+
+    //File Upload
+    suppdoc: any = [];
+    module: string = "";
+    uploadedFiles: any = [];
+
+    asfora: any = 0;
+    asforb: any = 0;
 
     //user details
     loginUser: LoginUserModel;
@@ -63,7 +73,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setTitle("Warehouse Transfer");
+        this.setActionButtons.setTitle("Stock Transfer");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".from").focus();
@@ -89,7 +99,7 @@ declare var commonfun: any;
         // Check this Ledger True And false
         this.checkLedger();
 
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
         }, 0);
     }
@@ -97,22 +107,25 @@ declare var commonfun: any;
     //Check Ledger Table 
     checkLedger() {
         try {
-            this._autoservice.getisproceed({
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "keyname": "is_wh_transfer",
-                "flag1": "",
-                "createdby": this.loginUser.login
-            }).subscribe(isproceed => {
-                var returnval = isproceed.data;
-                this.isproceed = returnval[0].val;
+            var that = this;
+            that._autoservice.getisproceed({
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "keyname": "is_wh_transfer_stock_check",
+                "negative": "is_wh_transfer_stock_negative",
+                "flag1": "negative",
+                "createdby": that.loginUser.login
+            }).subscribe(isproc => {
+                var returnval = isproc.data;
+                that.isnavigate = returnval[0].navigat;
+                that.isproceed = returnval[0].val;
             }, err => {
                 console.log("Error");
             }, () => {
                 //console.log("Done");
             });
         } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
+            that._msg.Show(messageType.error, "error", e.message);
         }
 
     }
@@ -124,7 +137,6 @@ declare var commonfun: any;
     // //Selected Items
     ItemsSelected(val, flag) {
         try {
-
             if (val != "") {
                 this.wareServies.getwarehouseTransfer({
                     "cmpid": this.loginUser.cmpid,
@@ -132,12 +144,16 @@ declare var commonfun: any;
                     "flag": "salesdrop",
                     "itemsid": val,
                     "warehouse": this.fromwareid,
+                    "whto": this.Towarid,
                     "createdby": this.loginUser.login
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;
                     this.amt = ItemsResult[0].amt;
                     this.remark = ItemsResult[0].itemremark;
                     this.qty = ItemsResult[0].qty;
+                    this.totalqty = ItemsResult[0].totalqty;
+                    this.asfora = ItemsResult[0]._asfora === null ? 0 : ItemsResult[0]._asfora;
+                    this.asforb = ItemsResult[0]._asforb === null ? 0 : ItemsResult[0]._asforb;
                     if (flag == 1) {
                         this.ratelistnew = ItemsResult[0]._ratejosn;
                     }
@@ -179,20 +195,20 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
-                        //if (this.isproceed == true) {
-                        _me.ItemsSelected(me.Itemsid, 1);
-                        // }
+                        if (_me.isproceed === 'true') {
+                            _me.ItemsSelected(me.Itemsid, 1);
+                        }
                         me.editadd = 1;
                     } else {
                         me.NewItemsName = ui.item.label;
                         me.NewItemsid = ui.item.value;
-                        // if (this.isproceed == true) {
-                        _me.ItemsSelected(me.NewItemsid, 0);
-                        //  }
+                        if (_me.isproceed === 'true') {
+                            _me.ItemsSelected(me.NewItemsid, 0);
+                        }
                         me.editadd = 0;
                     }
                 }
@@ -223,7 +239,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.fromwareid = ui.item.value;
                     me.fromwarname = ui.item.label;
                 }
@@ -254,7 +270,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.Towarid = ui.item.value;
                     me.Towarname = ui.item.label;
                 }
@@ -296,6 +312,9 @@ declare var commonfun: any;
         }
 
         try {
+
+
+
             that.Duplicateflag = true;
             for (var i = 0; i < that.newAddRow.length; i++) {
                 if (that.newAddRow[i].itemsname == that.NewItemsName) {
@@ -304,40 +323,57 @@ declare var commonfun: any;
                 }
             }
             if (that.Duplicateflag == true) {
-                if (that.editadd == 1) {
-                    that.newAddRow.push({
-                        "autoid": 0,
-                        'itemsname': that.itemsname,
-                        "itemsid": that.itemsid,
-                        'qty': that.qty,
-                        'rate': that.ratelistnew,
-                        'amt': that.amt,
-                        'remark': that.remark,
-                        'counter': that.counter
-                    });
+                debugger;
+                var flagqty = true;
+                if (that.qty > that.asfora) {
+                    flagqty = that.isnavigate;
+                }
+                if (flagqty == true) {
+                    if (that.editadd == 1) {
+                        that.newAddRow.push({
+                            "autoid": 0,
+                            'itemsname': that.itemsname,
+                            "itemsid": that.itemsid,
+                            'qty': that.qty,
+                            'rate': that.ratelistnew,
+                            'amt': that.amt,
+                            'asfora': that.asfora,
+                            'asforb': that.asforb,
+                            'remark': that.remark,
+                            'counter': that.counter
+                        });
+                    }
+                    else {
+                        that.newAddRow.push({
+                            "autoid": 0,
+                            'itemsname': that.NewItemsName,
+                            'itemsid': that.NewItemsid,
+                            'ratelist': that.ratelistnew,
+                            'id': that.newrate,
+                            'amt': that.amt,
+                            'asfora': that.asfora,
+                            'asforb': that.asforb,
+                            'qty': that.qty,
+                            'remark': that.remark,
+                            'counter': that.counter
+                        });
+                    }
+                    that.counter++;
+                    that.itemsname = "";
+                    that.NewItemsName = "";
+                    that.qty = 0;
+                    that.newrate = 0;
+                    that.asfora = "";
+                    that.asforb = "";
+                    that.totalqty = 0;
+                    that.amt = "";
+                    that.remark = "";
+                    $("#foot_custname").focus();
                 }
                 else {
-                    that.newAddRow.push({
-                        "autoid": 0,
-                        'itemsname': that.NewItemsName,
-                        'itemsid': that.NewItemsid,
-                        'ratelist': that.ratelistnew,
-                        'id': that.newrate,
-                        'amt': that.amt,
-                        'qty': that.qty,
-                        'remark': that.remark,
-                        'counter': that.counter
-                    });
+                    this._msg.Show(messageType.error, "error", "Quantity greater than A");
+                    return;
                 }
-
-                that.counter++;
-                that.itemsname = "";
-                that.NewItemsName = "";
-                that.qty = 0;
-                that.newrate = 0;
-                that.amt = "";
-                that.remark = "";
-                $("#foot_custname").focus();
             }
             else {
                 this._msg.Show(messageType.info, "info", "Duplicate Items");
@@ -410,9 +446,10 @@ declare var commonfun: any;
             for (let item of this.newAddRow) {
                 ledgertransfe.push({
                     "autoid": 0,
+                    "ledger": 0,
                     "wareid": this.fromwareid,
                     "typ": 'TR',
-                    "itemid": item.id,
+                    "itemid": item.itemsid,
                     "rate": item.ratelist[0].val,
                     "amt": item.amt,
                     "outward": item.qty,
@@ -423,9 +460,10 @@ declare var commonfun: any;
                 })
                 ledgertransfe.push({
                     "autoid": 0,
+                    "ledger": 0,
                     "wareid": this.Towarid,
                     "typ": 'TR',
-                    "itemid": item.id,
+                    "itemid": item.itemsid,
                     "rate": item.ratelist[0].val,
                     "amt": item.amt,
                     "inword": item.qty,
@@ -473,10 +511,21 @@ declare var commonfun: any;
         this.rem = "";
     }
 
-    calculationQty(qty: any, rate: any = []) {
-        debugger;
+    calculationRow(row: any = []) {
         var culamt = 0;
-        if (qty != "") {
+        if (row.qty != "") {
+            culamt = +row.qty * +row.rate[0].val;
+            this.amt = culamt.toFixed(2);
+        }
+        else {
+            this.amt = "";
+        }
+    }
+
+    calculationQty(qty: any, rate: any = []) {
+        var culamt = 0;
+        if (qty != "" && rate != "") {
+            var rate = this.ratelistnew.filter(item => item.id == this.newrate);
             culamt = +qty * +rate[0].val;
             this.amt = culamt.toFixed(2);
         }

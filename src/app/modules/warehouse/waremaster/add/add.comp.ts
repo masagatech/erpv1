@@ -64,10 +64,11 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Warehouse Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        $(".code").removeAttr('disabled', 'disabled');
         $(".code").focus();
 
         setTimeout(function () {
@@ -346,9 +347,9 @@ declare var commonfun: any;
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
+            $(".code").attr('disabled', 'disabled');
+            this.Getcode();
             $(".warehouse").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {

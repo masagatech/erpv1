@@ -23,23 +23,28 @@
 				<div class="table-responsive">
 					<p-dataTable #dt [value]="Openinglist" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
 						expandableRows="true">
-						<p-column header="Item" [style]="{'text-align':'left'}">
+						<p-column header="Item code" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<label>{{row.itemname}}</label>
+								<label>{{row.itemcode}}</label>
 							</template>
 						</p-column>
-						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+						<p-column header="Item name" [style]="{'text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<select [(ngModel)]="row.id" class="form-control" (ngModelChange)="ratechange(item)" class="form-control">
-						<option *ngFor="let row of row.rate" [value]="row.id">
-							{{row.val}}
-					    </option>
-							</select>
+								<label>{{row.itemname}}</label>
 							</template>
 						</p-column>
 						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<numtext [iscurrency]="false" (keyup)="ratechange(row)" [(ngModel)]="row.qty"></numtext>
+							</template>
+						</p-column>
+							<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<select [(ngModel)]="row.id" class="form-control" (ngModelChange)="ratechange(row)" class="form-control">
+						<option *ngFor="let row of row.rate" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
 							</template>
 						</p-column>
 						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
