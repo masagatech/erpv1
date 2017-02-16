@@ -46,7 +46,7 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     //     maximumValue: "9999999999999.99"
     // };
 
-
+    isReady: boolean = false;
     @Input() iscurrency: boolean = true;
     @Input() allowdecimal: boolean = false;
     @Input() decimals: number = this._userservice.getUser()._globsettings[0].decimals;
@@ -106,9 +106,11 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
         if (value !== this.innerValue) {
             this.innerValue = value;
             var that = this;
-            setTimeout(function () {
-                $("#" + that.id + "," + "label_" + that.id).autoNumeric('set', value == "" ? 0 : value);
-            }, 10)
+            if (that.isReady) {
+                setTimeout(function () {
+                    $("#" + that.id).autoNumeric('set', value == "" ? 0 : value);
+                }, 10)
+            }
             // if ($("#" + this.id).autoNumeric('init')) {
             //     $("#" + this.id).autoNumeric('reSet');
             // }
@@ -126,10 +128,6 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     }
 
     ngOnInit() {
-
-    }
-
-    ngAfterViewInit() {
         var that = this;
 
         setTimeout(function () {
@@ -137,15 +135,21 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
             that.autoNumericOptionsEuro.maximumValue = that.max + that.decimalsArry[that.decimals];
 
             if (that.iscurrency) {
-                $("#" + that.id + "," + "label_" + that.id).autoNumeric('init', that.autoNumericOptionsEuro);
+                $("#" + that.id).autoNumeric('init', that.autoNumericOptionsEuro);
             }
             else {
                 that.autoNumericOptionsEuro.digitGroupSeparator = that.grpseperator;
                 that.autoNumericOptionsEuro.currencySymbol = '';
-                $("#" + that.id + "," + "label_" + that.id).autoNumeric('init', that.autoNumericOptionsEuro);
+                $("#" + that.id).autoNumeric('init', that.autoNumericOptionsEuro);
             }
+            $("#" + that.id).autoNumeric('set', that.innerValue);
+            that.isReady = true;
             that.updateModel();
         }, 100);
+    }
+
+    ngAfterViewInit() {
+
     }
 
     // onKeyPress(e) {
