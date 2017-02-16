@@ -806,6 +806,12 @@ submenu nav a {
     display: block;
 }
 
+.maincontent {
+    position: absolute!important;
+    overflow: auto!important;
+    height: calc(100% - 70px);
+}
+
 .container {
     width: 100% !important;
     padding-left: 190px!important;
@@ -961,7 +967,7 @@ label {
 a.active {
     background-color: #e7e7e7;
     border-left-color: #e7e7e7;
-    color: #000!important;
+    color: #000;
 }
 
 #sidebar a {
@@ -1208,7 +1214,7 @@ html select[disabled] {
 
 .inlinetextbox {
     border: 0;
-    background-color: transparent;
+    background-color: transparent!important;
     box-shadow: none;
 }
 

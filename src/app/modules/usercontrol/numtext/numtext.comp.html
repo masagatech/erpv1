@@ -1,1 +1,1 @@
-<input type="text" id="{{id}}" class="text-right form-control {{css}}" [(ngModel)]="value" (blur)="onBlur($event)">
+<input type="text" id="{{id}}" tabindex="{{tabindex}}" [disabled]="islabel" class="text-right form-control {{css}}" [ngClass]="{'inlinetextbox': islabel}" [(ngModel)]="value" (blur)="onBlur($event)">
