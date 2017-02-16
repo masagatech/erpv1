@@ -99,7 +99,7 @@ declare var commonfun: any;
         // Check this Ledger True And false
         this.checkLedger();
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
         }, 0);
     }
@@ -195,7 +195,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
@@ -239,7 +239,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.fromwareid = ui.item.value;
                     me.fromwarname = ui.item.label;
                 }
@@ -270,7 +270,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.Towarid = ui.item.value;
                     me.Towarname = ui.item.label;
                 }
@@ -323,7 +323,6 @@ declare var commonfun: any;
                 }
             }
             if (that.Duplicateflag == true) {
-                debugger;
                 var flagqty = true;
                 if (that.qty > that.asfora) {
                     flagqty = that.isnavigate;
@@ -382,9 +381,6 @@ declare var commonfun: any;
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
-
-
-
     }
 
     //Delete Row 
@@ -430,27 +426,46 @@ declare var commonfun: any;
     }
 
     createItemsjson() {
-        var itemjson = [];
+        var Param = [];
         if (this.newAddRow.length > 0) {
             for (let item of this.newAddRow) {
-                itemjson.push({ "id": item.itemsid, "val": item.qty })
+                var rate = this.ratelistnew.filter(itemval => itemval.id == item.id);
+                Param.push({
+                    "autoid": 0,
+                    "docno": this.docno,
+                    "fromid": this.fromwareid,
+                    "toid": this.Towarid,
+                    "remark": this.rem,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "createdby": this.loginUser.login,
+                    "itemid": item.itemsid,
+                    "qty": item.qty,
+                    "amt": item.amt,
+                    "rateid": item.id,
+                    "rate": rate[0].val,
+                    "fora": item.asfora,
+                    "forb": item.asforb
+                })
             }
         }
-        return itemjson;
+        return Param;
     }
 
     //Create Ledger Json 
     ledgerInsert() {
         try {
             var ledgertransfe = [];
+            debugger;
             for (let item of this.newAddRow) {
+                var rate = this.ratelistnew.filter(itemval => itemval.id == item.id);
                 ledgertransfe.push({
                     "autoid": 0,
                     "ledger": 0,
                     "wareid": this.fromwareid,
                     "typ": 'TR',
                     "itemid": item.itemsid,
-                    "rate": item.ratelist[0].val,
+                    "rate": rate[0].val,
                     "amt": item.amt,
                     "outward": item.qty,
                     "inword": 0,
@@ -464,7 +479,7 @@ declare var commonfun: any;
                     "wareid": this.Towarid,
                     "typ": 'TR',
                     "itemid": item.itemsid,
-                    "rate": item.ratelist[0].val,
+                    "rate": rate[0].val,
                     "amt": item.amt,
                     "inword": item.qty,
                     "outward": 0,
@@ -475,6 +490,7 @@ declare var commonfun: any;
             }
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
+            return;
         }
         return ledgertransfe;
     }
@@ -484,18 +500,12 @@ declare var commonfun: any;
         try {
             var that = this;
             var param = {
-                "docno": that.docno,
-                "fromid": that.fromwareid,
-                "toid": that.Towarid,
-                "remark": that.rem,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login,
                 "warehousedetails": this.createItemsjson(),
                 "ledgertransfe": this.ledgerInsert()
             }
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
+            return;
         }
 
         return param;
@@ -561,6 +571,7 @@ declare var commonfun: any;
                     }
                 } catch (e) {
                     this._msg.Show(messageType.error, "error", e.message);
+                    return;
                 }
             }, err => {
                 console.log("Error");

@@ -1,15 +1,24 @@
 <div class="table-responsive">
-    <p-dataTable #dt [value]="warehousedetails" [lazy]="true" [rows]="10" [paginator]="true"
-     [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"  (onRowClick)="EditItem(dt, $event)"
-        [(selection)]="selectedRB1" expandableRows="true">
-        <p-column field="docno" header="Doc No" [style]="{'width':'20px','text-align':'left'}">
+	<p-dataTable #dt [value]="warehousedetails" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+		(onRowClick)="EditItem(dt, $event)" [(selection)]="selectedRB1" expandableRows="true">
+		<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+		<p-column field="docno" header="Doc No" [style]="{'width':'20px','text-align':'left'}">
 			<template let-row="rowData" pTemplate type="body">
 				<a role="button" (click)="EditItem(row)">{{row.docno}}</a>
-            </template>
+			</template>
 		</p-column>
-        <p-column field="fromware" header="From Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
-        <p-column field="toware" header="To Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
-        <p-column field="qty" header="Total Qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
-        <p-column field="remark" header="Remark" [style]="{'width':'50px','text-align':'left'}"></p-column>
-    </p-dataTable>
+		<p-column field="fromware" header="From Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
+		<p-column field="toware" header="To Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
+		<p-column field="qty" header="Total Qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
+		<p-column field="remark" header="Remark" [style]="{'width':'50px','text-align':'left'}"></p-column>
+		<template let-row>
+			<table class="table table-striped table-bordered table-hover">
+				<tbody>
+					<tr>
+                        <td>Details</td>
+					</tr>
+				</tbody>
+			</table>
+		</template>
+	</p-dataTable>
 </div>

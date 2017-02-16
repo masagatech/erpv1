@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { NumTextModule } from '../../usercontrol/numtext';
-import { NumLabelModule } from '../../usercontrol/numlabel';
 
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 
@@ -43,7 +42,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
-        CommonModule, DataTableModule, NumTextModule, NumLabelModule],
+        CommonModule, DataTableModule, NumTextModule],
     declarations: [
         WarehouseAdd,
         WarehouseView,

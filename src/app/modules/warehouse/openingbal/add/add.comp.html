@@ -52,11 +52,11 @@
 								<numtext [iscurrency]="false" css="inlinetextbox" [disabled]="true" [(ngModel)]="row.amt"></numtext>
 							</template>
 						</p-column>
-						<p-column header="Remark" [style]="{'width':'120px','text-align':'left'}">
+						<!--<p-column header="Remark" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<input type="text" class="form-control" [(ngModel)]="row.remark" />
 							</template>
-						</p-column>
+						</p-column>-->
 						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
