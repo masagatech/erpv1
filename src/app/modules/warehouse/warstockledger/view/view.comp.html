@@ -1,0 +1,36 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class='col-md-4'>
+			<div class='form-group'>
+				<label>Warehouse Name</label>
+				<input type="text" class="form-control whname" validate="" maxlength="150" tabindex="1" [(ngModel)]="whname" (keyup)="getAutoCompleteWH(this)">
+			</div>
+		</div>
+		<div class='col-md-4'>
+			<div class='form-group'>
+				<label>Item Name</label>
+				<input type="text" class="form-control item" validate="" maxlength="150" tabindex="2" [(ngModel)]="itemname" (keyup)="getAutoCompleteItem(this)">
+			</div>
+		</div>
+		<div class='col-md-4'>
+			<div class='form-group'>
+				<div>
+					<button class="btn btn-theme btn-sm" (click)="getWhStockLedger()" tabindex="3" ><i class="fa fa-arrow-right"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="col-md-12" *ngIf="whstocklist.length>0">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="whstocklist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+			[(selection)]="selectedRB1" expandableRows="true">
+			<p-column field="leddate" header="Date" [style]="{'width':'40px','text-align':'left'}"></p-column>
+			<p-column field="typ" header="Type" [style]="{'width':'30px','text-align':'left'}"></p-column>
+			<p-column field="docno" header="Doc.no" [style]="{'width':'30px','text-align':'left'}"></p-column>
+			<p-column field="outword" header="Debit" [style]="{'width':'50px','text-align':'left'}"></p-column>
+			<p-column field="inword" header="Credit" [style]="{'width':'50px','text-align':'left'}"></p-column>
+			<p-column field="remark" header="Remark" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		</p-dataTable>
+	</div>
+</div>

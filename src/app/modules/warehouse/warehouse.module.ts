@@ -46,6 +46,11 @@ const routerConfig =
                             }),
                         },
                         {
+                            path:'stckledger', loadChildren: () => System.import('./warstockledger').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
+                        {
                             path:'invlocation', loadChildren: () => System.import('./inventorylocation').then((comp: any) => {
                                 return comp.default;
                             }),

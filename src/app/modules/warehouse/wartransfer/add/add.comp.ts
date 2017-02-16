@@ -99,7 +99,7 @@ declare var commonfun: any;
         // Check this Ledger True And false
         this.checkLedger();
 
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
         }, 0);
     }
@@ -195,7 +195,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
@@ -239,7 +239,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.fromwareid = ui.item.value;
                     me.fromwarname = ui.item.label;
                 }
@@ -270,7 +270,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.Towarid = ui.item.value;
                     me.Towarname = ui.item.label;
                 }
@@ -312,9 +312,6 @@ declare var commonfun: any;
         }
 
         try {
-
-
-
             that.Duplicateflag = true;
             for (var i = 0; i < that.newAddRow.length; i++) {
                 if (that.newAddRow[i].itemsname == that.NewItemsName) {
@@ -436,9 +433,6 @@ declare var commonfun: any;
                     "fromid": this.fromwareid,
                     "toid": this.Towarid,
                     "remark": this.rem,
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy,
-                    "createdby": this.loginUser.login,
                     "itemid": item.itemsid,
                     "qty": item.qty,
                     "amt": item.amt,
@@ -501,7 +495,10 @@ declare var commonfun: any;
             var that = this;
             var param = {
                 "warehousedetails": this.createItemsjson(),
-                "ledgertransfe": this.ledgerInsert()
+                "ledgertransfe": this.ledgerInsert(),
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
             }
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);

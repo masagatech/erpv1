@@ -81,7 +81,7 @@ declare var commonfun: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".ware").focus();
 
-        setTimeout(function() {
+        setTimeout(function () {
             var date = new Date();
             var opeingdate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
             $("#opedate").datepicker({
@@ -174,7 +174,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.warehouseid = ui.item.value;
                     me.warehousename = ui.item.label;
                     me.ItemsSelected(me.warehouseid);
@@ -228,7 +228,6 @@ declare var commonfun: any;
         var that = this;
         try {
             var opestock = [];
-            debugger;
             for (let item of that.Openinglist) {
                 if (item.qty != "") {
                     opestock.push({
@@ -244,10 +243,7 @@ declare var commonfun: any;
                         "rem": item.remark,
                         "wareid": that.warehouseid,
                         "opedate": this.openstock.getDate(),
-                        "remark": that.remark,
-                        "fy": that.loginUser.fy,
-                        "cmpid": that.loginUser.cmpid,
-                        "createdby": that.loginUser.login
+                        "remark": that.remark
                     })
                 }
             }
@@ -259,8 +255,12 @@ declare var commonfun: any;
     }
 
     Paramter() {
+        var that = this;
         var param = {
-            "openstockdetails": this.tablejson()
+            "openstockdetails": this.tablejson(),
+            "fy": that.loginUser.fy,
+            "cmpid": that.loginUser.cmpid,
+            "createdby": that.loginUser.login
         }
         return param;
     }

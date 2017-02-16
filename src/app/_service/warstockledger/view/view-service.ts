@@ -6,5 +6,8 @@ import { Router } from '@angular/router';
 export class warstockViewService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-   
+    getStockLedger(req: any) {
+        return this._dataserver.post("getstockLedger", req);
+    }
+
 }
