@@ -66,7 +66,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setTitle("Transpoter");
+        this.setActionButtons.setTitle("Transpoter Master");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".code").prop('disabled', false);
@@ -267,6 +267,7 @@ declare var commonfun: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 
 

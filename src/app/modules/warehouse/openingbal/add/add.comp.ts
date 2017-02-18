@@ -45,12 +45,9 @@ declare var commonfun: any;
         , private _userService: UserService, private _alsservice: ALSService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
-
-
-
+    
     setAuditDate() {
         var that = this;
-
         that._alsservice.getAuditLockSetting({
             "flag": "modulewise", "dispnm": "os", "fy": that.loginUser.fy
         }).subscribe(data => {
@@ -82,15 +79,6 @@ declare var commonfun: any;
         $(".ware").focus();
 
         setTimeout(function () {
-            var date = new Date();
-            var opeingdate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            $("#opedate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#opedate").datepicker('setDate', opeingdate);
             commonfun.addrequire();
         }, 0);
 
@@ -215,7 +203,7 @@ declare var commonfun: any;
             var culamt = 0;
             var rateval = row.rate.filter(item => item.id == row.id);
             if (row.qty != "") {
-                culamt = +row.qty * +row.rate[0].val;
+                culamt = +row.qty * +rateval[0].val;
                 row.amt = culamt.toFixed(2);
             }
             else {
@@ -239,6 +227,9 @@ declare var commonfun: any;
                         "inword": item.qty,
                         "outward": 0,
                         "typ": "OB",
+                        "fy": this.loginUser.fy,
+                        "cmpid": this.loginUser.cmpid,
+                        "createdby": this.loginUser.login,
                         "amt": item.amt,
                         "rem": item.remark,
                         "wareid": that.warehouseid,
@@ -255,13 +246,13 @@ declare var commonfun: any;
     }
 
     Paramter() {
-        var that = this;
         var param = {
             "openstockdetails": this.tablejson(),
-            "fy": that.loginUser.fy,
-            "cmpid": that.loginUser.cmpid,
-            "createdby": that.loginUser.login
+            "fy": this.loginUser.fy,
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login
         }
+        console.log(param);
         return param;
     }
 

@@ -284,6 +284,7 @@ declare var commonfun: any;
 
     //Add New Row
     private NewRowAdd() {
+      
         var that = this;
         var validateme = commonfun.validate();
         if (!validateme.status) {
@@ -426,7 +427,7 @@ declare var commonfun: any;
         var Param = [];
         if (this.newAddRow.length > 0) {
             for (let item of this.newAddRow) {
-                var rate = this.ratelistnew.filter(itemval => itemval.id == item.id);
+                var rate = item.ratelist.filter(itemval => itemval.id == item.id);
                 Param.push({
                     "autoid": 0,
                     "docno": this.docno,
@@ -450,9 +451,8 @@ declare var commonfun: any;
     ledgerInsert() {
         try {
             var ledgertransfe = [];
-            debugger;
             for (let item of this.newAddRow) {
-                var rate = this.ratelistnew.filter(itemval => itemval.id == item.id);
+                var rate = item.ratelist.filter(itemval => itemval.id == item.id);
                 ledgertransfe.push({
                     "autoid": 0,
                     "ledger": 0,

@@ -49,7 +49,7 @@
 						</p-column>
 						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<numtext [iscurrency]="false" [id]="i+1" css="inlinetextbox" [disabled]="true" [(ngModel)]="row.amt"></numtext>
+								<numtext [iscurrency]="false" css="inlinetextbox" [disabled]="true" [(ngModel)]="row.amt"></numtext>
 							</template>
 						</p-column>
 						<!--<p-column header="Remark" [style]="{'width':'120px','text-align':'left'}">

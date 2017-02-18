@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -8,6 +8,8 @@ import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
+import { ALSService } from '../../../../_service/auditlock/als-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -15,7 +17,7 @@ declare var $: any;
 declare var commonfun: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [warstockViewService, CommonService]
+    providers: [warstockViewService, CommonService, ALSService]
 
 }) export class WhStockLed implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
@@ -34,20 +36,53 @@ declare var commonfun: any;
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    //Calendor
+    @ViewChild("stockfrom")
+    stockfrom: CalendarComp;
+
+    //Calendor
+    @ViewChild("stockto")
+    stockto: CalendarComp;
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private whservice: warstockViewService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) { //Inherit Service
+        private _routeParams: ActivatedRoute, private _msg: MessageService,
+        private _userService: UserService, private _alsservice: ALSService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
+
+    setAuditDate() {
+        var that = this;
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "os", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.stockfrom.setMinMaxDate(new Date(lockdate), null);
+            that.stockto.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     //Add Save Edit Delete Button
     ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("refresh", "Refresh", "plus", true, false));
+        this.stockfrom.initialize(this.loginUser);
+        this.stockfrom.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.stockto.initialize(this.loginUser);
+        this.stockto.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("refresh", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Stock Ledger");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         setTimeout(function () {
             commonfun.addrequire();
-            $(".whname").focus();
+            $(".item").focus();
         }, 0);
     }
 
@@ -125,6 +160,7 @@ declare var commonfun: any;
         }
         try {
             var that = this;
+            $(".get").prop("disabled", true);
             that.whservice.getStockLedger({
                 "cmpid": that.loginUser.cmpid,
                 "whid": that.whid,
@@ -133,17 +169,30 @@ declare var commonfun: any;
                 "flag": ""
             }).subscribe(result => {
                 var dataset = result.data;
-                console.log(dataset);
                 //total row
                 that.totalRecords = dataset[1][0].recordstotal;
-                that.whstocklist = dataset[0];
+                if (dataset[0].length > 0) {
+                    var arrylist = [];
+                    that.whstocklist = dataset[0];
+                    $(".get").prop("disabled", false);
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    that.whstocklist = [];
+                    $(".get").prop("disabled", false);
+                    $(".item").focus();
+                    return;
+                }
+
             }, err => {
                 console.log("Error");
+                $(".get").prop("disabled", false);
             }, () => {
                 'Final'
             });
         } catch (e) {
             that._msg.Show(messageType.error, "error", e.message);
+            $(".get").prop("disabled", false);
             return;
         }
     }
@@ -158,9 +207,30 @@ declare var commonfun: any;
         this.itemId = 0;
         this.itemname = "";
         this.whstocklist = [];
-        $(".whname").focus();
+        $(".item").focus();
     }
 
+    //Total Debit Amount
+    TotalDebit() {
+        var debitamt = 0;
+        if (this.whstocklist.length > 0) {
+            for (let item of this.whstocklist) {
+                debitamt += item.outword;
+            }
+        }
+        return debitamt;
+    }
+
+    //Total Credit Amount
+    TotalCredit() {
+        var Creditamt = 0;
+        if (this.whstocklist.length > 0) {
+            for (let item of this.whstocklist) {
+                Creditamt += item.inword;
+            }
+        }
+        return Creditamt;
+    }
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "refresh") {
