@@ -51,6 +51,11 @@ const routerConfig =
                             }),
                         },
                         {
+                            path:'transferres', loadChildren: () => System.import('./trasnferrestriction').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
+                        {
                             path:'invlocation', loadChildren: () => System.import('./inventorylocation').then((comp: any) => {
                                 return comp.default;
                             }),

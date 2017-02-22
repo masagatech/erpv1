@@ -456,7 +456,7 @@ declare var commonfun: any;
                 ledgertransfe.push({
                     "autoid": 0,
                     "ledger": 0,
-                    "wareid": this.fromwareid,
+                    "whid": this.fromwareid,
                     "typ": 'TR',
                     "itemid": item.itemsid,
                     "rate": rate[0].val,
@@ -470,7 +470,7 @@ declare var commonfun: any;
                 ledgertransfe.push({
                     "autoid": 0,
                     "ledger": 0,
-                    "wareid": this.Towarid,
+                    "whid": this.Towarid,
                     "typ": 'TR',
                     "itemid": item.itemsid,
                     "rate": rate[0].val,

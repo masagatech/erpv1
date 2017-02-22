@@ -126,12 +126,6 @@ declare var commonfun: any;
             validateme.data[0].input.focus();
             return;
         }
-
-        // if (this.attName == "") {
-        //     this._msg.Show(messageType.error, "error", "Attribute required");
-        //     $("#attnam").focus();
-        //     return;
-        // }
         this.attributeServies.attsave(
             this.jsonparam()
         ).subscribe(result => {

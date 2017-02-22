@@ -69,10 +69,10 @@ declare var commonfun: any;
         this.setAuditDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
-        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Opening Stock");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -216,14 +216,16 @@ declare var commonfun: any;
         var that = this;
         try {
             var opestock = [];
+            debugger;
             for (let item of that.Openinglist) {
                 if (item.qty != "") {
+                     var rate = item.rate.filter(itemval => itemval.id == item.id);
                     opestock.push({
                         "autoid": item.autoid === null ? 0 : item.autoid,
                         "ledger": item.ledger === null ? 0 : item.ledger,
                         "itemid": item.value,
                         "rateid": item.rate[0].id,
-                        "rate": item.rate[0].val,
+                        "rate": rate[0].val,
                         "inword": item.qty,
                         "outward": 0,
                         "typ": "OB",
@@ -232,7 +234,7 @@ declare var commonfun: any;
                         "createdby": this.loginUser.login,
                         "amt": item.amt,
                         "rem": item.remark,
-                        "wareid": that.warehouseid,
+                        "whid": that.warehouseid,
                         "opedate": this.openstock.getDate(),
                         "remark": that.remark
                     })

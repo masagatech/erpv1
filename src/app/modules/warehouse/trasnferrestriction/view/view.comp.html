@@ -1,0 +1,8 @@
+<div class="table-responsive">
+		<p-dataTable #dt [value]="whlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+			(onRowClick)="EditItem(dt, $event)" [(selection)]="selectedRB1" expandableRows="true">
+			<p-column field="whcode" header="Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
+			<p-column field="whname" header="From Warehouse" [style]="{'width':'100px','text-align':'left'}"></p-column>
+            <!--<p-column field="whto" header="To Warehouse" [style]="{'width':'150px','text-align':'left'}"></p-column>-->
+		</p-dataTable>
+	</div>

@@ -26,6 +26,7 @@ declare var commonfun: any;
     // local veriable 
     whstocklist: any = [];
     totalRecords: number = 0;
+    totalDetailsRecords: number = 0;
     whname: any = "";
     whid: any = 0;
     itemname: any = "";
@@ -121,11 +122,11 @@ declare var commonfun: any;
     getAutoCompleteItem(me: any) {
         var _me = this;
         this._autoservice.getAutoData({
-            "type": "warehouseTrasnfer",
+            "type": "CatProdName",
             "search": me.itemname,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
-            "warehouse": this.whid,
+            //"warehouse": this.whid,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             $(".item").autocomplete({
@@ -150,6 +151,62 @@ declare var commonfun: any;
         })
     }
 
+    expandDetails(event) {
+        if (event.details && event.details.length > 0) { return; }
+        try {
+            var that = this;
+            var row = event;
+            row.loading = false;
+            that.whservice.getStockLedger({
+                "cmpid": that.loginUser.cmpid,
+                "whid": row.warid,
+                "fy": that.loginUser.fy,
+                "itemid": that.itemId,
+                "flag": ""
+            }).subscribe(result => {
+                var dataset = result.data;
+                that.totalDetailsRecords = dataset[1][0].recordstotal;
+                if (dataset[0].length > 0) {
+                    row.loading = true;
+                    row.details = dataset[0];
+                    $(".get").prop("disabled", false);
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    that.whstocklist = [];
+                    $(".get").prop("disabled", false);
+                    $(".item").focus();
+                    return;
+                }
+
+            }, err => {
+                console.log("Error");
+                $(".get").prop("disabled", false);
+            }, () => {
+                'Final'
+            });
+        } catch (error) {
+
+        }
+    }
+
+    TotalHand() {
+        var hand = 0;
+        if (this.whstocklist.length > 0) {
+            for (let item of this.whstocklist) {
+                hand += parseFloat(item.hand);
+            }
+        }
+        return hand;
+    }
+
+
+    whfocusout() {
+        if ($(".whname").val() == "") {
+            this.whid = 0;
+        }
+    }
+
     //Get Stock Ledger Data
     getWhStockLedger() {
         var validateme = commonfun.validate();
@@ -160,19 +217,19 @@ declare var commonfun: any;
         }
         try {
             var that = this;
+            that.whstocklist = [];
             $(".get").prop("disabled", true);
             that.whservice.getStockLedger({
                 "cmpid": that.loginUser.cmpid,
                 "whid": that.whid,
                 "fy": that.loginUser.fy,
                 "itemid": that.itemId,
-                "flag": ""
+                "flag": "expand"
             }).subscribe(result => {
                 var dataset = result.data;
                 //total row
                 that.totalRecords = dataset[1][0].recordstotal;
                 if (dataset[0].length > 0) {
-                    var arrylist = [];
                     that.whstocklist = dataset[0];
                     $(".get").prop("disabled", false);
                 }

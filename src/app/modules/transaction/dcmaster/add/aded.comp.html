@@ -37,9 +37,9 @@
 				</div>
 				<div class="col-md-6">
 					<div class='form-group'>
-						<label>Warehouse</label>
-						<select class="form-control" [(ngModel)]="wareid" tabindex="6">
-								<option *ngFor="let items of warehouselist" [value]="items.val">
+						<label>Salesman</label>
+						<select class="form-control" [(ngModel)]="salesid" tabindex="5">
+								<option *ngFor="let items of Salesmanlist" [value]="items.val">
 									{{items.label}}
 								</option>
 						</select>
@@ -47,9 +47,9 @@
 				</div>
 				<div class="col-md-6">
 					<div class='form-group'>
-						<label>Salesman</label>
-						<select class="form-control" [(ngModel)]="salesid" tabindex="5">
-								<option *ngFor="let items of Salesmanlist" [value]="items.val">
+						<label>Warehouse</label>
+						<select class="form-control" [(ngModel)]="wareid" tabindex="4">
+								<option *ngFor="let items of warehouselist" [value]="items.val">
 									{{items.label}}
 								</option>
 						</select>
@@ -68,39 +68,73 @@
 						</p-column>
 						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<input type="number" class="form-control text-right inlinetextbox" [(ngModel)]="row.qty" autocomplete='off' value="" />
+								<!--<input type="number" class="form-control text-right inlinetextbox" [(ngModel)]="row.qty" autocomplete='off' value="" />-->
+								<numtext [iscurrency]="false" css="inlinetextbox" [(ngModel)]="row.qty"></numtext>
 							</template>
 						</p-column>
 						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<numtext name="rate" css="inlinetextbox" [(ngModel)]="row.rate"></numtext>
+								<select [(ngModel)]="row.id" class="form-control inlinetextbox" (ngModelChange)="ratechange(row)">
+						<option *ngFor="let row of row.rateslist" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
 							</template>
 						</p-column>
-						<p-column field="dis" header="Dis" [style]="{'width':'120px','text-align':'left'}"></p-column>
-						<p-column field="amount" header="Amount" [style]="{'width':'120px','text-align':'left'}"></p-column>
-						<p-column header="Action" [style]="{'width':'80px','text-align':'left'}">
+						<p-column header="Dis %" [style]="{'width':'120px','text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<button class="btn btn-theme btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash"></i></button>
+								<numtext [iscurrency]="false" css="inlinetextbox" tabindex="7" [(ngModel)]="row.dis"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-theme btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash danger"></i></button>
 							</template>
 						</p-column>
 						<footer>
-							<table class="tableNoborder">
+							<table class="tableNoborder" style="height: 60px;">
 								<tbody>
 									<tr>
-										<td><input type="text" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
-												autocomplete='off' value="" /></td>
-										<td style="width:120px;"><input type="text" class="form-control qty" [(ngModel)]="qty" autocomplete='off' value="" /></td>
-										<td style="width:120px;"><input type="text" class="form-control rate" [(ngModel)]="Rate" autocomplete='off' value="" /></td>
-										<td style="width:120px;"><input type="text" class="form-control dis" [(ngModel)]="Dis" autocomplete='off' value="" /></td>
-										<td style="width:120px;"><input type="text" class="form-control amt" [(ngModel)]="Amount" autocomplete='off' value="" /></td>
-										<td style="width:80px;"><button type="button" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
+										<td style="vertical-align: top;"><input type="text" tabindex="6" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
+												autocomplete='off' value="" (keyup.enter)="NewRowAdd()" /></td>
+										<td style="width:120px;vertical-align: top;">
+											<!--<input type="text" class="form-control  qty" [(ngModel)]="qty" autocomplete='off' value="" />-->
+											<numtext [iscurrency]="false" css="inlinetextbox" tabindex="7" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis)"
+												[(ngModel)]="qty"></numtext>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<select [(ngModel)]="newrate" class="form-control" tabindex="8" (keyup.enter)="NewRowAdd()" (ngModelChange)="ratechange(qty,newrate,dis)"
+												class="form-control">
+												<option *ngFor="let row of rateslist" [value]="row.id">
+														{{row.val}}
+					    						</option>
+											</select>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<!--<input type="text" class="form-control dis" tabindex="9" [(ngModel)]="Dis" autocomplete='off' value="" />-->
+											<numtext [iscurrency]="false" css="inlinetextbox" tabindex="9" (keyup)="ratechange(qty,newrate,dis)" (keyup.enter)="NewRowAdd()"
+												[(ngModel)]="dis"></numtext>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<!--<input type="text" class="form-control amt" [(ngModel)]="Amount" autocomplete='off' value="" />-->
+											<numtext [iscurrency]="true" css="inlinetextbox" [islabel]="true" [(ngModel)]="amount"></numtext>
+										</td>
+										<td style="width:80px;vertical-align: top;"><button type="button" tabindex="10" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td *ngIf="totalqty.length > 0">{{totalqty}}</td>
 									</tr>
 								</tbody>
 							</table>
 
 						</footer>
 					</p-dataTable>
-
 				</div>
 			</div>
 		</div>
@@ -109,7 +143,7 @@
 		<div class="panel-body">
 			<ul class="nav nav-tabs">
 				<li class="active"><a data-target="#itemdis" role="button" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>
-				<li><a data-target="#trans" role="button" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
+				<li><a data-target="#trans" role="button" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transportation</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane" id="itemdis">
@@ -176,15 +210,53 @@
 					</div>
 				</div>
 				<div class="tab-pane" id="trans">
-					<div class='form-group'>
-						<label>Transpoter</label>
-						<select class="form-control" [(ngModel)]="Traspoter" tabindex="6">
+					<div *ngIf="isinvoice">
+						<div class="col-md-12">
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>LR No</label>
+									<input type="text" class="form-control" name="txtlr" value="" />
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class='form-group'>
+									<label>LR Date</label>
+									<div class="controls">
+										<div class="input-group">
+											<input type="text" name="date" id="lrDate" tabindex="3" class="date-picker form-control" [(ngModel)]="delDate" />
+											<label for="date" class="input-group-addon btn">
+												<span class="glyphicon glyphicon-calendar"></span>
+										</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class='form-group'>
+									<label>Transpoter</label>
+									<select class="form-control" [(ngModel)]="Traspoter" tabindex="6">
 								<option *ngFor="let items of Transpoterlist" [value]="items.val">
 									{{items.label}}
 								</option>
-						</select>
+								</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Ref No</label>
+									<input type="text" class="form-control" name="txtrefno" value="" />
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group">
+									<label>Remark</label>
+									<textarea type="text" class="form-control" name="txtremark" value=""></textarea>
+								</div>
+							</div>
+						</div>
 					</div>
-
 				</div>
 			</div>
 		</div>

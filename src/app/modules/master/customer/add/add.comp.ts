@@ -116,6 +116,9 @@ declare var commonfun: any;
     @ViewChild('attribute')
     attribute: AttributeComp;
 
+    //  @ViewChild('transpoter')
+    // transpoter: AttributeComp;
+
     private subscribeParameters: any;
 
     //Add Servies Refrence
@@ -1206,11 +1209,9 @@ declare var commonfun: any;
             $('textarea').removeAttr('disabled');
             $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
+             this.addressBook.AddBook(this.code);
             $(".fname").focus();
-            this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
         }

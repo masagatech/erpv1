@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 
 import { CalendarModule } from '../../usercontrol/calendar';
 
-import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule,DataListModule,CheckboxModule } from 'primeng/primeng';
 
 
 @Component({
@@ -40,7 +40,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
-    FormsModule, CommonModule, DataTableModule, CheckboxModule,CalendarModule],
+    FormsModule, CommonModule,DataListModule,DataTableModule, CheckboxModule,CalendarModule],
     declarations: [
         WhStockLed,
         WhStockComp

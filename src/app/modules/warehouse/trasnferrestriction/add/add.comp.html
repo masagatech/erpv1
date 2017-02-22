@@ -1,0 +1,47 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-10">
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>From A</label>
+					<input type="text" validate="" class="form-control wha" tabindex="1" validate="" [(ngModel)]="froma" (keyup)="getAutoCompleteWha(this)">
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>To B</label>
+					<input type="text" validate="" class="form-control whb" tabindex="2" (keyup.enter)="NewAddWH()" validate="" [(ngModel)]="fromb"
+						(keyup)="getAutoCompleteWhb(this)">
+				</div>
+			</div>
+			<div>
+				<div class='form-group'>
+					<div style="padding-top: 28px;">
+						<button class="btn btn-theme btn-sm add" type="button" tabindex="3" (click)="NewAddWH()"><i class="fa fa-plus"></i></button>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class='form-group'>
+					<label>Remark</label>
+					<textarea type="text" class="form-control medium-text-box" tabindex="4" [(ngModel)]="remark"></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-10">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="whlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+			(onRowClick)="EditItem(dt, $event)" [(selection)]="selectedRB1" expandableRows="true">
+			<p-column field="whcode" header="Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
+			<p-column field="whname" header="Warehouse name" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column header="Action" [style]="{'width':'20px','text-align':'center'}">
+				<template let-col let-row="rowData" pTemplate="editor">
+					<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+				</template>
+			</p-column>
+		</p-dataTable>
+	</div>
+</div>

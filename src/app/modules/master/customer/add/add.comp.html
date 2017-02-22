@@ -79,7 +79,98 @@
 			</div>
 			<div class="tab-pane" id="itemdis">
 				<div class="row">
-					<div class="col-md-5">
+					<div class="panel panel-theme">
+						<div class="panel-body">
+							<div class="col-md-12">
+								<div class="col-md-2">
+									<div class='form-group'>
+										<label>Discount</label>
+										<select [(ngModel)]="debit" class="form-control" tabindex="23">
+									<option [value]="'0'">Select Discount</option>
+											<option *ngFor="let row of discountlist" [value]="row.value">
+												{{row.label}}
+									</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-1">
+									<div class='form-group'>
+										<label>From</label>
+										<input type="text" class="form-control fromval text-right" tabindex="12" [(ngModel)]="fromval">
+									</div>
+								</div>
+								<div class="col-md-1">
+									<div class='form-group'>
+										<label>To</label>
+										<input type="text" class="form-control toval text-right" tabindex="13" [(ngModel)]="toval">
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class='form-group'>
+										<label>Amount</label>
+										<select [(ngModel)]="debit" class="form-control" tabindex="23">
+											<option [value]="'0'">Select Amount</option>
+											<option *ngFor="let row of discountlist" [value]="row.value">
+												{{row.label}}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class='form-group'>
+										<label>Value</label>
+										<input type="text" class="form-control disval text-right" tabindex="14" (keyup.enter)="AddNewdisattr()" [(ngModel)]="dis">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div style="padding-top:28px;">
+										<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>Applicable on sales invoice</label>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="col-md-3">
+									<div class='form-group'>
+										<label>Item</label>
+										<input type="text" class="form-control" tabindex="14" [(ngModel)]="item">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class='form-group'>
+										<label>Customer</label>
+										<input type="text" class="form-control" tabindex="14" [(ngModel)]="cust">
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div style="padding-top:28px;">
+										<button class="btn btn-theme btn-sm"><i class="fa fa-plus"></i></button>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8">
+								<table class="table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Item</th>
+											<th>Customer</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody *ngFor="let row of itemslist let i=index">
+										<tr>
+											<td><span>{{i+1}}</span></td>
+											<td>{{row.item}}</td>
+											<td>{{row.cust}}</td>
+											<td><button class="btn btn-theme btn-sm" (click)="itemsRemove(row)"><i class="fa fa-trash"></i></button></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<!--<div class="col-md-5">
 						<div class="panel panel-theme">
 							<div class="panel-heading">
 								<h3 class="panel-title">Items Discount</h3>
@@ -191,7 +282,7 @@
 								</tbody>
 							</table>
 						</div>
-					</div>
+					</div>-->
 				</div>
 			</div>
 			<div class="tab-pane" id="sales">
