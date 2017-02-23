@@ -13,11 +13,11 @@
                 <div class="form-group">
                     <label class="control-label">Financial Year</label>
                     <select id="fy" name="fy" [(ngModel)]="fy" class="form-control">
-                            <option value="0">-- Select Financial Year --</option>
-                            <option *ngFor="let fyrow of FYDT" [value]="fyrow.fyid">
-                                {{fyrow.fyname}}
-                            </option>
-                        </select>
+                        <option value="0">-- Select Financial Year --</option>
+                        <option *ngFor="let fyrow of FYDT" [value]="fyrow.fyid">
+                            {{fyrow.fyname}}
+                        </option>
+                    </select>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -71,48 +71,34 @@
 
         <div class="panel-body">
             <div class="col-md-8">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th width="20px"></th>
-                            <th width="300px">Milestone</th>
-                            <th>Date</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let row of milestoneDT; let i=index;">
-                            <td width="20px" class="textalign">
-                                {{i+1}}
-                            </td>
-                            <td width="300px">
-                                <input type="text" name="msname{{i+1}}" [(ngModel)]="row.msname" class="msname form-control inlinetextbox" />
-                            </td>
-                            <td width="300px">
-                                <input type="text" name="msdate{{i+1}}" [(ngModel)]="row.msdate" class="form-control inlinetextbox" />
-                                <!--<calendar #msdate [name]="'msdate' + i + 1"></calendar>-->
-                            </td>
-                            <td>
-                                <button type="button" name="btnremove{{i+1}}" class="btn btn-theme btn-sm fa fa-trash" (click)="deleteMilestone(row)"></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td width="20px">#</td>
-                            <td width="300px">
-                                <input type="text" name="newmsname" [(ngModel)]="newmsname" class="form-control" />
-                            </td>
-                            <td width="300px">
-                                <input type="text" name="newmsdate" [(ngModel)]="newmsdate" class="form-control" />
-                                <!--<calendar #newmsdate [name]="'msdate'" (keyup.enter)="NewRowAdd()"></calendar>-->
-                            </td>
-                            <td>
-                                <button type="button" name="btnadd" class="btn btn-theme btn-sm fa fa-plus" (click)="NewRowAdd()"></button>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div class="table-responsive">
+                    <p-dataTable #dt [value]="milestoneDT" [editable]="true" [lazy]="true">
+                        <p-column field="msname" header="Milestone" [editable]="!isdetails" [styleClass]="form-control" [style]="{'width':'325px','text-align':'left'}"></p-column>
+                        <p-column field="msdate" header="Date" [editable]="!isdetails" [styleClass]="form-control" [style]="{'width':'325px','text-align':'left'}"></p-column>
+                        <p-column [style]="{'text-align':'center'}" *ngIf="!isdetails">
+                            <template let-col let-row="rowData" pTemplate="editor">
+                                <button class="btn btn-danger btn-sm" (click)="deleteMilestone(row)"><i class="fa fa-trash"></i></button>
+                            </template>
+                        </p-column>
+                        <footer *ngIf="!isdetails">
+                            <table class="table table-striped table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td width="325px">
+                                            <input type="text" name="newmsname" [(ngModel)]="newmsname" class="form-control" />
+                                        </td>
+                                        <td width="325px">
+                                            <input type="text" name="newmsdate" [(ngModel)]="newmsdate" class="form-control" />
+                                        </td>
+                                        <td>
+                                            <button type="button" name="btnadd" class="btn btn-theme btn-sm" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </footer>
+                    </p-dataTable>
+                </div>
             </div>
         </div>
     </div>
@@ -127,7 +113,7 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="attr">
-                    <attribute #attr></attribute>
+                    <attribute #attr [isdetails]="isdetails"></attribute>
                 </div>
                 <div class="tab-pane" id="docupload">
                 </div>
