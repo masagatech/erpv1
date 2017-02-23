@@ -13,8 +13,6 @@ declare var $: any;
     providers: [AttributeService]
 })
 
-
-
 export class AttributeComp implements OnInit, OnDestroy {
     //Local Veriable 
     attrparam: any = [];
@@ -24,12 +22,12 @@ export class AttributeComp implements OnInit, OnDestroy {
     attrname: any = "";
     attrid: number = 0;
     Duplicateflag: boolean = false;
+    
+    @Input() isdetails: boolean = false;
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
-
-
 
     constructor(private _adrbookservice: AttributeService, private _commonservice: CommonService,
         private _msg: MessageService, private _userService: UserService) {
