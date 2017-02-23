@@ -1,0 +1,42 @@
+<form id="frmbudget">
+    <div class="panel panel-theme">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Budget</label>
+                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="getEnvelopeData()">
+                            <option value="0">-- Select Budget --</option>
+                            <option *ngFor="let row of BudgetDT" [value]="row.bid">
+                                {{row.btitle}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="table-responsive">
+                        <p-dataTable #dt [value]="envelopeDT" [lazy]="true">
+                            <p-column header="#" [style]="{'width':'40px','text-align':'left'}">
+                                <template let-i="rowIndex" pTemplate="editor">
+                                    {{i + 1}}
+                                </template>
+                            </p-column>
+                            <p-column header="Chart of Accounts" [style]="{'width':'360px','text-align':'left'}">
+                                <template let-row="rowData" pTemplate="body">
+                                    {{row.coaname}}
+                                </template>
+                            </p-column>
+                            <p-column header="Envelope" [style]="{'width':'360px','text-align':'left'}">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor">
+                                    <input type="text" name="envtitle{{i + 1}}" [(ngModel)]="row.envtitle" class="form-control" />
+                                </template>
+                            </p-column>
+                        </p-dataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

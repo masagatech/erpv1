@@ -28,6 +28,11 @@ const routerConfig = [
             }),
           },
           {
+            path: 'envelope', loadChildren: () => System.import('./envelope').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          {
             path: 'startforecasting', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
               return comp.default;
             }),

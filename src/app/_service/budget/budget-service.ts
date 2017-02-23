@@ -28,6 +28,16 @@ export class BudgetService {
 
     // Ownership
 
+    getEnvelope(req: any) {
+        return this._dataserver.post("getEnvelope", req)
+    }
+
+    saveEnvelope(req: any) {
+        return this._dataserver.post("saveEnvelope", req)
+    }
+
+    // Ownership
+
     getOwnership(req: any) {
         return this._dataserver.post("getOwnership", req)
     }
