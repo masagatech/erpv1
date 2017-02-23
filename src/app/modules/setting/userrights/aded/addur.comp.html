@@ -89,7 +89,7 @@
 											<div class="panel-body">
 												<div *ngFor="let row of selectedCompany.menudetails | groupBy:'pname'; let i = index;">
 													<div class="panel-heading">
-														<h3 class="panel-title">{{row.key}}</h3>
+														<h4>{{row.key}}</h4>
 													</div>
 													<div class="panel-body">
 														<div class="col-md-12 allcheckboxes" *ngFor="let drow of row.value">
