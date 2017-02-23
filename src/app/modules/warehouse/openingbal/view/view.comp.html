@@ -1,12 +1,16 @@
 <div class="table-responsive">
-    <p-dataTable #dt [value]="Openinglist" [lazy]="true" [rows]="10" [paginator]="true"
-     [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"  (onRowClick)="EditItem(dt, $event)"
-        [(selection)]="selectedRB1" expandableRows="true">
-        <p-column field="code" header="Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
-        <p-column field="warename" header="Warehouse name" [style]="{'width':'100px','text-align':'left'}"></p-column>
-        <p-column field="opedate" header="Op . date" [style]="{'width':'30px','text-align':'left'}"></p-column>
-        <p-column field="itemcount" header="Items count" [style]="{'width':'30px','text-align':'left'}"></p-column>
-        <p-column field="qtytoal" header="Total qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
-        <p-column field="remark" header="Remark" [style]="{'width':'50px','text-align':'left'}"></p-column>
-    </p-dataTable>
+	<p-dataTable #dt [value]="Openinglist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+		(onRowClick)="EditItem(dt, $event)" [(selection)]="selectedRB1" expandableRows="true">
+		<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				{{rowIndex+1}}
+			</template>
+		</p-column>
+		<p-column field="code" header="Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
+		<p-column field="warename" header="Warehouse name" [style]="{'width':'100px','text-align':'left'}"></p-column>
+		<p-column field="opedate" header="Op . date" [style]="{'width':'30px','text-align':'left'}"></p-column>
+		<p-column field="itemcount" header="Items count" [style]="{'width':'30px','text-align':'left'}"></p-column>
+		<p-column field="qtytoal" header="Total qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
+		<p-column field="remark" header="Remark" [style]="{'width':'50px','text-align':'left'}"></p-column>
+	</p-dataTable>
 </div>

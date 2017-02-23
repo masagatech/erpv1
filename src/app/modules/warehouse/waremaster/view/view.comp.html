@@ -1,6 +1,11 @@
 <div class="table-responsive">
 	<p-dataTable #dt [value]="Warehaouselist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
 		[(selection)]="selectedRB1" expandableRows="true">
+		<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				{{rowIndex+1}}
+			</template>
+		</p-column>
 		<p-column field="code" header="Code" [style]="{'width':'80px','text-align':'left'}">
 			<template let-row="rowData" pTemplate type="body">
 				<a role="button" (click)="EditItem(row)">{{row.code}}</a>

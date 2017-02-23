@@ -12,6 +12,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
+declare var commonfun: any;
 @Component({
     templateUrl: 'aded.comp.html',
     providers: [dcmasterService, CommonService]
@@ -145,6 +146,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             });
             $("#lrDate").datepicker('setDate', docdate);
             $('.custname').focus();
+            commonfun.addrequire();
         }, 0);
 
 
@@ -187,8 +189,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "createdby": that.loginUser.login
             }).subscribe(isproc => {
                 var returnval = isproc.data;
-                that.isconfirm = returnval[0].navigat;
-                that.isinvoice = returnval[0].val;
+                that.isinvoice = returnval[0].navigat;
+                that.isconfirm = returnval[0].val;
             }, err => {
                 console.log("Error");
             }, () => {
@@ -210,6 +212,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.shippAdr = "";
         this.Remark1 = "";
         this.Remark2 = "";
+        this.salesid = 0;
+        this.Salesmanlist = [];
+        this.wareid = 0;
+        this.warehouselist = [];
         this.newAddRow = [];
 
     }
@@ -230,29 +236,45 @@ export class dcADDEdit implements OnInit, OnDestroy {
         return jsonparam;
     }
 
-    paramterjson() {
-        this.docdate = $('#docDate').datepicker('getDate');
-        this.delDate = $('#delDate').datepicker('getDate');
-        var param = {
-            "dcno": this.DocNo,
-            "docdate": this.docdate,
-            "acid": 1,
-            "refno": this.Token,
-            "deldate": this.delDate,
-            "salesid": this.salesid,
-            "traspo": this.Traspoter,
-            "status": "",
-            "billingadr": this.BillAdr,
-            "shippadr": this.shippAdr,
+    //Auto Confirm Sales Order Confirm 
+    confirmparam() {
+        var confparam = {
             "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
-            "remark": this.Remark,
-            "directinvoice": this.DirectInvoice,
-            "dcdetails": this.salesorderdetailsjson(),
-            "remark1": this.Remark1,
-            "remark2": this.Remark2,
-            "remark3": this.Remark3
+            "confimstatus": "auto confirm",
+            "autoconfirm": this.isconfirm
+        }
+        return confparam;
+    }
+
+    paramterjson() {
+        var that = this;
+        that.docdate = $('#docDate').datepicker('getDate');
+        that.delDate = $('#delDate').datepicker('getDate');
+        var param = {
+            "dcno": that.DocNo,
+            "docdate": that.docdate,
+            "acid": 1,
+            "refno": that.Token,
+            "deldate": that.delDate,
+            "salesid": that.salesid,
+            "traspo": that.Traspoter,
+            "status": "",
+            "billingadr": that.BillAdr,
+            "shippadr": that.shippAdr,
+            "fy": that.loginUser.fy,
+            "cmpid": that.loginUser.cmpid,
+            "createdby": that.loginUser.login,
+            "remark": that.Remark,
+            "directinvoice": that.DirectInvoice,
+            "dcdetails": that.salesorderdetailsjson(),
+            "autoconfirm": that.isconfirm,
+            "autoinvoice": that.isinvoice,
+            "confirmparam": that.confirmparam(),
+            "remark1": that.Remark1,
+            "remark2": that.Remark2,
+            "remark3": that.Remark3
         }
         console.log(param);
         return param;
@@ -265,16 +287,14 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this._router.navigate(['transaction/dcmaster/view']);
         }
         if (evt === "save") {
-            // if (this.CustName == '' || this.CustName == undefined) {
-            //     alert('Please Enter Customer');
-            //     return false;
-            // }
-            // if (this.Traspoter == '' || this.Traspoter == undefined) {
-            //     alert('Please Select Transpoter');
-            //     return false;
-            // }
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
             if (this.newAddRow.length == 0) {
-                this._msg.Show(messageType.error, "error", "Please Enter Items Details");
+                this._msg.Show(messageType.error, "error", "Please enter items detail");
                 return false;
             }
             this.dcServies.saveDcMaster(
@@ -485,9 +505,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 //this.amount = amt.toFixed(2);
             }
         } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
 
         }
-        debugger;
     }
 
     // //Selected Items
