@@ -5,7 +5,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Budget</label>
-                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control">
+                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="getCommitteeData()">
                             <option value="0">-- Select Budget --</option>
                             <option *ngFor="let row of BudgetDT" [value]="row.bid">
                                 {{row.btitle}}
@@ -15,50 +15,64 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-8">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th width="20px"></th>
-                                <th>Employee</th>
-                                <th width="300px">Role</th>
-                                <th width="40px"></th>
-                            </tr>
-                        </thead>
-                        <tbody *ngIf="committeeDT.length">
-                            <tr *ngFor="let row of committeeDT | filterBy : {isactive: true}; let i=index;">
-                                <td width="20px" class="textalign">
-                                    {{i+1}}
-                                </td>
-                                <td>
-                                    <input type="text" name="empname{{i+1}}" tabindex="{{i+1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox"
-                                        (keyup)="getEmpAuto(row, 1)" />
-                                </td>
-                                <td width="300px">
-                                    <input type="text" name="role{{i+1}}" tabindex="{{i+2}}" [(ngModel)]="row.role" class="form-control inlinetextbox" />
-                                </td>
-                                <td width="40px">
-                                    <button type="button" name="btnremove{{i+1}}" class="btn btn-danger btn-sm fa fa-trash" (click)="deleteCommittee(row)"></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td width="20px">#</td>
-                                <td>
-                                    <input type="text" name="newempname" tabindex="{{(committeeDT.length * 2) + 3}}" [(ngModel)]="newempname" class="empname form-control"
-                                        (keyup)="getEmpAuto(this, 0)" (keydown.enter)="addCommittee()" />
-                                </td>
-                                <td width="300px">
-                                    <input type="text" name="newrole" tabindex="{{(committeeDT.length * 2) + 4}}" [(ngModel)]="newrole" class="form-control"
-                                        (keydown.enter)="addCommittee()" (keydown.tab)="addCommittee()" />
-                                </td>
-                                <td width="40px">
-                                    <button type="button" name="btnadd" class="btn btn-theme btn-sm fa fa-plus" (click)="addCommittee()"></button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div class="col-md-9">
+                    <div class="table-responsive">
+                        <p-dataTable #dt [value]="committeeDT | filterBy : {isactive: true}" [editable]="!isdetails" [lazy]="true">
+                            <p-column header="#" [style]="{'width':'40px','text-align':'left'}">
+                                <template let-i="rowIndex" pTemplate="editor">
+                                    {{i + 1}}
+                                </template>
+                            </p-column>
+                            <p-column header="Employee" [style]="{'width':'360px','text-align':'left'}">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+                                    {{row.empname}}
+                                </template>
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+                                    <input type="text" name="empname{{i + 1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox" />
+                                </template>
+                            </p-column>
+                            <p-column header="Role" [style]="{'width':'360px','text-align':'left'}">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+                                    {{row.role}}
+                                </template>
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+                                    <input type="text" name="role{{i + 1}}" [(ngModel)]="row.role" class="empname form-control inlinetextbox" />
+                                </template>
+                            </p-column>
+                            <p-column [style]="{'text-align':'center'}" *ngIf="!isdetails">
+                                <template let-col let-row="rowData" pTemplate="editor">
+                                    <button class="btn btn-danger btn-sm" (click)="deleteCommittee(row)"><i class="fa fa-trash"></i></button>
+                                </template>
+                            </p-column>
+                            <footer *ngIf="!isdetails">
+                                <table class="table table-striped table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td width="40px">
+                                            </td>
+                                            <td width="360px">
+                                                <input type="text" name="newempname" [(ngModel)]="newempname" class="empname form-control" (keyup)="getEmpAuto(this, 0)"
+                                                    (keydown.enter)="addCommittee()" />
+                                            </td>
+                                            <td width="360px">
+                                                <input type="text" name="newrole" [(ngModel)]="newrole" class="form-control" (keydown.enter)="addCommittee()" (keydown.tab)="addCommittee()"
+                                                />
+                                            </td>
+                                            <td>
+                                                <button type="button" name="btnadd" class="btn btn-theme btn-sm" (click)="addCommittee()"><i class="fa fa-plus"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </footer>
+                        </p-dataTable>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9">
+                    <label class="control-label">Responsibilities</label>
+                    <textarea name="resp" validate="" [(ngModel)]="resp" class="form-control big-text-box" cols="150" rows="5"></textarea>
                 </div>
             </div>
         </div>

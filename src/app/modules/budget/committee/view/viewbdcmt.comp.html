@@ -23,18 +23,20 @@
 
 <div class="col-md-12">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="viewCommitteeDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadCommitteeGrid($event)">
-			<p-column field="btitle" header="Title" [style]="{'width':'150px','text-align':'left'}"></p-column>
-            <p-column field="empname" header="Emp Name" [style]="{'text-align':'left'}"></p-column>
-			<p-column field="role" header="Role" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column [style]="{'width':'60px','text-align':'left'}">
-				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="openCommittee(row)" class="btn btn-theme btn-sm">
+		<div class="panel-body">
+			<p-dataTable #dt [value]="viewCommitteeDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadCommitteeGrid($event)">
+				<p-column field="btitle" header="Title" [style]="{'width':'150px','text-align':'left'}"></p-column>
+				<p-column field="empname" header="Emp Name" [style]="{'text-align':'left'}"></p-column>
+				<p-column field="role" header="Role" [style]="{'width':'150px','text-align':'left'}"></p-column>
+				<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+				<p-column [style]="{'width':'60px','text-align':'left'}">
+					<template let-row="rowData" pTemplate type="body">
+						<button type="button" (click)="openCommittee(row)" class="btn btn-theme btn-sm">
 						<i class="fa fa-arrow-right"></i>
 					</button>
-				</template>
-			</p-column>
-		</p-dataTable>
+					</template>
+				</p-column>
+			</p-dataTable>
+		</div>
 	</div>
 </div>

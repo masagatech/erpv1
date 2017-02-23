@@ -28,6 +28,7 @@ export class ViewCommitteeComp implements OnInit {
         private _userService: UserService) {
         this.loginUser = this._userService.getUser();
         this.fillStatusDropDown();
+        this.getCommitteeMaster();
         this.resetCommitteeFields();
     }
 
@@ -57,11 +58,25 @@ export class ViewCommitteeComp implements OnInit {
         this.status = "true";
     }
 
+    getCommitteeMaster() {
+        var that = this;
+
+        that._budgetservice.getCommittee({
+            "flag": "all", "from": 0, "to": 10, "isactive": true
+        }).subscribe(committee => {
+            that.viewCommitteeDT = committee.data[0];
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     getCommittee(from: number, to: number) {
         var that = this;
 
         that._budgetservice.getCommittee({
-            "flag": "all", "from": from, "to": to, "isactive": that.status
+            "flag": "all", "from": from, "to": to, "isactive": true
         }).subscribe(committee => {
             that.totalRecords = committee.data[1][0].recordstotal;
             that.viewCommitteeDT = committee.data[0];

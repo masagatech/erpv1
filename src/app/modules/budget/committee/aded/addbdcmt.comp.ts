@@ -34,6 +34,7 @@ export class AddCommitteeComp implements OnInit {
     newempid: number = 0;
     newempname: string = "";
     newrole: string = "";
+    resp: string = "";
 
     counter: any;
 
@@ -65,7 +66,9 @@ export class AddCommitteeComp implements OnInit {
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+    }
 
+    setBudgetCommittee() {
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
                 this.setActionButtons.setTitle("Budget Committee > Add");
@@ -87,7 +90,7 @@ export class AddCommitteeComp implements OnInit {
                 $('textarea').prop('disabled', false);
 
                 this.bid = params['id'];
-                this.getCommitteeDataByBID(this.bid);
+                //this.getCommitteeDataByBID(this.bid);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
@@ -101,7 +104,7 @@ export class AddCommitteeComp implements OnInit {
                 $('textarea').prop('disabled', true);
 
                 this.bid = params['id'];
-                this.getCommitteeDataByBID(this.bid);
+                //this.getCommitteeDataByBID(this.bid);
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
@@ -159,7 +162,6 @@ export class AddCommitteeComp implements OnInit {
         var that = this;
 
         // Validation
-
         if (that.newempname == "") {
             that._msg.Show(messageType.error, "Error", "Please Enter Committee");
             return;
@@ -177,6 +179,7 @@ export class AddCommitteeComp implements OnInit {
                 'empid': that.newempid,
                 'empname': that.newempname,
                 'role': that.newrole,
+                'resp': that.resp,
                 'uidcode': that.loginUser.login,
                 'isactive': true
             });
@@ -224,14 +227,15 @@ export class AddCommitteeComp implements OnInit {
         })
     }
 
-    // get budget master by id
+    // get Committee by ID
 
-    getCommitteeDataByBID(pbid: number) {
+    getCommitteeData() {
         var that = this;
 
-        that._budgetservice.getCommittee({ "flag": "edit", "bid": pbid }).subscribe(data => {
+        that._budgetservice.getCommittee({ "flag": "edit", "bid": that.bid }).subscribe(data => {
             var _committeedata = data.data;
             that.committeeDT = _committeedata;
+            that.resp = _committeedata[0].resp;
         }, err => {
             console.log("Error");
         }, () => {

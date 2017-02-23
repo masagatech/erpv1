@@ -33,10 +33,10 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddCommitteeComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"bdcmt", "rights": "add", "urlname": "" }},
+                    { path: '', component: AddCommitteeComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"bdcmt", "rights": "add", "urlname": "" }},
                     { path: 'edit/:id', component: AddCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "edit", "urlname": "/edit" } },
                     { path: 'details/:id', component: AddCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: ViewCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "view", "urlname": "/committee" } },
+                    //{ path: '', component: ViewCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "view", "urlname": "/committee" } },
                 ]
             }
         ]
