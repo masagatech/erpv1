@@ -37,7 +37,7 @@ export class ViewEmployee implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.title = "View Employee";
+        this.setActionButtons.setTitle("Employee");
         this.type = "EmpWithCode";
 
         this.setActionRights();

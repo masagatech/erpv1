@@ -199,6 +199,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     }
 
                     if (that.isadd) {
+                        this.setActionButtons.setTitle("Employee > Add");
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -209,6 +210,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else if (that.isedit) {
+                        this.setActionButtons.setTitle("Employee > Edit");
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -219,14 +221,13 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else {
-                        that.title = "Details of Employee";
-                        //$('div *').prop('disabled', true);
-
+                        this.setActionButtons.setTitle("Employee > Details");
                         $('button').prop('disabled', true);
                         $('input').prop('disabled', true);
                         $('select').prop('disabled', true);
                         $('textarea').prop('disabled', true);
 
+                        $('#uname').prop('disabled', true);
                         this.actionButton.find(a => a.id === "save").hide = true;
                         this.actionButton.find(a => a.id === "edit").hide = false;
                     }
