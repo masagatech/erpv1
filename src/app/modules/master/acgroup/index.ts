@@ -3,8 +3,8 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
-import { acadd } from './add/add.comp';                //Purchase Add
-import { acview } from './view/view.comp';             //Purchase View
+import { acadd } from './add/add.comp';                
+import { acview } from './view/view.comp';             
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -28,8 +28,6 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-
-                    //Bank Payment Add Edit View
                     { path: 'add', component: acadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "add", "urlname": "/add" } },
                     { path: 'edit/:id', component: acadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: acview, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "view", "urlname": "/acgroup" } },
