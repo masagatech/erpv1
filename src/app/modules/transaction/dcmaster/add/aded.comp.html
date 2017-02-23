@@ -38,7 +38,7 @@
 				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Salesman</label>
-						<select class="form-control" [(ngModel)]="salesid" tabindex="5">
+						<select class="form-control" [(ngModel)]="salesid" tabindex="4">
 								<option *ngFor="let items of Salesmanlist" [value]="items.val">
 									{{items.label}}
 								</option>
@@ -48,7 +48,7 @@
 				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Warehouse</label>
-						<select class="form-control" [(ngModel)]="wareid" tabindex="4">
+						<select class="form-control" [(ngModel)]="wareid" tabindex="5">
 								<option *ngFor="let items of warehouselist" [value]="items.val">
 									{{items.label}}
 								</option>
@@ -60,7 +60,12 @@
 				<div class="table-responsive">
 					<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
 						expandableRows="true" [responsive]="true">
-						<p-column header="Item" footerTemplate="true" [style]="{'text-align':'left'}">
+						<p-column header="#" [style]="{'width':'30px'}">
+							<template let-col let-row = "rowData" let-rowIndex="rowIndex" pTemplate="editor">
+								{{rowIndex+1}}
+							</template>
+						</p-column>
+						<p-column header="Item" [style]="{'text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<input type="text" class="form-control ProdName inlinetextbox" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
 									autocomplete='off' value="" />
@@ -93,13 +98,16 @@
 						</p-column>
 						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<button class="btn btn-theme btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash danger"></i></button>
+								<button class="btn btn-theme btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash"></i></button>
 							</template>
 						</p-column>
 						<footer>
 							<table class="tableNoborder" style="height: 60px;">
 								<tbody>
 									<tr>
+										<td style="width:30px;vertical-align: top;">
+											<label>#</label>
+										</td>
 										<td style="vertical-align: top;"><input type="text" tabindex="6" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
 												autocomplete='off' value="" (keyup.enter)="NewRowAdd()" /></td>
 										<td style="width:120px;vertical-align: top;">
@@ -223,7 +231,7 @@
 									<label>LR Date</label>
 									<div class="controls">
 										<div class="input-group">
-											<input type="text" name="date" id="lrDate" tabindex="3" class="date-picker form-control" [(ngModel)]="delDate" />
+											<input type="text" name="date" id="lrDate" tabindex="3" class="date-picker form-control" [(ngModel)]="lrDate" />
 											<label for="date" class="input-group-addon btn">
 												<span class="glyphicon glyphicon-calendar"></span>
 										</label>

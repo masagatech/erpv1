@@ -75,10 +75,6 @@ declare var commonfun: any;
                 if (result.data.length > 0) {
                     this.warehousedetails = result.data;
                 }
-                else {
-                    this._msg.Show(messageType.info, "info", "Record Not Found");
-                }
-
             }, err => {
                 console.log("Error");
             }, () => {

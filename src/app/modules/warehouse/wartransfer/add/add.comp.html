@@ -22,6 +22,11 @@
             <div class="col-md-12">
                 <div class="table-responsive">
                     <p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1" expandableRows="true">
+                        <p-column header="#" [style]="{'width':'30px'}">
+							<template let-col let-row = "rowData" let-rowIndex="rowIndex" pTemplate="editor">
+								{{rowIndex+1}}
+							</template>
+						</p-column>
                         <p-column header="Item" [style]="{'text-align':'left'}">
                             <template let-col let-row="rowData" pTemplate="editor">
 								<input type="text" class="form-control ProdName inlinetextbox" autocomplete='off' value="" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
@@ -66,6 +71,9 @@
                             <table class="tableNoborder" style="height: 60px">
                                 <tbody>
                                     <tr>
+                                         <td style="width:30px;vertical-align: top;">
+                                             <label>#</label>
+                                         </td>
                                         <td style="vertical-align: top;">
                                             <input type="text" id="foot_custname" class="form-control ProdName" tabindex="4" (keyup.enter)="NewRowAdd()" autocomplete='off' value="" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)" autocomplete='off' value="" />
                                         </td>
@@ -82,11 +90,9 @@
                                             <numtext [iscurrency]="true" tabindex="7" (keyup.enter)="NewRowAdd()" [(ngModel)]="amt"></numtext>
                                         </td>
                                         <td style="width:120px;vertical-align: top;">
-                                            <!--<label>{{asfora}}</label>-->
                                             <numtext [iscurrency]="false" [islabel]="true" [id]="asfora" [(ngModel)]="asfora"></numtext>
                                         </td>
                                         <td style="width:120px;vertical-align: top;">
-                                            <!--<label>{{asforb}}</label>-->
                                             <numtext [iscurrency]="false" [islabel]="true" [id]="asforb" [(ngModel)]="asforb"></numtext>
                                         </td>
                                         <td style="width:80px;vertical-align: top;">

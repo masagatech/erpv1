@@ -36,21 +36,25 @@
 <div class="col-md-12">
 	<div class="table-responsive" *ngIf="whstocklist.length > 0">
 		<p-dataTable #dt [value]="whstocklist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-			 (onRowExpand)="expandDetails($event)" expandableRows="true">
-			<p-column expander="true" [style]="{'width':'50px'}">
-
+			(onRowExpand)="expandDetails($event)" expandableRows="true">
+			<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+				<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+					{{rowIndex+1}}
+				</template>
 			</p-column>
-			<!--<p-column field="item" header="items" [style]="{'width':'50px','text-align':'left'}"></p-column>-->
+			<p-column header="More" expander="true" [style]="{'width':'1px','text-align':'left'}">
+			</p-column>
 			<p-column field="whname" header="Warehouse" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<!--<p-column field="typ" header="Type" [style]="{'width':'30px','text-align':'left'}"></p-column>-->
-			<!--<p-column field="docno" header="Doc.no" [style]="{'width':'30px','text-align':'right'}"></p-column>-->
 			<p-column field="hand" header="Stock @ Hand" [style]="{'width':'50px','text-align':'right'}"></p-column>
-			<!--<p-column field="inword" header="Credit" [style]="{'width':'50px','text-align':'right'}"></p-column>
-			<p-column field="bal" header="Balance" [style]="{'width':'50px','text-align':'right'}"></p-column>
-			<p-column field="remark" header="Remark" [style]="{'width':'80px','text-align':'left'}"></p-column>-->
 			<template let-row pTemplate="rowexpansion">
 				<span *ngIf="!row.loading">Loading....</span>
-				<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="true" expandableRows="true" [totalRecords]="totalDetailsRecords">
+				<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="true" expandableRows="true"
+					[totalRecords]="totalDetailsRecords">
+					<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							{{rowIndex+1}}
+						</template>
+					</p-column>
 					<p-column field="leddate" header="Date" [style]="{'width':'40px','text-align':'left'}"></p-column>
 					<p-column field="whname" header="Warehouse" [style]="{'width':'80px','text-align':'left'}"></p-column>
 					<p-column field="typ" header="Type" [style]="{'width':'30px','text-align':'left'}"></p-column>
@@ -68,10 +72,6 @@
 							<td style="width:40px;text-align:left"></td>
 							<td style="width:30px;text-align:left"></td>
 							<td style="width:30px;text-align:right">{{TotalHand()}}</td>
-							<!--<td style="width:30px;text-align:right"></td>
-							<td style="width:50px;text-align:right">Debit</td>
-							<td style="width:50px;text-align:right">Credit</td>
-							<td style="width:150px;text-align:left"></td>-->
 						</tr>
 					</tbody>
 				</table>
