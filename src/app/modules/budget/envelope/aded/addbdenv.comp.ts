@@ -24,10 +24,14 @@ export class AddEnvelopeComp implements OnInit {
     BudgetDT: any = [];
     envelopeDT: any = [];
 
+    envRowData: any = [];
+    duplicatecoa: boolean = true;
+
     bid: number = 0;
-    beid: number = 0;
-    coaid: number = 0;
-    envtitle: string = "";
+    newbeid: number = 0;
+    newcoaid: number = 0;
+    newcoaname: string = "";
+    newenvtitle: string = "";
 
     counter: any;
 
@@ -41,7 +45,7 @@ export class AddEnvelopeComp implements OnInit {
         private _budgetservice: BudgetService, private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillBudgetDropDown();
-        this.fillCOAGrid();
+        //this.fillCOAGrid();
     }
 
     ngOnInit() {
@@ -81,6 +85,94 @@ export class AddEnvelopeComp implements OnInit {
         })
     }
 
+    isDuplicateCOA() {
+        for (var i = 0; i < this.envRowData.length; i++) {
+            var field = this.envRowData[i];
+
+            if (field.coaid == this.newcoaid) {
+                this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
+
+                this.newcoaid = 0;
+                this.newcoaname = "";
+                this.newenvtitle = "";
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    getAutoCOA(me: any, arg: number) {
+        var that = this;
+
+        that._budgetservice.getEnvelope({ "flag": "autocoa", "search": arg == 0 ? me.newcoaname : me.coaname }).subscribe(data => {
+            $(".coaname").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    if (arg === 1) {
+                        me.coaname = ui.item.label;
+                        me.coaid = ui.item.value;
+                    } else {
+                        me.newcoaname = ui.item.label;
+                        me.newcoaid = ui.item.value;
+                    }
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    private addBudgetEnvelope() {
+        var that = this;
+
+        // Validation
+
+        if (that.newcoaname == "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Chart of Accounts");
+            return;
+        }
+
+        // Duplicate items Check
+        that.duplicatecoa = that.isDuplicateCOA();
+
+        // Add New Row
+        if (that.duplicatecoa === false) {
+            that.envRowData.push({
+                'counter': that.counter,
+                'bid': that.bid,
+                'beid': that.newbeid,
+                'coaid': that.newcoaid,
+                'coaname': that.newcoaname,
+                'envtitle': that.newenvtitle,
+                'uidcode': that.loginUser.login,
+                "isactive": true
+            });
+
+            that.counter++;
+            that.newbeid = 0;
+            that.newcoaid = 0;
+            that.newcoaname = "";
+            that.newenvtitle = "";
+
+            $(".coaname").focus();
+        }
+    }
+
+    deleteBudgetEnvelope(row) {
+        row.isactive = false;
+    }
+
     fillCOAGrid() {
         var that = this;
 
@@ -99,12 +191,12 @@ export class AddEnvelopeComp implements OnInit {
         var that = this;
 
         that._budgetservice.getEnvelope({ "flag": "edit", "bid": that.bid }).subscribe(data => {
-            var envdtls = data.data;
+            that.envRowData = data.data;
 
-            for (var i = 0; i < that.envelopeDT.length; i++) {
-                that.envelopeDT[i].beid = envdtls[i].beid;
-                that.envelopeDT[i].envtitle = envdtls[i].envtitle;
-            }
+            // for (var i = 0; i < that.envelopeDT.length; i++) {
+            //     that.envelopeDT[i].beid = envdtls[i].beid;
+            //     that.envelopeDT[i].envtitle = envdtls[i].envtitle;
+            // }
         }, err => {
             console.log("Error");
         }, () => {
@@ -116,7 +208,6 @@ export class AddEnvelopeComp implements OnInit {
 
     saveEnvelopeData() {
         var that = this;
-        var envdtls: any = [];
 
         if (that.isFormChange()) {
             that._msg.Show(messageType.info, "info", "No save! There is no change!");
@@ -131,26 +222,13 @@ export class AddEnvelopeComp implements OnInit {
             return;
         }
 
-        for (var i = 0; i < that.envelopeDT.length; i++) {
-            if (that.envelopeDT[i].envtitle !== "") {
-                envdtls.push({
-                    "beid": that.envelopeDT[i].beid,
-                    "bid": this.bid,
-                    "coaid": that.envelopeDT[i].coaid,
-                    "envtitle": that.envelopeDT[i].envtitle,
-                    "uidcode": this.loginUser.login,
-                    "isactive": true
-                })
-            }
-        }
-
-        if (envdtls.length === 0) {
+        if (that.envRowData.length === 0) {
             that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Envelope Details");
             return;
         }
 
         var saveEnvelope = {
-            "envelope": envdtls
+            "envelope": that.envRowData
         }
 
         that._budgetservice.saveEnvelope(saveEnvelope).subscribe(data => {

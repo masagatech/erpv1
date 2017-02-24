@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
-import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -46,8 +45,7 @@ const routerConfig = [
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule, CalendarModule, NumTextModule],
     declarations: [
         AddEnvelopeComp,
-        EnvelopeComp,
-        GroupByPipe
+        EnvelopeComp
     ],
     providers: [AuthGuard]
 })
