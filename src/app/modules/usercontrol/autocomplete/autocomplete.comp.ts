@@ -4,7 +4,7 @@ import { CommonService } from '../../../_service/common/common-service';
 declare var $: any;
 
 @Component({
-    selector: '<autocomplete></autocomplete>',
+    selector: '<autotext></autotext>',
     templateUrl: 'autocomplete.comp.html',
     providers: [CommonService]
 })

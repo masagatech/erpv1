@@ -10,6 +10,10 @@ export class CommonService {
         return this._dataserver.post("getAutoData", req)
     }
 
+    getAutoDataGET(req: any) {
+        return this._dataserver.get("getAutoDataGET", req)
+    }
+
     checkValidate(req: any) {
         return this._dataserver.post("checkValidate", req)
     }
