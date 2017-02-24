@@ -61,3 +61,40 @@
         </div>
     </div>
 </div>
+
+
+<!--<div class="panel-body">
+    <p-dataTable #dt [value]="expbudgetDT | filterBy: {isactive: true}" [lazy]="true">
+        <p-column header="#" [style]="{'width':'50px','text-align':'left'}">
+            <template let-i="rowIndex" pTemplate="editor">
+                {{i + 1}}
+            </template>
+        </p-column>
+        <p-column header="Envelope" [style]="{'width':'150px'}">
+            <template let-row="rowData" let-i="rowIndex" pTemplate="body">
+                {{row.envtitle}}
+            </template>
+        </p-column>
+        <p-column [value]="expbudgetDT" header="Employee" [style]="{'width':'150px','text-align':'left'}">
+            <template let-row="row.monthdetails" let-i="rowIndex" pTemplate="body">
+                <input type="text" class="form-control" [(ngModel)]="row.monthvalue" (keydown)="totalAmtYearWise(row)" />
+            </template>
+        </p-column>
+        <p-column [style]="{'text-align':'center'}" *ngIf="!isdetails">
+            <template let-col let-row="rowData" pTemplate="editor">
+                {{totalAmtYearWise(row)}}
+            </template>
+        </p-column>
+        <footer>
+            <table class="table table-striped table-bordered">
+                <tbody>
+                    <tr>
+                        <th width="150px">Total Amount</th>
+                        <th width="150px" *ngFor="let mrow of financialmonthDT"></th>
+                        <th width="150px">{{totalAllAmount()}}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </footer>
+    </p-dataTable>
+</div>-->
