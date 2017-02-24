@@ -28,7 +28,7 @@ const routerConfig = [
                 children: [
                     {
                         path: '', component: test, canActivateChid: [AuthGuard],
-                        data: { "module": "test", "submodule": "test", "rights": "view", "urlname": "/attribute" }
+                        data: { "module": "test", "submodule": "test", "rights": "view", "urlname": "" }
                     },
                 ]
             }
