@@ -33,6 +33,11 @@ const routerConfig = [
             }),
           },
           {
+            path: 'ownership', loadChildren: () => System.import('./ownership').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          {
             path: 'startforecasting', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
               return comp.default;
             }),
