@@ -6,13 +6,13 @@ import { Router } from '@angular/router';
 export class pendingdcService  {
     constructor(private _dataserver:DataService,private _router:Router) { }
 
-    getPendingDocumentNo(req:any)
+    getPendingOrdNo(req:any)
     {
-        return this._dataserver.post("PendingDC_Get",req);
+        return this._dataserver.post("getPendingDocumentNo",req);
     }
     getPendignDcDetails(req:any)
     {
-        return this._dataserver.post("GetDcDetails",req);
+        return this._dataserver.post("getPendingOrderDetails",req);
     }
     ConfirmDC(req:any)
     {

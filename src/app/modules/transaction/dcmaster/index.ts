@@ -9,6 +9,8 @@ import { dcview } from './view/adedview.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { CalendarModule } from '../../usercontrol/calendar';
+
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -25,16 +27,14 @@ const routerConfig = [
         path: '',
         component: dcMasterComp,
         canActivate: [AuthGuard],
+        data: { "module": "dcm" },
         children: [
             {
                 path: '',
                 children: [
-
-                    //Bank Payment Add Edit View
-                    { path: 'add', component: dcADDEdit, canActivateChid: [AuthGuard], },
-                    { path: 'edit/:id', component: dcADDEdit, canActivateChid: [AuthGuard], },
-                    { path: 'view', component: dcview, canActivateChid: [AuthGuard], },
-                    { path: '', component: dcview, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: dcADDEdit, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "so", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: dcADDEdit, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "so", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: dcview, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "so", "rights": "view", "urlname": "dcmaster" } },
                 ]
             }
         ]
@@ -43,7 +43,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
-        CommonModule, DataTableModule, NumTextModule],
+        CommonModule, CalendarModule, DataTableModule, NumTextModule],
     declarations: [
         dcADDEdit,
         dcview,

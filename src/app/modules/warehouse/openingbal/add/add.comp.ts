@@ -216,7 +216,6 @@ declare var commonfun: any;
         var that = this;
         try {
             var opestock = [];
-            debugger;
             for (let item of that.Openinglist) {
                 if (item.qty != "") {
                      var rate = item.rate.filter(itemval => itemval.id == item.id);

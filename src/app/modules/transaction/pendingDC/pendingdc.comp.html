@@ -3,88 +3,106 @@
 		<div class="col-md-4">
 			<div class='form-group'>
 				<label>Customer</label>
-				<input type="text=" class="form-control Custcode" tabindex="1" value="" [(ngModel)]="CustName" (keyup)="getAutoComplete(this)"
+				<input type="text=" class="form-control Custcode" tabindex="1" value="" [(ngModel)]="custname" (keyup)="getAutoComplete(this)"
 				/>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class='form-group'>
 				<label>From Date</label>
-				<div class="controls">
-					<div class="input-group">
-						<input type="text" id="FromDate" name="date-picker-3" tabindex="2" class="date-picker form-control" [(ngModel)]="FromDate"
-						/>
-						<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-					</div>
-				</div>
+				<calendar #fromdatecal [name]="'fromdatecal'"></calendar>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class='form-group'>
 				<label>To Date</label>
-				<div class="controls">
-					<div class="input-group date">
-						<input type="text" id="ToDate" tabindex="3" name="date-picker-4" class="date-picker form-control" [(ngModel)]="ToDate" />
-						<label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-					</div>
-				</div>
+				<calendar #todatecal [name]="'todatecal'"></calendar>
 			</div>
 		</div>
 		<div class="col-md-1">
 			<div class='form-group'>
-				<label>&nbsp;</label>
-				<button type="button" class="btn btn-primary" (click)="getPendingDocNo()">Get</button>
+				<div style="padding-top:28px;">
+					<button type="button" class="btn btn-theme btn-sm get" tabindex="4" (click)="getPendingDocNo()"><i class="fa fa-arrow-right"></i></button>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-md-12" [hidden]="tableHead">
+	<div class="col-md-12 panel-body">
 		<div class="row">
 			<div class="col-md-10">
-				<div [hidden]="tableDetails">
-					<div class="col-xs-2">
-						<div class='form-group'>
-							<label>Document No</label>
-							<input type="text=" class="form-control" readonly="true" [(ngModel)]="docNo" tabindex="1" value="" />
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class='form-group'>
-							<label>Salesman</label>
-							<input type="text" class="form-control" readonly="true" [(ngModel)]="Salesmandrop">
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class='form-group'>
-							<label>Customer</label>
-							<input type="text=" class="form-control" readonly="true" tabindex="1" value="" [(ngModel)]="CustNam" />
-						</div>
-					</div>
-					<div class="col-xs-3">
-						<label>Document Date</label>
-						<div class="input-group date" data-provide="datepicker">
-							<input type="text=" class="form-control" [(ngModel)]="docdate" readonly="true" tabindex="2" value="" />
-							<div class="input-group-addon">
-								<span class="glyphicon glyphicon-th"></span>
+				<div class="panel panel-theme" *ngIf="CustomerDetails.length > 0">
+					<div class="panel-body">
+						<div>
+							<div class="col-md-2">
+								<div class='form-group'>
+									<label>Document No</label>
+									<input type="text=" class="form-control" readonly="true" [(ngModel)]="docno" tabindex="1" value="" />
+								</div>
 							</div>
-						</div>
-					</div>
-					<div class="col-xs-3">
-						<label>Delivery Date</label>
-						<div class="input-group date" data-provide="datepicker">
-							<input type="text=" class="form-control" [(ngModel)]="Deldate" readonly="true" tabindex="2" value="" />
-							<div class="input-group-addon">
-								<span class="glyphicon glyphicon-th"></span>
+							<div class="col-md-4">
+								<div class='form-group'>
+									<label>Salesman</label>
+									<input type="text" class="form-control" readonly="true" [(ngModel)]="salesman">
+								</div>
 							</div>
-						</div>
-					</div>
-					<div class="col-xs-8">
-						<div class='form-group'>
-							<label>Spe.Instruction</label>
-							<textarea [(ngModel)]="SpeInstr" class="form-control medium-text-box" cols="75" tabindex="8" readonly="true" autocomplete='off'
-								rows="3"></textarea>
-						</div>
-					</div>
-					<table class="table table-striped table-bordered" [hidden]="tableDetails">
+							<div class="col-md-4">
+								<div class='form-group'>
+									<label>Customer</label>
+									<input type="text=" class="form-control" readonly="true" tabindex="1" value="" [(ngModel)]="cust" />
+								</div>
+							</div>
+							<div class="col-md-3">
+								<label>Document Date</label>
+								<div class="input-group date" data-provide="datepicker">
+									<input type="text=" class="form-control" [(ngModel)]="docdate" readonly="true" tabindex="2" value="" />
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<label>Delivery Date</label>
+								<div class="input-group date" data-provide="datepicker">
+									<input type="text=" class="form-control" [(ngModel)]="deldate" readonly="true" tabindex="2" value="" />
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8">
+								<div class='form-group'>
+									<label>Spe.Instruction</label>
+									<textarea [(ngModel)]="remark" class="form-control medium-text-box" cols="75" tabindex="8" readonly="true" autocomplete='off'
+										rows="3"></textarea>
+								</div>
+							</div>
+							<!--<div class="table-responsive">-->
+							<p-dataTable #dt [value]="DocDetailslist" [lazy]="true" [paginator]="false" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+								expandableRows="true">
+								<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+									<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+										{{rowIndex+1}}
+									</template>
+								</p-column>
+								<p-column field="code" header="Code" [style]="{'width':'30px','text-align':'left'}"></p-column>
+								<p-column field="itemname" header="Item" [style]="{'width':'100px','text-align':'left'}"></p-column>
+								<p-column header="Qty" [style]="{'width':'30px','text-align':'left'}">
+									<template let-col let-row="rowData" pTemplate="editor">
+										<numtext [iscurrency]="false" [css]="inlinetextbox" [(ngModel)]="row.ordqty" (keyup)="CulculateQty(row)"></numtext>
+									</template>
+								</p-column>
+								<p-column field="rate" header="Rate" [style]="{'width':'30px','text-align':'left'}">
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox"></numtext>
+								</p-column>
+								<p-column field="dis" header="Dis" [style]="{'width':'30px','text-align':'left'}">
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox"></numtext>
+								</p-column>
+								<p-column field="amount" header="Amount" [style]="{'width':'50px','text-align':'left'}">
+									<numtext [iscurrency]="true" [islabel]="true" [css]="inlinetextbox"></numtext>
+								</p-column>
+							</p-dataTable>
+							<!--</div>-->
+							<!--<table class="table table-striped table-bordered">
 						<thead>
 							<tr>
 								<th>#No</th>
@@ -98,14 +116,14 @@
 						</thead>
 						<tbody>
 							<tr *ngFor="let item of DocDetailslist let i=index">
-								<td><span>{{i+1}}</span><span class="displayNone">{{item.DCNo}}</span><span class="displayNone">{{item.DCDetail}}</span></td>
-								<td>{{item.ProductCode}}</td>
-								<td>{{item.ProdName}}</td>
+								<td><span>{{i+1}}</span><span class="displayNone">{{item.docno}}</span><span class="hide">{{item.detaiid}}</span></td>
+								<td>{{item.code}}</td>
+								<td>{{item.itemname}}</td>
 								<td class="col-xs-1"><input type="text" class="form-control  textalign" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
-										(change)="CulculateQty(item.ProductCode,item.OldQty,item.DCQty)" [(ngModel)]="item.DCQty"></td>
-								<td class="textalign col-xs-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.Rate"></td>
-								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.Disount"></td>
-								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.Amount"></td>
+										(change)="CulculateQty(item.code,item.oldqty,item.ordqty)" [(ngModel)]="item.ordqty"></td>
+								<td class="textalign col-xs-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.rate"></td>
+								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.dis"></td>
+								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.amount"></td>
 							</tr>
 						</tbody>
 						<tfoot>
@@ -113,12 +131,12 @@
 								<td colspan="7" class="textalign"><b>{{SubTotal()|number}}</b></td>
 							</tr>
 						</tfoot>
-					</table>
-
-
+					</table>-->
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="col-md-2" [hidden]="tabledoc">
+			<div class="col-md-2" *ngIf="doclist">
 				<div style="height: 320px !important;overflow-y: scroll;">
 					<table class='table table-bordered table-condensed table-striped table-hover'>
 						<tbody>
@@ -129,7 +147,7 @@
 								<th>Doc No</th>
 							</tr>
 							<tr class="table-row" *ngFor="let item of doclist">
-								<td><a role="button" (click)=GetDetails(item)>{{item.DcNo}}</a></td>
+								<td><a role="button" (click)=GetDetails(item)>{{item.docno}}</a></td>
 							</tr>
 						</tbody>
 					</table>

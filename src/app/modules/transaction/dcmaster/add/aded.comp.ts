@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -8,6 +8,8 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
+import { ALSService } from '../../../../_service/auditlock/als-service';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -15,7 +17,7 @@ declare var $: any;
 declare var commonfun: any;
 @Component({
     templateUrl: 'aded.comp.html',
-    providers: [dcmasterService, CommonService]
+    providers: [dcmasterService, CommonService, ALSService]
     //,AutoService
 })
 
@@ -27,10 +29,6 @@ export class dcADDEdit implements OnInit, OnDestroy {
     getCustomerAuto: any;
     custKey: any;
     CustAddress: any;
-    BillAdr: any = "";
-    shippAdr: any = "";
-    docdate: any = "";
-    delDate: any = "";
     Traspoter: any = 0;
     Token: any = "";
     salesid: any = 0;
@@ -96,55 +94,62 @@ export class dcADDEdit implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    //Calendor
+    @ViewChild("docdatecal")
+    docdatecal: CalendarComp;
+
+    @ViewChild("deldatecal")
+    deldatecal: CalendarComp;
+
 
 
     //, private _autoservice:AutoService
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private dcServies: dcmasterService, private _autoservice: CommonService,
-        private _routeParams: ActivatedRoute, private _userService: UserService, private _msg: MessageService) {
+        private _routeParams: ActivatedRoute, private _userService: UserService,
+        private _msg: MessageService, private _alsservice: ALSService) {
         this.newAddRow = [];
         this.counter = 0;
         this.totalqty = 0;
         this.totalAmt = 0;
         this.loginUser = this._userService.getUser();
     }
+
+    setAuditDate() {
+        var that = this;
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "so", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.docdatecal.setMinMaxDate(new Date(lockdate), null);
+            that.deldatecal.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
     //Add Save Edit Delete Button
     ngOnInit() {
+        this.docdatecal.initialize(this.loginUser);
+        this.docdatecal.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.deldatecal.initialize(this.loginUser);
+        this.deldatecal.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.footer = true;
         setTimeout(function () {
-            var date = new Date();
-            var docdate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            $("#docDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#docDate").datepicker('setDate', docdate);
-
-            $("#delDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                minDate: 0,
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#delDate").datepicker('setDate', docdate);
-            $('.custname').focus();
-
-            $("#lrDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#lrDate").datepicker('setDate', docdate);
             $('.custname').focus();
             commonfun.addrequire();
         }, 0);
@@ -164,6 +169,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
+                var date = new Date();
+                this.docdatecal.setDate(date);
+                this.deldatecal.setDate(date);
+
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
@@ -205,19 +214,21 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Clear All Controll
     private ClearControll() {
         this.CustName = "";
+        this.CustID = 0;
         this.Salesmandrop = "";
         this.Traspoter = "";
         this.Token = "";
-        this.BillAdr = "";
-        this.shippAdr = "";
         this.Remark1 = "";
         this.Remark2 = "";
         this.salesid = 0;
         this.Salesmanlist = [];
         this.wareid = 0;
         this.warehouselist = [];
+        this.Transpoterlist = [];
+        this.Traspoter = 0;
         this.newAddRow = [];
-
+        this.addresslist = [];
+        $('.custname').focus();
     }
 
     salesorderdetailsjson() {
@@ -250,31 +261,32 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     paramterjson() {
         var that = this;
-        that.docdate = $('#docDate').datepicker('getDate');
-        that.delDate = $('#delDate').datepicker('getDate');
-        var param = {
-            "dcno": that.DocNo,
-            "docdate": that.docdate,
-            "acid": 1,
-            "refno": that.Token,
-            "deldate": that.delDate,
-            "salesid": that.salesid,
-            "traspo": that.Traspoter,
-            "status": "",
-            "billingadr": that.BillAdr,
-            "shippadr": that.shippAdr,
-            "fy": that.loginUser.fy,
-            "cmpid": that.loginUser.cmpid,
-            "createdby": that.loginUser.login,
-            "remark": that.Remark,
-            "directinvoice": that.DirectInvoice,
-            "dcdetails": that.salesorderdetailsjson(),
-            "autoconfirm": that.isconfirm,
-            "autoinvoice": that.isinvoice,
-            "confirmparam": that.confirmparam(),
-            "remark1": that.Remark1,
-            "remark2": that.Remark2,
-            "remark3": that.Remark3
+        try {
+            var param = {
+                "dcno": that.DocNo,
+                "docdate": that.docdatecal.getDate(),
+                "acid": that.CustID,
+                "refno": that.Token,
+                "deldate": that.deldatecal.getDate(),
+                "salesid": that.salesid,
+                "traspo": that.Traspoter,
+                "status": "",
+                "fy": that.loginUser.fy,
+                "cmpid": that.loginUser.cmpid,
+                "createdby": that.loginUser.login,
+                "remark": that.Remark,
+                "directinvoice": that.DirectInvoice,
+                "dcdetails": that.salesorderdetailsjson(),
+                "autoconfirm": that.isconfirm,
+                "autoinvoice": that.isinvoice,
+                "confirmparam": that.confirmparam(),
+                "remark1": that.Remark1,
+                "remark2": that.Remark2,
+                "remark3": that.Remark3
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
         }
         console.log(param);
         return param;
@@ -283,8 +295,11 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Add Top Buttons
     actionBarEvt(evt) {
         this.DirectInvoice = 0;
+        if (evt === "clear") {
+            this.ClearControll();
+        }
         if (evt === "back") {
-            this._router.navigate(['transaction/dcmaster/view']);
+            this._router.navigate(['transaction/dcmaster']);
         }
         if (evt === "save") {
             var validateme = commonfun.validate();
@@ -297,23 +312,29 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this._msg.Show(messageType.error, "error", "Please enter items detail");
                 return false;
             }
-            this.dcServies.saveDcMaster(
-                this.paramterjson()
-            ).subscribe(result => {
-                var returndata = result.data;
-                if (returndata[0].funsave_salesorder.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", returndata[0].funsave_salesorder.msg + ':' + returndata[0].funsave_salesorder.maxid)
-                    this.ClearControll();
-                    $('.custname').focus();
-                }
-                else {
-                    console.log(returndata);
-                }
-            }, err => {
-                console.log(err);
-            }, () => {
-                //console.log("Done");
-            })
+            try {
+                this.dcServies.saveDcMaster(
+                    this.paramterjson()
+                ).subscribe(result => {
+                    var returndata = result.data;
+                    if (returndata[0].funsave_salesorder.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", returndata[0].funsave_salesorder.msg + ':' + returndata[0].funsave_salesorder.maxid)
+                        this.ClearControll();
+                        $('.custname').focus();
+                    }
+                    else {
+                        console.log(returndata);
+                    }
+                }, err => {
+                    console.log(err);
+                }, () => {
+                    //console.log("Done");
+                })
+            } catch (e) {
+                this._msg.Show(messageType.error, "error", e.message);
+                return;
+            }
+
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
@@ -367,11 +388,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this.CustomerSelected(CustomerMaster[0].acid);
                 this.CustName = CustomerMaster[0].acname;
                 this.CustID = CustomerMaster[0].acid;
-                this.docdate = CustomerMaster[0].dcdate;
-                this.delDate = CustomerMaster[0].deldate;
                 this.Token = CustomerMaster[0].refno;
-                this.BillAdr = CustomerMaster[0].billadr;
-                this.shippAdr = CustomerMaster[0].shippadr;
                 this.Remark = CustomerMaster[0].remark;
                 this.Remark2 = CustomerMaster[0].remark1;
                 this.Salesmandrop = CustomerMaster[0].salesid;
@@ -393,117 +410,167 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Auto Completed Customer Name
     getAutoComplete(me: any) {
         var _me = this;
-        this._autoservice.getAutoData({
-            "type": "customer",
-            "search": _me.CustName,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".custname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.CustID = ui.item.value;
-                    me.CustName = ui.item.label;
-                    _me.CustomerSelected(me.CustID);
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        try {
+            this._autoservice.getAutoData({
+                "type": "customer",
+                "search": _me.CustName,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".custname").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.CustID = ui.item.value;
+                        me.CustName = ui.item.label;
+                        _me.CustomerSelected(me.CustID);
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
+        }
+
     }
 
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
         var _me = this;
-        this._autoservice.getAutoData({
-            "type": "productwithwh",
-            "whid": this.wareid,
-            "search": arg == 0 ? me.NewItemsName : me.itemsname,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".ProdName").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.itemsname = ui.item.label;
-                    if (arg === 1) {
+        try {
+            var duplicateitem = true;
+            this._autoservice.getAutoData({
+                "type": "productwithwh",
+                "whid": this.wareid,
+                "search": arg == 0 ? me.NewItemsName : me.itemsname,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".ProdName").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
                         me.itemsname = ui.item.label;
-                        me.itemsid = ui.item.value;
-                        _me.ItemsSelected(me.itemsid, arg, me.counter);
-                    } else {
-                        me.NewItemsName = ui.item.label;
-                        me.itemsid = ui.item.value;
-                        _me.ItemsSelected(me.itemsid, arg, me.counter);
+                        if (_me.newAddRow.length > 0) {
+                            for (let item of _me.newAddRow) {
+                                if (item.itemsname == me.itemsname) {
+                                    duplicateitem = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (duplicateitem === true) {
+                            if (arg === 1) {
+                                me.itemsname = ui.item.label;
+                                me.itemsid = ui.item.value;
+                                _me.ItemsSelected(me.itemsid, arg, me.counter);
+                            } else {
+                                me.NewItemsName = ui.item.label;
+                                me.itemsid = ui.item.value;
+                                _me.ItemsSelected(me.itemsid, arg, me.counter);
+                            }
+                        }
+                        else {
+                            _me._msg.Show(messageType.info, "info", "Duplicate item");
+                            return;
+                        }
+
                     }
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-        })
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
+        }
+
     }
 
     // //Selected Customer  Event
     CustomerSelected(val) {
-        if (val != "") {
-            this.addresslist = [];
-            this.warehouselist = [];
-            this.Transpoterlist = [];
-            this.custKey = val;
-            this.dcServies.getdcdetails({
-                "custid": val,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login,
-                "flag": '',
-                "flag1": ''
-            }).subscribe(details => {
-                var dataset = details.data;
-                this.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
-                this.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
-                this.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
-                this.Salesmanlist = dataset[0]._salesman === null ? [] : dataset[0]._salesman;
-                this.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
-            }, err => {
-                console.log('Error');
-            }, () => {
-                // console.log('Complet');
-            });
-            this.CustfilteredList = [];
+        try {
+            if (val != "") {
+                this.addresslist = [];
+                this.warehouselist = [];
+                this.Transpoterlist = [];
+                this.custKey = val;
+                this.dcServies.getdcdetails({
+                    "custid": val,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "createdby": this.loginUser.login,
+                    "flag": '',
+                    "flag1": ''
+                }).subscribe(details => {
+                    var dataset = details.data;
+                    this.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
+                    this.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
+                    this.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
+                    this.Salesmanlist = dataset[0]._salesman === null ? [] : dataset[0]._salesman;
+                    this.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
+                }, err => {
+                    console.log('Error');
+                }, () => {
+                    // console.log('Complet');
+                });
+                this.CustfilteredList = [];
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
         }
     }
 
     //Rate Change Event
-    ratechange(qty: any, newrate: any = [], dis: any) {
+    ratechange(qty: any, newrate: any = [], dis: any, row: any = [], agr: number) {
         try {
-            if (qty != "" && newrate != "") {
-                var amt = 0;
-                var rate = this.rateslist.filter(item => item.id == newrate);
-                amt = +qty * +rate[0].val;
-                this.disTotal = amt * this.dis / 100;
-                this.amount = Math.round(amt - this.disTotal);
-                //this.amount = amt.toFixed(2);
+            if (agr == 0) {
+                if (qty != "" && newrate != "") {
+                    var amt = 0;
+                    var rate = this.rateslist.filter(item => item.id == newrate);
+                    amt = +qty * +rate[0].val;
+                    this.disTotal = amt * this.dis / 100;
+                    this.amount = Math.round(amt - this.disTotal);
+                }
             }
+            else {
+                if (row.qty != "" && row.id != "") {
+                    this.disTotal = 0;
+                    amt = 0;
+                    for (let item of this.newAddRow) {
+                        if (item.counter == row.counter) {
+                            var rate = item.rateslist.filter(itemval => itemval.id == row.id);
+                            amt = +item.qty * +rate[0].val;
+                            this.disTotal = amt * item.dis / 100;
+                            item.amount = Math.round(amt - this.disTotal);
+                            break;
+                        }
+                    }
+                }
+            }
+
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
             return;
@@ -513,26 +580,44 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     // //Selected Items
     ItemsSelected(val: number, falg: number, counter: number) {
-        if (val != 0) {
-            this.dcServies.getItemsAutoCompleted({
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "itemsid": val,
-                "whid": this.wareid,
-                "createdby": this.loginUser.login
-            }).subscribe(itemsdata => {
-                var ItemsResult = itemsdata.data;
-                if (falg === 0) {
-                    this.qty = 0;
-                    this.totalqty = ItemsResult[0].qty;
-                    this.dis = ItemsResult[0].dis;
-                    this.rateslist = ItemsResult[0].rates;
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //console.log("Done");
-            });
+        try {
+            if (val != 0) {
+                this.dcServies.getItemsAutoCompleted({
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "itemsid": val,
+                    "whid": this.wareid,
+                    "createdby": this.loginUser.login
+                }).subscribe(itemsdata => {
+                    var ItemsResult = itemsdata.data;
+                    if (falg === 0) {
+                        this.qty = 0;
+                        this.totalqty = ItemsResult[0].qty;
+                        this.dis = ItemsResult[0].dis;
+                        this.rateslist = ItemsResult[0].rates;
+                    }
+                    else {
+                        for (let item of this.newAddRow) {
+                            if (item.counter == counter) {
+                                item.itemsid = val;
+                                item.qty = 0;
+                                item.rateslist = ItemsResult[0].rates;
+                                item.id = "";
+                                item.dis = ItemsResult[0].dis;
+                                item.amount = 0;
+                                break;
+                            }
+                        }
+                    }
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //console.log("Done");
+                });
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
         }
     }
 

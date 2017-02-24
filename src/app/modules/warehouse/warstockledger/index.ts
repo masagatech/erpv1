@@ -31,7 +31,7 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: '', component: WhStockLed, canActivateChid: [AuthGuard], data: { "module": "waresub", "submodule": "wl", "rights": "view", "urlname": "/stckledger" } },
+                    { path: '', component: WhStockLed, canActivateChid: [AuthGuard], data: { "module": "waresub", "submodule": "sl", "rights": "view", "urlname": "/stckledger" } },
                 ]
             }
         ]

@@ -55,7 +55,7 @@ declare var commonfun: any;
     setAuditDate() {
         var that = this;
         that._alsservice.getAuditLockSetting({
-            "flag": "modulewise", "dispnm": "os", "fy": that.loginUser.fy
+            "flag": "modulewise", "dispnm": "sl", "fy": that.loginUser.fy
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
@@ -85,6 +85,9 @@ declare var commonfun: any;
             commonfun.addrequire();
             $(".item").focus();
         }, 0);
+        var date = new Date();
+        this.stockfrom.setDate(date);
+        this.stockto.setDate(date);
     }
 
     //Auto Completed warehouse Name  Data
