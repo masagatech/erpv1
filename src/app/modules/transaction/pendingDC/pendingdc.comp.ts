@@ -34,6 +34,7 @@ declare var $: any;
     remark: any;
     custid: any = 0;
     custname: any = "";
+    acid: number = 0;
 
     //Declare Array Veriable
     DocDetailslist: any[];
@@ -54,7 +55,7 @@ declare var $: any;
     tocal: CalendarComp;
 
     //Declare Table Veriable
-    constructor(private setActionButtons: SharedVariableService, private pendingdcServies: pendingdcService,
+    constructor(private setActionButtons: SharedVariableService, private ConfirmServies: pendingdcService,
         private _autoservice: CommonService, private _userService: UserService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
@@ -89,6 +90,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Pending Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -102,55 +104,62 @@ declare var $: any;
         this.tocal.setDate(date);
     }
 
+    //Refresh Button Call Method
+    ClearControl() {
+        this.custname = "";
+        this.custid = 0;
+        this.doclist = [];
+        this.CustomerDetails = [];
+        this.DocDetailslist = [];
+        $(".Custcode").focus();
+    }
+
+    paramjson() {
+        var param = [];
+        if (this.DocDetailslist.length > 0) {
+            for (let item of this.DocDetailslist) {
+                param.push({
+                    "autoid": 0,
+                    "docdetail": item.detaiid,
+                    "acid": this.acid,
+                    "itemid": item.itemsid,
+                    "ordqty": item.ordqty,
+                    "rate": item.dcrate,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "createdby": this.loginUser.login,
+                    "confimstatus": 'Menual',
+                    "autoconfirm":false
+                })
+            }
+        }
+        console.log(param);
+        return param;
+    }
+
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-        if (evt === "save") {
-            // var DirectInvoice = 0;
-            // var xmldata = '<r>';
-            // this.DocDetailslist.forEach(items => {
-            //     xmldata += '<i>';
-            //     xmldata += '<cu>' + this.custname.split(':')[0] + '</cu>';
-            //     xmldata += '<dcno>' + items.DCNo + '</dcno>';
-            //     xmldata += '<dcdet>' + items.DCDetail + '</dcdet>';
-            //     xmldata += '<it>' + items.ProductCode + '</it>';
-            //     xmldata += '<itn>' + items.ProdName + '</itn>';
-            //     xmldata += '<q>' + items.DCQty + '</q>';
-            //     xmldata += '<dirc>' + DirectInvoice + '</dirc>';
-            //     if (DirectInvoice == 1) {
-            //         xmldata += "<cnfq>" + items.DCQty + "</cnfq>";
-            //     } else {
-            //         xmldata += "<cnfq>" + 0 + "</cnfq>";
-            //     }
-            //     xmldata += '<r>' + items.Rate + '</r>';
-            //     xmldata += '<d>' + items.Disount + '</d>';
-            //     xmldata += '<a>' + items.Amount + '</a>';
-            //     xmldata += '<cre>' + 'Admin' + '</cre>';
-            //     xmldata += '<wh>' + 1 + '</wh>';
-            //     xmldata += '<typ>' + 'Invoice' + '</typ>';
-            //     xmldata += '</i>';
-            // });
-            // xmldata += '</r>'
-            // this.pendingdcServies.ConfirmDC({
-            //     "CmpCode": "MTech",
-            //     "FY": 5,
-            //     "XmlData": xmldata,
-            //     "DocNo": this.docno,
-            //     "Flag": "",
-            //     "Flag1": ""
-            // }).subscribe(documentno => {
-            //     var dataset = JSON.parse(documentno.data);
-            //     debugger;
-            //     if (dataset[0].doc > 0) {
-            //         alert("Data Save Successfully Document No :" + dataset[0].doc);
-            //         this.DocDetailslist = [];
-            //         this.getPendingDocNo();
-            //     }
-            // }, err => {
-            //     console.log('Error');
-            // }, () => {
-            //     //Done Process
-            // });
-            //Save CLick Event
+        if (evt === "clear") {
+            this.ClearControl();
+        }
+        else if (evt === "save") {
+            debugger;
+            var DirectInvoice = 0;
+            this.ConfirmServies.ConfirmDC({
+                "confirmdetails": this.paramjson(),
+                "docno": this.docno,
+            }).subscribe(documentno => {
+                var dataset = documentno.data;
+                if (dataset[0].doc > 0) {
+                    alert("Data Save Successfully Document No :" + dataset[0].doc);
+                    this.DocDetailslist = [];
+                    //this.getPendingDocNo();
+                }
+            }, err => {
+                console.log('Error');
+            }, () => {
+                //Done Process
+            });
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             // alert("edit called");
@@ -166,7 +175,7 @@ declare var $: any;
     //Get Pending DC Document no
     getPendingDocNo() {
         try {
-            this.pendingdcServies.getPendingOrdNo({
+            this.ConfirmServies.getPendingOrdNo({
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "acid": this.custid,
@@ -201,7 +210,7 @@ declare var $: any;
             this.CustomerDetails = [];
             this.dcdetails = [];
             this.DocDetailslist = [];
-            this.pendingdcServies.getPendignDcDetails({
+            this.ConfirmServies.getPendignDcDetails({
                 "cmpid": this.loginUser.cmpid,
                 "docno": items.docno,
                 "fy": this.loginUser.fy,
@@ -211,6 +220,7 @@ declare var $: any;
                 this.dcdetails = documentno.data[1] === null ? [] : documentno.data[1];
                 if (this.CustomerDetails.length > 0) {
                     this.docno = this.CustomerDetails[0].docno;
+                    this.acid = this.CustomerDetails[0].custid;
                     this.cust = this.CustomerDetails[0].cust;
                     this.salesman = this.CustomerDetails[0].salesman;
                     this.docdate = this.CustomerDetails[0].docdate;
@@ -274,49 +284,42 @@ declare var $: any;
     }
 
     //Quntity Calculation
-    private CulculateQty(row: any = [], counter: number) {
-        debugger;
+    private CulculateQty(row: any = [], detaiid: number = 0) {
         var QtyRate = 0;
         var DisAmt = 0;
-        // if (row.ordqty != "" && row.ordqty != "0") {
-        //     if (row.oldqty < row.ordqty) {
-        //         alert('Please enter valid quntity');
-        //         for (var i = 0; i < this.DocDetailslist.length; i++) {
-        //             if (this.DocDetailslist[i].ProductCode === itemcode) {
-        //                 this.DocDetailslist[i].ordqty = row.oldqty;
-        //                 QtyRate = this.DocDetailslist[i].ordqty * this.DocDetailslist[i].rate;
-        //                 DisAmt = QtyRate * this.DocDetailslist[i].dis / 100;
-        //                 this.DocDetailslist[i].amount = Math.round(QtyRate - DisAmt);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        //     else {
+        if (row.ordqty != "" && row.ordqty != "0") {
+            if (parseInt(row.ordqty) > parseInt(row.oldqty)) {
+                this._msg.Show(messageType.info, "info", "Please Enter valid Quntity")
+                for (var i = 0; i < this.DocDetailslist.length; i++) {
+                    if (this.DocDetailslist[i].detaiid === detaiid) {
+                        this.DocDetailslist[i].ordqty = row.oldqty;
+                        QtyRate = this.DocDetailslist[i].ordqty * this.DocDetailslist[i].rate;
+                        DisAmt = QtyRate * this.DocDetailslist[i].dis / 100;
+                        this.DocDetailslist[i].amount = Math.round(QtyRate - DisAmt);
+                        break;
+                    }
+                }
+            }
+            else {
 
-        //         for (var i = 0; i < this.DocDetailslist.length; i++) {
-        //             if (this.DocDetailslist[i].ProductCode === itemcode) {
-        //                 QtyRate = this.DocDetailslist[i].DCQty * this.DocDetailslist[i].Rate;
-        //                 DisAmt = QtyRate * this.DocDetailslist[i].Disount / 100;
-        //                 this.DocDetailslist[i].Amount = Math.round(QtyRate - DisAmt);
-        //                 break;
-        //             }
-        //         }
-        //     }
-
-        // }
-        // else {
-        //     for (var i = 0; i < this.DocDetailslist.length; i++) {
-        //         if (this.DocDetailslist[i].ProductCode === itemcode) {
-        //             this.DocDetailslist[i].Amount = 0;
-        //             break;
-        //         }
-        //     }
-        // }
-    }
-
-    //Get Button Click Event
-    private GetData() {
-        console.log(this.all);
+                for (var i = 0; i < this.DocDetailslist.length; i++) {
+                    if (this.DocDetailslist[i].detaiid === detaiid) {
+                        QtyRate = this.DocDetailslist[i].ordqty * this.DocDetailslist[i].rate;
+                        DisAmt = QtyRate * this.DocDetailslist[i].dis / 100;
+                        this.DocDetailslist[i].amount = Math.round(QtyRate - DisAmt);
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            for (var i = 0; i < this.DocDetailslist.length; i++) {
+                if (this.DocDetailslist[i].detaiid === detaiid) {
+                    this.DocDetailslist[i].Amount = 0;
+                    break;
+                }
+            }
+        }
     }
 
     //Sub Total

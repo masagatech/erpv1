@@ -6,7 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
-import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 import { ALSService } from '../../../../_service/auditlock/als-service';
@@ -89,6 +89,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
     uploadedFiles: any = [];
     isconfirm: boolean;
     isinvoice: boolean;
+
+    CustomerAutodata: any[];
 
     //user details
     loginUser: LoginUserModel;
@@ -406,45 +408,67 @@ export class dcADDEdit implements OnInit, OnDestroy {
         })
     }
 
+    CustomerAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "customer",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.CustomerAutodata = data;
+        });
+    }
+    CustomerSelect(event) {
+        this.CustID = event.value;
+        this.CustName = event.label;
+        this.CustomerSelected(this.CustID);
+    }
 
     //Auto Completed Customer Name
-    getAutoComplete(me: any) {
-        var _me = this;
-        try {
-            this._autoservice.getAutoData({
-                "type": "customer",
-                "search": _me.CustName,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".custname").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.CustID = ui.item.value;
-                        me.CustName = ui.item.label;
-                        _me.CustomerSelected(me.CustID);
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-            return;
-        }
+    // getAutoComplete(me: any) {
+    //     var _me = this;
+    //     try {
 
-    }
+
+    //     }
+
+    // this._autoservice.getAutoData({
+    //     "type": "customer",
+    //     "search": _me.CustName,
+    //     "cmpid": this.loginUser.cmpid,
+    //     "fy": this.loginUser.fy,
+    //     "createdby": this.loginUser.login
+    // }).subscribe(data => {
+    //     $(".custname").autocomplete({
+    //         source: data.data,
+    //         width: 300,
+    //         max: 20,
+    //         delay: 100,
+    //         minLength: 0,
+    //         autoFocus: true,
+    //         cacheLength: 1,
+    //         scroll: true,
+    //         highlight: false,
+    //         select: function (event, ui) {
+    //             me.CustID = ui.item.value;
+    //             me.CustName = ui.item.label;
+    //             _me.CustomerSelected(me.CustID);
+    //         }
+    //     });
+    // }, err => {
+    //     console.log("Error");
+    // }, () => {
+    //     // console.log("Complete");
+    // })
+
+    //     } catch (e) {
+    //         this._msg.Show(messageType.error, "error", e.message);
+    //         return;
+    //     }
+
+    // }
 
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {

@@ -3,19 +3,16 @@ import { DataService } from '../../_service/dataconnect';
 import { Router } from '@angular/router';
 
 @Injectable()
-export class pendingdcService  {
-    constructor(private _dataserver:DataService,private _router:Router) { }
+export class pendingdcService {
+    constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getPendingOrdNo(req:any)
-    {
-        return this._dataserver.post("getPendingDocumentNo",req);
+    getPendingOrdNo(req: any) {
+        return this._dataserver.post("getPendingDocumentNo", req);
     }
-    getPendignDcDetails(req:any)
-    {
-        return this._dataserver.post("getPendingOrderDetails",req);
+    getPendignDcDetails(req: any) {
+        return this._dataserver.post("getPendingOrderDetails", req);
     }
-    ConfirmDC(req:any)
-    {
-        return this._dataserver.post("DCConfirm_Save",req);
+    ConfirmDC(req: any) {
+        return this._dataserver.post("saveConfirmOrder", req);
     }
 }

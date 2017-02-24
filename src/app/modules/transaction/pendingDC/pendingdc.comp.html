@@ -88,7 +88,7 @@
 								<p-column field="itemname" header="Item" [style]="{'width':'100px','text-align':'left'}"></p-column>
 								<p-column header="Qty" [style]="{'width':'30px','text-align':'left'}">
 									<template let-col let-row="rowData" pTemplate="editor">
-										<numtext [iscurrency]="false" [css]="inlinetextbox" [(ngModel)]="row.ordqty" (keyup)="CulculateQty(row)"></numtext>
+										<numtext [iscurrency]="false" [css]="inlinetextbox" [(ngModel)]="row.ordqty" (keyup)="CulculateQty(row,row.detaiid)"></numtext>
 									</template>
 								</p-column>
 								<p-column field="rate" header="Rate" [style]="{'width':'30px','text-align':'left'}">
