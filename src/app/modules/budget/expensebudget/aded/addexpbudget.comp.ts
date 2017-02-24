@@ -21,12 +21,14 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
+    budgetDT: any = [];
     ctrlcenterDT: any = [];
     financialmonthDT: any = [];
     expbudgetDT: any = [];
 
     title: string = "";
     id: number = 0;
+    bid: number = 0;
     ccid: number = 0;
 
     docno: number = 0;
@@ -44,34 +46,38 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
         this.module = "Expense Budget";
 
+        this.fillBudgetDDL();
+        this.fillCtrlCenterDDL();
         this.BindFinancialMonthDT();
-        this.fillControlCenterDDL();
     }
 
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.setActionButtons.setTitle("Start Forecasting");
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params["docno"] !== undefined) {
-                this.title = "Expesne Budget : Edit";
-                this.docno = params["docno"];
-            }
-            else {
-                this.title = "Expesne Budget : Add";
-            }
-        });
     }
 
-    fillControlCenterDDL() {
+    fillBudgetDDL() {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "ctrlddl", "cmpid": that.loginUser.cmpid }).subscribe(data => {
+        that._expbudgetservice.getExpenseBudgetDetails({ "flag": "bdgddl" }).subscribe(data => {
+            that.budgetDT = data.data;
+        }, err => {
+            that._message.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    fillCtrlCenterDDL() {
+        var that = this;
+
+        that._expbudgetservice.getExpenseBudgetDetails({ "flag": "ccddl", "bid": that.bid }).subscribe(data => {
             that.ctrlcenterDT = data.data;
         }, err => {
-            console.log("Error");
+            that._message.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -81,11 +87,11 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "ccid": that.ccid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+            "flag": "addedit", "fy": this.loginUser.fy, "bid": that.bid, "ccid": that.ccid
         }).subscribe(data => {
             that.expbudgetDT = data.data[0];
         }, err => {
-            console.log("Error");
+            that._message.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -97,11 +103,11 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "ccid": that.ccid, "fy": that.loginUser.fy
+            "flag": "addedit", "fy": this.loginUser.fy, "bid": that.bid, "ccid": that.ccid
         }).subscribe(data => {
             that.financialmonthDT = data.data[1];
         }, err => {
-            console.log("Error");
+            that._message.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -147,7 +153,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "ccid": that.ccid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+            "flag": "addedit", "bid": this.bid, "ccid": that.ccid, "fy": this.loginUser.fy
         }).subscribe(data => {
             that.amtMonthWise = data.data[2];
         });
@@ -195,11 +201,9 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
 
             expbDetails.push({
                 "expbid": that.expbudgetDT[a].expbid,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "ccid": this.ccid,
-                "expheadid": that.expbudgetDT[a].expheadid,
-                "exptype": that.expbudgetDT[a].exptype,
+                "bid": that.bid,
+                "ccid": that.ccid,
+                "envid": that.expbudgetDT[a].envid,
                 "jan": monthpriceDT[a].jan,
                 "feb": monthpriceDT[a].feb,
                 "mar": monthpriceDT[a].mar,
@@ -212,7 +216,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
                 "oct": monthpriceDT[a].oct,
                 "nov": monthpriceDT[a].nov,
                 "dec": monthpriceDT[a].dec,
-                "uidcode": this.loginUser.login
+                "uidcode": that.loginUser.login
             })
         }
 
@@ -227,10 +231,10 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
                 that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensebudget.msg.toString());
             }
             else {
-                alert("Error");
+                that._message.Show(messageType.error, "Error", dataResult[0].funsave_expensebudget.msg.toString());
             }
         }, err => {
-            console.log(err);
+            that._message.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         });
@@ -238,9 +242,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._message.confirm("Are you sure that you want to save?", () => {
-                this.saveExpenseBudget();
-            });
+            this.saveExpenseBudget();
         }
     }
 
