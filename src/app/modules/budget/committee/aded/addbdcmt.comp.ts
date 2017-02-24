@@ -233,8 +233,15 @@ export class AddCommitteeComp implements OnInit {
 
         that._budgetservice.getCommittee({ "flag": "edit", "bid": that.bid }).subscribe(data => {
             var _committeedata = data.data;
-            that.committeeDT = _committeedata;
-            that.resp = _committeedata[0].resp;
+
+            if (_committeedata.length !== 0) {
+                that.committeeDT = _committeedata;
+                that.resp = _committeedata[0].resp;
+            }
+            else {
+                that.committeeDT = [];
+                that.resp = "";
+            }
         }, err => {
             console.log("Error");
         }, () => {
