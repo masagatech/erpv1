@@ -166,8 +166,6 @@ declare var $: any;
     //Get Pending DC Document no
     getPendingDocNo() {
         try {
-            this.FromDate = $("#FromDate").val();
-            this.ToDate = $("#ToDate").val();
             this.pendingdcServies.getPendingOrdNo({
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
@@ -276,19 +274,19 @@ declare var $: any;
     }
 
     //Quntity Calculation
-    private CulculateQty(row: any = []) {
+    private CulculateQty(row: any = [], counter: number) {
         debugger;
-        // var QtyRate = 0;
-        // var DisAmt = 0;
-        // if (qty != "" && qty != "0") {
-        //     if (oldQty < qty) {
+        var QtyRate = 0;
+        var DisAmt = 0;
+        // if (row.ordqty != "" && row.ordqty != "0") {
+        //     if (row.oldqty < row.ordqty) {
         //         alert('Please enter valid quntity');
         //         for (var i = 0; i < this.DocDetailslist.length; i++) {
         //             if (this.DocDetailslist[i].ProductCode === itemcode) {
-        //                 this.DocDetailslist[i].DCQty = oldQty;
-        //                 QtyRate = this.DocDetailslist[i].DCQty * this.DocDetailslist[i].Rate;
-        //                 DisAmt = QtyRate * this.DocDetailslist[i].Disount / 100;
-        //                 this.DocDetailslist[i].Amount = Math.round(QtyRate - DisAmt);
+        //                 this.DocDetailslist[i].ordqty = row.oldqty;
+        //                 QtyRate = this.DocDetailslist[i].ordqty * this.DocDetailslist[i].rate;
+        //                 DisAmt = QtyRate * this.DocDetailslist[i].dis / 100;
+        //                 this.DocDetailslist[i].amount = Math.round(QtyRate - DisAmt);
         //                 break;
         //             }
         //         }

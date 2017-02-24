@@ -14,23 +14,28 @@ declare var $: any;
 declare var commonfun: any;
 
 @Component({
-    templateUrl: 'addbdenv.comp.html',
+    templateUrl: 'addbdowners.comp.html',
     providers: [BudgetService]
 })
 
-export class AddEnvelopeComp implements OnInit {
+export class AddOwnershipComp implements OnInit {
     loginUser: LoginUserModel;
 
-    BudgetDT: any = [];
-    envelopeDT: any = [];
+    OwnershipDT: any = [];
 
-    envRowData: any = [];
-    duplicatecoa: boolean = true;
+    BudgetDT: any = [];
+    EnvelopeDT: any = [];
+    CtrlCenterDT: any = [];
+
+    ownersRowData: any = [];
+    duplicateowner: boolean = true;
 
     bid: number = 0;
-    newbeid: number = 0;
-    newcoaid: number = 0;
-    newcoaname: string = "";
+    newboid: number = 0;
+    newenvid: number = 0;
+    newempid: number = 0;
+    newempname: string = "";
+    newccid: number = 0;
     newenvtitle: string = "";
 
     counter: any;
@@ -44,8 +49,7 @@ export class AddEnvelopeComp implements OnInit {
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _budgetservice: BudgetService, private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
-        this.fillBudgetDropDown();
-        //this.fillCOAGrid();
+        this.fillDropDownList();
     }
 
     ngOnInit() {
@@ -63,35 +67,37 @@ export class AddEnvelopeComp implements OnInit {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this.saveEnvelopeData();
+            this.saveOwnershipData();
         } else if (evt === "edit") {
-            this._router.navigate(['/budget/envelope/edit', this.bid]);
+            this._router.navigate(['/budget/Ownership/edit', this.bid]);
         } else if (evt === "back") {
-            this._router.navigate(['/budget/envelope']);
+            this._router.navigate(['/budget/Ownership']);
         }
     }
 
-    fillBudgetDropDown() {
+    fillDropDownList() {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "dropdown" }).subscribe(data => {
-            that.BudgetDT = data.data;
+        that._budgetservice.getOwnership({ "flag": "dropdown" }).subscribe(data => {
+            that.BudgetDT = data.data[0]._bdgddl;
+            that.EnvelopeDT = data.data[0]._envddl;
+            that.CtrlCenterDT = data.data[0]._ccddl;
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
     }
 
-    isDuplicateCOA() {
-        for (var i = 0; i < this.envRowData.length; i++) {
-            var field = this.envRowData[i];
+    isDuplicateOwnership() {
+        for (var i = 0; i < this.ownersRowData.length; i++) {
+            var field = this.ownersRowData[i];
 
-            if (field.coaid == this.newcoaid) {
+            if (field.empid == this.newempid) {
                 this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
 
-                this.newcoaid = 0;
-                this.newcoaname = "";
+                this.newempid = 0;
+                this.newempname = "";
                 this.newenvtitle = "";
                 return true;
             }
@@ -100,11 +106,11 @@ export class AddEnvelopeComp implements OnInit {
         return false;
     }
 
-    getAutoCOA(me: any, arg: number) {
+    getAutoEmp(me: any, arg: number) {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "autocoa", "search": arg == 0 ? me.newcoaname : me.coaname }).subscribe(data => {
-            $(".coaname").autocomplete({
+        that._budgetservice.getOwnership({ "flag": "autoemp", "search": arg == 0 ? me.newempname : me.empname }).subscribe(data => {
+            $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
                 max: 20,
@@ -116,87 +122,70 @@ export class AddEnvelopeComp implements OnInit {
                 highlight: false,
                 select: function (event, ui) {
                     if (arg === 1) {
-                        me.coaname = ui.item.label;
-                        me.coaid = ui.item.value;
+                        me.empname = ui.item.label;
+                        me.empid = ui.item.value;
                     } else {
-                        me.newcoaname = ui.item.label;
-                        me.newcoaid = ui.item.value;
+                        me.newempname = ui.item.label;
+                        me.newempid = ui.item.value;
                     }
                 }
             });
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
     }
 
-    private addBudgetEnvelope() {
+    private addBudgetOwnership() {
         var that = this;
 
         // Validation
 
-        if (that.newcoaname == "") {
+        if (that.newempname == "") {
             that._msg.Show(messageType.error, "Error", "Please Enter Chart of Accounts");
             return;
         }
 
         // Duplicate items Check
-        that.duplicatecoa = that.isDuplicateCOA();
+        that.duplicateowner = that.isDuplicateOwnership();
 
         // Add New Row
-        if (that.duplicatecoa === false) {
-            that.envRowData.push({
+        if (that.duplicateowner === false) {
+            that.ownersRowData.push({
                 'counter': that.counter,
+                'boid': that.newboid,
                 'bid': that.bid,
-                'beid': that.newbeid,
-                'coaid': that.newcoaid,
-                'coaname': that.newcoaname,
-                'envtitle': that.newenvtitle,
+                'envid': that.newenvid,
+                'empid': that.newempid,
+                'empname': that.newempname,
+                'ccid': that.newccid,
                 'uidcode': that.loginUser.login,
                 "isactive": true
             });
 
             that.counter++;
-            that.newbeid = 0;
-            that.newcoaid = 0;
-            that.newcoaname = "";
-            that.newenvtitle = "";
-
-            $(".coaname").focus();
+            that.newboid = 0;
+            that.newenvid = 0;
+            that.newempid = 0;
+            that.newempname = "";
+            that.newccid = 0;
         }
     }
 
-    deleteBudgetEnvelope(row) {
+    deleteBudgetOwnership(row) {
         row.isactive = false;
     }
 
-    fillCOAGrid() {
+    // get Ownership by ID
+
+    getOwnershipData() {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "coa" }).subscribe(data => {
-            that.envelopeDT = data.data;
+        that._budgetservice.getOwnership({ "flag": "edit", "bid": that.bid }).subscribe(data => {
+            that.ownersRowData = data.data;
         }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    // get Envelope by ID
-
-    getEnvelopeData() {
-        var that = this;
-
-        that._budgetservice.getEnvelope({ "flag": "edit", "bid": that.bid }).subscribe(data => {
-            that.envRowData = data.data;
-
-            // for (var i = 0; i < that.envelopeDT.length; i++) {
-            //     that.envelopeDT[i].beid = envdtls[i].beid;
-            //     that.envelopeDT[i].envtitle = envdtls[i].envtitle;
-            // }
-        }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -204,7 +193,7 @@ export class AddEnvelopeComp implements OnInit {
 
     // save budget
 
-    saveEnvelopeData() {
+    saveOwnershipData() {
         var that = this;
 
         if (that.isFormChange()) {
@@ -220,25 +209,25 @@ export class AddEnvelopeComp implements OnInit {
             return;
         }
 
-        if (that.envRowData.length === 0) {
-            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Envelope Details");
+        if (that.ownersRowData.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Ownership Details");
             return;
         }
 
-        var saveEnvelope = {
-            "envelope": that.envRowData
+        var saveOwnership = {
+            "ownership": that.ownersRowData
         }
 
-        that._budgetservice.saveEnvelope(saveEnvelope).subscribe(data => {
+        that._budgetservice.saveOwnership(saveOwnership).subscribe(data => {
             try {
                 var dataResult = data.data;
 
-                if (dataResult[0].funsave_bdgenv.msgid != "-1") {
-                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_bdgenv.msg);
-                    that._router.navigate(['/budget/envelope']);
+                if (dataResult[0].funsave_bdgowner.msgid != "-1") {
+                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_bdgowner.msg);
+                    that._router.navigate(['/budget/ownership']);
                 }
                 else {
-                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_bdgenv.msg);
+                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_bdgowner.msg);
                 }
             }
             catch (e) {
@@ -246,7 +235,6 @@ export class AddEnvelopeComp implements OnInit {
             }
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
-            console.log(err);
         }, () => {
             // console.log("Complete");
         });
@@ -254,6 +242,5 @@ export class AddEnvelopeComp implements OnInit {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
     }
 }
