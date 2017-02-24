@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" *ngIf="bid !== 0">
                 <div class="col-md-9">
                     <div class="table-responsive">
                         <p-dataTable #dt [value]="committeeDT | filterBy : {isactive: true}" [editable]="!isdetails" [lazy]="true">
@@ -68,8 +68,6 @@
                         </p-dataTable>
                     </div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-9">
                     <label class="control-label">Responsibilities</label>
                     <textarea name="resp" validate="" [(ngModel)]="resp" class="form-control big-text-box" cols="150" rows="5"></textarea>

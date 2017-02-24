@@ -49,9 +49,7 @@ export class AddEnvelopeComp implements OnInit {
     }
 
     ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));

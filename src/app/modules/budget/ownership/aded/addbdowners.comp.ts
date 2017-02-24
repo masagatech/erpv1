@@ -53,9 +53,7 @@ export class AddOwnershipComp implements OnInit {
     }
 
     ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -85,7 +83,7 @@ export class AddOwnershipComp implements OnInit {
             that.EnvelopeDT = data.data[0]._envddl;
             that.CtrlCenterDT = data.data[0]._ccddl;
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -133,7 +131,7 @@ export class AddOwnershipComp implements OnInit {
                 }
             });
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -186,13 +184,8 @@ export class AddOwnershipComp implements OnInit {
 
         that._budgetservice.getOwnership({ "flag": "edit", "bid": that.bid }).subscribe(data => {
             that.ownersRowData = data.data;
-
-            // for (var i = 0; i < that.OwnershipDT.length; i++) {
-            //     that.OwnershipDT[i].boid = envdtls[i].boid;
-            //     that.OwnershipDT[i].envtitle = envdtls[i].envtitle;
-            // }
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -242,7 +235,6 @@ export class AddOwnershipComp implements OnInit {
             }
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
-            console.log(err);
         }, () => {
             // console.log("Complete");
         });
@@ -250,6 +242,5 @@ export class AddOwnershipComp implements OnInit {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
     }
 }
