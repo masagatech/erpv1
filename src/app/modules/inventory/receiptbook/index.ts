@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
-import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -51,8 +50,7 @@ const routerConfig = [
     declarations: [
         AddReceiptBook,
         ViewReceiptBook,
-        ReceiptBookComp,
-        GroupByPipe
+        ReceiptBookComp
     ],
     providers: [AuthGuard]
 })
