@@ -6,14 +6,14 @@ import { CommonService } from '../../../../_service/common/common-service'; /* a
 import { dcviewService } from "../../../../_service/dcmaster/view/dcview-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'adedview.comp.html',
-    providers: [dcviewService, CommonService]                         //Provides Add Service dcmaster-service.ts
-    //,AutoService
+    providers: [dcviewService, CommonService]
 })
 
 export class dcview implements OnInit, OnDestroy {
@@ -22,18 +22,20 @@ export class dcview implements OnInit, OnDestroy {
 
     //Declare Veriable Local
     CustName: any = '';
-    CustID: any = '';
-    DcDetails: any[];
+    CustID: any = 0;
+
     FromData: any;
     ToData: any;
-    tableLength: any;
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    CustomerAutodata: any[];
+    salesorderview: any[];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private dcviewServies: dcviewService, private _autoservice: CommonService,
+        private SalesOrdViewServies: dcviewService, private _autoservice: CommonService,
         private _userService: UserService) {
         this.loginUser = this._userService.getUser();
     }
@@ -45,9 +47,7 @@ export class dcview implements OnInit, OnDestroy {
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.tableLength = true;
         setTimeout(function () {
-            $(".Custcode").focus();
             var date = new Date();
             var FromDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
             var ToDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -66,6 +66,7 @@ export class dcview implements OnInit, OnDestroy {
                 setDate: new Date()
             });
             $("#ToDate").datepicker('setDate', ToDate);
+            $("#Custcode").focus();
         }, 0);
     }
 
@@ -82,30 +83,24 @@ export class dcview implements OnInit, OnDestroy {
         }
     }
 
+    loadRBIGrid(event: LazyLoadEvent) {
+
+    }
+
     //Get Button Click Event 
     private GetData() {
-        this.FromData = $('#FromDate').datepicker('getDate');
-        this.ToData = $('#ToDate').datepicker('getDate');
-        this.dcviewServies.getDcmasterView({                     //User getdcdropdown
+        this.SalesOrdViewServies.GetSalesOrderView({                     //User getdcdropdown
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
-            "createdby": "Admin",
-            "acid": this.CustID,
-            "FromDoc": 0,
-            "flag": "",
-            "DCNo": 0,
-            "ToDoc": 0,
-            "FromDate": this.FromData,
-            "ToDate": this.ToData
+            "createdby": this.loginUser.login,
+            "acid": this.CustID
         }).subscribe(result => {
             var dataset = result.data;
-            if (dataset[0].length > 0) {
-                this.DcDetails = dataset[0];
-                this.tableLength = false;
+            if (dataset.length > 0) {
+                this.salesorderview = dataset;
             }
             else {
                 alert("Record Not Found");
-                this.tableLength = true;
                 $(".Custcode").focus();
             }
         }, err => {
@@ -122,54 +117,51 @@ export class dcview implements OnInit, OnDestroy {
         }
     }
 
-    expandDetails(row) {
-        row.Details = [];
-        if (row.issh == 0) {
-            row.issh = 1;
-            if (row.Details.length === 0) {
-                this.dcviewServies.getDcmasterView({
-                    "flag": "Details",
-                    "doc": row.dcno,
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy,
-                    "createdby": this.loginUser.login
-                }).subscribe(data => {
-                    row.Details = data.data[0];
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
+    expandDetails(event) {
+        if (event.details && event.details.length > 0) { return; }
+        var that = this;
+        var row = event;
+        row.loading = false;
+        this.SalesOrdViewServies.GetSalesOrderView({
+            "flag": "detail",
+            "docno": row.docno,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            row.loading = true;
+            row.details = data.data;
+            debugger;
+            row.subtotal = 0;
+            row.subqty = 0;
+            for (let item of row.details) {
+                row.subtotal += parseFloat(item.amount);
+                row.subqty += parseFloat(item.ordqty);
             }
-        } else {
-            row.issh = 0;
-        }
-    }
-
-    //Auto Completed Customer Name
-    getAutoComplete(me: any) {
-        var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "search": this.CustName }).subscribe(data => {
-            $(".Custcode").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.CustID = ui.item.value;
-                    me.CustName = ui.item.label;
-                }
-            });
         }, err => {
             console.log("Error");
         }, () => {
             // console.log("Complete");
         })
+    }
+
+    //Customer Autoextender
+    CustomerAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "customer",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.CustomerAutodata = data;
+        });
+    }
+
+    CustomerSelect(event) {
+        this.CustID = event.value;
+        this.CustName = event.label;
     }
 
     ngOnDestroy() {

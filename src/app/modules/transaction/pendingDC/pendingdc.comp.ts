@@ -114,6 +114,7 @@ declare var $: any;
         $(".Custcode").focus();
     }
 
+    //Create Paramter Json
     paramjson() {
         var param = [];
         if (this.DocDetailslist.length > 0) {
@@ -129,11 +130,10 @@ declare var $: any;
                     "fy": this.loginUser.fy,
                     "createdby": this.loginUser.login,
                     "confimstatus": 'Menual',
-                    "autoconfirm":false
+                    "autoconfirm": false
                 })
             }
         }
-        console.log(param);
         return param;
     }
 
@@ -150,8 +150,9 @@ declare var $: any;
                 "docno": this.docno,
             }).subscribe(documentno => {
                 var dataset = documentno.data;
-                if (dataset[0].doc > 0) {
-                    alert("Data Save Successfully Document No :" + dataset[0].doc);
+                if (dataset[0].funsave_salesorderconfirm.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", dataset[0].funsave_salesorderconfirm.msg + ' ' + dataset[0].funsave_salesorderconfirm.maxid);
+                    this.CustomerDetails = [];
                     this.DocDetailslist = [];
                     //this.getPendingDocNo();
                 }

@@ -126,7 +126,7 @@ declare var commonfun: any;
         private CustAddServies: CustomerAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
         this.module = "cust";
-        
+
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -135,6 +135,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Customer Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -1138,6 +1139,10 @@ declare var commonfun: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+        if (evt === "clear") {
+            this.ClearControll();
+            $(".code").focus();
+        }
         if (evt === "back") {
             this._router.navigate(['master/customer']);
         }
@@ -1210,7 +1215,7 @@ declare var commonfun: any;
             $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-             this.addressBook.AddBook(this.code);
+            this.addressBook.AddBook(this.code);
             $(".fname").focus();
         } else if (evt === "delete") {
             alert("delete called");

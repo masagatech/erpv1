@@ -4,7 +4,7 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
+					<input type="text" class="form-control code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" ng-trim="false" (blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -57,7 +57,7 @@
 </div>
 <div class="panel panel-theme">
 	<div class="panel-body">
-		<ul class="nav nav-tabs">
+		<ul class="nav nav-tabs" id="headtab">
 			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contacts</a></li>
 			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
 			<li><a data-target="#itemdis" role="button" (click)="itemdis()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>

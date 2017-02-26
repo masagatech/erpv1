@@ -66,6 +66,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setTitle("Transpoter Master");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -207,6 +208,10 @@ declare var commonfun: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
+         if (evt === "clear") {
+            this.clearcontrol();
+            $(".code").focus();
+        }
         if (evt === "back") {
             this._router.navigate(['master/transpoter']);
         }

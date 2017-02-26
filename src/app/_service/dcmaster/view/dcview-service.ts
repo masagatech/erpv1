@@ -3,11 +3,10 @@ import { DataService } from '../../../_service/dataconnect';
 import { Router } from '@angular/router';
 
 @Injectable()
-export class dcviewService  {
-    constructor(private _dataserver:DataService,private _router:Router) { }
+export class dcviewService {
+    constructor(private _dataserver: DataService, private _router: Router) { }
 
-     getDcmasterView(req:any)
-    {
-        return this._dataserver.post("getdcdetails",req);
+    GetSalesOrderView(req: any) {
+        return this._dataserver.post("getSalesOrderView", req);
     }
 }

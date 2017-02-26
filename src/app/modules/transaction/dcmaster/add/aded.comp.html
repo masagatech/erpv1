@@ -94,7 +94,7 @@
 											<label>#</label>
 										</td>
 										<td style="vertical-align: top;"><input type="text" tabindex="10" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
-												autocomplete='off' value="" (keyup.enter)="NewRowAdd()" /></td>
+												autocomplete='off' value="" /></td>
 										<td style="width:120px;vertical-align: top;">
 											<numtext [iscurrency]="false" css="inlinetextbox" tabindex="11" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis,this,0)"
 												[(ngModel)]="qty"></numtext>
