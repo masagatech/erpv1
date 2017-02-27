@@ -125,7 +125,6 @@ declare var commonfun: any;
             "createdby": that.loginUser.login
         }).subscribe(result => {
             var dataset = result.data[0];
-            debugger;
             that.editmode = true;
             that.isactive = dataset[0].isactive;
             that.code = dataset[0].mcode;

@@ -225,7 +225,7 @@ declare var $: any;
             //     $("#foot_custname").focus();
             //     return;
             // }
-            debugger;
+            
             this.PurchaseServies.SaveOP(
                 this.ParamJson()
             ).subscribe(result => {

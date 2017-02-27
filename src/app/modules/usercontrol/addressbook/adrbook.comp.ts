@@ -238,8 +238,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
-        debugger;
-        console.log(Param);
+        
         return Param;
     }
 

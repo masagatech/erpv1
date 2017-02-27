@@ -147,10 +147,8 @@ declare var commonfun: any;
     checkalllead() {
         if (this.allload.otherdropdwn) {
             if (this._editid > 0) {
-                debugger;
                 this.EditItems(this._editid);
             }
-
         }
     }
 
@@ -369,7 +367,6 @@ declare var commonfun: any;
 
     //Add New Supplier 
     SupplierAdd() {
-        debugger;
         if ($(".supp").val() == "") {
             this.suppid = 0;
         }
