@@ -9,22 +9,23 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 @Component({
-    templateUrl: 'viewbdcmt.comp.html',
+    templateUrl: 'viewbdowners.comp.html',
     providers: [BudgetService]
 })
 
-export class ViewCommitteeComp implements OnInit, OnDestroy {
+export class ViewOwnershipComp implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    viewCommitteeDT: any = [];
+    viewOwnershipDT: any = [];
     totalRecords: number = 0;
     status: string = "";
 
     search: string = "";
     statusDT: any = [];
-    budgetDT: any = [];
+    pendingbudgetDT: any = [];
+    allocatedbudgetDT: any = [];
 
     selectedbid: number = 0;
 
@@ -33,11 +34,11 @@ export class ViewCommitteeComp implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
         this.fillStatusDropDown();
         this.fillBudgetDropDown();
-        this.resetCommitteeFields();
+        this.resetOwnershipFields();
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Budget Committee");
+        this.setActionButtons.setTitle("Budget Ownership");
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -47,7 +48,7 @@ export class ViewCommitteeComp implements OnInit, OnDestroy {
         var that = this;
 
         this._userService.getMenuDetails({
-            "flag": "trashrights", "ptype": "set", "mtype": "bdcmt",
+            "flag": "trashrights", "ptype": "set", "mtype": "bdown",
             "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             that.statusDT = data.data;
@@ -61,8 +62,11 @@ export class ViewCommitteeComp implements OnInit, OnDestroy {
     fillBudgetDropDown() {
         var that = this;
 
-        that._budgetservice.getCommittee({ "flag": "dropdown", "search": that.search }).subscribe(data => {
-            that.budgetDT = data.data;
+        that._budgetservice.getOwnership({ "flag": "dropdown", "search": that.search }).subscribe(data => {
+            var budgetDT = data.data[0]._bdgddl;
+            
+            that.pendingbudgetDT = budgetDT.filter(a => a.countowners === 0);
+            that.allocatedbudgetDT = budgetDT.filter(a => a.countowners !== 0);
         }, err => {
             console.log(err);
         }, () => {
@@ -70,17 +74,17 @@ export class ViewCommitteeComp implements OnInit, OnDestroy {
         })
     }
 
-    resetCommitteeFields() {
+    resetOwnershipFields() {
         this.status = "true";
     }
 
-    getCommitteeMaster(row) {
+    getOwnershipMaster(row) {
         var that = this;
 
-        that._budgetservice.getCommittee({
+        that._budgetservice.getOwnership({
             "flag": "all", "bid": row.bid, "from": 0, "to": 10, "isactive": true
-        }).subscribe(committee => {
-            that.viewCommitteeDT = committee.data[0];
+        }).subscribe(Ownership => {
+            that.viewOwnershipDT = Ownership.data[0];
             that.selectedbid = row.bid;
         }, err => {
             console.log(err);
@@ -89,14 +93,14 @@ export class ViewCommitteeComp implements OnInit, OnDestroy {
         })
     }
 
-    getCommittee(from: number, to: number) {
+    getOwnership(from: number, to: number) {
         var that = this;
 
-        that._budgetservice.getCommittee({
+        that._budgetservice.getOwnership({
             "flag": "all", "from": from, "to": to, "isactive": true
-        }).subscribe(committee => {
-            that.totalRecords = committee.data[1][0].recordstotal;
-            that.viewCommitteeDT = committee.data[0];
+        }).subscribe(Ownership => {
+            that.totalRecords = Ownership.data[1][0].recordstotal;
+            that.viewOwnershipDT = Ownership.data[0];
         }, err => {
             console.log(err);
         }, () => {
@@ -104,21 +108,21 @@ export class ViewCommitteeComp implements OnInit, OnDestroy {
         })
     }
 
-    loadCommitteeGrid(event: LazyLoadEvent) {
-        this.getCommittee(event.first, (event.first + event.rows));
+    loadOwnershipGrid(event: LazyLoadEvent) {
+        this.getOwnership(event.first, (event.first + event.rows));
     }
 
-    searchCommittee(dt: DataTable) {
+    searchOwnership(dt: DataTable) {
         dt.reset();
     }
 
-    openCommittee() {
-        this._router.navigate(['/budget/committee/details', this.selectedbid]);
+    openOwnership() {
+        this._router.navigate(['/budget/ownership/details', this.selectedbid]);
     }
 
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/budget/committee/add']);
+            this._router.navigate(['/budget/ownership/add']);
         }
     }
 

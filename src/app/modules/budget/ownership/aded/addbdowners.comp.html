@@ -5,7 +5,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Budget</label>
-                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="getOwnershipData()">
+                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control">
                             <option value="0">-- Select Budget --</option>
                             <option *ngFor="let row of BudgetDT" [value]="row.bid">
                                 {{row.btitle}}
@@ -24,7 +24,10 @@
                                 </template>
                             </p-column>
                             <p-column header="Envelope" [style]="{'width':'300px'}">
-                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+                                    {{row.envtitle}}
+                                </template>
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
                                     <select name="envelope{{i+1}}" [(ngModel)]="row.envid" class="form-control inlinetextbox">
                                         <option value="0">-- Select Envelope --</option>
                                         <option *ngFor="let items of EnvelopeDT" [value]="items.envid">
@@ -34,13 +37,19 @@
                                 </template>
                             </p-column>
                             <p-column header="Employee" [style]="{'width':'400px','text-align':'left'}">
-                                <template let-row="rowData" let-i="rowIndex" pTemplate="body">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+                                    {{row.empname}}
+                                </template>
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
                                     <input type="text" name="empname{{i+1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox" (keyup)="getAutoemp(row, 1)"
                                     />
                                 </template>
                             </p-column>
                             <p-column header="Control Center" [style]="{'width':'300px','text-align':'left'}">
-                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+                                    {{row.ccname}}
+                                </template>
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
                                     <select name="newccid{{i+1}}" [(ngModel)]="row.ccid" class="form-control inlinetextbox">
                                         <option value="0">-- Select Control Center --</option>
                                         <option *ngFor="let items of CtrlCenterDT" [value]="items.ccid">

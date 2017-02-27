@@ -34,7 +34,6 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
     var that = this;
 
     return Observable.create((observer: Subject<boolean>) => {
-      //debugger;
       if (checks.status) {
         //call here
 

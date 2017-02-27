@@ -23,7 +23,7 @@
 				<div class="col-md-1">
 					<div class="form-group">
 						<label>&nbsp;</label>
-						<button type="button" class="btn btn-theme btn-sm" (click)="searchCommittee(dt)">Get</button>
+						<button type="button" class="btn btn-theme btn-sm" (click)="searchEnvelope(dt)">Get</button>
 					</div>
 				</div>
 			</div>
@@ -34,29 +34,49 @@
 <div class="col-md-12">
 	<div class="row">
 		<div class="col-md-2" style="border-right: 3px #d1d8dd dashed;">
-			<p-dataList [value]="budgetDT" selectionMode="single">
+			<p-dataList [value]="pendingbudgetDT" selectionMode="single">
 				<header>
-					Budget Details
+					Pending
 				</header>
 				<template let-row>
 					<div style="padding: 10px;">
-						<a role="button" (click)="getCommitteeMaster(row);">{{row.btitle}}</a>
+						{{row.btitle}}
 					</div>
 				</template>
 			</p-dataList>
+			<div *ngIf="allocatedbudgetDT.length" style="margin: 15px 0;">
+				<p-dataList [value]="allocatedbudgetDT" selectionMode="single">
+					<header>
+						Allocated
+					</header>
+					<template let-row>
+						<div style="padding: 10px;">
+							<a role="button" (click)="getEnvelopeMaster(row);">{{row.btitle}}</a>
+						</div>
+					</template>
+				</p-dataList>
+			</div>
+			<div *ngIf="!allocatedbudgetDT.length" style="margin: 15px 0; text-align: center;">
+				<h3>No Budget Allocated</h3>
+			</div>
 		</div>
 		<div class="col-md-10">
+			<div class="row" *ngIf="selectedbid === 0">
+				<div class="col-md-12">
+					<h3>Please select Budget Item</h3>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-md-11">
-					<p-dataTable #dt [value]="viewCommitteeDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadCommitteeGrid($event)">
+					<p-dataTable #dt [value]="viewEnvelopeDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadEnvelopeGrid($event)">
 						<p-column field="btitle" header="Title" [style]="{'width':'150px','text-align':'left'}"></p-column>
-						<p-column field="empname" header="Emp Name" [style]="{'text-align':'left'}"></p-column>
-						<p-column field="role" header="Role" [style]="{'width':'150px','text-align':'left'}"></p-column>
+						<p-column field="groupname" header="Group Name" [style]="{'text-align':'left'}"></p-column>
+						<p-column field="envtitle" header="Envelope" [style]="{'width':'150px','text-align':'left'}"></p-column>
 						<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
 					</p-dataTable>
 				</div>
-				<div class="col-md-1" *ngIf="viewCommitteeDT.length">
-					<button type="button" (click)="openCommittee()" class="btn btn-theme btn-sm"><i class="fa fa-arrow-right"></i></button>
+				<div class="col-md-1" *ngIf="viewEnvelopeDT.length">
+					<button type="button" (click)="openEnvelope()" class="btn btn-theme btn-sm"><i class="fa fa-arrow-right"></i></button>
 				</div>
 			</div>
 		</div>

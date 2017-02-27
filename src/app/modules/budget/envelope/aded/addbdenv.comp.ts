@@ -18,19 +18,20 @@ declare var commonfun: any;
     providers: [BudgetService]
 })
 
-export class AddEnvelopeComp implements OnInit {
+export class AddEnvelopeComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     BudgetDT: any = [];
     envelopeDT: any = [];
 
     envRowData: any = [];
-    duplicatecoa: boolean = true;
+    duplicateenv: boolean = true;
 
     bid: number = 0;
     newbeid: number = 0;
-    newcoaid: number = 0;
-    newcoaname: string = "";
+    envtype: string = "";
+    coaid: number = 0;
+    coaname: string = "";
     newenvtitle: string = "";
 
     counter: any;
@@ -39,18 +40,29 @@ export class AddEnvelopeComp implements OnInit {
     subscr_actionbarevt: Subscription;
     formvals: string = "";
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _budgetservice: BudgetService, private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillBudgetDropDown();
-        //this.fillCOAGrid();
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
 
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.setActionButtons.setTitle("Envelope");
+
+        this.setBudgetEnvelope();
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -72,10 +84,57 @@ export class AddEnvelopeComp implements OnInit {
         }
     }
 
+    setBudgetEnvelope() {
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (this.isadd) {
+                this.setActionButtons.setTitle("Add Budget Envelope");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('#bid').prop('disabled', false);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+            else if (this.isedit) {
+                this.setActionButtons.setTitle("Edit Budget Envelope");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('#bid').prop('disabled', true);
+
+                this.bid = params['id'];
+                this.getEnvelopeData(this.bid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+            else {
+                this.setActionButtons.setTitle("Details Of Budget Envelope");
+
+                $('button').prop('disabled', true);
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
+                $('#bid').prop('disabled', true);
+
+                this.bid = params['id'];
+                this.getEnvelopeData(this.bid);
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+            }
+        });
+    }
+
     fillBudgetDropDown() {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "dropdown" }).subscribe(data => {
+        that._budgetservice.getEnvelope({ "flag": "dropdown", "search": "" }).subscribe(data => {
             that.BudgetDT = data.data;
         }, err => {
             console.log("Error");
@@ -84,15 +143,12 @@ export class AddEnvelopeComp implements OnInit {
         })
     }
 
-    isDuplicateCOA() {
+    isDuplicateEnvelope() {
         for (var i = 0; i < this.envRowData.length; i++) {
             var field = this.envRowData[i];
 
-            if (field.coaid == this.newcoaid) {
-                this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
-
-                this.newcoaid = 0;
-                this.newcoaname = "";
+            if (field.envtitle == this.newenvtitle) {
+                this._msg.Show(messageType.error, "Error", "Duplicate Envelope not Allowed");
                 this.newenvtitle = "";
                 return true;
             }
@@ -101,10 +157,10 @@ export class AddEnvelopeComp implements OnInit {
         return false;
     }
 
-    getAutoCOA(me: any, arg: number) {
+    getAutoCOA(me: any) {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "autocoa", "search": arg == 0 ? me.newcoaname : me.coaname }).subscribe(data => {
+        that._budgetservice.getEnvelope({ "flag": "autocoa", "search": me.coaname }).subscribe(data => {
             $(".coaname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -116,13 +172,8 @@ export class AddEnvelopeComp implements OnInit {
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    if (arg === 1) {
-                        me.coaname = ui.item.label;
-                        me.coaid = ui.item.value;
-                    } else {
-                        me.newcoaname = ui.item.label;
-                        me.newcoaid = ui.item.value;
-                    }
+                    me.coaname = ui.item.label;
+                    me.coaid = ui.item.value;
                 }
             });
         }, err => {
@@ -135,24 +186,18 @@ export class AddEnvelopeComp implements OnInit {
     private addBudgetEnvelope() {
         var that = this;
 
-        // Validation
-
-        if (that.newcoaname == "") {
-            that._msg.Show(messageType.error, "Error", "Please Enter Chart of Accounts");
-            return;
-        }
-
-        // Duplicate items Check
-        that.duplicatecoa = that.isDuplicateCOA();
+        // Duplicate Envelope Check
+        that.duplicateenv = that.isDuplicateEnvelope();
 
         // Add New Row
-        if (that.duplicatecoa === false) {
+        if (that.duplicateenv === false) {
             that.envRowData.push({
                 'counter': that.counter,
                 'bid': that.bid,
                 'beid': that.newbeid,
-                'coaid': that.newcoaid,
-                'coaname': that.newcoaname,
+                'coaid': that.coaid,
+                'coaname': that.coaname,
+                'envtype': that.envtype,
                 'envtitle': that.newenvtitle,
                 'uidcode': that.loginUser.login,
                 "isactive": true
@@ -160,11 +205,9 @@ export class AddEnvelopeComp implements OnInit {
 
             that.counter++;
             that.newbeid = 0;
-            that.newcoaid = 0;
-            that.newcoaname = "";
             that.newenvtitle = "";
 
-            $(".coaname").focus();
+            $(".envtitle").focus();
         }
     }
 
@@ -172,30 +215,18 @@ export class AddEnvelopeComp implements OnInit {
         row.isactive = false;
     }
 
-    fillCOAGrid() {
-        var that = this;
-
-        that._budgetservice.getEnvelope({ "flag": "coa" }).subscribe(data => {
-            that.envelopeDT = data.data;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
     // get Envelope by ID
 
-    getEnvelopeData() {
+    getEnvelopeData(pbid) {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "edit", "bid": that.bid }).subscribe(data => {
-            that.envRowData = data.data;
-
-            // for (var i = 0; i < that.envelopeDT.length; i++) {
-            //     that.envelopeDT[i].beid = envdtls[i].beid;
-            //     that.envelopeDT[i].envtitle = envdtls[i].envtitle;
-            // }
+        that._budgetservice.getEnvelope({ "flag": "edit", "bid": pbid }).subscribe(data => {
+            if (data.data.length !== 0) {
+                that.envtype = data.data[0].envtype;
+                that.coaid = data.data[0].coaid;
+                that.coaname = data.data[0].coaname;
+                that.envRowData = data.data;
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -254,7 +285,8 @@ export class AddEnvelopeComp implements OnInit {
     }
 
     ngOnDestroy() {
+        this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }

@@ -7,7 +7,7 @@ import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -33,10 +33,10 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: '', component: AddCommitteeComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"bdcmt", "rights": "add", "urlname": "" }},
+                    { path: 'add', component: AddCommitteeComp, canActivateChid: [AuthGuard],  data: { "module": "bdg", "submodule":"bdcmt", "rights": "add", "urlname": "" }},
                     { path: 'edit/:id', component: AddCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "edit", "urlname": "/edit" } },
                     { path: 'details/:id', component: AddCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "edit", "urlname": "/edit" } },
-                    //{ path: '', component: ViewCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "view", "urlname": "/committee" } },
+                    { path: '', component: ViewCommitteeComp, canActivateChid: [AuthGuard], data: { "module": "bdg", "submodule":"bdcmt", "rights": "view", "urlname": "/committee" } },
                 ]
             }
         ]
@@ -44,7 +44,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule, CalendarModule, NumTextModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+     DataTableModule, DataListModule, CalendarModule, NumTextModule],
     declarations: [
         AddCommitteeComp,
         ViewCommitteeComp,

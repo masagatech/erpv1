@@ -41,7 +41,7 @@ declare var commonfun: any;
     providers: [BudgetService, CommonService, FYService, ALSService]
 })
 
-export class AddInitiateComp implements OnInit {
+export class AddInitiateComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     bid: number = 0;
@@ -378,6 +378,11 @@ export class AddInitiateComp implements OnInit {
             return;
         }
 
+        if (this.attr.attrlist.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Attribute");
+            return;
+        }
+
         var saveinitiate = {
             "bid": that.bid,
             "btitle": that.btitle,
@@ -430,7 +435,8 @@ export class AddInitiateComp implements OnInit {
     }
 
     ngOnDestroy() {
+        this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }
