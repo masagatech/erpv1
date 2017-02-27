@@ -52,6 +52,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     newrate: any = "";
 
     //Declare Table Veriable
+    autoid:number=0;
     DCDetelId: any;
     dis: any = 0;
     Rate: any = 0;
@@ -107,7 +108,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //, private _autoservice:AutoService
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private dcServies: dcmasterService, private _autoservice: CommonService,
+        private SalesOrderServies: dcmasterService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _userService: UserService,
         private _msg: MessageService, private _alsservice: ALSService) {
         this.newAddRow = [];
@@ -238,7 +239,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         for (let item of this.newAddRow) {
             var rate = item.rateslist.filter(itemval => itemval.id == item.id)
             jsonparam.push({
-                "autoid": 0,
+                "autoid": item.autoid,
                 "itemsid": item.itemsid,
                 "qty": item.qty,
                 "rate": rate[0].id,
@@ -252,6 +253,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Auto Confirm Sales Order Confirm 
     confirmparam() {
         var confparam = {
+            "autoid": 0,
             "fy": this.loginUser.fy,
             "cmpid": this.loginUser.cmpid,
             "createdby": this.loginUser.login,
@@ -265,12 +267,13 @@ export class dcADDEdit implements OnInit, OnDestroy {
         var that = this;
         try {
             var param = {
-                "dcno": that.DocNo,
+                "docno": that.DocNo,
                 "docdate": that.docdatecal.getDate(),
                 "acid": that.CustID,
                 "refno": that.Token,
                 "deldate": that.deldatecal.getDate(),
                 "salesid": that.salesid,
+                "whid": that.wareid,
                 "traspo": that.Traspoter,
                 "status": "",
                 "fy": that.loginUser.fy,
@@ -315,7 +318,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 return false;
             }
             try {
-                this.dcServies.saveDcMaster(
+                this.SalesOrderServies.saveDcMaster(
                     this.paramterjson()
                 ).subscribe(result => {
                     var returndata = result.data;
@@ -343,9 +346,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
-            this.dcServies.deleteDcMaster({
+            this.SalesOrderServies.deleteDcMaster({
                 "DCNo": this.DocNo,
                 "DCDetelId": 0,
                 "CmpCode": "Mtech",
@@ -376,24 +379,24 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
 
     GetEditData(Docno) {
-        this.dcServies.getDcmasterView({
+        this.SalesOrderServies.GetSalesOrderView({
             "flag": "edit",
-            "doc": Docno,
-            "cmpid": this.loginUser.fy,
+            "docno": Docno,
+            "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             var dataset = data.data;
             var CustomerMaster = dataset[0];
-
             if (CustomerMaster.length > 0) {
                 this.CustomerSelected(CustomerMaster[0].acid);
                 this.CustName = CustomerMaster[0].acname;
                 this.CustID = CustomerMaster[0].acid;
-                this.Token = CustomerMaster[0].refno;
                 this.Remark = CustomerMaster[0].remark;
-                this.Remark2 = CustomerMaster[0].remark1;
-                this.Salesmandrop = CustomerMaster[0].salesid;
+                this.salesid = CustomerMaster[0].salesid;
+                this.docdatecal.setDate(new Date(CustomerMaster[0].docdate));
+                this.deldatecal.setDate(new Date(CustomerMaster[0].deldate));
+                this.wareid = CustomerMaster[0].whid;
                 this.Traspoter = CustomerMaster[0].transid;
                 this.newAddRow = dataset[1];
             }
@@ -408,6 +411,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         })
     }
 
+    //AutoCompletd Customer
     CustomerAuto(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
@@ -420,55 +424,13 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.CustomerAutodata = data;
         });
     }
+
+    //Selected Customer
     CustomerSelect(event) {
         this.CustID = event.value;
         this.CustName = event.label;
         this.CustomerSelected(this.CustID);
     }
-
-    //Auto Completed Customer Name
-    // getAutoComplete(me: any) {
-    //     var _me = this;
-    //     try {
-
-
-    //     }
-
-    // this._autoservice.getAutoData({
-    //     "type": "customer",
-    //     "search": _me.CustName,
-    //     "cmpid": this.loginUser.cmpid,
-    //     "fy": this.loginUser.fy,
-    //     "createdby": this.loginUser.login
-    // }).subscribe(data => {
-    //     $(".custname").autocomplete({
-    //         source: data.data,
-    //         width: 300,
-    //         max: 20,
-    //         delay: 100,
-    //         minLength: 0,
-    //         autoFocus: true,
-    //         cacheLength: 1,
-    //         scroll: true,
-    //         highlight: false,
-    //         select: function (event, ui) {
-    //             me.CustID = ui.item.value;
-    //             me.CustName = ui.item.label;
-    //             _me.CustomerSelected(me.CustID);
-    //         }
-    //     });
-    // }, err => {
-    //     console.log("Error");
-    // }, () => {
-    //     // console.log("Complete");
-    // })
-
-    //     } catch (e) {
-    //         this._msg.Show(messageType.error, "error", e.message);
-    //         return;
-    //     }
-
-    // }
 
     //AutoCompletd Product Name
     getAutoCompleteProd(me: any, arg: number) {
@@ -540,7 +502,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this.warehouselist = [];
                 this.Transpoterlist = [];
                 this.custKey = val;
-                this.dcServies.getdcdetails({
+                this.SalesOrderServies.getdcdetails({
                     "custid": val,
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
@@ -569,6 +531,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Rate Change Event
     ratechange(qty: any, newrate: any = [], dis: any, row: any = [], agr: number) {
+        debugger;
         try {
             if (agr == 0) {
                 if (qty != "" && newrate != "") {
@@ -606,7 +569,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     ItemsSelected(val: number, falg: number, counter: number) {
         try {
             if (val != 0) {
-                this.dcServies.getItemsAutoCompleted({
+                this.SalesOrderServies.getItemsAutoCompleted({
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
                     "itemsid": val,
@@ -673,7 +636,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             }
             if (this.Duplicateflag == true) {
                 this.newAddRow.push({
-                    "autoid": 0,
+                    "autoid": this.autoid,
                     'itemsname': this.itemsname,
                     "itemsid": this.itemsid,
                     'qty': this.qty,
@@ -692,7 +655,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this.qty = "";
                 this.totalqty = 0;
                 this.Rate = "";
-                this.dis = "";
+                this.dis = 0;
                 this.amount = "";
                 $(".ProdName").focus();
             }
@@ -750,7 +713,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Delete Row 
     private DeleteRow(val, DcDelid) {
         if (DcDelid != "" || DcDelid != undefined) {
-            this.dcServies.deleteDcMaster({
+            this.SalesOrderServies.deleteDcMaster({
                 "DCNo": 0,
                 "DCDetelId": DcDelid,
                 "FY": this.loginUser.fy,

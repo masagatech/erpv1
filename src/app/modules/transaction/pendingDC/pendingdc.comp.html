@@ -3,8 +3,9 @@
 		<div class="col-md-4">
 			<div class='form-group'>
 				<label>Customer</label>
-				<input type="text=" class="form-control Custcode" tabindex="1" value="" [(ngModel)]="custname" (keyup)="getAutoComplete(this)"
-				/>
+				<!--<input type="text=" class="form-control Custcode" tabindex="1" value="" [(ngModel)]="custname" (keyup)="getAutoComplete(this)"-->
+				<p-autoComplete [(ngModel)]="custname" tabindex="1" class="form-controlAutoComplete Custcode" (onSelect)="CustomerSelect($event)"
+					[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" [minLength]="1"></p-autoComplete>
 			</div>
 		</div>
 		<div class="col-md-2">

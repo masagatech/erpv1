@@ -123,7 +123,6 @@ declare var commonfun: any;
                     "createdby": this.loginUser.login
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;
-                    console.log(ItemsResult);
                     if (ItemsResult[0].length > 0) {
                         this.Openinglist = ItemsResult[0];
                     }

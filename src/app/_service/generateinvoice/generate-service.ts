@@ -9,8 +9,9 @@ export class generateinvService  {
     //Get Document No
     getInvdocumentNo(req:any)
     {
-        return this._dataserver.post("GetInvoiceDC",req);
+        return this._dataserver.post("getdocumentno",req);
     }
+    
     getInvDetails(req:any)
     {
         return this._dataserver.post("GetInvoiceDetails",req);

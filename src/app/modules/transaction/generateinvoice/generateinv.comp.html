@@ -3,37 +3,28 @@
 		<div class="col-md-4">
 			<div class='form-group'>
 				<label>Customer</label>
-				<input type="text=" class="form-control Custcode" [(ngModel)]="CustName" tabindex="1" value="" (keyup)="getAutoComplete(this)"
-				/>
+				<!--<input type="text=" class="form-control Custcode" [(ngModel)]="CustName" tabindex="1" value="" (keyup)="getAutoComplete(this)"-->
+				<p-autoComplete [(ngModel)]="CustName" tabindex="1" class="form-controlAutoComplete Custcode" (onSelect)="CustomerSelect($event)"
+					[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" [minLength]="1"></p-autoComplete>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class='form-group'>
 				<label>From Date</label>
-				<div class="controls">
-					<div class="input-group">
-						<input type="text" name="date-picker-3" id="FromDate" tabindex="2" class="date-picker form-control" [(ngModel)]="FromDate"
-						/>
-						<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-					</div>
-				</div>
+				<calendar #fromdatecal [name]="'fromdate'"></calendar>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class='form-group'>
 				<label>To Date</label>
-				<div class="controls">
-					<div class="input-group date">
-						<input type="text" name="date-picker-4" id="ToDate" tabindex="3" class="date-picker form-control" [(ngModel)]="ToDate" />
-						<label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-					</div>
-				</div>
+				<calendar #todatecal [name]="'todate'"></calendar>
 			</div>
 		</div>
 		<div class="col-md-1">
 			<div class='form-group'>
-				<label>&nbsp;</label>
-				<button type="button" class="btn btn-primary" (click)="getdocumentNo()">Get</button>
+				<div style="padding-top:28px;">
+					<button type="button" class="btn btn-theme btn-sm" (click)="getdocumentNo()"><i class="fa fa-arrow-right"></i></button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -150,7 +141,7 @@
 							<th>Doc No</th>
 						</tr>
 						<tr class="table-row" *ngFor="let item of doclist">
-							<td><a role="button" (click)="getInvDetails(item)">{{item.DocNo}}</a><span class="displayNone">{{item.autoid}}</span></td>
+							<td><a role="button" (click)="getInvDetails(item)">{{item.docno}}</a><span class="hide">{{item.autoid}}</span></td>
 						</tr>
 					</tbody>
 				</table>

@@ -21,8 +21,8 @@ export class dcmasterService {
         return this._dataserver.post("saveDcMaster", req);
     }
 
-    getDcmasterView(req: any) {
-        return this._dataserver.post("getdcdetails", req);
+     GetSalesOrderView(req: any) {
+        return this._dataserver.post("getSalesOrderView", req);
     }
 
     deleteDcMaster(req: any) {

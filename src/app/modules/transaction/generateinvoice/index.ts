@@ -8,6 +8,9 @@ import { generateInv } from '../generateinvoice/generateinv.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { CalendarModule } from '../../usercontrol/calendar';
+
+import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -35,7 +38,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
+    FormsModule, CommonModule, CalendarModule, DataTableModule, AutoCompleteModule,],
     declarations: [
         generateInv,
         generateInvComp

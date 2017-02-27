@@ -6,7 +6,7 @@ import { pendingdc } from '../pendingDC/pendingdc.comp';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
@@ -36,7 +36,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
-        FormsModule, CommonModule, DataTableModule, CalendarModule,NumTextModule],
+        FormsModule, CommonModule, DataTableModule, AutoCompleteModule, CalendarModule, NumTextModule],
     declarations: [
         pendingdc,
         PendingdcComp
