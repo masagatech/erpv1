@@ -16,6 +16,7 @@ export class CalendarComp implements OnInit {
 
     @Input() name: string = "";
     @Input() module: string = "";
+    @Input() islabel: boolean = false;
 
     loginUser: any = {};
 
