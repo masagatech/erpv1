@@ -115,3 +115,12 @@ a.active {
 .panel-theme {
     box-shadow: none!important;
 }
+
+::-webkit-scrollbar-thumb {
+    background-color: #2196f3!important;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #2d373c!important;
+    ;
+}
