@@ -270,7 +270,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
     getTypDrop() {
         this._bpservice.getBankMaster({
-            "type": "BankType"
+            "type": "banktype"
         }).subscribe(BankType => {
             this.typelistDT = BankType.data;
         }, err => {

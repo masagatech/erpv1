@@ -80,28 +80,60 @@ export class AddRBI implements OnInit, OnDestroy {
         this.docdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
 
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params["irbid"] !== undefined) {
-                this.title = "Issued Receipt Book : Edit";
+                this.setActionButtons.setTitle("Post Dated Cheque > Edit");
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+
                 this.irbid = params["irbid"];
                 this.getRBIDetailsByID(this.irbid);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
             }
             else {
-                this.title = "Issued Receipt Book : Add";
+                this.setActionButtons.setTitle("Post Dated Cheque > Add");
+
+                var date = new Date();
+                this.docdate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
             }
         });
     }
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._msg.confirm('Are you sure that you want to save?', () => {
-                this.saveRBIDetails();
-            });
+            this.saveRBIDetails();
+        } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        } else if (evt === "back") {
+            this._router.navigate(['/accounts/receiptbookissued']);
         }
     }
 

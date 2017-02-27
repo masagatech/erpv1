@@ -87,7 +87,7 @@ export class AddPDC implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                this.title = "Edit Post Dated Cheque";
+                this.setActionButtons.setTitle("Post Dated Cheque > Edit");
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
@@ -101,7 +101,7 @@ export class AddPDC implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
-                this.title = "Add Post Dated Cheque";
+                this.setActionButtons.setTitle("Post Dated Cheque > Add");
 
                 var date = new Date();
                 this.chequedate.setDate(date);
@@ -130,7 +130,7 @@ export class AddPDC implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         } else if (evt === "back") {
-            this._router.navigate(['/accounts/jv']);
+            this._router.navigate(['/accounts/pdc']);
         }
     }
 
@@ -276,5 +276,6 @@ export class AddPDC implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
         this.subscribeParameters.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

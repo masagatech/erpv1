@@ -50,7 +50,7 @@ export class ViewPDC implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.title = "View Post Dated Cheque";
+        this.setActionButtons.setTitle("Post Dated Cheque");
 
         let today = new Date();
         let month = today.getMonth();
@@ -74,6 +74,6 @@ export class ViewPDC implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }

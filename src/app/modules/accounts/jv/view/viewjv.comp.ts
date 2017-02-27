@@ -188,6 +188,6 @@ export class ViewJV implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }

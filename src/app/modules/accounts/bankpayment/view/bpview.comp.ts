@@ -25,12 +25,12 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     // Veriable Declare
-    BankPayId: any = 0;
-    banknameListDT: any = [];
-    bankpaymentDT: any = [];
-
+    bankpayid: any = 0;
     bankid: any = 0;
     status: string = "";
+    
+    banknamelistDT: any = [];
+    bankpaymentDT: any = [];
     statusDT: any = [];
 
     tableLength: any;
@@ -71,6 +71,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         this.tableLength = true;
     }
 
+    //Any Button Click Event
+
     actionBarEvt(evt) {
         if (evt === "add") {
             this._router.navigate(['/accounts/bankpayment/add']);
@@ -80,9 +82,9 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     fillStatusDropDown() {
         var that = this;
 
-        this._userService.getMenuDetails({
-            "flag": "trashrights", "ptype": "accs", "mtype": "jv",
-            "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+        that._userService.getMenuDetails({
+            "flag": "trashrights", "ptype": "accs", "mtype": "ap",
+            "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
@@ -98,7 +100,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     }
 
     // Open Edit Mode
-    OpenBPDetails(row) {
+
+    OpenBankPayment(row) {
         if (row.islocked) {
             this._msg.Show(messageType.info, "Info", "This Bank Payment is Locked");
         }
@@ -110,7 +113,24 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         }
     }
 
+    //Bank Dropdown Bind
+
+    getBankMasterDrop() {
+        this._bpservice.getBankMaster({
+            "type": "bank"
+        }).subscribe(BankName => {
+            var dataset = BankName.data;
+            this.banknamelistDT = BankName.data;
+            //this.Typelist = dataset.Table1;
+        }, err => {
+            console.log('Error');
+        }, () => {
+            // Done Process
+        });
+    }
+
     // Get Button Click Event
+
     GetBankPayment(from: number, to: number) {
         var that = this;
 
@@ -143,23 +163,36 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         });
     }
 
-    loadBPGrid(event: LazyLoadEvent) {
+    loadBankPaymentGrid(event: LazyLoadEvent) {
         this.GetBankPayment(event.first, (event.first + event.rows));
     }
 
-    getBankMasterDrop() {
-        this._bpservice.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            var dataset = BankName.data;
-            this.banknameListDT = BankName.data;
-            //this.Typelist = dataset.Table1;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            // Done Process
-        });
+    // Expand Grid Button Click
+
+    expandDetails(dt, event) {
+        var that = this;
+        var row = event.data;
+
+        if (row.details.length === 0) {
+            that._bpservice.getBankPayment({
+                "flag": "details", "autoid": row.autoid,
+                "from": event.first, "to": (event.first + event.rows)
+            }).subscribe(details => {
+                that.totalDetailsRecords = details.data[1][0].recordstotal;
+                row.details = details.data[0];
+                
+                dt.toggleRow(event.data);
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } else {
+            dt.toggleRow(event.data);
+        }
     }
+
+    // Search Button Click
 
     searchBankPayment(dt: DataTable) {
         // if (this.rangewise == "docrange") {
@@ -188,31 +221,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         dt.reset();
     }
 
-    // Button Click
-    expandDetails(dt, event) {
-        var that = this;
-        var row = event.data;
-
-        if (row.details.length === 0) {
-            that._bpservice.getBankPayment({
-                "flag": "details", "autoid": row.autoid,
-                "from": event.first, "to": (event.first + event.rows)
-            }).subscribe(details => {
-                that.totalDetailsRecords = details.data[1][0].recordstotal;
-                row.details = details.data[0];
-                
-                dt.toggleRow(event.data);
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } else {
-            dt.toggleRow(event.data);
-        }
-    }
-
     // Total Sum in Bank Payment Amount
+    
     TotalAmount() {
         if (this.bankpaymentDT != undefined) {
             var total = 0;
@@ -226,5 +236,6 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

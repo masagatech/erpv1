@@ -18,7 +18,7 @@ declare var $: any;
     providers: [BankReceiptService, CommonService, ALSService] //Provides Add Service dcmaster-service.ts, AutoService
 })
 
-export class bankreceiptaddedit implements OnInit, OnDestroy {
+export class AddEditBankReceipt implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
