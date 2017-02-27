@@ -65,9 +65,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['uid'] !== undefined) {
-                this.setActionButtons.setTitle("User Rights > Edit");
-
-                this.title = "Edit User Rights";
+                this.setActionButtons.setTitle("Edit User Rights");
 
                 this.uid = params['uid'];
                 console.log(params['uid']);
@@ -76,7 +74,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 //this.getUserRightsById(params['uid']);
             }
             else {
-                this.setActionButtons.setTitle("User Rights");
+                this.setActionButtons.setTitle("Add User Rights");
 
                 setTimeout(function () {
                     $("#uname").focus();
@@ -118,7 +116,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 }
             });
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -144,7 +142,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 }
             });
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -156,7 +154,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         that._compservice.getCompany({ "flag": "usrwise", "uid": puid }).subscribe(data => {
             that.CompanyDetails = data.data;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -172,7 +170,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         that._fyservice.getfy({ "flag": "usrcmpwise", "uid": row.uid, "cmpid": row.cmpid }).subscribe(data => {
             that.FYDetails = data.data;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -187,7 +185,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
             that.getFYDetails(row);
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         });
@@ -319,7 +317,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 }
             }
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
