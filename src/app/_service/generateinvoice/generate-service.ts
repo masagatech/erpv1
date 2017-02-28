@@ -11,13 +11,12 @@ export class generateinvService  {
     {
         return this._dataserver.post("getdocumentno",req);
     }
-    
-    getInvDetails(req:any)
-    {
-        return this._dataserver.post("GetInvoiceDetails",req);
-    }
+    // getInvDetails(req:any)
+    // {
+    //     return this._dataserver.post("GetInvoiceDetails",req);
+    // }
     GenerateInvoice(req:any)
     {
-         return this._dataserver.post("Invoice_Save",req);
+         return this._dataserver.post("saveGenerateInvoice",req);
     }
 }

@@ -127,7 +127,8 @@ declare var $: any;
                     "acid": this.acid,
                     "itemid": item.itemsid,
                     "ordqty": item.ordqty,
-                    "rate": item.dcrate,
+                    "rate": item.rate,
+                    "rateid": item.dcrate,
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
                     "createdby": this.loginUser.login,
@@ -145,7 +146,6 @@ declare var $: any;
             this.ClearControl();
         }
         else if (evt === "save") {
-            var DirectInvoice = 0;
             this.ConfirmServies.ConfirmDC({
                 "confirmdetails": this.paramjson(),
                 "docno": this.docno,

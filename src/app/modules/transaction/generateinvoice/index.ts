@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { CalendarModule } from '../../usercontrol/calendar';
 
 import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -39,7 +40,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
-    FormsModule, CommonModule, CalendarModule, DataTableModule, AutoCompleteModule,],
+    FormsModule, CommonModule, CalendarModule, DataTableModule, AutoCompleteModule,NumTextModule,],
     declarations: [
         generateInv,
         generateInvComp

@@ -242,7 +242,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "autoid": item.autoid,
                 "itemsid": item.itemsid,
                 "qty": item.qty,
-                "rate": rate[0].id,
+                "rate": rate[0].val,
+                "rateid": rate[0].id,
                 "dis": item.dis,
                 "amount": item.amount
             })
