@@ -5,7 +5,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Budget</label>
-                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control">
+                        <select validate="0" id="bid" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="fillEnvelopeDDL()">
                             <option value="0">-- Select Budget --</option>
                             <option *ngFor="let row of BudgetDT" [value]="row.bid">
                                 {{row.btitle}}
@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row" *ngIf="bid !== 0">
+            <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
                         <p-dataTable #dt [value]="ownersRowData | filterBy: {isactive: true}" [lazy]="true">

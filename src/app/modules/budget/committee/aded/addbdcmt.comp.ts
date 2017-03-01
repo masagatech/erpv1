@@ -179,18 +179,16 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
         // Add New Row
         if (that.duplicatecommittee === false) {
             that.committeeDT.push({
-                'counter': that.counter,
-                'bcid': 0,
-                'bid': that.bid,
-                'empid': that.newempid,
-                'empname': that.newempname,
-                'role': that.newrole,
-                'resp': that.resp,
-                'uidcode': that.loginUser.login,
-                'isactive': true
+                "counter": that.counter,
+                "bcid": "0",
+                "empid": that.newempid,
+                "empname": that.newempname,
+                "role": that.newrole,
+                "isactive": true
             });
 
             that.counter++;
+            that.newempid = 0;
             that.newempname = "";
             that.newrole = "";
 
@@ -260,6 +258,7 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
 
     saveCommitteeData(flag, isactive) {
         var that = this;
+        var bdcmtDT: any = [];
 
         if (that.isFormChange()) {
             that._msg.Show(messageType.info, "info", "No save! There is no change!");
@@ -281,8 +280,21 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
 
         that.duplicatecommittee = that.isDuplicateCommittee();
 
+        for (var i = 0; i < that.committeeDT.length; i++) {
+            bdcmtDT.push({
+                "bcid": that.committeeDT[i].bcid,
+                "bid": that.bid,
+                "empid": that.committeeDT[i].empid,
+                "empname": that.committeeDT[i].empname,
+                "role": that.committeeDT[i].role,
+                "resp": that.resp,
+                "uidcode": that.loginUser.login,
+                "isactive": that.committeeDT[i].isactive,
+            });
+        }
+
         if (that.duplicatecommittee == false) {
-            that._budgetservice.saveCommittee({ "committee": that.committeeDT }).subscribe(data => {
+            that._budgetservice.saveCommittee({ "committee": bdcmtDT }).subscribe(data => {
                 try {
                     var dataResult = data.data;
 

@@ -34,7 +34,6 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
     newempid: number = 0;
     newempname: string = "";
     newccid: number = 0;
-    newenvtitle: string = "";
 
     counter: any;
 
@@ -110,6 +109,7 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
                 $('#bid').prop('disabled', true);
 
                 this.bid = params['id'];
+                this.fillEnvelopeDDL();
                 this.getOwnershipData(this.bid);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
@@ -125,6 +125,7 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
                 $('#bid').prop('disabled', true);
 
                 this.bid = params['id'];
+                this.fillEnvelopeDDL();
                 this.getOwnershipData(this.bid);
 
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -136,10 +137,21 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
     fillDropDownList() {
         var that = this;
 
-        that._budgetservice.getOwnership({ "flag": "dropdown", "search":"" }).subscribe(data => {
+        that._budgetservice.getOwnership({ "flag": "dropdown", "search": "" }).subscribe(data => {
             that.BudgetDT = data.data[0]._bdgddl;
-            that.EnvelopeDT = data.data[0]._envddl;
             that.CtrlCenterDT = data.data[0]._ccddl;
+        }, err => {
+            this._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    fillEnvelopeDDL() {
+        var that = this;
+
+        that._budgetservice.getOwnership({ "flag": "dropdown", "bid": that.bid, "search": "" }).subscribe(data => {
+            that.EnvelopeDT = data.data[0]._envddl;
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
         }, () => {
@@ -151,12 +163,13 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
         for (var i = 0; i < this.ownersRowData.length; i++) {
             var field = this.ownersRowData[i];
 
-            if (field.empid == this.newempid) {
-                this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
+            if ((field.envid == this.newenvid) && (field.empid == this.newempid) && (field.ccid == this.newccid)) {
+                this._msg.Show(messageType.error, "Error", "Duplicate Ownership not Allowed");
 
+                this.newenvid = 0;
                 this.newempid = 0;
                 this.newempname = "";
-                this.newenvtitle = "";
+                this.newccid = 0;
                 return true;
             }
         }

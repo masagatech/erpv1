@@ -5,7 +5,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Budget</label>
-                        <select id="bid" validate="0" name="bid" [(ngModel)]="bid" class="form-control">
+                        <select id="bid" validate="0" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="getCommitteeData(bid)">
                             <option value="0">-- Select Budget --</option>
                             <option *ngFor="let row of BudgetDT" [value]="row.bid">
                                 {{row.btitle}}
@@ -52,11 +52,10 @@
                                             </td>
                                             <td width="360px">
                                                 <input type="text" name="newempname" [(ngModel)]="newempname" class="empname form-control" (keyup)="getEmpAuto(this, 0)"
-                                                    (keydown.enter)="addCommittee()" />
+                                                />
                                             </td>
                                             <td width="360px">
-                                                <input type="text" name="newrole" [(ngModel)]="newrole" class="form-control" (keydown.enter)="addCommittee()" (keydown.tab)="addCommittee()"
-                                                />
+                                                <input type="text" name="newrole" [(ngModel)]="newrole" class="form-control" (keydown.tab)="addCommittee()" />
                                             </td>
                                             <td>
                                                 <button type="button" name="btnadd" class="btn btn-theme btn-sm" (click)="addCommittee()"><i class="fa fa-plus"></i></button>
