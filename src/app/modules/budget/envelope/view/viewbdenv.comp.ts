@@ -115,8 +115,8 @@ export class ViewEnvelopeComp implements OnInit, OnDestroy {
         dt.reset();
     }
 
-    openEnvelope() {
-        this._router.navigate(['/budget/envelope/details', this.selectedbid]);
+    openEnvelope(row) {
+        this._router.navigate(['/budget/envelope/details', row.beid]);
     }
 
     actionBarEvt(evt) {

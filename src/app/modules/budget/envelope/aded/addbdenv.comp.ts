@@ -24,15 +24,16 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
     BudgetDT: any = [];
     envelopeDT: any = [];
 
-    envRowData: any = [];
-    duplicateenv: boolean = true;
+    duplicatesubitems: boolean = true;
 
+    beid: number = 0;
     bid: number = 0;
-    newbeid: number = 0;
-    envtype: string = "";
+    envtitle: string = "";
     coaid: number = 0;
     coaname: string = "";
-    newenvtitle: string = "";
+
+    subitems: any = [];
+    newsubitem: string = "";
 
     counter: any;
 
@@ -78,7 +79,7 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
         if (evt === "save") {
             this.saveEnvelopeData();
         } else if (evt === "edit") {
-            this._router.navigate(['/budget/envelope/edit', this.bid]);
+            this._router.navigate(['/budget/envelope/edit', this.beid]);
         } else if (evt === "back") {
             this._router.navigate(['/budget/envelope']);
         }
@@ -107,8 +108,8 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
                 $('textarea').prop('disabled', false);
                 $('#bid').prop('disabled', true);
 
-                this.bid = params['id'];
-                this.getEnvelopeData(this.bid);
+                this.beid = params['id'];
+                this.getEnvelopeData(this.beid);
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
@@ -122,8 +123,8 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
                 $('textarea').prop('disabled', true);
                 $('#bid').prop('disabled', true);
 
-                this.bid = params['id'];
-                this.getEnvelopeData(this.bid);
+                this.beid = params['id'];
+                this.getEnvelopeData(this.beid);
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
@@ -143,13 +144,13 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
         })
     }
 
-    isDuplicateEnvelope() {
-        for (var i = 0; i < this.envRowData.length; i++) {
-            var field = this.envRowData[i];
+    isDuplicateSubItems() {
+        for (var i = 0; i < this.subitems.length; i++) {
+            var field = this.subitems[i];
 
-            if (field.envtitle == this.newenvtitle) {
-                this._msg.Show(messageType.error, "Error", "Duplicate Envelope not Allowed");
-                this.newenvtitle = "";
+            if (field.envtitle == this.newsubitem) {
+                this._msg.Show(messageType.error, "Error", "Duplicate Sub Items not Allowed");
+                this.newsubitem = "";
                 return true;
             }
         }
@@ -183,49 +184,41 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
         })
     }
 
-    private addBudgetEnvelope() {
+    private addSubItems() {
         var that = this;
 
-        // Duplicate Envelope Check
-        that.duplicateenv = that.isDuplicateEnvelope();
+        // Duplicate Sub Items Check
+        that.duplicatesubitems = that.isDuplicateSubItems();
 
         // Add New Row
-        if (that.duplicateenv === false) {
-            that.envRowData.push({
-                'counter': that.counter,
-                'bid': that.bid,
-                'beid': that.newbeid,
-                'coaid': that.coaid,
-                'coaname': that.coaname,
-                'envtype': that.envtype,
-                'envtitle': that.newenvtitle,
-                'uidcode': that.loginUser.login,
-                "isactive": true
+        if (that.duplicatesubitems === false) {
+            that.subitems.push({
+                'subitem': that.newsubitem
             });
 
             that.counter++;
-            that.newbeid = 0;
-            that.newenvtitle = "";
+            that.newsubitem = "";
 
-            $(".envtitle").focus();
+            $(".subitem").focus();
         }
     }
 
-    deleteBudgetEnvelope(row) {
-        row.isactive = false;
+    deleteSubItem(row) {
+        this.subitems.splice(this.subitems.indexOf(row), 1);
     }
 
     // get Envelope by ID
 
-    getEnvelopeData(pbid) {
+    getEnvelopeData(pbeid) {
         var that = this;
 
-        that._budgetservice.getEnvelope({ "flag": "edit", "bid": pbid }).subscribe(data => {
+        that._budgetservice.getEnvelope({ "flag": "edit", "beid": pbeid }).subscribe(data => {
             if (data.data.length !== 0) {
-                that.envtype = data.data[0].envtype;
+                that.bid = data.data[0].bid;
+                that.envtitle = data.data[0].envtitle;
                 that.coaid = data.data[0].coaid;
                 that.coaname = data.data[0].coaname;
-                that.envRowData = data.data;
+                that.subitems = data.data[0].subitems;
             }
         }, err => {
             console.log("Error");
@@ -252,13 +245,20 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
             return;
         }
 
-        if (that.envRowData.length === 0) {
+        if (that.subitems.length === 0) {
             that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Envelope Details");
             return;
         }
 
         var saveEnvelope = {
-            "envelope": that.envRowData
+            "beid": that.beid,
+            "envtitle": that.envtitle,
+            "bid": that.bid,
+            "coaid": that.coaid,
+            "coaname": that.coaname,
+            "subitems": that.subitems,
+            "uidcode": that.loginUser.login,
+            "isactive": true
         }
 
         that._budgetservice.saveEnvelope(saveEnvelope).subscribe(data => {

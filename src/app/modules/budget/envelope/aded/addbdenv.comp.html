@@ -17,8 +17,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label class="control-label">Envelope Type</label>
-                        <input validate="" type="text" name="envtype" [(ngModel)]="envtype" class="form-control" />
+                        <label class="control-label">Envelope Title</label>
+                        <input validate="" type="text" name="envtitle" [(ngModel)]="envtitle" class="form-control" />
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -32,23 +32,23 @@
             <div class="row">
                 <div class="col-md-8">
                     <div class="table-responsive">
-                        <p-dataTable #dt [value]="envRowData | filterBy: {isactive: true}" [lazy]="true">
+                        <p-dataTable #dt [value]="subitems" [lazy]="true">
                             <p-column header="#" [style]="{'width':'40px'}">
                                 <template let-i="rowIndex" pTemplate="editor">
                                     {{i + 1}}
                                 </template>
                             </p-column>
-                            <p-column header="Envelope" [style]="{'text-align':'left'}">
+                            <p-column header="Sub Items" [style]="{'text-align':'left'}">
                                 <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
-                                    {{row.envtitle}}
+                                    {{row.subitem}}
                                 </template>
                                 <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
-                                    <input type="text" name="envtitle{{i+1}}" [(ngModel)]="row.envtitle" class="form-control inlinetextbox" />
+                                    <input type="text" name="subitem{{i+1}}" [(ngModel)]="row.subitem" class="form-control inlinetextbox" />
                                 </template>
                             </p-column>
                             <p-column [style]="{'width':'60px','text-align':'center'}" *ngIf="!isdetails">
                                 <template let-col let-row="rowData" pTemplate="editor">
-                                    <button class="btn btn-danger btn-sm" (click)="deleteBudgetEnvelope(row)" tabindex="-1"><i class="fa fa-trash"></i></button>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteSubItem(row)" tabindex="-1"><i class="fa fa-trash"></i></button>
                                 </template>
                             </p-column>
                             <footer *ngIf="!isdetails">
@@ -57,7 +57,7 @@
                                         <tr>
                                             <td width="40px">#</td>
                                             <td>
-                                                <input type="text" name="newenvtitle" [(ngModel)]="newenvtitle" (keydown.tab)="addBudgetEnvelope()" class="form-control envtitle"
+                                                <input type="text" name="newsubitem" [(ngModel)]="newsubitem" (keydown.tab)="addSubItems()" class="form-control subitem"
                                                 />
                                             </td>
                                             <td width="60px">

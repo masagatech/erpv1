@@ -73,10 +73,29 @@
 						<p-column field="groupname" header="Group Name" [style]="{'text-align':'left'}"></p-column>
 						<p-column field="envtitle" header="Envelope" [style]="{'width':'150px','text-align':'left'}"></p-column>
 						<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+						<p-column [style]="{'width':'45px','text-align':'left'}">
+							<template let-row="rowData" pTemplate type="body">
+								<button type="button" (click)="openEnvelope(row)" class="btn btn-theme btn-sm">
+									<i class="fa fa-arrow-right"></i>
+								</button>
+							</template>
+						</p-column>
+						<template let-row>
+							<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalDetailsRecords" expandableRows="true">
+								<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+								<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
+									<template let-drow="rowData" pTemplate type="body">
+										{{drow.dramt | currency:loginUser._globsettings.currency:true}}
+									</template>
+								</p-column>
+								<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
+									<template let-drow="rowData" pTemplate type="body">
+										{{drow.cramt | currency:loginUser._globsettings.currency:true}}
+									</template>
+								</p-column>
+							</p-dataTable>
+						</template>
 					</p-dataTable>
-				</div>
-				<div class="col-md-1" *ngIf="viewEnvelopeDT.length">
-					<button type="button" (click)="openEnvelope()" class="btn btn-theme btn-sm"><i class="fa fa-arrow-right"></i></button>
 				</div>
 			</div>
 		</div>
