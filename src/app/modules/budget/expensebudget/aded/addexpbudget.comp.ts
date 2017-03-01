@@ -4,7 +4,7 @@ import { ActionBtnProp } from "../../../../_model/action_buttons";
 import { Subscription } from "rxjs/Subscription";
 import { Router, ActivatedRoute } from "@angular/router";
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for master of master */
-import { ExpBudgetService } from "../../../../_service/expenseBudget/expBudget-service" /* add reference for Expense Budget */
+import { ExpBudgetService } from "../../../../_service/expensebudget/expbudget-service" /* add reference for Expense Budget */
 import { MessageService, messageType } from "../../../../_service/messages/message-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
@@ -21,15 +21,19 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    budgetDT: any = [];
+    bdginitiateDT: any = [];
     ctrlcenterDT: any = [];
+    statusDT: any = [];
     financialmonthDT: any = [];
+    envtypeDT: any = [];
     expbudgetDT: any = [];
 
     title: string = "";
     id: number = 0;
     bid: number = 0;
     ccid: number = 0;
+    status: string = "";
+    narration: string = "";
 
     docno: number = 0;
 
@@ -46,8 +50,8 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
         this.module = "Expense Budget";
 
-        this.fillBudgetDDL();
-        this.fillCtrlCenterDDL();
+        this.fillDropDownList();
+        //this.fillCtrlCenterDDL();
         this.BindFinancialMonthDT();
     }
 
@@ -59,11 +63,12 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    fillBudgetDDL() {
+    fillDropDownList() {
         var that = this;
 
-        that._expbudgetservice.getExpenseBudgetDetails({ "flag": "bdgddl" }).subscribe(data => {
-            that.budgetDT = data.data;
+        that._expbudgetservice.getExpenseBudget({ "flag": "dropdown" }).subscribe(data => {
+            that.bdginitiateDT = data.data[0]._bdgddl;
+            that.statusDT = data.data[0]._statusddl;
         }, err => {
             that._message.Show(messageType.error, "Error", err);
         }, () => {
@@ -74,8 +79,8 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     fillCtrlCenterDDL() {
         var that = this;
 
-        that._expbudgetservice.getExpenseBudgetDetails({ "flag": "ccddl", "bid": that.bid }).subscribe(data => {
-            that.ctrlcenterDT = data.data;
+        that._expbudgetservice.getExpenseBudget({ "flag": "dropdown", "bid": that.bid }).subscribe(data => {
+            that.ctrlcenterDT = data.data[0]._ccddl;
         }, err => {
             that._message.Show(messageType.error, "Error", err);
         }, () => {
@@ -83,13 +88,27 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         })
     }
 
-    BindExpenseBudgetDT() {
+    BindFinancialMonthDT() {
         var that = this;
 
-        that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "fy": this.loginUser.fy, "bid": that.bid, "ccid": that.ccid
+        that._expbudgetservice.getExpenseBudget({
+            "flag": "monthhead", "fy": that.loginUser.fy, "bid": that.bid, "ccid": that.ccid
         }).subscribe(data => {
-            that.expbudgetDT = data.data[0];
+            that.financialmonthDT = data.data;
+        }, err => {
+            that._message.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    BindControlCenterDT() {
+        var that = this;
+
+        that._expbudgetservice.getExpenseBudget({
+            "flag": "ccval", "fy": that.loginUser.fy, "bid": that.bid
+        }).subscribe(data => {
+            that.ctrlcenterDT = data.data;
         }, err => {
             that._message.Show(messageType.error, "Error", err);
         }, () => {
@@ -99,18 +118,52 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         this.getAmtMonthWise();
     }
 
-    BindFinancialMonthDT() {
+    ExpandEnvelopeTypeDT(row) {
         var that = this;
 
-        that._expbudgetservice.getAllExpenseBudget({
-            "flag": "addedit", "fy": this.loginUser.fy, "bid": that.bid, "ccid": that.ccid
-        }).subscribe(data => {
-            that.financialmonthDT = data.data[1];
-        }, err => {
-            that._message.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        })
+        if (row.issh == 0) {
+            row.issh = 1;
+
+            if (row.envtitledt.length === 0) {
+                that._expbudgetservice.getExpenseBudget({
+                    "flag": "envtitle", "fy": that.loginUser.fy, "bid": that.bid, "ccid": row.ccid
+                }).subscribe(data => {
+                    row.envtitledt = data.data;
+                }, err => {
+                    that._message.Show(messageType.error, "Error", err);
+                }, () => {
+                    // console.log("Complete");
+                })
+            }
+
+            this.getAmtMonthWise();
+        } else {
+            row.issh = 0;
+        }
+    }
+
+    ExpandExpenseBudgetDT(row) {
+        var that = this;
+
+        if (row.issh == 0) {
+            row.issh = 1;
+
+            if (row.subitemsdt.length === 0) {
+                that._expbudgetservice.getExpenseBudget({
+                    "flag": "subitems", "fy": that.loginUser.fy, "beid": row.beid
+                }).subscribe(data => {
+                    row.subitemsdt = data.data;
+                }, err => {
+                    that._message.Show(messageType.error, "Error", err);
+                }, () => {
+                    // console.log("Complete");
+                })
+            }
+
+            this.getAmtMonthWise();
+        } else {
+            row.issh = 0;
+        }
     }
 
     copyAcrossRow() {
@@ -152,7 +205,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     getAmtMonthWise() {
         var that = this;
 
-        that._expbudgetservice.getAllExpenseBudget({
+        that._expbudgetservice.getExpenseBudget({
             "flag": "addedit", "bid": this.bid, "ccid": that.ccid, "fy": this.loginUser.fy
         }).subscribe(data => {
             that.amtMonthWise = data.data[2];
@@ -200,7 +253,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
             monthpriceDT.push(JSON.parse("{" + jsonval.substring(0, jsonval.length - 1) + "}"));
 
             expbDetails.push({
-                "expbid": that.expbudgetDT[a].expbid,
+                "sfid": that.expbudgetDT[a].sfid,
                 "bid": that.bid,
                 "ccid": that.ccid,
                 "envid": that.expbudgetDT[a].envid,
@@ -216,6 +269,8 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
                 "oct": monthpriceDT[a].oct,
                 "nov": monthpriceDT[a].nov,
                 "dec": monthpriceDT[a].dec,
+                "status": that.status,
+                "narration": that.narration,
                 "uidcode": that.loginUser.login
             })
         }

@@ -8,15 +8,11 @@ export class ExpBudgetService {
 
     // Receipt Book
 
-    getAllExpenseBudget(req: any) {
-        return this._dataserver.post("getAllExpenseBudget", req)
-    }
-
-    getExpenseBudgetDetails(req: any) {
-        return this._dataserver.post("getExpenseBudgetDetails", req)
+    getExpenseBudget(req: any) {
+        return this._dataserver.post("getStartForeCasting", req)
     }
 
     saveExpenseBudget(req: any) {
-        return this._dataserver.post("saveExpenseBudget", req)
+        return this._dataserver.post("saveStartForeCasting", req)
     }
 }
