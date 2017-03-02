@@ -59,6 +59,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'itemgroup', loadChildren: () => System.import('./itemgroup').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           //Suppler Expenses Add Edit And View
           { path: 'expadd', component: expadd, canActivateChid: [AuthGuard], },

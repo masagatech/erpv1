@@ -40,6 +40,9 @@ export class generateInv implements OnInit, OnDestroy {
     ledgerparam: any = [];
     param: any = [];
     stockparam: any = [];
+    taxval: any = 0;
+    taxlist: any = [];
+    buttonitems:any=[];
 
     //Calendor
     @ViewChild("fromdatecal")
@@ -89,8 +92,8 @@ export class generateInv implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
-        this.actionButton.push(new ActionBtnProp("generate", "Generate", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("print", "Generate & Print", "print", true, false));
+        this.actionButton.push(new ActionBtnProp("generate", "Generate", "save", true, true));
+        this.actionButton.push(new ActionBtnProp("print", "Generate & Print", "print", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.tableDetails = true;
@@ -196,6 +199,19 @@ export class generateInv implements OnInit, OnDestroy {
 
     //Document No Click Get Details
     getInvDetails(items) {
+
+         this.buttonitems = [
+            {label: ' Generate + Print', icon: 'fa-print', command: () => {
+                //this.update();
+            }},
+            {label: ' Generate + Email', icon: 'fa-envelope', command: () => {
+               // this.delete();
+            }},
+            // {label: 'Angular.io', icon: 'fa-link', url: 'http://angular.io'},
+            // {label: 'Theming', icon: 'fa-paint-brush', routerLink: ['/theming']}
+        ];
+
+
         this.InvServies.getInvdocumentNo({
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
@@ -209,6 +225,7 @@ export class generateInv implements OnInit, OnDestroy {
                 var invoiceModel = { "header": {}, "details": [] };
                 invoiceModel.header = dataset[1].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
                 invoiceModel.details = dataset[2].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
+                this.taxlist = invoiceModel.header[0]._tax;
                 this.invoices.push(invoiceModel);
             }
             this.tableDetails = false;
@@ -267,19 +284,23 @@ export class generateInv implements OnInit, OnDestroy {
         return total;
     }
     //Sub  Total With Tax 
-    private SubtotalTax(details) {
+    private SubtotalTax(details, taxval) {
         var totalTax = 0;
         for (var i = 0; i < details.length; i++) {
             totalTax += parseInt(details[i].amount);
         }
-        return Math.round(totalTax * 10 / 100);;
+        return Math.round(totalTax * taxval / 100);;
     }
 
 
 
     //Grand Total
-    private GrandTotal(details) {
-        return Math.round(this.Subtotal(details) + this.SubtotalTax(details));
+    private GrandTotal(details, taxlist) {
+        var taxvalue = 0;
+        for (var i = 0; i < taxlist.length; i++) {
+            taxvalue += parseInt(taxlist[i].taxval);
+        }
+        return Math.round(this.Subtotal(details) + this.SubtotalTax(details, taxvalue));
     }
 
 

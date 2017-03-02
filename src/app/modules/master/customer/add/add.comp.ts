@@ -10,6 +10,7 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
 import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
+// import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -47,6 +48,8 @@ declare var commonfun: any;
     remark: any = "";
     attrname: any = "";
     attrid: any = 0;
+    invtypname: any = "";
+    invtypid: any = 0;
     ctrlname: any = "";
     ctrlid: any = 0;
     Ctrllist: any = [];
@@ -68,6 +71,7 @@ declare var commonfun: any;
     itemsdis: any = 0;
     itemslist: any = [];
     counter: number = 0;
+    taxlist: any = [];
 
 
     //Other Module Declare
@@ -744,7 +748,6 @@ declare var commonfun: any;
         }
         this.keyvallist.splice(index, 1);
         $(".key").focus();
-
     }
 
     //Final Save Clear Controll 
@@ -765,6 +768,7 @@ declare var commonfun: any;
         this.itemslist = [];
         this.translist = [];
         this.Ctrllist = [];
+        this.taxlist = [];
         this.debit = 0;
         this.credit = 0;
         this.days = 0;
@@ -797,11 +801,11 @@ declare var commonfun: any;
                 that.parentid = _parentname[0].pid;
                 that.parentname = _parentname[0].pname;
             }
-
             that.custid = _custdata[0].autoid;
             that.code = _custdata[0].custcode;
             that.Custname = _custdata[0].custname;
             that.isactive = _custdata[0].isactive;
+            that.taxlist = resultdata._tax == null ? [] : resultdata._tax;
             that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
             that.attribute.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
             that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
@@ -851,6 +855,21 @@ declare var commonfun: any;
             }
         }
         return warehouseid;
+    }
+
+    taxjson() {
+        var taxlistjson = [];
+        for (let item of this.taxlist) {
+            taxlistjson.push({
+                "taxid": item.autoid,
+                "taxname": item.taxname,
+                "ontax": item.val,
+                "taxval": item.taxval,
+                "invtyp": item.id,
+                "seq": item.seq
+            });
+        }
+        return taxlistjson;
     }
 
     //Create a Json in controll
@@ -1005,6 +1024,76 @@ declare var commonfun: any;
         })
     }
 
+    //Autocompleted Attribute Name
+    getAutoCompleteTax(me: any) {
+        var that = this;
+        this._autoservice.getAutoData({
+            "type": "invoicetype",
+            "search": that.invtypname,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            $(".invtype").autocomplete({
+                source: data.data,
+                width: 300,
+                max: 20,
+                delay: 100,
+                minLength: 0,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                select: function (event, ui) {
+                    me.invtypid = ui.item.value;
+                    me.invtypname = ui.item.label;
+                }
+            });
+        }, err => {
+            console.log("Error");
+        }, () => {
+            //Complete
+        })
+    }
+
+    //Selected Tax Bind
+    SelectedTax() {
+        try {
+            var that = this;
+            this.CustAddServies.getTaxMaster({
+                "flag": "custtax",
+                "invtyp": this.invtypid,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                this.taxlist = data.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //Complete
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
+
+    //Tax Remove in the Grid
+    TaxDeleteRow(row) {
+        var index = -1;
+        for (var i = 0; i < this.taxlist.length; i++) {
+            if (this.taxlist[i].autoid === row.autoid) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.taxlist.splice(index, 1);
+        //$(".key").focus();
+    }
+
     Ctrl() {
         setTimeout(function () {
             $(".ctrl").val("");
@@ -1122,6 +1211,7 @@ declare var commonfun: any;
             "cr": this.credit == "" ? 0 : this.credit,
             "dr": this.debit == "" ? 0 : this.debit,
             "op": this.ope == "" ? 0 : this.ope,
+            "tax": this.taxjson(),
             "cmpid": this.loginUser.cmpid,
             "remark": this.remark,
             "ctrl": this.Ctrljson(),
@@ -1227,6 +1317,13 @@ declare var commonfun: any;
         setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
+        }, 0);
+    }
+
+    taxtab() {
+        setTimeout(function () {
+            $(".invtype").val("");
+            $(".invtype").focus();
         }, 0);
     }
 

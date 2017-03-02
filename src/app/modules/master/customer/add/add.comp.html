@@ -66,6 +66,7 @@
 			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
 			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab"><i class="fa fa-cc" aria-hidden="true"></i> Control Center</a></li>
 			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
+			<li><a data-target="#tax" role="button" (click)="taxtab()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Tax</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
 		<div class="tab-content">
@@ -462,6 +463,45 @@
 								</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="tax">
+				<div class="col-md-12">
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Invoice type</label>
+							<input type="text=" class="form-control invtype" tabindex="16" value="" [(ngModel)]="invtypname" (keyup.enter)="SelectedTax()"
+								(keyup)="getAutoCompleteTax(this)" />
+						</div>
+					</div>
+					<div class='col-md-2'>
+						<div class='form-group'>
+							<div style="padding-top:28px">
+								<button class="btn btn-theme btn-sm get" tabindex="3"><i class="fa fa-arrow-right"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="table-responsive" *ngIf="taxlist.length>0">
+						<p-dataTable #dt [value]="taxlist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" [(selection)]="selectedRB1"
+							expandableRows="true">
+							<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
+								<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+									{{rowIndex+1}}
+								</template>
+							</p-column>
+							<p-column field="taxname" header="Tax Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+							<p-column field="taxval" header="%" [style]="{'width':'30px','text-align':'left'}"></p-column>
+							<p-column field="label" header="On" [style]="{'width':'120px','text-align':'left'}"></p-column>
+							<p-column field="seq" header="Seq" [style]="{'width':'30px','text-align':'left'}"></p-column>
+							<p-column header="Action" [style]="{'width':'30px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<button class="btn btn-danger btn-sm" (click)="TaxDeleteRow(row)"><i class="fa fa-trash"></i></button>
+								</template>
+							</p-column>
+						</p-dataTable>
 					</div>
 				</div>
 			</div>

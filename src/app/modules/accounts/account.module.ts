@@ -52,6 +52,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'taxmaster', loadChildren: () => System.import('./taxmaster').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]

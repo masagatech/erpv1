@@ -108,24 +108,28 @@
 								<table>
 									<tbody style="float: right;">
 										<tr class="bg-warning">
-											<td colspan="7"><b style="float:left;">Sub Total</b>{{Subtotal(InvNoitem.details)}}</td>
+											<td colspan="5"><b style="float:left;">Gross Total</b></td>
+											<td colspan="4"><b>{{Subtotal(InvNoitem.details)}}</b></td>
 										</tr>
-										<tr class="bg-warning">
-											<td colspan="5"><b style="float:left;">Tax</b></td>
-											<td class="textalign">10 %</td>
-											<td class="textalign"><b style="float:left;">{{SubtotalTax(InvNoitem.details)}}</b></td>
+										<tr class="bg-warning" *ngFor="let item of taxlist">
+											<td colspan="5"><b style="float:left;">{{item.taxname}}</b></td>
+											<td class="textalign">
+												<span>{{item.taxval}}</span>
+											</td>
+											<td class="textalign"><b style="float:left;">{{SubtotalTax(InvNoitem.details,item.taxval)}}</b></td>
 										</tr>
 										<tr class="bg-warning">
 											<td colspan="5" class="textalign"><b style="float:left;">Grand Total</b></td>
 											<td></td>
-											<td class="textalign"><b style="float:left;">{{GrandTotal(InvNoitem.details)}}</b></td>
+											<td class="textalign"><b style="float:left;">{{GrandTotal(InvNoitem.details,taxlist)}}</b></td>
 										</tr>
 									</tbody>
 								</table>
 							</footer>
 						</p-dataTable>
-						<button type="button" style="float:right" class="btn btn-theme btn-sm">Generate + Print</button>
-						<button type="button" style="float:right" class="btn btn-theme btn-sm" (click)="GenerateInvoice(InvNoitem.details,InvNoitem.header)">Generate Invoice</button>
+						<!--<button type="button" style="float:right" class="btn btn-theme btn-sm">Generate + Print</button>
+						<button type="button" style="float:right" class="btn btn-theme btn-sm" (click)="GenerateInvoice(InvNoitem.details,InvNoitem.header)">Generate Invoice</button>-->
+						<p-splitButton label="Generate" icon="fa-check" [style]="{'float':'right'}" (onClick)="GenerateInvoice(InvNoitem.details,InvNoitem.header)" [model]="buttonitems"></p-splitButton>
 					</div>
 				</div>
 			</div>
