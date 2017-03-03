@@ -26,7 +26,6 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     statusDT: any = [];
     financialmonthDT: any = [];
     envtypeDT: any = [];
-    expbudgetDT: any = [];
 
     title: string = "";
     id: number = 0;
@@ -51,7 +50,6 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         this.module = "Expense Budget";
 
         this.fillDropDownList();
-        //this.fillCtrlCenterDDL();
         this.BindFinancialMonthDT();
     }
 
@@ -69,18 +67,6 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         that._expbudgetservice.getExpenseBudget({ "flag": "dropdown" }).subscribe(data => {
             that.bdginitiateDT = data.data[0]._bdgddl;
             that.statusDT = data.data[0]._statusddl;
-        }, err => {
-            that._message.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    fillCtrlCenterDDL() {
-        var that = this;
-
-        that._expbudgetservice.getExpenseBudget({ "flag": "dropdown", "bid": that.bid }).subscribe(data => {
-            that.ctrlcenterDT = data.data[0]._ccddl;
         }, err => {
             that._message.Show(messageType.error, "Error", err);
         }, () => {
@@ -106,7 +92,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var that = this;
 
         that._expbudgetservice.getExpenseBudget({
-            "flag": "ccval", "fy": that.loginUser.fy, "bid": that.bid
+            "flag": "ccval", "uid": that.loginUser.uid, "fy": that.loginUser.fy, "bid": that.bid
         }).subscribe(data => {
             that.ctrlcenterDT = data.data;
         }, err => {
@@ -126,7 +112,7 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
 
             if (row.envtitledt.length === 0) {
                 that._expbudgetservice.getExpenseBudget({
-                    "flag": "envtitle", "fy": that.loginUser.fy, "bid": that.bid, "ccid": row.ccid
+                    "flag": "envtitle", "uid": that.loginUser.uid, "fy": that.loginUser.fy, "bid": that.bid, "ccid": row.ccid
                 }).subscribe(data => {
                     row.envtitledt = data.data;
                 }, err => {
@@ -142,17 +128,29 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         }
     }
 
-    ExpandExpenseBudgetDT(row) {
+    ExpandExpenseBudgetDT(etrow) {
         var that = this;
 
-        if (row.issh == 0) {
-            row.issh = 1;
+        if (etrow.issh == 0) {
+            etrow.issh = 1;
 
-            if (row.subitemsdt.length === 0) {
+            if (etrow.subitemsdt.length === 0) {
                 that._expbudgetservice.getExpenseBudget({
-                    "flag": "subitems", "fy": that.loginUser.fy, "beid": row.beid
+                    "flag": "subitems", "fy": that.loginUser.fy, "beid": etrow.envid, "ccid": etrow.ccid
                 }).subscribe(data => {
-                    row.subitemsdt = data.data;
+                    etrow.subitemsdt = data.data;
+                    // var MonthAmtTotal = 0;
+
+                    // for (var i = 0; i <= etrow.subitemsdt.length - 1; i++) {
+                    //     var envtitle = etrow.subitemsdt[i].monthdetails;
+                    //     var sititle = etrow.monthdetails[i];
+
+                    //     for (var j = 0; j <= envtitle.length - 1; j++) {
+                    //         MonthAmtTotal += parseFloat(envtitle[j].monthvalue);
+                    //     }
+
+                    //     sititle.monthvalue = MonthAmtTotal / etrow.subitemsdt.length;
+                    // }
                 }, err => {
                     that._message.Show(messageType.error, "Error", err);
                 }, () => {
@@ -162,13 +160,13 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
 
             this.getAmtMonthWise();
         } else {
-            row.issh = 0;
+            etrow.issh = 0;
         }
     }
 
     copyAcrossRow() {
-        for (var i = 0; i < this.expbudgetDT.length; i++) {
-            var monthdtls = this.expbudgetDT[i].monthdetails;
+        for (var i = 0; i < this.ctrlcenterDT.length; i++) {
+            var monthdtls = this.ctrlcenterDT[i].monthdetails;
 
             for (var j = 0; j < monthdtls.length; j++) {
                 monthdtls[j].monthvalue = monthdtls[0].monthvalue;
@@ -177,20 +175,20 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
     }
 
     copyAcrossGrid() {
-        for (var i = 0; i < this.expbudgetDT.length; i++) {
-            var monthdtls = this.expbudgetDT[i].monthdetails;
+        for (var i = 0; i < this.ctrlcenterDT.length; i++) {
+            var monthdtls = this.ctrlcenterDT[i].monthdetails;
 
             for (var j = 0; j < monthdtls.length; j++) {
-                monthdtls[j].monthvalue = this.expbudgetDT[0].monthdetails[0].monthvalue;
+                monthdtls[j].monthvalue = this.ctrlcenterDT[0].monthdetails[0].monthvalue;
             }
         }
     }
 
-    totalAllAmount() {
+    totalAmtEnvelopeWise(ccrow) {
         var MonthAmtTotal = 0;
 
-        for (var i = 0; i < this.expbudgetDT.length; i++) {
-            var monthdtls = this.expbudgetDT[i].monthdetails;
+        for (var i = 0; i < ccrow.envtitledt.length; i++) {
+            var monthdtls = ccrow.envtitledt[i].monthdetails;
 
             for (var j = 0; j < monthdtls.length; j++) {
                 MonthAmtTotal += parseInt(monthdtls[j].monthvalue);
@@ -200,35 +198,79 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         return MonthAmtTotal;
     }
 
+    getTotalCCWise(colindex) {
+        var colTotal = 0.00, _rowTotal = 0.00;
+
+        for (var cc = 0; cc <= this.ctrlcenterDT.length - 1; cc++) {
+            var monthdetails = this.ctrlcenterDT[cc].monthdetails;
+
+            colTotal += parseFloat(monthdetails[colindex].monthvalue);
+        }
+
+        return colTotal;
+    }
+
+    getTotalAllAmount() {
+        var MonthAmtTotal = 0;
+
+        for (var i = 0; i < this.ctrlcenterDT.length; i++) {
+            var monthdtls = this.ctrlcenterDT[i].monthdetails;
+
+            for (var j = 0; j < monthdtls.length; j++) {
+                MonthAmtTotal += parseFloat(monthdtls[j].monthvalue);
+            }
+        }
+
+        return MonthAmtTotal;
+    }
+
+    getTotalEnvWise(event, ccrow, etrow, colindex) {
+        var colTotal = 0.00, _rowTotal = 0.00;
+        var envTitels = ccrow.envtitledt;
+
+        for (var cc = 0; cc <= envTitels.length - 1; cc++) {
+            var cc_1details = envTitels[cc].monthdetails;
+            colTotal += parseFloat(cc_1details[colindex].monthvalue);
+        }
+
+        for (var cc_1 = 0; cc_1 <= etrow.monthdetails.length - 1; cc_1++) {
+            _rowTotal += parseFloat(etrow.monthdetails[cc_1].monthvalue);
+        }
+
+        ccrow.monthdetails[colindex].monthvalue = colTotal;
+        etrow.rowTotal = _rowTotal;
+    }
+
+    getTotalSubItemWise(event, ccrow, etrow, sirow, colindex) {
+
+        var colTotal = 0.00, _rowTotal = 0.00;
+        var envItems = etrow.subitemsdt;
+
+        for (var cc = 0; cc <= envItems.length - 1; cc++) {
+            var cc_1details = envItems[cc].monthdetails;
+            colTotal += parseFloat(cc_1details[colindex].monthvalue);
+        }
+
+        for (var cc_1 = 0; cc_1 <= sirow.monthdetails.length - 1; cc_1++) {
+            _rowTotal += parseFloat(sirow.monthdetails[cc_1].monthvalue);
+        }
+
+        etrow.monthdetails[colindex].monthvalue = colTotal;
+        sirow.rowTotal = _rowTotal;
+
+        this.getTotalEnvWise(event, ccrow, etrow, colindex);
+    }
+
     amtMonthWise: any = [];
 
     getAmtMonthWise() {
         var that = this;
 
         that._expbudgetservice.getExpenseBudget({
-            "flag": "addedit", "bid": this.bid, "ccid": that.ccid, "fy": this.loginUser.fy
+            "flag": "subitems", "bid": this.bid, "ccid": that.ccid, "fy": this.loginUser.fy
         }).subscribe(data => {
             that.amtMonthWise = data.data[2];
         });
-    }
-
-    // totalAmtMonthWise(row) {
-    //     var MonthAmtTotal = 0;
-    //     var that = this;
-
-    //     MonthAmtTotal += parseInt(row.monthvalue);
-
-    //     return MonthAmtTotal;
-    // }
-
-    totalAmtYearWise(row) {
-        var MonthAmtTotal = 0;
-
-        for (var i = 0; i < row.monthdetails.length; i++) {
-            MonthAmtTotal += parseInt(row.monthdetails[i].monthvalue);
-        }
-
-        return MonthAmtTotal;
     }
 
     saveExpenseBudget() {
@@ -237,56 +279,135 @@ export class AddExpenseBudgetComp implements OnInit, OnDestroy {
         var monthDetailsDT: any = [];
         var expbDetails: any = [];
         var monthname: string = "";
-        var monthvalue: string = "";
-        var jsonval: string = "";
+        var ccmvalue: string = "";
+        var etmvalue: string = "";
+        var simvalue: string = "";
 
-        var jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec;
+        var ccmjson: string = "";
+        var etmjson: string = "";
+        var simjson: string = "";
 
-        for (var a = 0; a < that.expbudgetDT.length; a++) {
-            for (var c = 0; c < that.financialmonthDT.length; c++) {
-                monthname = that.financialmonthDT[c].monthname;
-                monthvalue = that.expbudgetDT[a].monthdetails[c].monthvalue;
+        //var jsonval: string = "";
 
-                jsonval += '"' + monthname.trim() + '":  "' + monthvalue + '",';
+        var etrowdt: any = [];
+        var sirowdt: any = [];
+
+        for (var a = 0; a < that.ctrlcenterDT.length; a++) {
+            etrowdt = that.ctrlcenterDT[a].envtitledt;
+
+            for (var b = 0; b < etrowdt.length; b++) {
+                sirowdt = etrowdt[b].subitemsdt;
+
+                for (var c = 0; c < sirowdt.length; c++) {
+                    for (var d = 0; d < that.financialmonthDT.length; d++) {
+                        monthname = that.financialmonthDT[d].monthname;
+
+                        ccmvalue = that.ctrlcenterDT[a].monthdetails[d].monthvalue;
+                        etmvalue = etrowdt[b].monthdetails[d].monthvalue;
+                        simvalue = sirowdt[c].monthdetails[d].monthvalue;
+
+                        ccmjson += '"' + monthname.trim() + '":"' + ccmvalue + '", "ccid":"' + that.ctrlcenterDT[a].ccid + '", "envid":"0", "subitem":"",';
+                        etmjson += '"' + monthname.trim() + '":"' + etmvalue + '", "ccid":"' + etrowdt[b].ccid + '", "envid":"' + etrowdt[b].envid + '", "subitem":"",';
+                        simjson += '"' + monthname.trim() + '":"' + simvalue + '", "ccid":"' + sirowdt[c].ccid + '", "envid":"' + sirowdt[c].envid + '", "subitem":"' + sirowdt[c].subitem + '",';
+                    }
+
+                    monthpriceDT.push({
+                        "ccdt": JSON.parse("{" + ccmjson.substring(0, ccmjson.length - 1) + "}"),
+                        "etmdt": JSON.parse("{" + etmjson.substring(0, etmjson.length - 1) + "}"),
+                        "simdt": JSON.parse("{" + simjson.substring(0, simjson.length - 1) + "}")
+                    });
+
+                    //monthpriceDT.push(JSON.parse("{" + jsonval.substring(0, jsonval.length - 1) + "}"));
+                    //console.log(monthpriceDT);
+                }
             }
+        }
 
-            monthpriceDT.push(JSON.parse("{" + jsonval.substring(0, jsonval.length - 1) + "}"));
-
+        for (var md = 0; md < monthpriceDT.length; md++) {
             expbDetails.push({
-                "sfid": that.expbudgetDT[a].sfid,
+                "sfid": 0,
                 "bid": that.bid,
-                "ccid": that.ccid,
-                "envid": that.expbudgetDT[a].envid,
-                "jan": monthpriceDT[a].jan,
-                "feb": monthpriceDT[a].feb,
-                "mar": monthpriceDT[a].mar,
-                "apr": monthpriceDT[a].apr,
-                "may": monthpriceDT[a].may,
-                "jun": monthpriceDT[a].jun,
-                "jul": monthpriceDT[a].jul,
-                "aug": monthpriceDT[a].aug,
-                "sep": monthpriceDT[a].sep,
-                "oct": monthpriceDT[a].oct,
-                "nov": monthpriceDT[a].nov,
-                "dec": monthpriceDT[a].dec,
+                "ccid": monthpriceDT[md].ccdt.ccid,
+                "envid": monthpriceDT[md].ccdt.envid,
+                "subitem": monthpriceDT[md].ccdt.subitem,
+                "jan": monthpriceDT[md].ccdt.jan,
+                "feb": monthpriceDT[md].ccdt.feb,
+                "mar": monthpriceDT[md].ccdt.mar,
+                "apr": monthpriceDT[md].ccdt.apr,
+                "may": monthpriceDT[md].ccdt.may,
+                "jun": monthpriceDT[md].ccdt.jun,
+                "jul": monthpriceDT[md].ccdt.jul,
+                "aug": monthpriceDT[md].ccdt.aug,
+                "sep": monthpriceDT[md].ccdt.sep,
+                "oct": monthpriceDT[md].ccdt.oct,
+                "nov": monthpriceDT[md].ccdt.nov,
+                "dec": monthpriceDT[md].ccdt.dec,
                 "status": that.status,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login
-            })
+            });
+
+            expbDetails.push({
+                "sfid": 0,
+                "bid": that.bid,
+                "ccid": monthpriceDT[md].etmdt.ccid,
+                "envid": monthpriceDT[md].etmdt.envid,
+                "subitem": monthpriceDT[md].etmdt.subitem,
+                "jan": monthpriceDT[md].etmdt.jan,
+                "feb": monthpriceDT[md].etmdt.feb,
+                "mar": monthpriceDT[md].etmdt.mar,
+                "apr": monthpriceDT[md].etmdt.apr,
+                "may": monthpriceDT[md].etmdt.may,
+                "jun": monthpriceDT[md].etmdt.jun,
+                "jul": monthpriceDT[md].etmdt.jul,
+                "aug": monthpriceDT[md].etmdt.aug,
+                "sep": monthpriceDT[md].etmdt.sep,
+                "oct": monthpriceDT[md].etmdt.oct,
+                "nov": monthpriceDT[md].etmdt.nov,
+                "dec": monthpriceDT[md].etmdt.dec,
+                "status": that.status,
+                "narration": that.narration,
+                "uidcode": that.loginUser.login
+            });
+
+            expbDetails.push({
+                "sfid": 0,
+                "bid": that.bid,
+                "ccid": monthpriceDT[md].simdt.ccid,
+                "envid": monthpriceDT[md].simdt.envid,
+                "subitem": monthpriceDT[md].simdt.subitem,
+                "jan": monthpriceDT[md].simdt.jan,
+                "feb": monthpriceDT[md].simdt.feb,
+                "mar": monthpriceDT[md].simdt.mar,
+                "apr": monthpriceDT[md].simdt.apr,
+                "may": monthpriceDT[md].simdt.may,
+                "jun": monthpriceDT[md].simdt.jun,
+                "jul": monthpriceDT[md].simdt.jul,
+                "aug": monthpriceDT[md].simdt.aug,
+                "sep": monthpriceDT[md].simdt.sep,
+                "oct": monthpriceDT[md].simdt.oct,
+                "nov": monthpriceDT[md].simdt.nov,
+                "dec": monthpriceDT[md].simdt.dec,
+                "status": that.status,
+                "narration": that.narration,
+                "uidcode": that.loginUser.login
+            });
         }
 
+        console.log(expbDetails);
+
         var saveEB = {
-            "expensebudget": expbDetails
+            "startforecasting": expbDetails
         }
 
         that._expbudgetservice.saveExpenseBudget(saveEB).subscribe(data => {
             var dataResult = data.data;
 
-            if (dataResult[0].funsave_expensebudget.msgid != "-1") {
-                that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensebudget.msg.toString());
+            if (dataResult[0].funsave_startforecasting.msgid != "-1") {
+                that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_startforecasting.msg.toString());
             }
             else {
-                that._message.Show(messageType.error, "Error", dataResult[0].funsave_expensebudget.msg.toString());
+                that._message.Show(messageType.error, "Error", dataResult[0].funsave_startforecasting.msg.toString());
             }
         }, err => {
             that._message.Show(messageType.error, "Error", err);

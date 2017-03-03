@@ -37,7 +37,7 @@
             <button type="button" class="btn btn-theme btn-sm" (click)="copyAcrossGrid()">Copy Across Grid</button>
         </div>
         <div class="panel-body">
-            <table class="table table-striped table-bordered table-hover">
+            <table class="table table-striped table-bordered table-hover tblexcel">
                 <thead>
                     <tr>
                         <td width="20px"></td>
@@ -46,55 +46,64 @@
                         <th width="150px">Total</th>
                     </tr>
                 </thead>
-                <tbody *ngFor="let ccrow of ctrlcenterDT">
+                <tbody *ngFor="let ccrow of ctrlcenterDT; let i=index;">
                     <tr>
                         <td width="50px">
-                            <button class="btn btn-theme btn-sm" (click)="ExpandEnvelopeTypeDT(ccrow)">{{ccrow.issh == 1 ? "-" : "+"}}</button>
+                            <a role="button" (click)="ExpandEnvelopeTypeDT(ccrow)">
+                                <i class="{{ccrow.issh == 0 ? 'fa fa-plus-square' : 'fa fa-minus-square'}}"></i>
+                            </a>
                         </td>
                         <td width="150px">
                             {{ccrow.ccname}}
                         </td>
                         <td width="150px" *ngFor="let mrow of ccrow.monthdetails">
-                            <input type="text" class="form-control" [(ngModel)]="mrow.monthvalue" (keydown)="totalAmtYearWise(ccrow)" />
+                            <numtext id="{{ccrow.ccname + mrow.monthname + i + 1}}" name="{{ccrow.ccname + mrow.monthname + i + 1}}" [iscurrency]="false"
+                                [islabel]="true" css="inp-small" [(ngModel)]="mrow.monthvalue"></numtext>
                         </td>
                         <td width="150px">
-                            {{totalAmtYearWise(ccrow)}}
+                            {{totalAmtEnvelopeWise(ccrow)}}
                         </td>
                     </tr>
-                    <tr>
+                    <tr [style.display]="ccrow.issh == 0?'none':''">
                         <td colspan="15">
-                            <table class="table table-striped table-bordered table-hover">
-                                <tbody *ngFor="let et1row of ccrow.envtitledt; let i = index;">
-                                    <tr [style.display]="ccrow.issh == 0?'none':''">
+                            <table class="table table-striped table-bordered table-hover tblexcel">
+                                <tbody *ngFor="let etrow of ccrow.envtitledt; let j = index;">
+                                    <tr>
                                         <td width="50px">
-                                            <button class="btn btn-theme btn-sm" (click)="ExpandExpenseBudgetDT(et1row)">{{et1row.issh == 1 ? "-" : "+"}}</button>
+                                            <a role="button" (click)="ExpandExpenseBudgetDT(etrow);">
+                                                <i class="{{etrow.issh == 0 ? 'fa fa-plus-square' : 'fa fa-minus-square'}}"></i>
+                                            </a>
                                         </td>
                                         <td width="150px">
-                                            {{et1row.envtitle}}
+                                            {{etrow.envtitle}}
                                         </td>
-                                        <td width="150px" *ngFor="let mrow of et1row.monthdetails">
-                                            <input type="text" class="form-control" [(ngModel)]="mrow.monthvalue" (keydown)="totalAmtYearWise(et1row)" />
+                                        <td width="150px" *ngFor="let mrow of etrow.monthdetails; let s_i=index;">
+                                            <numtext id="{{mrow.monthname + i + 1 + j + 1}}" (blur)="getTotalEnvWise($event, ccrow, etrow, s_i)" name="{{mrow.monthname + i + 1 + j + 1}}"
+                                                [islabel]="etrow.issh == 0 ? false : true" [iscurrency]="false" css="inlinetextbox inp-small"
+                                                [(ngModel)]="mrow.monthvalue"></numtext>
                                         </td>
                                         <td width="150px">
-                                            {{totalAmtYearWise(et1row)}}
+                                            {{etrow.rowTotal}}
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr [style.display]="etrow.issh == 0?'none':''">
                                         <td colspan="15">
-                                            <table class="table table-striped table-bordered table-hover">
-                                                <tbody *ngFor="let et2row of et1row.subitemsdt; let i = index;">
-                                                    <tr [style.display]="et1row.issh == 0?'none':''">
+                                            <table class="table table-striped table-bordered table-hover tblexcel">
+                                                <tbody *ngFor="let sirow of etrow.subitemsdt; let k = index;">
+                                                    <tr>
                                                         <td width="50px">
-                                                            {{i+1}}
+                                                            {{k+1}}
                                                         </td>
                                                         <td width="150px" align="right">
-                                                            {{et2row.subitem}}
+                                                            {{sirow.subitem}}
                                                         </td>
-                                                        <td width="150px" *ngFor="let mrow of et2row.monthdetails">
-                                                            <input type="text" class="form-control" [(ngModel)]="mrow.monthvalue" (keydown)="totalAmtYearWise(et2row)" />
+                                                        <td width="150px" *ngFor="let mrow of sirow.monthdetails; let s_i=index;">
+                                                            <numtext id="{{mrow.monthname + i + 1 + j + 1 + k + 1}}" (blur)="getTotalSubItemWise($event, ccrow, etrow, sirow, s_i);"
+                                                                name="{{mrow.monthname + i + 1 + j + 1 + k + 1}}" [iscurrency]="false"
+                                                                css="inp-small" [(ngModel)]="mrow.monthvalue"></numtext>
                                                         </td>
                                                         <td width="150px">
-                                                            {{totalAmtYearWise(et2row)}}
+                                                            {{sirow.rowTotal}}
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -110,8 +119,10 @@
                     <tr>
                         <td width="20px"></td>
                         <th width="150px">Total Amount</th>
-                        <th width="150px" *ngFor="let mrow of financialmonthDT"></th>
-                        <th width="150px">{{totalAllAmount()}}</th>
+                        <th width="150px" *ngFor="let mrow of financialmonthDT; let mi=index;">
+                            {{getTotalCCWise(mi)}}
+                        </th>
+                        <th width="150px">{{getTotalAllAmount()}}</th>
                     </tr>
                 </tfoot>
             </table>

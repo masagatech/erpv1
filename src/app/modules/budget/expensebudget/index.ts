@@ -9,6 +9,7 @@ import { ActionBarModule } from '../../../_shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,7 +44,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule],
+        DataTableModule, NumTextModule],
     declarations: [
         AddExpenseBudgetComp,
         //ViewExpenseBudgetComp,
