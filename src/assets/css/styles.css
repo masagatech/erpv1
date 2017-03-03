@@ -1384,3 +1384,16 @@ table.tableNoborder td {
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     height: 30px !important;
 }
+
+.form-control.inp-small {
+    padding: 1px;
+    margin: 0!important;
+    height: 21px!important;
+    border-radius: 0;
+    border: 1px solid #A59D9D;
+    font-size: 12px;
+}
+
+.tblexcel>thead>tr>th, .tblexcel>tbody>tr>th, .tblexcel>tfoot>tr>th, .tblexcel>thead>tr>td, .tblexcel>tbody>tr>td, .tblexcel>tfoot>tr>td {
+    padding: 4px!important;
+}
