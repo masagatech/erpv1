@@ -82,34 +82,15 @@ export class ViewOwnershipComp implements OnInit, OnDestroy {
         var that = this;
 
         that._budgetservice.getOwnership({
-            "flag": "all", "bid": row.bid, "from": 0, "to": 10, "isactive": true
-        }).subscribe(Ownership => {
-            that.viewOwnershipDT = Ownership.data[0];
+            "flag": "all", "bid": row.bid, "isactive": true
+        }).subscribe(ownership => {
+            that.viewOwnershipDT = ownership.data;
             that.selectedbid = row.bid;
         }, err => {
             console.log(err);
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    getOwnership(from: number, to: number) {
-        var that = this;
-
-        that._budgetservice.getOwnership({
-            "flag": "all", "from": from, "to": to, "isactive": true
-        }).subscribe(Ownership => {
-            that.totalRecords = Ownership.data[1][0].recordstotal;
-            that.viewOwnershipDT = Ownership.data[0];
-        }, err => {
-            console.log(err);
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    loadOwnershipGrid(event: LazyLoadEvent) {
-        this.getOwnership(event.first, (event.first + event.rows));
     }
 
     searchOwnership(dt: DataTable) {
