@@ -129,7 +129,7 @@
 						</p-dataTable>
 						<!--<button type="button" style="float:right" class="btn btn-theme btn-sm">Generate + Print</button>
 						<button type="button" style="float:right" class="btn btn-theme btn-sm" (click)="GenerateInvoice(InvNoitem.details,InvNoitem.header)">Generate Invoice</button>-->
-						<p-splitButton label="Generate" icon="fa-check" [style]="{'float':'right'}" (onClick)="GenerateInvoice(InvNoitem.details,InvNoitem.header)" [model]="buttonitems"></p-splitButton>
+						<p-splitButton label="Generate" icon="fa-check" [style]="{'float':'right'}" (onClick)="GenerateInvoice(InvNoitem.details,InvNoitem.header,taxlist)" [model]="buttonitems"></p-splitButton>
 					</div>
 				</div>
 			</div>
