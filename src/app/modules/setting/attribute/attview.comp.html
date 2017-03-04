@@ -2,18 +2,19 @@
 	<div class="panel-body">
 		<div class="col-md-4">
 			<div class="form-group">
-				<label>Attribute Name</label>
-				<input type="text" class="form-control" tabindex="1" validate="" id="attnam" [(ngModel)]="attName" />
-			</div>
-		</div>
-		<div class="col-md-4">
-			<div class="form-group">
 				<label>Attribute Group</label>
-				<select [(ngModel)]="attrgrp" class="form-control" tabindex="2">
+				<select [(ngModel)]="attrgrp" class="form-control" id="attrdrop" tabindex="1">
 			<option *ngFor="let row of attributegrouplist" [value]="row.id+':'+row.key">
 				{{row.val}}
 			</option>
 		</select>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="form-group">
+				<label>Attribute Name</label>
+				<!--<input type="text" class="form-control" tabindex="2" validate="" id="attnam" [(ngModel)]="attName" />-->
+				<p-autoComplete [(ngModel)]="attName" id="attnam"  class="form-controlAutoComplete" (onSelect)="AttributeSelect($event)" [suggestions]="AttributeAutodata" (completeMethod)="AttributeAuto($event)" field="label" [size]="30" placeholder="Attribute" [minLength]="1"></p-autoComplete>
 			</div>
 		</div>
 		<div class="col-md-1 text-center">
@@ -26,17 +27,19 @@
 		</div>
 		<div class="col-md-2">
 			<div class="form-group">
-				<label></label>
-				<button type="button" class="btn btn-theme btn-sm" text="Add" tabindex="3" (click)="NewRowAdd()">
+				<div style="padding-top:28px;">
+					<button type="button" class="btn btn-theme btn-sm" text="Add" tabindex="3" (click)="NewRowAdd()">
 			<i class="fa fa-plus"></i></button>
-				<button type="button" class="btn btn-theme btn-sm" text="claer" tabindex="4" (click)="ClearRow()">
+					<button type="button" class="btn btn-theme btn-sm" text="claer" tabindex="4" (click)="ClearRow()">
 			<i class="fa fa-trash"></i></button>
+				</div>
+
 			</div>
 		</div>
 	</div>
 </div>
 <div class="table-responsive">
-	<p-dataTable #dt [value]="addNewAttr" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+	<p-dataTable #dt [value]="addNewAttr" [lazy]="true" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
 		[(selection)]="selectedRB1" expandableRows="true">
 		<p-column field="atname" header="Attribute Name" [style]="{'width':'83px','text-align':'left'}">
 			<template let-row="rowData" pTemplate type="body">

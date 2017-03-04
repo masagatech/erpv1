@@ -777,6 +777,7 @@ body {
     background-repeat: repeat-x;
 }
 
+
 .btn-theme {
     background-image: -webkit-linear-gradient(top, #fff 0%, #ded6ce 100%);
     background-image: -o-linear-gradient(top, #fff 0%, #ded6ce 100%);
@@ -800,6 +801,11 @@ body {
 .btn-theme.active {
     background-color: #e89d7e;
     border-color: #b7b7b7;
+}
+
+.btn-grid{
+    padding: 0px 7px 0px 7px!important;
+    font-size: 12px!important;
 }
 
 submenu nav a {

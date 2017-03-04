@@ -170,7 +170,7 @@ declare var commonfun: any;
         }, 0);
 
 
-        this.attribute.attrparam = ["item_attr", "acinfo_attr"];
+        this.attribute.attrparam = ["custinfo_attr"];
     }
 
     //Get Code Blur Event

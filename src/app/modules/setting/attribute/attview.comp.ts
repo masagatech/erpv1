@@ -31,6 +31,8 @@ declare var commonfun: any;
     keyid: number = 0;
     totalRecords: number = 0;
     isactive: boolean = false;
+    AttributeAutodata: any[];
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -50,12 +52,13 @@ declare var commonfun: any;
         this.setActionButtons.setTitle("Attribute");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.getattributegroup();
-        $("#attnam").focus();
+        $("#attrdrop").focus();
         setTimeout(function () {
             commonfun.addrequire();
         }, 0);
     }
 
+    //Dropdown Attribute
     getattributegroup() {
         var that = this;
         this._commonservice.getMOM({
@@ -67,6 +70,27 @@ declare var commonfun: any;
         }, () => {
             console.log("Complete");
         })
+    }
+
+    //AutoCompletd Attribute
+    AttributeAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "attrmom",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query,
+            "atttype":this.attrgrp.split(':')[0]
+        }).then(data => {
+            this.AttributeAutodata = data;
+        });
+    }
+
+    //Selected Attribute
+    AttributeSelect(event) {
+        this.attid = event.value;
+        this.attName = event.label;
     }
 
     //Add Top Buttons Add Edit And Save
@@ -110,7 +134,7 @@ declare var commonfun: any;
             "to": to,
         }).subscribe(result => {
             var resultdata = result.data;
-            this.totalRecords = resultdata[1];
+            this.totalRecords = resultdata[1][0].recordstotal;
             this.addNewAttr = resultdata[0];
         })
     }
@@ -132,7 +156,7 @@ declare var commonfun: any;
             var dataset = result.data;
             if (dataset[0].funsave_attribute.maxid == "-1") {
                 this._msg.Show(messageType.info, "info", "Duplicate attribute");
-                $("#attnam").focus();
+                $("#attrdrop").focus();
                 return;
             }
             if (dataset[0].funsave_attribute.maxid > 0) {
@@ -146,13 +170,12 @@ declare var commonfun: any;
                 });
                 this.counter++;
                 this.attName = "";
-                this.attrgrp = "";
-                $("#attnam").focus();
-
+                $("#attnam input").focus();
+                this.getAttribute(0, 10);
             }
             else {
                 console.log("Error");
-                $("#attnam").focus();
+                $("#attrdrop").focus();
                 return;
             }
         }, err => {
@@ -168,7 +191,7 @@ declare var commonfun: any;
             this.attName = row.atname;
             this.attrgrp = row.id + ':' + row.key;
             this.isactive = row.val;
-            $("#attnam").focus();
+            $("#attrdrop").focus();
         }
     }
 
@@ -176,7 +199,7 @@ declare var commonfun: any;
         this.attid = 0;
         this.attName = "";
         this.attrgrp = "";
-        $("#attnam").focus();
+        $("#attrdrop").focus();
     }
 
     DeleteRow(row) {

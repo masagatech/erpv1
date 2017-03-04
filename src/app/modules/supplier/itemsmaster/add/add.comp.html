@@ -315,7 +315,7 @@
 												<!--<p-autoComplete [(ngModel)]="matname" class="form-controlAutoComplete inlinetextbox" id="material" (onSelect)="MaterialSelect($event)"
 													[suggestions]="MaterialAutodata" (completeMethod)="MaterialAuto($event)" field="label" [size]="30" placeholder="Material"
 													[minLength]="1" [tabindex]="100"></p-autoComplete>-->
-												<input type="text" class="form-control material inlinetextbox" tabindex="6" [(ngModel)]="row.matname" (keyup)="getAutoCompleteMate(this,0)"
+												<input type="text" class="form-control material inlinetextbox" tabindex="6" [(ngModel)]="newmatname" (keyup)="getAutoCompleteMate(this,0)"
 													autocomplete='off' value="" />
 											</td>
 											<td style="width:120px;vertical-align: top;">

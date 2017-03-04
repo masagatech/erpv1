@@ -422,7 +422,6 @@ export class generateInv implements OnInit, OnDestroy {
             "fy": this.loginUser.fy
         }).subscribe(details => {
             var dataset = details.data;
-            console
             if (dataset[0].funsave_generateinvoice.maxid > 0) {
                 alert(dataset[0].funsave_generateinvoice.msg + ' :' + dataset[0].funsave_generateinvoice.maxid)
                 var InvoicelocalNo = dataset.Table;
