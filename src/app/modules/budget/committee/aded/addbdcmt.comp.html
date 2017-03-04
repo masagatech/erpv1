@@ -5,7 +5,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Budget</label>
-                        <select id="bid" validate="0" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="getCommitteeData(bid)">
+                        <select id="bid" validate="0" name="bid" [(ngModel)]="bid" class="form-control btitle" (ngModelChange)="getCommitteeData(bid)">
                             <option value="0">-- Select Budget --</option>
                             <option *ngFor="let row of BudgetDT" [value]="row.bid">
                                 {{row.btitle}}
@@ -28,7 +28,8 @@
                                     {{row.empname}}
                                 </template>
                                 <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
-                                    <input type="text" name="empname{{i + 1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox" />
+                                    <input type="text" name="empname{{i+1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox" (keyup)="getAutoEmp(row, 1)"
+                                    />
                                 </template>
                             </p-column>
                             <p-column header="Role" [style]="{'width':'360px','text-align':'left'}">
@@ -51,7 +52,7 @@
                                             <td width="40px">
                                             </td>
                                             <td width="360px">
-                                                <input type="text" name="newempname" [(ngModel)]="newempname" class="empname form-control" (keyup)="getEmpAuto(this, 0)"
+                                                <input type="text" name="newempname" [(ngModel)]="newempname" class="empname form-control" (keyup)="getAutoEmp(this, 0)"
                                                 />
                                             </td>
                                             <td width="360px">

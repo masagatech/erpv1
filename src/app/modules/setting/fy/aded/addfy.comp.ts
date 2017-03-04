@@ -106,7 +106,7 @@ export class AddFY implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         } else if (evt === "back") {
-            this._router.navigate(['/setting/company']);
+            this._router.navigate(['/setting/fy']);
         }
     }
 

@@ -41,7 +41,7 @@
                                     {{row.empname}}
                                 </template>
                                 <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
-                                    <input type="text" name="empname{{i+1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox" (keyup)="getAutoemp(row, 1)"
+                                    <input type="text" name="empname{{i+1}}" [(ngModel)]="row.empname" class="empname form-control inlinetextbox" (keyup)="getAutoEmp(row, 1)"
                                     />
                                 </template>
                             </p-column>

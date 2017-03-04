@@ -15,23 +15,36 @@ export class ViewMOM implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    mom: any = [];
+    monGroupDT: any = [];
+    momDT: any = [];
     totalRecords: number = 0;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _commonservice: CommonService) {
-
+        this.fillMOMGroup();
     }
 
-    BindMOMGrid(from: number, to: number) {
+    fillMOMGroup() {
         var that = this;
-        that._commonservice.getMOMGrid({ "flag": "grid", "from": from, "to": to }).subscribe(data => {
-            that.totalRecords = data.data[1][0].recordstotal;
-            that.mom = data.data[0];
+
+        that._commonservice.getMOM({ "flag": "group" }).subscribe(data => {
+            that.monGroupDT = data.data;
+        }, err => {
+            console.log(err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    BindMOMGrid(row, from: number, to: number) {
+        var that = this;
+        that._commonservice.getMOMGrid({ "flag": "grid", "group": row.group, "from": from, "to": to }).subscribe(data => {
+            that.totalRecords = data.data[1].recordstotal;
+            that.momDT = data.data[0];
         });
     }
 
     loadMOMGrid(event: LazyLoadEvent) {
-        this.BindMOMGrid(event.first, (event.first + event.rows));
+        this.BindMOMGrid(event, event.first, (event.first + event.rows));
     }
 
     openMOMDetails(row) {
@@ -40,6 +53,7 @@ export class ViewMOM implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        this.setActionButtons.setTitle("Master of Master");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }

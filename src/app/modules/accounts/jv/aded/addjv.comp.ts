@@ -208,9 +208,9 @@ export class AddJV implements OnInit, OnDestroy {
         return CreditAmtTotal;
     }
 
-    private NewRowAdd() {
+    private addJVRow() {
         var that = this;
-
+        
         // Validation
 
         if (that.newacname == "") {

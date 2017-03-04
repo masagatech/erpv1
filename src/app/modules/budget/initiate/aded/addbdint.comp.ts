@@ -159,6 +159,7 @@ export class AddInitiateComp implements OnInit, OnDestroy {
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
                 this.setActionButtons.setTitle("Budget Initiate > Add");
+                $(".btitle").focus();
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -174,6 +175,7 @@ export class AddInitiateComp implements OnInit, OnDestroy {
             }
             else if (this.isedit) {
                 this.setActionButtons.setTitle("Budget Initiate > Edit");
+                $(".btitle").focus();
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -204,7 +206,7 @@ export class AddInitiateComp implements OnInit, OnDestroy {
             }
         });
 
-        this.attr.attrparam = ["compinfo_attr"];
+        this.attr.attrparam = ["bdattrinfo"];
     }
 
     //Attribute Tab Click Event

@@ -1,0 +1,38 @@
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-2" style="border-right: 3px #d1d8dd dashed;">
+			<div class="form-group">
+				<label>Search</label>
+				<input type="text" name="search" [(ngModel)]="search" class="form-control" (keyup)="fillBudgetDropDown()" />
+			</div>
+		</div>
+		<div class="col-md-10">
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-5">
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label>Status</label>
+						<select class="form-control" [(ngModel)]="status">
+							<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-1">
+					<div class="form-group">
+						<label>&nbsp;</label>
+						<button type="button" class="btn btn-theme btn-sm" (click)="searchEnvelope(dt)">Get</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="row">
+		
+	</div>
+</div>

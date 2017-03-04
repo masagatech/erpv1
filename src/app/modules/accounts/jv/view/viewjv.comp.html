@@ -44,7 +44,7 @@
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Status</label>
-				<select class="form-control" [(ngModel)]="status">
+				<select class="form-control" [(ngModel)]="status" (ngModelChange)="searchJV(dt)">
 					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
 				</select>
 			</div>
@@ -52,7 +52,7 @@
 		<div class="col-md-1">
 			<div class="form-group">
 				<label>&nbsp;</label>
-				<button type="button" class="btn btn-thme btn-sm" (click)="searchJV(dt)">Get</button>
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchJV(dt)">Get</button>
 			</div>
 		</div>
 	</div>
@@ -60,13 +60,11 @@
 
 <div class="col-md-12">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="viewJVDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
+		<p-dataTable #dt [value]="viewJVDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails(dt, $event)"
 			(onLazyLoad)="loadJVGrid($event)" expandableRows="true">
-			<p-column expander="true" [style]="{'width':'50px'}">
-			</p-column>
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
 			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
-			<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
 			<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
 					{{row.totdramt | currency:loginUser._globsettings.currency:true}}
@@ -89,7 +87,7 @@
 					</button>
 				</template>
 			</p-column>
-			<template let-row>
+			<template let-row pTemplate="rowexpansion">
 				<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalDetailsRecords" expandableRows="true">
 					<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
 					<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">

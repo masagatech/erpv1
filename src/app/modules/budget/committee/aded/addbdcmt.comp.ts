@@ -91,6 +91,7 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
                 this.setActionButtons.setTitle("Add Budget Committee");
+                $(".btitle").focus();
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -103,6 +104,7 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
             }
             else if (this.isedit) {
                 this.setActionButtons.setTitle("Edit Budget Committee");
+                $(".btitle").focus();
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -172,6 +174,11 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
             that._msg.Show(messageType.error, "Error", "Please Enter Committee");
             return;
         }
+        
+        if (that.newrole == "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Role");
+            return;
+        }
 
         // Duplicate items Check
         that.duplicatecommittee = that.isDuplicateCommittee();
@@ -200,10 +207,13 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
         row.isactive = false;
     }
 
-    getEmpAuto(me: any, arg: number) {
+    getAutoEmp(me: any, arg: number) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": arg == 0 ? me.newempname : me.empname }).subscribe(data => {
+        that._budgetservice.getCommittee({
+            "flag": "autoemp", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
+            "search": arg == 0 ? me.newempname : me.empname
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -225,7 +235,7 @@ export class AddCommitteeComp implements OnInit, OnDestroy {
                 }
             });
         }, err => {
-            console.log(err);
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })

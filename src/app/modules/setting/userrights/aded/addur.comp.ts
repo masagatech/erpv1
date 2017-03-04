@@ -59,6 +59,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -89,6 +90,20 @@ export class AddUserRights implements OnInit, OnDestroy {
         if (evt === "save") {
             this.saveUserRights();
         }
+        else if (evt === "clear") {
+            this.resetUserRights();
+        }
+    }
+
+    resetUserRights() {
+        $(".uname").focus();
+        this.uid = "";
+        this.uname = "";
+        this.refuid = "";
+        this.refuname = "";
+        this.CompanyDetails = [];
+        this.selectedCompany.menudetails = [];
+        this.fy = 0;
     }
 
     getUserAuto(me: any) {
@@ -228,10 +243,19 @@ export class AddUserRights implements OnInit, OnDestroy {
         }
 
         if (this.uid == "") {
-            that._msg.Show(messageType.info, "Info", "Please Enter User");
+            that._msg.Show(messageType.error, "Error", "Please Enter User");
+        }
+        else if (this.refuid == "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Reference User");
+        }
+        else if (this.selectedCompany.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Company");
+        }
+        else if (this.selectedCompany.menudetails.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Company");
         }
         else if (this.fy == 0) {
-            that._msg.Show(messageType.info, "Info", "Please Select Financial Year");
+            that._msg.Show(messageType.error, "Error", "Please Select Financial Year");
         }
         else {
             this._userservice.saveUserRights(saveUR).subscribe(data => {

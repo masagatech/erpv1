@@ -180,7 +180,10 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
     getAutoEmp(me: any, arg: number) {
         var that = this;
 
-        that._budgetservice.getOwnership({ "flag": "autoemp", "search": arg == 0 ? me.newempname : me.empname }).subscribe(data => {
+        that._budgetservice.getOwnership({
+            "flag": "autoemp", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
+            "search": arg == 0 ? me.newempname : me.empname
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -213,8 +216,18 @@ export class AddOwnershipComp implements OnInit, OnDestroy {
 
         // Validation
 
+        if (that.newenvid == 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Envelope");
+            return;
+        }
+
         if (that.newempname == "") {
-            that._msg.Show(messageType.error, "Error", "Please Enter Chart of Accounts");
+            that._msg.Show(messageType.error, "Error", "Please Enter Employee");
+            return;
+        }
+
+        if (that.newccid == 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Control Center");
             return;
         }
 
