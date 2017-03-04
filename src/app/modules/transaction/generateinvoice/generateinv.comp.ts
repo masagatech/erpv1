@@ -287,7 +287,7 @@ export class generateInv implements OnInit, OnDestroy {
         }
         return total;
     }
-    
+
     //Sub  Total With Tax 
     private SubtotalTax(details, taxval) {
         var totalTax = 0;
@@ -353,7 +353,7 @@ export class generateInv implements OnInit, OnDestroy {
         return param;
     }
 
-    paramledger(tabledetails, CustomerDetails) {
+    paramledger(tabledetails, CustomerDetails,taxlist) {
         var ledgerparam = [];
         var that = this;
         ledgerparam.push({
@@ -362,7 +362,7 @@ export class generateInv implements OnInit, OnDestroy {
             "acid": CustomerDetails[0].acid,
             "fy": that.loginUser.fy,
             "typ": "invoice",
-            "dramt": that.GrandTotal(tabledetails),
+            "dramt": that.GrandTotal(tabledetails,taxlist),
             "cramt": 0,
             "nar": CustomerDetails[0].remark,
             "createdby": that.loginUser.login
@@ -373,7 +373,7 @@ export class generateInv implements OnInit, OnDestroy {
             "acid": that.salesregister,
             "fy": that.loginUser.fy,
             "typ": that.salesregister,
-            "cramt": that.GrandTotal(tabledetails),
+            "cramt": that.GrandTotal(tabledetails,taxlist),
             "dramt": 0,
             "nar": CustomerDetails[0].remark,
             "createdby": that.loginUser.login
@@ -409,7 +409,7 @@ export class generateInv implements OnInit, OnDestroy {
 
     private GenerateInvoice(tabledetails, CustomerDetails, taxlist) {
         this.param = this.paramjson(tabledetails, CustomerDetails);
-        this.ledgerparam = this.paramledger(tabledetails, CustomerDetails);
+        this.ledgerparam = this.paramledger(tabledetails, CustomerDetails,taxlist);
         this.stockparam = this.stockledger(tabledetails, CustomerDetails);
         this.InvServies.GenerateInvoice({
             "generatedetails": this.param,
