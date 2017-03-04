@@ -3,10 +3,12 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
-import { itemadd } from './add/itemadd.comp';                            //item Add
-import { itemview } from './view/itemview.comp';                         //item View
+import { itemadd } from './add/add.comp';                            //item Add
+import { itemview } from './view/view.comp';                         //item View
 
-import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule, AutoCompleteModule } from 'primeng/primeng';
+
+import { NumTextModule } from '../../usercontrol/numtext';
 
 
 import { FormsModule } from '@angular/forms';
@@ -25,16 +27,16 @@ const routerConfig = [
         path: '',
         component: ItemsMasterComp,
         canActivate: [AuthGuard],
+        data: { "module": "sup" },
         children: [
             {
                 path: '',
                 children: [
 
                     //Bank Payment Add Edit View
-                    { path: 'itemadd', component: itemadd, canActivateChid: [AuthGuard], },
-                    { path: 'itemedit/:id', component: itemadd, canActivateChid: [AuthGuard], },
-                    { path: 'itemview', component: itemview, canActivateChid: [AuthGuard], },
-                    { path: '', component: itemview, canActivateChid: [AuthGuard], },
+                    { path: 'add', component: itemadd, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "im", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: itemadd, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "im", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: itemview, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "im", "rights": "view", "urlname": "/itemsmaster" } },
                 ]
             }
         ]
@@ -43,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule
-        , CheckboxModule],
+        , CheckboxModule, AutoCompleteModule, NumTextModule],
     declarations: [
         itemadd,
         itemview,

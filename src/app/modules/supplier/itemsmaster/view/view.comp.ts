@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
-    templateUrl: 'itemview.comp.html',
+    templateUrl: 'view.comp.html',
     providers: [ItemViewService, CommonService]                         //Provides Add Service dcmaster-service.ts
     //,AutoService
 }) export class itemview implements OnInit, OnDestroy {
@@ -111,7 +111,7 @@ declare var $: any;
     //Edit Row
     EditItem(row) {
         if (!row.islocked) {
-            this._router.navigate(['/supplier/itemsmaster/itemedit', row.itemsid]);
+            this._router.navigate(['/supplier/itemsmaster/edit', row.itemsid]);
         }
     }
 
@@ -145,7 +145,7 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/supplier/itemsmaster/itemadd']);
+            this._router.navigate(['/supplier/itemsmaster/add']);
         }
         else if (evt === "save") {
             //Save CLick Event

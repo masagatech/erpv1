@@ -79,6 +79,7 @@
 			<li><a data-target="#itmpric" role="button" (click)="ItemsTab()" data-toggle="tab">Item Price</a></li>
 			<li><a data-target="#ware" role="button" data-toggle="tab">Warehouse</a></li>
 			<li><a data-target="#supp" role="button" (click)="SuppTab()" data-toggle="tab">Supplier</a></li>
+			<li><a data-target="#mate" role="button" (click)="MateTab()" data-toggle="tab">Material</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
 		</ul>
 		<div class="tab-content">
@@ -261,6 +262,78 @@
 							<span data-role="remove" (click)="Removesupp(row)"></span>
 							</span>
 						</div>
+					</div>
+				</div>
+			</div>
+			<!--Material Master-->
+			<div class="tab-pane" id="mate">
+				<div class="col-md-8">
+					<div class="table-responsive">
+						<p-dataTable #dt [value]="materialdetail" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+							[(selection)]="selectedRB1" expandableRows="true">
+							<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
+								<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+									{{rowIndex+1}}
+								</template>
+							</p-column>
+							<p-column header="Material Name" [style]="{'text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<!--<p-autoComplete [(ngModel)]="row.matname" class="form-controlAutoComplete" id="material" (onSelect)="MaterialSelect(row)"
+										[suggestions]="MaterialAutodata" (completeMethod)="MaterialAuto(row)" field="label" [size]="30" placeholder="Material"
+										[minLength]="1"></p-autoComplete>-->
+									<input type="text" class="form-control material inlinetextbox" tabindex="6" [(ngModel)]="row.matname" (keyup)="getAutoCompleteMate(row,1)"
+										autocomplete='off' value="" />
+								</template>
+							</p-column>
+							<p-column header="Uom" [style]="{'width':'120px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="8">
+											<option *ngFor="let row of row.griduomlist" [value]="row.id">
+												{{row.val}}
+					    					</option>
+									</select>
+								</template>
+							</p-column>
+							<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.qty"></numtext>
+								</template>
+							</p-column>
+							<p-column header="Action" [style]="{'width':'120px','text-align':'center'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<button class="btn btn-danger btn-sm" (click)="MaterialDelete(row.counter)"><i class="fa fa-trash"></i></button>
+								</template>
+							</p-column>
+							<footer>
+								<table class="tableNoborder" style="height: 60px;">
+									<tbody>
+										<tr>
+											<td style="width:30px;vertical-align: top;">
+												<label>#</label>
+											</td>
+											<td style="vertical-align: top;">
+												<!--<p-autoComplete [(ngModel)]="matname" class="form-controlAutoComplete inlinetextbox" id="material" (onSelect)="MaterialSelect($event)"
+													[suggestions]="MaterialAutodata" (completeMethod)="MaterialAuto($event)" field="label" [size]="30" placeholder="Material"
+													[minLength]="1" [tabindex]="100"></p-autoComplete>-->
+												<input type="text" class="form-control material inlinetextbox" tabindex="6" [(ngModel)]="row.matname" (keyup)="getAutoCompleteMate(this,0)"
+													autocomplete='off' value="" />
+											</td>
+											<td style="width:120px;vertical-align: top;">
+												<select [(ngModel)]="newuom" class="form-control " tabindex="101" class="form-control">
+												<option *ngFor="let row of griduomlist" [value]="row.id">
+														{{row.val}}
+					    						</option>
+											</select>
+											</td>
+											<td style="width:120px;vertical-align: top;">
+												<numtext [iscurrency]="false" css="inlinetextbox qty" [tabindex]="103" [(ngModel)]="qty"></numtext>
+											</td>
+											<td style="width:120px;vertical-align: top;"><button type="button" tabindex="104" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewMaterialAdd()"><i class="fa fa-plus"></i></button></td>
+										</tr>
+									</tbody>
+								</table>
+							</footer>
+						</p-dataTable>
 					</div>
 				</div>
 			</div>

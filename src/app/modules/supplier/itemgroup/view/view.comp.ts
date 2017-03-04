@@ -7,6 +7,7 @@ import { itemGroupService } from "../../../../_service/itemgroup/itemgroup-servi
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
@@ -18,6 +19,11 @@ declare var $: any;
 }) export class itemgroupView implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    itemgrouplist: any = [];
+    totalRecords: number = 0;
+    totalDetailsRecords: number = 0;
+    totalqty:any = 0
+    totalamt:any = 0
 
     //user details
     loginUser: LoginUserModel;
@@ -38,12 +44,84 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
+
+    getItemgroup(from: number, to: number) {
+        var that = this;
+        that.ItemgroupServies.getitemdetail({
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "from": from,
+            "to": to,
+            "createdby": that.loginUser.login
+        }).subscribe(result => {
+            that.totalRecords = result.data[1][0].recordstotal;
+            that.itemgrouplist = result.data[0];
+        }, err => {
+            console.log("Error");
+        }, () => {
+            'Final'
+        });
+    }
+
+    //Pagination Grid View 
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getItemgroup(event.first, (event.first + event.rows));
+    }
+
+    //More Button Click Event
+    expandDetails(event) {
+        if (event.details && event.details.length > 0) { return; }
+        try {
+            var that = this;
+            var row = event;
+            row.loading = false;
+            that.ItemgroupServies.getitemdetail({
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "createdby": that.loginUser.login,
+                "docno": row.docno,
+                "flag": "expdetails"
+            }).subscribe(result => {
+                var dataset = result.data;
+                that.totalDetailsRecords = dataset[1][0].recordstotal;
+                if (dataset[0].length > 0) {
+                    row.loading = true;
+                    row.details = dataset[0];
+                   
+                    for (let item of row.details) {
+                        that.totalqty += parseFloat(item.qty);
+                        that.totalamt += parseFloat(item.amt);
+                    }
+                    $(".get").prop("disabled", false);
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    $(".get").prop("disabled", false);
+                    $(".item").focus();
+                    return;
+                }
+
+            }, err => {
+                console.log("Error");
+                $(".get").prop("disabled", false);
+            }, () => {
+                'Final'
+            });
+        } catch (error) {
+
+        }
+    }
+
     // //Group Code (Edit) Group
-    // Editacgroup(row) {
-    //     if (!row.IsLocked) {
-    //         this._router.navigate(['/master/acgroup/edit', row.groupid]);
-    //     }
-    // }
+    EditItem(event) {
+        debugger;
+        var data = event.value;
+        if (!data[0].islocked) {
+            this._router.navigate(['/supplier/itemgroup/edit', data[0].docno]);
+        }
+    }
+
+
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {

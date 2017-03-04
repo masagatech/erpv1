@@ -43,10 +43,10 @@ declare var $: any;
     getcustomer(from: number, to: number) {
         var that = this;
         that.CustViewServies.getcustomer({
-            "cmpid": this.loginUser.cmpid ,
+            "cmpid": that.loginUser.cmpid ,
             "from": from,
             "to": to,
-            "createdby":this.loginUser.login
+            "createdby":that.loginUser.login
         }).subscribe(result => {
             that.totalRecords = result.data[1][0].recordstotal;
             that.customerlist = result.data[0];

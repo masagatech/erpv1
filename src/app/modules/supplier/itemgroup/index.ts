@@ -30,7 +30,7 @@ const routerConfig = [
                 path: '',
                 children: [
                     { path: 'add', component: itemgroupAdd, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "ig", "rights": "add", "urlname": "/add" } },
-                    { path: 'edit/:id', component: itemgroupAdd, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "if", "rights": "edit", "urlname": "/edit" } },
+                    { path: 'edit/:id', component: itemgroupAdd, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "ig", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: itemgroupView, canActivateChid: [AuthGuard], data: { "module": "sup", "submodule": "ig", "rights": "view", "urlname": "/itemgroup" } },
                 ]
             }

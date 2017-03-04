@@ -8,13 +8,15 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { NumTextModule } from '../../../usercontrol/numtext';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 declare var commonfun: any;
 @Component({
-    templateUrl: 'itemadd.comp.html',
+    templateUrl: 'add.comp.html',
     providers: [ItemAddService, CommonService]
     //,AutoService
 }) export class itemadd implements OnInit, OnDestroy {
@@ -59,6 +61,18 @@ declare var commonfun: any;
     barcode: any = "";
     editmode: boolean = false;
     isactive: boolean = false;
+
+    materialdetail: any = [];
+    matname: any = "";
+    newmatname: any = "";
+    matid: any = 0;
+    griduomlist: any = [];
+    qty: any = 0;
+    newuom: number = 0;
+    materialcounter: number = 0;
+
+    //Auto Extender Array
+    MaterialAutodata: any = [];
 
     //user details
     loginUser: LoginUserModel;
@@ -122,6 +136,9 @@ declare var commonfun: any;
         }, 0);
     }
 
+    loadRBIGrid(event: LazyLoadEvent) {
+    }
+
     //Shelf Life Dropdown Fill
     getAllDropdown() {
         var that = this;
@@ -132,6 +149,7 @@ declare var commonfun: any;
             that.shelflifelist = dsshelflife;
             var dsUoM = data.data[0].filter(item => item.group === "uom");
             that.UoMlist = dsUoM;
+            that.griduomlist = dsUoM;
             if (data.data[1].length > 0) {
                 that.Keyvallist = data.data[1]
             }
@@ -546,6 +564,143 @@ declare var commonfun: any;
         }, 100);
     }
 
+    getAutoCompleteMate(me: any, arg: number) {
+        var _me = this;
+        try {
+            var duplicateitem = true;
+            this._autoservice.getAutoData({
+                "type": "material",
+                "whid": this.matname,
+                "search": arg == 0 ? me.newmatname : me.matname,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".material").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.itemsname = ui.item.label;
+                        if (_me.materialdetail.length > 0) {
+                            for (let item of _me.materialdetail) {
+                                if (item.matname == me.matname) {
+                                    duplicateitem = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (duplicateitem === true) {
+                            if (arg === 1) {
+                                me.matname = ui.item.label;
+                                me.matid = ui.item.value;
+                            } else {
+                                me.newmatname = ui.item.label;
+                                me.matid = ui.item.value;
+                            }
+                        }
+                        else {
+                            _me._msg.Show(messageType.info, "info", "Duplicate item");
+                            return;
+                        }
+
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+            return;
+        }
+
+    }
+
+    // MaterialAuto(event) {
+    //     try {
+    //         let query = event.query;
+    //         this._autoservice.getAutoDataGET({
+    //             "type": "material",
+    //             "cmpid": this.loginUser.cmpid,
+    //             "fy": this.loginUser.fy,
+    //             "createdby": this.loginUser.login,
+    //             "search": query
+    //         }).then(data => {
+    //             this.MaterialAutodata = data;
+    //         });
+    //     } catch (e) {
+    //         this._msg.Show(messageType.success, "success", e.message);
+    //     }
+
+    // }
+
+    MaterialDelete(row) {
+        var index = -1;
+        for (var i = 0; i < this.materialdetail.length; i++) {
+            if (this.materialdetail[i].materialcounter === row.materialcounter) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.materialdetail.splice(index, 1);
+        $("#material input").focus();
+    }
+
+    // MaterialSelect(event) {
+    //     this.matid = event.value;
+    //     this.matname = event.label;
+    // }
+
+    NewMaterialAdd() {
+        if ($("#material input").val() === "") {
+            this._msg.Show(messageType.info, "info", "Please Enter Material");
+            $("#material input").focus();
+            return;
+        }
+        if (this.qty === 0) {
+            this._msg.Show(messageType.info, "info", "Please Enter Quantity");
+            $(".qty").focus();
+            return;
+        }
+        if (this.newuom == 0) {
+            this._msg.Show(messageType.info, "info", "Please Enter Quantity");
+            $(".qty").focus();
+            return;
+        }
+        this.materialdetail.push({
+            "matname": this.matname,
+            "matid": this.matid,
+            "qty": this.qty,
+            "griduomlist": this.griduomlist,
+            "id": this.newuom,
+            "counter": this.materialcounter
+        });
+
+        this.materialcounter++;
+        $("#material input").val("");
+        this.matid = 0;
+        this.qty = 0;
+        this.newuom = 0;
+        $("#material input").focus();
+    }
+
+    MateTab() {
+        setTimeout(function () {
+            $("#material input").val("");
+            $("#material input").focus();
+        }, 0)
+    }
+
     //Delete Purchase Price
     PurDeleteRow(row) {
         var index = -1;
@@ -561,7 +716,6 @@ declare var commonfun: any;
         this.purchaselist.splice(index, 1);
         $(".purattr").focus();
     }
-
 
     //Edit Paramter
     EditParamJson() {
@@ -595,6 +749,7 @@ declare var commonfun: any;
             that.shelf = returndata.shelflife;
             that.itemsdesc = returndata.itemdesc;
             that.itemsremark = returndata.itemremark;
+            that.materialdetail = returndata._materiallist === null ? [] : returndata._materiallist;
             that.attribute.attrlist = returndata._attributejson === null ? [] : returndata._attributejson;
             that.Keyvallist = returndata._keydatajson === null ? [] : returndata._keydatajson;
             that.saleslist = returndata._salesjson === null ? [] : returndata._salesjson;
@@ -637,9 +792,22 @@ declare var commonfun: any;
         this.Keyvallist = [];
         this.supplist = [];
         this.uploadedFiles = [];
+        this.materialdetail = [];
         this.barcode = "";
         $('.itemcode').removeAttr('disabled');
         $('.itemcode').focus();
+    }
+
+    private CreatejsonMaterial() {
+        var paramMaterial = [];
+        for (let item of this.materialdetail) {
+            paramMaterial.push({
+                "matid": item.matid,
+                "uom": item.id,
+                "qty": item.qty
+            })
+        }
+        return paramMaterial;
     }
 
     //Create Json String in Attribute
@@ -753,6 +921,7 @@ declare var commonfun: any;
             "purc": this.CreatejsonPurchasePrice(),
             "supp": this.CreatejsonSupplier(),
             "ware": this.CreatejsonWarehouse(),
+            "mate": this.CreatejsonMaterial(),
             "suppdoc": this.suppdoc,
             "ledger": this.craetLedgerjson()
         }

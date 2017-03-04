@@ -39,6 +39,7 @@ declare var commonfun: any;
     disTotal: any = 0;
     isactive: boolean;
     editmode: boolean = false;
+    docno: number = 0;
 
 
     private subscribeParameters: any;
@@ -74,8 +75,8 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                //this.groupid = params['id'];
-                //this.Editgroup(this.groupid);
+                this.docno = params['id'];
+                this.EditItem(this.docno);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -86,6 +87,25 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
+        });
+    }
+
+    EditItem(docno) {
+        this.ItemgroupServies.getitemdetail({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "docno": docno,
+            "flag": "edit"
+        }).subscribe(itemsdata => {
+            var ItemsResult = itemsdata.data[0];
+            this.itemcombo = ItemsResult[0].itemcombo;
+            this.desc = ItemsResult[0].description;
+            this.NewRowAdd = itemsdata.data[1];
+        }, err => {
+            console.log("Error");
+        }, () => {
+            //console.log("Done");
         });
     }
 
@@ -176,11 +196,10 @@ declare var commonfun: any;
                     "createdby": this.loginUser.login
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data[0];
-                    debugger;
                     if (falg === 0) {
                         this.qty = 1;
-                        this.dis = ItemsResult.dis;
-                        this.rateslist = ItemsResult.rates;
+                        this.dis = ItemsResult[0].dis;
+                        this.rateslist = ItemsResult[0].rates;
                     }
                     else {
                         for (let item of this.NewRowAdd) {
@@ -338,6 +357,11 @@ declare var commonfun: any;
                     validateme.data[0].input.focus();
                     return;
                 }
+                if (this.NewRowAdd.length == 0) {
+                    this._msg.Show(messageType.error, "error", "Please Enter Items");
+                    $(".ProdName").focus();
+                    return;
+                }
                 this.actionButton.find(a => a.id === "save").enabled = false;
                 this.ItemgroupServies.saveitemgroup({
                     "itemdetail": this.paramjson(),
@@ -348,6 +372,10 @@ declare var commonfun: any;
                     "desc": this.desc
                 }).subscribe(result => {
                     var dataset = result.data;
+                    if (dataset[0].funsave_itemgroup.msgid == '-1') {
+                        this._msg.Show(messageType.info, "info", dataset[0].funsave_itemgroup.msg);
+                        $(".itemconbo").focus();
+                    }
                     if (dataset[0].funsave_itemgroup.msgid > 0) {
                         this._msg.Show(messageType.success, "success", dataset[0].funsave_itemgroup.msg);
                         this.Clearcontrol();

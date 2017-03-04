@@ -83,7 +83,7 @@ declare var commonfun: any;
             }
         });
         this.getuom();
-        this.attribute.attrparam = ["item_attr"];
+        this.attribute.attrparam = ["material_master"];
     }
 
     //Get Uom Dropdown 
@@ -111,7 +111,7 @@ declare var commonfun: any;
         this.name = "";
         this.uom = 0;
         this.description = "";
-        this.attribute.attrlist;
+        this.attribute.attrlist = [];
         $(".code").focus();
     }
 
