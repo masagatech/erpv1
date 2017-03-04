@@ -387,7 +387,7 @@ export class generateInv implements OnInit, OnDestroy {
         return opestock;
     }
 
-    private GenerateInvoice(tabledetails, CustomerDetails) {
+    private GenerateInvoice(tabledetails, CustomerDetails,taxlist) {
         this.param = this.paramjson(tabledetails, CustomerDetails);
         this.ledgerparam = this.paramledger(tabledetails, CustomerDetails);
         this.stockparam = this.stockledger(tabledetails, CustomerDetails);
@@ -396,8 +396,8 @@ export class generateInv implements OnInit, OnDestroy {
             "docno": CustomerDetails[0].docno,
             "ledgerparam": this.ledgerparam,
             "openstockdetails": this.stockparam,
-            "totaltax": this.SubtotalTax(tabledetails),
-            "netamt": this.GrandTotal(tabledetails),
+            "totaltax":  0,//this.SubtotalTax(tabledetails),
+            "netamt": this.GrandTotal(tabledetails,taxlist),
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy
         }).subscribe(details => {
