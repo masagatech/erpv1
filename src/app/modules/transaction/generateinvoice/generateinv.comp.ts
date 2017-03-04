@@ -42,7 +42,7 @@ export class generateInv implements OnInit, OnDestroy {
     stockparam: any = [];
     taxval: any = 0;
     taxlist: any = [];
-    buttonitems:any=[];
+    buttonitems: any = [];
 
     //Calendor
     @ViewChild("fromdatecal")
@@ -200,13 +200,17 @@ export class generateInv implements OnInit, OnDestroy {
     //Document No Click Get Details
     getInvDetails(items) {
 
-         this.buttonitems = [
-            {label: ' Generate + Print', icon: 'fa-print', command: () => {
-                //this.update();
-            }},
-            {label: ' Generate + Email', icon: 'fa-envelope', command: () => {
-               // this.delete();
-            }},
+        this.buttonitems = [
+            {
+                label: ' Generate + Print', icon: 'fa-print', command: () => {
+                    //this.update();
+                }
+            },
+            {
+                label: ' Generate + Email', icon: 'fa-envelope', command: () => {
+                    // this.delete();
+                }
+            },
             // {label: 'Angular.io', icon: 'fa-link', url: 'http://angular.io'},
             // {label: 'Theming', icon: 'fa-paint-brush', routerLink: ['/theming']}
         ];
@@ -283,6 +287,7 @@ export class generateInv implements OnInit, OnDestroy {
         }
         return total;
     }
+    
     //Sub  Total With Tax 
     private SubtotalTax(details, taxval) {
         var totalTax = 0;
@@ -292,13 +297,28 @@ export class generateInv implements OnInit, OnDestroy {
         return Math.round(totalTax * taxval / 100);;
     }
 
-
+    //Total Tax Save
+    private SubtotalTotalTax(details, taxlist) {
+        var amount = 0;
+        var taxval = 0;
+        for (var i = 0; i < details.length; i++) {
+            amount += parseInt(details[i].amount);
+        }
+        if (taxlist.length > 0) {
+            for (var i = 0; i < taxlist.length; i++) {
+                taxval += parseInt(taxlist[i].taxval);
+            }
+            return Math.round(amount * taxval / 100);
+        }
+    }
 
     //Grand Total
     private GrandTotal(details, taxlist) {
         var taxvalue = 0;
-        for (var i = 0; i < taxlist.length; i++) {
-            taxvalue += parseInt(taxlist[i].taxval);
+        if (taxlist.length > 0) {
+            for (var i = 0; i < taxlist.length; i++) {
+                taxvalue += parseInt(taxlist[i].taxval);
+            }
         }
         return Math.round(this.Subtotal(details) + this.SubtotalTax(details, taxvalue));
     }
@@ -387,7 +407,7 @@ export class generateInv implements OnInit, OnDestroy {
         return opestock;
     }
 
-    private GenerateInvoice(tabledetails, CustomerDetails,taxlist) {
+    private GenerateInvoice(tabledetails, CustomerDetails, taxlist) {
         this.param = this.paramjson(tabledetails, CustomerDetails);
         this.ledgerparam = this.paramledger(tabledetails, CustomerDetails);
         this.stockparam = this.stockledger(tabledetails, CustomerDetails);
@@ -396,8 +416,8 @@ export class generateInv implements OnInit, OnDestroy {
             "docno": CustomerDetails[0].docno,
             "ledgerparam": this.ledgerparam,
             "openstockdetails": this.stockparam,
-            "totaltax":  0,//this.SubtotalTax(tabledetails),
-            "netamt": this.GrandTotal(tabledetails,taxlist),
+            "totaltax": this.SubtotalTotalTax(tabledetails, taxlist),
+            "netamt": this.GrandTotal(tabledetails, taxlist),
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy
         }).subscribe(details => {
