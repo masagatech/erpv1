@@ -20,14 +20,15 @@
 
 <div class="table-responsive">
 	<p-dataTable #dt [value]="ItemDetails" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-		[(selection)]="selectedRB1" expandableRows="true">
-		<p-column field="itemcode" header="Item Code" [style]="{'width':'50px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				<a role="button" (click)="EditItem(row)">{{row.itemcode}}</a>
-			</template>
-		</p-column>
+		(onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
+		<p-column field="itemcode" header="Item Code" [style]="{'width':'50px','text-align':'left'}"></p-column>
 		<p-column field="itemname" header="Item Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
 		<p-column field="skucode" header="Sku Code" [style]="{'width':'50px','text-align':'left'}"></p-column>
 		<p-column field="itemdesc" header="item Description" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				<button type="button" (click)="EditItem(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
+			</template>
+		</p-column>
 	</p-dataTable>
 </div>

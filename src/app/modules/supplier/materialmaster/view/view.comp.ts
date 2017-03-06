@@ -38,38 +38,59 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.setActionButtons.setTitle("Material Master");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".GroupName").focus();
     }
 
     getMaterialMaster(from: number, to: number) {
-        var that = this;
-        that.materialViewServies.getMaterialMaster({
-            "cmpid": this.loginUser.cmpid,
-            "from": from,
-            "to": to,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(result => {
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.materaillist = result.data[0];
+        try {
+            var that = this;
+            that.materialViewServies.getMaterialMaster({
+                "cmpid": this.loginUser.cmpid,
+                "from": from,
+                "to": to,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(result => {
+                that.totalRecords = result.data[1][0].recordstotal;
+                that.materaillist = result.data[0];
 
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getMaterialMaster(event.first, (event.first + event.rows));
+        try {
+            this.getMaterialMaster(event.first, (event.first + event.rows));
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['/supplier/material/edit', row.autoid]);
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['/supplier/material/edit', data.autoid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
     }
 
     //Add Top Buttons Add Edit And Save
@@ -91,5 +112,6 @@ declare var $: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

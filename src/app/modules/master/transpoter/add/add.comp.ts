@@ -95,7 +95,7 @@ declare var commonfun: any;
             commonfun.addrequire();
         }, 0);
 
-        this.attribute.attrparam = ["item_attr"];
+        this.attribute.attrparam = ["transpoter_attr"];
     }
 
     //File Upload Start 
@@ -120,44 +120,49 @@ declare var commonfun: any;
 
     //Edit Transpoter 
     EditTranspoter(id) {
-        var that = this;
-        that.transpoter_service.getTranspoter({
-            "cmpid": that.loginUser.cmpid,
-            "flag": "Edit",
-            "transid": id,
-            "fy": that.loginUser.fy,
-            "createdby": that.loginUser.login
-        }).subscribe(result => {
-            that.editmode = true;
-            var _Transdata = result.data[0][0]._transdata;
-            var _uploadedfile = result.data[0][0]._uploadedfile;
-            var _suppdoc = result.data[0][0]._suppdoc;
+        try {
+            var that = this;
+            that.transpoter_service.getTranspoter({
+                "cmpid": that.loginUser.cmpid,
+                "flag": "Edit",
+                "transid": id,
+                "fy": that.loginUser.fy,
+                "createdby": that.loginUser.login
+            }).subscribe(result => {
+                that.editmode = true;
+                var _Transdata = result.data[0][0]._transdata;
+                var _uploadedfile = result.data[0][0]._uploadedfile;
+                var _suppdoc = result.data[0][0]._suppdoc;
 
-            that.code = _Transdata[0].transcode;
-            that.transname = _Transdata[0].transname;
-            that.desc = _Transdata[0].descp;
-            that.remark = _Transdata[0].remark;
-            that.remark = _Transdata[0].remark;
-            that.isactive = _Transdata[0].isactive;
-            that.attribute.attrlist = result.data[0][0]._attributejson == null ? [] : result.data[0][0]._attributejson;
+                that.code = _Transdata[0].transcode;
+                that.transname = _Transdata[0].transname;
+                that.desc = _Transdata[0].descp;
+                that.remark = _Transdata[0].remark;
+                that.remark = _Transdata[0].remark;
+                that.isactive = _Transdata[0].isactive;
+                that.attribute.attrlist = result.data[0][0]._attributejson == null ? [] : result.data[0][0]._attributejson;
 
-            if (_uploadedfile != null) {
-                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
-            }
-
-            that.adrcsvid = "";
-            if (_Transdata[0].adr.length > 0) {
-                for (let items of _Transdata[0].adr) {
-                    that.adrcsvid += items.adrid + ',';
+                if (_uploadedfile != null) {
+                    that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                    that.suppdoc = _suppdoc == null ? [] : _suppdoc;
                 }
-                that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
-            }
-        }, err => {
-            console.log("error");
-        }, () => {
-            //Done
-        })
+
+                that.adrcsvid = "";
+                if (_Transdata[0].adr.length > 0) {
+                    for (let items of _Transdata[0].adr) {
+                        that.adrcsvid += items.adrid + ',';
+                    }
+                    that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+                }
+            }, err => {
+                console.log("error");
+            }, () => {
+                //Done
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
     createattrjson() {
         var attrid = [];
@@ -170,24 +175,28 @@ declare var commonfun: any;
     }
 
     paramterjson() {
-        var param = {
-            "transid": this.transid,
-            "code": this.code,
-            "transname": this.transname,
-            "desc": this.desc,
-            "adr": this.adrbookid,
-            "attr": this.createattrjson(),
-            "suppdoc": this.suppdoc,
-            "fy": this.loginUser.fy,
-            "cmpid": this.loginUser.cmpid,
-            "createdby": this.loginUser.login,
-            "remark": this.remark,
-            "isactive": this.isactive,
-            "remark1": "",
-            "remark2": "",
-            "remark3": []
+        try {
+            var param = {
+                "transid": this.transid,
+                "code": this.code,
+                "transname": this.transname,
+                "desc": this.desc,
+                "adr": this.adrbookid,
+                "attr": this.createattrjson(),
+                "suppdoc": this.suppdoc,
+                "fy": this.loginUser.fy,
+                "cmpid": this.loginUser.cmpid,
+                "createdby": this.loginUser.login,
+                "remark": this.remark,
+                "isactive": this.isactive,
+                "remark1": "",
+                "remark2": "",
+                "remark3": []
+            }
+            return param;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return param;
     }
 
     clearcontrol() {
@@ -208,7 +217,7 @@ declare var commonfun: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-         if (evt === "clear") {
+        if (evt === "clear") {
             this.clearcontrol();
             $(".code").focus();
         }
@@ -226,44 +235,45 @@ declare var commonfun: any;
                 this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
-            this.actionButton.find(a => a.id === "save").enabled = false;
-            this.transpoter_service.saveTranspoter(
-                this.paramterjson()
-            ).subscribe(result => {
-                if (result.data[0].funsave_transpoter.maxid == -1) {
-                    this._msg.Show(messageType.info, "info", "Dulpicate Transpoter");
-                    $(".code").focus();
-                    return;
-                }
-                else if (result.data[0].funsave_transpoter.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", "Data Save Successfully");
-                    this.clearcontrol();
-                    $(".code").prop('disabled', false);
-                    $(".code").focus();
-                    if (this.editmode) {
-                        this._router.navigate(['master/transpoter']);
+            try {
+                this.actionButton.find(a => a.id === "save").enabled = false;
+                this.transpoter_service.saveTranspoter(
+                    this.paramterjson()
+                ).subscribe(result => {
+                    if (result.data[0].funsave_transpoter.maxid == -1) {
+                        this._msg.Show(messageType.error, "error", "Dulpicate Transpoter");
+                        $(".code").focus();
+                        return;
                     }
-                    this.editmode = false;
-                    return;
-                }
-            }, err => {
-                console.log("error");
-            }, () => {
-                this.actionButton.find(a => a.id === "save").enabled = true;
-            })
-
-            this.actionButton.find(a => a.id === "save").hide = false;
+                    else if (result.data[0].funsave_transpoter.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", "Data Save Successfully");
+                        this.clearcontrol();
+                        $(".code").prop('disabled', false);
+                        $(".code").focus();
+                        if (this.editmode) {
+                            this._router.navigate(['master/transpoter']);
+                        }
+                        this.editmode = false;
+                        return;
+                    }
+                }, err => {
+                    console.log("error");
+                }, () => {
+                    //Completed
+                })
+            } catch (e) {
+                this._msg.Show(messageType.error, "error", e.message);
+            }
+            this.actionButton.find(a => a.id === "save").enabled = true;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
             $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".tranname").focus();
-            this.actionButton.find(a => a.id === "save").hide = false;
+            this.addressBook.AddBook(this.code);
         } else if (evt === "delete") {
             alert("delete called");
         }

@@ -22,8 +22,8 @@ declare var $: any;
     itemgrouplist: any = [];
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
-    totalqty:any = 0
-    totalamt:any = 0
+    totalqty: any = 0
+    totalamt: any = 0
 
     //user details
     loginUser: LoginUserModel;
@@ -46,26 +46,36 @@ declare var $: any;
     }
 
     getItemgroup(from: number, to: number) {
-        var that = this;
-        that.ItemgroupServies.getitemdetail({
-            "cmpid": that.loginUser.cmpid,
-            "fy": that.loginUser.fy,
-            "from": from,
-            "to": to,
-            "createdby": that.loginUser.login
-        }).subscribe(result => {
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.itemgrouplist = result.data[0];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+        try {
+            var that = this;
+            that.ItemgroupServies.getitemdetail({
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "from": from,
+                "to": to,
+                "createdby": that.loginUser.login
+            }).subscribe(result => {
+                that.totalRecords = result.data[1][0].recordstotal;
+                that.itemgrouplist = result.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Pagination Grid View 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getItemgroup(event.first, (event.first + event.rows));
+        try {
+            this.getItemgroup(event.first, (event.first + event.rows));
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //More Button Click Event
@@ -87,7 +97,7 @@ declare var $: any;
                 if (dataset[0].length > 0) {
                     row.loading = true;
                     row.details = dataset[0];
-                   
+
                     for (let item of row.details) {
                         that.totalqty += parseFloat(item.qty);
                         that.totalamt += parseFloat(item.amt);
@@ -114,14 +124,22 @@ declare var $: any;
 
     // //Group Code (Edit) Group
     EditItem(event) {
-        debugger;
-        var data = event.value;
-        if (!data[0].islocked) {
-            this._router.navigate(['/supplier/itemgroup/edit', data[0].docno]);
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['/supplier/itemgroup/edit', data.docno]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
     }
-
-
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {

@@ -194,149 +194,169 @@ declare var commonfun: any;
 
     //Attribute Auto Extender
     getAutoCompletedisattr(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "attribute",
-            "search": that.disattrname,
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "filter": "item_attr",
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".disattr").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.disattrid = ui.item.value;
-                    me.disattrname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            this.attrid = 0;
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "attribute",
+                "search": that.disattrname,
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "filter": "item_attr",
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".disattr").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.disattrid = ui.item.value;
+                        me.disattrname = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                this.attrid = 0;
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Attribute Auto Extender
     getAutoCompletetrans(me: any) {
-        var that = this;
-        that._autoservice.getAutoData({
-            "type": "transpoter",
-            "search": that.transname,
-            "cmpid": that.loginUser.cmpid,
-            "fy": that.loginUser.fy,
-            "createdby": that.loginUser.login
-        }).subscribe(data => {
-            $(".transname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.transid = ui.item.value;
-                    me.transname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //Complete
-        })
+        try {
+            var that = this;
+            that._autoservice.getAutoData({
+                "type": "transpoter",
+                "search": that.transname,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "createdby": that.loginUser.login
+            }).subscribe(data => {
+                $(".transname").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.transid = ui.item.value;
+                        me.transname = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //Complete
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     getparentname(pid: number) {
-        this.CustAddServies.getcustomer({
-            "cmpid": this.loginUser.cmpid,
-            "flag": "parentname",
-            "parentid": pid,
-            "createdby": this.loginUser.login
-        }).subscribe(result => {
-            this.parentname = "";
-            this.parentname = result.data[0][0].custname;
-        }, err => {
-            console.log("error");
-        }, () => {
-            //Complete
-        })
+        try {
+            this.CustAddServies.getcustomer({
+                "cmpid": this.loginUser.cmpid,
+                "flag": "parentname",
+                "parentid": pid,
+                "createdby": this.loginUser.login
+            }).subscribe(result => {
+                this.parentname = "";
+                this.parentname = result.data[0][0].custname;
+            }, err => {
+                console.log("error");
+            }, () => {
+                //Complete
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     getAutoCompleteItems(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "product",
-            "search": that.itemsname,
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".itemsname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.itemsid = ui.item.value;
-                    me.itemsname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            this.attrid = 0;
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "product",
+                "search": that.itemsname,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".itemsname").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.itemsid = ui.item.value;
+                        me.itemsname = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                this.attrid = 0;
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //attribute list Add Div
     TranspoterAdd() {
-        if (this.transid > 0) {
-            this.Duplicateflag = true;
-            if (this.translist.length > 0) {
-                for (var i = 0; i < this.translist.length; i++) {
-                    if (this.translist[i].transname == this.transname) {
-                        this.Duplicateflag = false;
-                        break;
+        try {
+            if (this.transid > 0) {
+                this.Duplicateflag = true;
+                if (this.translist.length > 0) {
+                    for (var i = 0; i < this.translist.length; i++) {
+                        if (this.translist[i].transname == this.transname) {
+                            this.Duplicateflag = false;
+                            break;
+                        }
                     }
                 }
-            }
-            if (this.Duplicateflag == true) {
-                this.translist.push({
-                    'transname': this.transname,
-                    'value': this.transid
-                });
-                this.transname = "";
-                $(".trans").focus();
+                if (this.Duplicateflag == true) {
+                    this.translist.push({
+                        'transname': this.transname,
+                        'value': this.transid
+                    });
+                    this.transname = "";
+                    $(".trans").focus();
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Duplicate transpoter");
+                    $(".trans").focus();
+                    return;
+                }
+
             }
             else {
-                this._msg.Show(messageType.info, "info", "Duplicate transpoter");
+                this._msg.Show(messageType.error, "error", "Please enter valied transpoter name");
                 $(".trans").focus();
                 return;
             }
-
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied transpoter name");
-            $(".trans").focus();
-            return;
-        }
-
     }
 
     transtab() {
@@ -366,74 +386,83 @@ declare var commonfun: any;
 
     //Add Attribute Items
     Additems() {
-        if (this.itemsid > 0) {
-            if ($(".itemdis").val() == "") {
-                this._msg.Show(messageType.info, "info", "Please Enter Items Discount");
-                $(".itemdis").focus();
-                return;
-            }
-            this.Duplicateflag = true;
-            for (var i = 0; i < this.itemslist.length; i++) {
-                if (this.itemslist[i].itemsname == this.itemsname && this.itemslist[i].itemsdis == this.itemsdis) {
-                    this.Duplicateflag = false;
-                    break;
+        try {
+            if (this.itemsid > 0) {
+                if ($(".itemdis").val() == "") {
+                    this._msg.Show(messageType.error, "error", "Please Enter Items Discount");
+                    $(".itemdis").focus();
+                    return;
+                }
+                this.Duplicateflag = true;
+                for (var i = 0; i < this.itemslist.length; i++) {
+                    if (this.itemslist[i].itemsname == this.itemsname && this.itemslist[i].itemsdis == this.itemsdis) {
+                        this.Duplicateflag = false;
+                        break;
+                    }
+                }
+                if (this.Duplicateflag == true) {
+                    this.itemslist.push({
+                        'itemsname': this.itemsname,
+                        'itemsdis': this.itemsdis,
+                        'itemsid': this.itemsid,
+                        'counter': this.counter
+                    });
+                    this.counter++;
+                    this.itemsname = "";
+                    this.itemsdis = "";
+                    this.itemsid = 0;
+                    $(".itemsname").focus();
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Duplicate Items");
+                    $(".itemsname").focus();
+                    return;
                 }
             }
-            if (this.Duplicateflag == true) {
-                this.itemslist.push({
-                    'itemsname': this.itemsname,
-                    'itemsdis': this.itemsdis,
-                    'itemsid': this.itemsid,
-                    'counter': this.counter
-                });
-                this.counter++;
-                this.itemsname = "";
-                this.itemsdis = "";
-                this.itemsid = 0;
-                $(".itemsname").focus();
-            }
             else {
-                this._msg.Show(messageType.info, "info", "Duplicate Items");
+                this._msg.Show(messageType.error, "error", "Please enter valid items name");
                 $(".itemsname").focus();
                 return;
             }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valid items name");
-            $(".itemsname").focus();
-            return;
-        }
+
     }
 
     getAutoCompleteSales(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "salesman",
-            "search": that.salename,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".sales").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.saleid = ui.item.value;
-                    me.salename = ui.item.label;
-                    me.SalemanAdd(me.saleid);
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "salesman",
+                "search": that.salename,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".sales").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.saleid = ui.item.value;
+                        me.salename = ui.item.label;
+                        me.SalemanAdd(me.saleid);
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     saletab() {
@@ -444,37 +473,41 @@ declare var commonfun: any;
     }
 
     SalemanAdd(salesid: number) {
-        if (salesid > 0) {
-            this.Duplicateflag = true;
-            if (this.salesmanlist.length > 0) {
-                for (var i = 0; i < this.salesmanlist.length; i++) {
-                    if (this.salesmanlist[i].salename == this.salename) {
-                        this.Duplicateflag = false;
-                        break;
+        try {
+            if (salesid > 0) {
+                this.Duplicateflag = true;
+                if (this.salesmanlist.length > 0) {
+                    for (var i = 0; i < this.salesmanlist.length; i++) {
+                        if (this.salesmanlist[i].salename == this.salename) {
+                            this.Duplicateflag = false;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (this.Duplicateflag == true) {
-                this.salesmanlist.push({
-                    'salename': this.salename,
-                    'value': salesid
-                });
-                this.salename = "";
-                salesid = 0;
-                $(".sales").focus();
+                if (this.Duplicateflag == true) {
+                    this.salesmanlist.push({
+                        'salename': this.salename,
+                        'value': salesid
+                    });
+                    this.salename = "";
+                    salesid = 0;
+                    $(".sales").focus();
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Duplicate Salesman");
+                    $(".sales").focus();
+                    return;
+                }
+
             }
             else {
-                this._msg.Show(messageType.info, "info", "Duplicate Salesman");
+                this._msg.Show(messageType.error, "error", "Please enter valied attribute name");
                 $(".sales").focus();
                 return;
             }
-
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-            $(".sales").focus();
-            return;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
@@ -519,86 +552,95 @@ declare var commonfun: any;
 
     //Parent Code Auto Extender
     getAutoCompleteParentCode(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "custcode",
-            "search": that.parentcodename,
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".parentcode").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.parentid = ui.item.value;
-                    me.parentcodename = ui.item.label;
-                    me.getparentname(me.parentid);
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            this.attrid = 0;
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "custcode",
+                "search": that.parentcodename,
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".parentcode").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.parentid = ui.item.value;
+                        me.parentcodename = ui.item.label;
+                        me.getparentname(me.parentid);
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                this.attrid = 0;
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //Add Attribute Items
     AddNewdisattr() {
-        if (this.fromval > this.toval) {
-            this._msg.Show(messageType.info, "info", "Wrong entry From greater than to");
-            $(".fromval").focus();
-            return;
-        }
-        if (this.disattrid > 0) {
-            this.Duplicateflag = true;
-            if (this.disattrlist.length > 0) {
-                for (var i = 0; i < this.disattrlist.length; i++) {
-                    if (this.disattrlist[i].disattrname == this.disattrname &&
-                        parseInt(this.disattrlist[i].toval) < parseInt(this.fromval)) {
-                        this.Duplicateflag = true;
-                    }
-                    else {
-                        this.Duplicateflag = false;
+        try {
+            if (this.fromval > this.toval) {
+                this._msg.Show(messageType.error, "error", "Wrong entry From greater than to");
+                $(".fromval").focus();
+                return;
+            }
+            if (this.disattrid > 0) {
+                this.Duplicateflag = true;
+                if (this.disattrlist.length > 0) {
+                    for (var i = 0; i < this.disattrlist.length; i++) {
+                        if (this.disattrlist[i].disattrname == this.disattrname &&
+                            parseInt(this.disattrlist[i].toval) < parseInt(this.fromval)) {
+                            this.Duplicateflag = true;
+                        }
+                        else {
+                            this.Duplicateflag = false;
+                        }
                     }
                 }
-            }
-            if (this.Duplicateflag == true) {
-                this.disattrlist.push({
-                    'disattrname': this.disattrname,
-                    'id': this.disattrid,
-                    'fromval': this.fromval,
-                    'toval': this.toval,
-                    'discou': this.dis,
-                    'counter': this.counter
-                });
-                this.counter++;
-                this.disattrname = "";
-                this.fromval = "";
-                this.disattrid = 0;
-                this.toval = "";
-                this.dis = "";
-                $(".disattr").focus();
+                if (this.Duplicateflag == true) {
+                    this.disattrlist.push({
+                        'disattrname': this.disattrname,
+                        'id': this.disattrid,
+                        'fromval': this.fromval,
+                        'toval': this.toval,
+                        'discou': this.dis,
+                        'counter': this.counter
+                    });
+                    this.counter++;
+                    this.disattrname = "";
+                    this.fromval = "";
+                    this.disattrid = 0;
+                    this.toval = "";
+                    this.dis = "";
+                    $(".disattr").focus();
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Duplicate Attribute");
+                    $(".disattr").focus();
+                    return;
+                }
+
             }
             else {
-                this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                this._msg.Show(messageType.error, "error", "Please enter valid attribute name");
                 $(".disattr").focus();
                 return;
             }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
 
-        }
-        else {
-            this._msg.Show(messageType.info, "info", "Please enter valid attribute name");
-            $(".disattr").focus();
-            return;
-        }
     }
 
     //Remove Attribute
@@ -632,37 +674,39 @@ declare var commonfun: any;
 
     //Get Company And Warehouse Dropdown Bind
     getcustomerdrop() {
-        var _this = this;
-        this.CustAddServies.getCustomerdrop({
-            "cmpid": this.loginUser.cmpid,
-            "createdby": this.loginUser.login,
-            "tblname": "customer",
-            "fy": this.loginUser.fy
-        }).subscribe(result => {
-            _this.warehouselist = result.data[0];
-            _this.debitlist = result.data[1];
-            _this.creditlist = result.data[1];
-            _this.dayslist = result.data[2];
-            if (!_this.editmode) {
-                _this.keyvallist = result.data[3];
-            }
-            _this.allload.otherdropdwn = true;
-            _this.checkalllead();
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        try {
+            var _this = this;
+            this.CustAddServies.getCustomerdrop({
+                "cmpid": this.loginUser.cmpid,
+                "createdby": this.loginUser.login,
+                "tblname": "customer",
+                "fy": this.loginUser.fy
+            }).subscribe(result => {
+                _this.warehouselist = result.data[0];
+                _this.debitlist = result.data[1];
+                _this.creditlist = result.data[1];
+                _this.dayslist = result.data[2];
+                if (!_this.editmode) {
+                    _this.keyvallist = result.data[3];
+                }
+                _this.allload.otherdropdwn = true;
+                _this.checkalllead();
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //First Time Load 
     checkalllead() {
-
         if (this.allload.otherdropdwn) {
             if (this._editid > 0) {
                 this.EditCust(this._editid);
             }
-
         }
     }
 
@@ -679,43 +723,47 @@ declare var commonfun: any;
 
     //Add Accounting Row
     AddNewKyeval() {
-        var that = this;
-        if (that.acinfiid == 0) {
-            that._msg.Show(messageType.info, "info", "Please enter key");
-            $(".key").focus()
-            return;
-        }
-        if (that.value == "") {
-            that._msg.Show(messageType.info, "info", "Please enter value");
-            $(".val").focus()
-            return;
-        }
-        that.Duplicateflag = true;
-        if (that.keyvallist.length > 0) {
-            for (var i = 0; i < that.keyvallist.length; i++) {
-                if (that.keyvallist[i].key == that.key && that.keyvallist[i].value == that.value) {
-                    that.Duplicateflag = false;
-                    break;
+        try {
+            var that = this;
+            if (that.acinfiid == 0) {
+                that._msg.Show(messageType.error, "error", "Please enter key");
+                $(".key").focus()
+                return;
+            }
+            if (that.value == "") {
+                that._msg.Show(messageType.error, "error", "Please enter value");
+                $(".val").focus()
+                return;
+            }
+            that.Duplicateflag = true;
+            if (that.keyvallist.length > 0) {
+                for (var i = 0; i < that.keyvallist.length; i++) {
+                    if (that.keyvallist[i].key == that.key && that.keyvallist[i].value == that.value) {
+                        that.Duplicateflag = false;
+                        break;
+                    }
                 }
             }
-        }
-        if (that.Duplicateflag == true) {
-            that.keyvallist.push({
-                'key': that.acinfival,
-                'keyid': that.acinfiid,
-                'value': that.value
-            });
-            that.acinfival = "";
-            that.value = "";
-            that.acinfiid = 0;
-            that.attrtable = false;
-            $(".key").focus();
+            if (that.Duplicateflag == true) {
+                that.keyvallist.push({
+                    'key': that.acinfival,
+                    'keyid': that.acinfiid,
+                    'value': that.value
+                });
+                that.acinfival = "";
+                that.value = "";
+                that.acinfiid = 0;
+                that.attrtable = false;
+                $(".key").focus();
 
-        }
-        else {
-            that._msg.Show(messageType.info, "info", "Duplicate key and value");
-            $(".key").focus();
-            return;
+            }
+            else {
+                that._msg.Show(messageType.error, "error", "Duplicate key and value");
+                $(".key").focus();
+                return;
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
@@ -782,68 +830,72 @@ declare var commonfun: any;
 
     //Edit Customer 
     EditCust(id) {
-        var that = this;
-        that.CustAddServies.getcustomer({
-            "cmpid": this.loginUser.cmpid,
-            "flag": "Edit",
-            "custid": id,
-            "createdby": this.loginUser.login
-        }).subscribe(result => {
-            that.editmode = true;
-            var resultdata = result.data[0][0]
-            var _custdata = resultdata._custdata;
-            var _uploadedfile = resultdata._uploadedfile;
+        try {
+            var that = this;
+            that.CustAddServies.getcustomer({
+                "cmpid": this.loginUser.cmpid,
+                "flag": "Edit",
+                "custid": id,
+                "createdby": this.loginUser.login
+            }).subscribe(result => {
+                that.editmode = true;
+                var resultdata = result.data[0][0]
+                var _custdata = resultdata._custdata;
+                var _uploadedfile = resultdata._uploadedfile;
 
-            var _docfile = resultdata._docfile;
-            var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
-            if (_parentname.length > 0) {
-                that.parentcodename = _parentname[0].pcode;
-                that.parentid = _parentname[0].pid;
-                that.parentname = _parentname[0].pname;
-            }
-            that.custid = _custdata[0].autoid;
-            that.code = _custdata[0].custcode;
-            that.Custname = _custdata[0].custname;
-            that.isactive = _custdata[0].isactive;
-            that.taxlist = resultdata._tax == null ? [] : resultdata._tax;
-            that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
-            that.attribute.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
-            that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
-            that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
-            that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
-            that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
-            that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
-            that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
-            that.issh = 1;
-            that.days = _custdata[0].days;
-            that.remark = _custdata[0].remark;
-            that.adrid = _custdata[0].adrid;
-
-            if (_uploadedfile != null) {
-                that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
-                that.suppdoc = _docfile == null ? [] : _docfile;
-            }
-            that.adrcsvid = "";
-            for (let items of _custdata[0].adr) {
-                that.adrcsvid += items.adrid + ',';
-            }
-            that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
-
-
-            //Warehouse check edit mode
-            if (that.warehouselist.length > 0) {
-                var wareedit = _custdata[0].warehouseid;
-                for (var j = 0; j <= wareedit.length - 1; j++) {
-                    var chk = that.warehouselist.find(a => a.value === wareedit[j].id);
-                    chk.Warechk = true;
+                var _docfile = resultdata._docfile == null ? [] : resultdata._docfile;
+                var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
+                if (_parentname.length > 0) {
+                    that.parentcodename = _parentname[0].pcode;
+                    that.parentid = _parentname[0].pid;
+                    that.parentname = _parentname[0].pname;
                 }
-            }
+                that.custid = _custdata[0].autoid;
+                that.code = _custdata[0].custcode;
+                that.Custname = _custdata[0].custname;
+                that.isactive = _custdata[0].isactive;
+                that.taxlist = resultdata._tax == null ? [] : resultdata._tax;
+                that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
+                that.attribute.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
+                that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
+                that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
+                that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
+                that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
+                that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
+                that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
+                that.issh = 1;
+                that.days = _custdata[0].days;
+                that.remark = _custdata[0].remark;
+                that.adrid = _custdata[0].adrid;
 
-        }, err => {
-            console.log("error");
-        }, () => {
-            //Done
-        })
+                if (_uploadedfile != null) {
+                    that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
+                    that.suppdoc = _docfile == null ? [] : _docfile;
+                }
+                that.adrcsvid = "";
+                for (let items of _custdata[0].adr) {
+                    that.adrcsvid += items.adrid + ',';
+                }
+                that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+
+                //Warehouse check edit mode
+                if (that.warehouselist.length > 0) {
+                    var wareedit = _custdata[0].warehouseid;
+                    for (var j = 0; j <= wareedit.length - 1; j++) {
+                        var chk = that.warehouselist.find(a => a.value === wareedit[j].id);
+                        chk.Warechk = true;
+                    }
+                }
+
+            }, err => {
+                console.log("error");
+            }, () => {
+                //Done
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Multipal Warehouse Selection Create a Json
@@ -928,132 +980,152 @@ declare var commonfun: any;
 
     //Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "attribute",
-            "search": that.attrname,
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "filter": "item_attr",
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".attr").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.attrid = ui.item.value;
-                    me.attrname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            this.attrid = 0;
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "attribute",
+                "search": that.attrname,
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "filter": "item_attr",
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".attr").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.attrid = ui.item.value;
+                        me.attrname = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                this.attrid = 0;
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Autocompleted Control Center
     getAutoCompleteCtrl(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "ccauto",
-            "search": that.ctrlname,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".ctrl").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.ctrlid = ui.item.value;
-                    me.ctrlname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "ccauto",
+                "search": that.ctrlname,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".ctrl").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.ctrlid = ui.item.value;
+                        me.ctrlname = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Autocompleted Control Center
     getAutoCompletekey(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "attribute",
-            "search": that.acinfival,
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "filter": "acinfo_attr",
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".key").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.acinfiid = ui.item.value;
-                    me.acinfival = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "attribute",
+                "search": that.acinfival,
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "filter": "acinfo_attr",
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".key").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.acinfiid = ui.item.value;
+                        me.acinfival = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Autocompleted Attribute Name
     getAutoCompleteTax(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "invoicetype",
-            "search": that.invtypname,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".invtype").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.invtypid = ui.item.value;
-                    me.invtypname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //Complete
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "invoicetype",
+                "search": that.invtypname,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".invtype").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.invtypid = ui.item.value;
+                        me.invtypname = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //Complete
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Selected Tax Bind
@@ -1141,14 +1213,14 @@ declare var commonfun: any;
 
                 }
                 else {
-                    this._msg.Show(messageType.info, "info", "Duplicate control center");
+                    this._msg.Show(messageType.error, "error", "Duplicate control center");
                     this.ctrlname = "";
                     $(".ctrl").focus();
                     return;
                 }
             }
             else {
-                this._msg.Show(messageType.info, "info", "Control name Not found");
+                this._msg.Show(messageType.error, "error", "Control name Not found");
                 this.ctrlname = "";
                 $(".ctrl").focus();
                 return;
@@ -1194,37 +1266,42 @@ declare var commonfun: any;
 
     //Paramter Wth Json
     paramterjson() {
-        var param = {
-            "custid": this.custid,
-            "code": this.code,
-            "custname": this.Custname,
-            "warehouse": this.warehousejson(),
-            "keyval": this.createkeydatajson(),
-            "dis": this.discountjson(),
-            "attr": this.createattrjson(),
-            "suppdoc": this.suppdoc,
-            "itemsdis": this.itemsdiscountjson(),
-            "trans": this.transpoterjson(),
-            "sales": this.salesmanjson(),
-            "isactive": this.isactive,
-            "days": this.days == "" ? 0 : this.days,
-            "cr": this.credit == "" ? 0 : this.credit,
-            "dr": this.debit == "" ? 0 : this.debit,
-            "op": this.ope == "" ? 0 : this.ope,
-            "tax": this.taxjson(),
-            "cmpid": this.loginUser.cmpid,
-            "remark": this.remark,
-            "ctrl": this.Ctrljson(),
-            "createdby": this.loginUser.login,
-            "adrid": this.adrbookid,
-            "parentid": this.parentcodename,
-            "ledgerparam": this.ledgerparam(),
-            "dynamicfields": this.tabListDT,
-            "remark1": '',
-            "remark2": "",
-            "remark3": []
+        try {
+            var param = {
+                "custid": this.custid,
+                "code": this.code,
+                "custname": this.Custname,
+                "warehouse": this.warehousejson(),
+                "keyval": this.createkeydatajson(),
+                "dis": this.discountjson(),
+                "attr": this.createattrjson(),
+                "suppdoc": this.suppdoc,
+                "itemsdis": this.itemsdiscountjson(),
+                "trans": this.transpoterjson(),
+                "sales": this.salesmanjson(),
+                "isactive": this.isactive,
+                "days": this.days == "" ? 0 : this.days,
+                "cr": this.credit == "" ? 0 : this.credit,
+                "dr": this.debit == "" ? 0 : this.debit,
+                "op": this.ope == "" ? 0 : this.ope,
+                "tax": this.taxjson(),
+                "cmpid": this.loginUser.cmpid,
+                "remark": this.remark,
+                "ctrl": this.Ctrljson(),
+                "createdby": this.loginUser.login,
+                "adrid": this.adrbookid,
+                "parentid": this.parentcodename,
+                "ledgerparam": this.ledgerparam(),
+                "dynamicfields": this.tabListDT,
+                "remark1": '',
+                "remark2": "",
+                "remark3": []
+            }
+            return param;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return param;
+
     }
 
     //Add Top Buttons Add Edit And Save
@@ -1243,12 +1320,13 @@ declare var commonfun: any;
                 validateme.data[0].input.focus();
                 return;
             }
+
             if (this.adrbookid.length == 0) {
                 this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
             else if (this.Ctrllist.length == 0) {
-                this._msg.Show(messageType.info, "error", "Please enter control center");
+                this._msg.Show(messageType.error, "error", "Please enter control center");
                 return;
             }
 
@@ -1261,18 +1339,21 @@ declare var commonfun: any;
                     }
                 }
                 if (checkware == false) {
-                    this._msg.Show(messageType.info, "error", "Please Check Warehouse");
+                    this._msg.Show(messageType.error, "error", "Please Check Warehouse");
+                    return;
                 }
             }
             else {
-                this._msg.Show(messageType.info, "error", "Please create warehouse master");
+                this._msg.Show(messageType.error, "error", "Please create warehouse master");
+                return;
             }
+            this.actionButton.find(a => a.id === "save").enabled = false;
             this.CustAddServies.saveCustomer(
                 this.paramterjson()
             ).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].funsave_customer.maxid == '-1') {
-                    this._msg.Show(messageType.info, "error", "Customer code already exists");
+                    this._msg.Show(messageType.error, "error", "Customer code already exists");
                     $(".code").focus();
                     return;
                 }
@@ -1283,21 +1364,18 @@ declare var commonfun: any;
                     $(".code").focus();
                     if (this.issh == 1) {
                         this._router.navigate(['master/customer']);
-
                     }
                     else {
                         this.getcustomerdrop();
                         this.issh = 0;
                     }
-
-
                 }
             }, err => {
                 console.log("Error");
             }, () => {
                 // console.log("Complete");
             })
-            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").enabled = true;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
@@ -1347,7 +1425,7 @@ declare var commonfun: any;
                 that.warehouselist = result.data[0];
             }
             else {
-                this._msg.Show(messageType.info, "info", "No warehouse found");
+                this._msg.Show(messageType.error, "error", "No warehouse found");
             }
 
         }, err => {

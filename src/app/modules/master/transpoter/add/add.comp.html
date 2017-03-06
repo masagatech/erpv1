@@ -5,7 +5,7 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Code</label>
-						<input type="text" validate="" class="form-control code" maxlength="10" name="code" tabindex="1" [(ngModel)]="code">
+						<input type="text" validate="" class="form-control code" (blur)="Getcode()" maxlength="10" name="code" tabindex="1" [(ngModel)]="code">
 					</div>
 				</div>
 				<div class="col-md-8">

@@ -1,6 +1,6 @@
 <div class="table-responsive">
 	<p-dataTable #dt [value]="itemgrouplist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-		(onRowExpand)="expandDetails($event)" (onRowClick)="EditItem(dt, $event)" [(selection)]="selectedRB1" expandableRows="true">
+		(onRowExpand)="expandDetails($event)" (onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
 		<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
 			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 				{{rowIndex+1}}
@@ -11,6 +11,11 @@
 		<p-column field="itemcount" header="Item count" [style]="{'width':'50px','text-align':'left'}"></p-column>
 		<p-column field="totalqty" header="Total Qty" [style]="{'width':'50px','text-align':'left'}"></p-column>
 		<p-column field="description" header="Description" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				<button type="button" (click)="EditItem(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
+			</template>
+		</p-column>
 		<template let-row pTemplate="rowexpansion">
 			<span *ngIf="!row.loading">Loading....</span>
 			<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="false" expandableRows="true"

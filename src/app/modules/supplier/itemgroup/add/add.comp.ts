@@ -91,22 +91,27 @@ declare var commonfun: any;
     }
 
     EditItem(docno) {
-        this.ItemgroupServies.getitemdetail({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "docno": docno,
-            "flag": "edit"
-        }).subscribe(itemsdata => {
-            var ItemsResult = itemsdata.data[0];
-            this.itemcombo = ItemsResult[0].itemcombo;
-            this.desc = ItemsResult[0].description;
-            this.NewRowAdd = itemsdata.data[1];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //console.log("Done");
-        });
+        try {
+            this.ItemgroupServies.getitemdetail({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "docno": docno,
+                "flag": "edit"
+            }).subscribe(itemsdata => {
+                var ItemsResult = itemsdata.data[0];
+                this.itemcombo = ItemsResult[0].itemcombo;
+                this.desc = ItemsResult[0].description;
+                this.NewRowAdd = itemsdata.data[1];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //console.log("Done");
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Delete Button Click 
@@ -325,20 +330,25 @@ declare var commonfun: any;
     }
 
     paramjson() {
-        var jsonparam = [];
-        for (let item of this.NewRowAdd) {
-            var rate = item.rateslist.filter(itemval => itemval.id == item.id)
-            jsonparam.push({
-                "autoid": item.autoid,
-                "itemsid": item.itemsid,
-                "qty": item.qty,
-                "rate": rate[0].val,
-                "rateid": rate[0].id,
-                "dis": item.dis,
-                "amount": item.amount
-            })
+        try {
+            var jsonparam = [];
+            for (let item of this.NewRowAdd) {
+                var rate = item.rateslist.filter(itemval => itemval.id == item.id)
+                jsonparam.push({
+                    "autoid": item.autoid,
+                    "itemsid": item.itemsid,
+                    "qty": item.qty,
+                    "rate": rate[0].val,
+                    "rateid": rate[0].id,
+                    "dis": item.dis,
+                    "amount": item.amount
+                })
+            }
+            return jsonparam;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return jsonparam;
+
     }
 
     //Add Top Buttons Add Edit And Save
@@ -350,18 +360,19 @@ declare var commonfun: any;
             this._router.navigate(['supplier/itemgroup']);
         }
         if (evt === "save") {
+
+            var validateme = commonfun.validate();
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+            if (this.NewRowAdd.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please Enter Items");
+                $(".ProdName").focus();
+                return;
+            }
             try {
-                var validateme = commonfun.validate();
-                if (!validateme.status) {
-                    this._msg.Show(messageType.error, "error", validateme.msglist);
-                    validateme.data[0].input.focus();
-                    return;
-                }
-                if (this.NewRowAdd.length == 0) {
-                    this._msg.Show(messageType.error, "error", "Please Enter Items");
-                    $(".ProdName").focus();
-                    return;
-                }
                 this.actionButton.find(a => a.id === "save").enabled = false;
                 this.ItemgroupServies.saveitemgroup({
                     "itemdetail": this.paramjson(),

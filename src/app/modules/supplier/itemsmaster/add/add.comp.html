@@ -315,8 +315,8 @@
 												<!--<p-autoComplete [(ngModel)]="matname" class="form-controlAutoComplete inlinetextbox" id="material" (onSelect)="MaterialSelect($event)"
 													[suggestions]="MaterialAutodata" (completeMethod)="MaterialAuto($event)" field="label" [size]="30" placeholder="Material"
 													[minLength]="1" [tabindex]="100"></p-autoComplete>-->
-												<input type="text" class="form-control material inlinetextbox" tabindex="6" [(ngModel)]="newmatname" (keyup)="getAutoCompleteMate(this,0)"
-													autocomplete='off' value="" />
+												<input type="text" class="form-control material" tabindex="6" [(ngModel)]="newmatname" (keyup)="getAutoCompleteMate(this,0)"
+													autocomplete='off' value="" (keyup.enter)="NewMaterialAdd()" />
 											</td>
 											<td style="width:120px;vertical-align: top;">
 												<select [(ngModel)]="newuom" class="form-control " tabindex="101" class="form-control">
@@ -326,7 +326,7 @@
 											</select>
 											</td>
 											<td style="width:120px;vertical-align: top;">
-												<numtext [iscurrency]="false" css="inlinetextbox qty" [tabindex]="103" [(ngModel)]="qty"></numtext>
+												<numtext [iscurrency]="false" css="qty" [tabindex]="103" [(ngModel)]="qty"></numtext>
 											</td>
 											<td style="width:120px;vertical-align: top;"><button type="button" tabindex="104" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewMaterialAdd()"><i class="fa fa-plus"></i></button></td>
 										</tr>

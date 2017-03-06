@@ -50,25 +50,34 @@ declare var $: any;
 
     //Get Customer Details
     getTranspoter(from: number, to: number) {
-        var that = this;
-        that.transpoter_service.getTranspoter({
-            "cmpid": this.loginUser.cmpid ,
-            "from": from,
-            "to": to,
-            "createdby":this.loginUser.login
-        }).subscribe(result => {
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.transpoterlist = result.data[0];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+        try {
+            var that = this;
+            that.transpoter_service.getTranspoter({
+                "cmpid": this.loginUser.cmpid,
+                "from": from,
+                "to": to,
+                "createdby": this.loginUser.login
+            }).subscribe(result => {
+                that.totalRecords = result.data[1][0].recordstotal;
+                that.transpoterlist = result.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Pagination Grid View 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getTranspoter(event.first, (event.first + event.rows));
+        try {
+            this.getTranspoter(event.first, (event.first + event.rows));
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     actionBarEvt(evt) {
@@ -84,14 +93,25 @@ declare var $: any;
         }
     }
 
-     EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['master/transpoter/edit', row.autoid]);
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['master/transpoter/edit', data.autoid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
 
-    
+
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();

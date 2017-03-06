@@ -1,20 +1,21 @@
 <div class="table-responsive">
 	<p-dataTable #dt [value]="transpoterlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-		[(selection)]="selectedRB1" expandableRows="true">
+		(onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
 		<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
 			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 				{{rowIndex+1}}
 			</template>
 		</p-column>
-		<p-column field="transcode" header="Code" [style]="{'width':'30px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				<a role="button" (click)="EditItem(row)">{{row.transcode}}</a>
-			</template>
-		</p-column>
+		<p-column field="transcode" header="Code" [style]="{'width':'30px','text-align':'left'}"></p-column>
 		<p-column field="transname" header="Transpoter Name" [style]="{'width':'100px','text-align':'left'}"></p-column>
 		<p-column field="mob" header="Mobile" [style]="{'width':'80px','text-align':'left'}"></p-column>
 		<p-column field="email" header="Email" [style]="{'width':'80px','text-align':'left'}"></p-column>
 		<p-column field="address1" header="Address" [style]="{'width':'150px','text-align':'left'}"></p-column>
 		<p-column field="descp" header="Description" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				<button type="button" (click)="EditItem(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
+			</template>
+		</p-column>
 	</p-dataTable>
 </div>

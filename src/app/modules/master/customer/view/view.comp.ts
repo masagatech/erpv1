@@ -7,6 +7,7 @@ import { CustomerViewService } from "../../../../_service/customer/view/view-ser
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router } from '@angular/router';
 declare var $: any;
@@ -25,7 +26,8 @@ declare var $: any;
     loginUserName: string;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-    private CustViewServies: CustomerViewService, private _autoservice: CommonService,private _userService: UserService) {
+        private CustViewServies: CustomerViewService, private _autoservice: CommonService,
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -41,20 +43,25 @@ declare var $: any;
 
     //Get Customer Details
     getcustomer(from: number, to: number) {
-        var that = this;
-        that.CustViewServies.getcustomer({
-            "cmpid": that.loginUser.cmpid ,
-            "from": from,
-            "to": to,
-            "createdby":that.loginUser.login
-        }).subscribe(result => {
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.customerlist = result.data[0];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+        try {
+            var that = this;
+            that.CustViewServies.getcustomer({
+                "cmpid": that.loginUser.cmpid,
+                "from": from,
+                "to": to,
+                "createdby": that.loginUser.login
+            }).subscribe(result => {
+                that.totalRecords = result.data[1][0].recordstotal;
+                that.customerlist = result.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Pagination Grid View 
@@ -63,10 +70,22 @@ declare var $: any;
     }
 
     //Edit Customer 
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['master/customer/edit', row.autoid]);
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['master/customer/edit', data.autoid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
     }
 
     //Add Top Buttons Add Edit And Save
