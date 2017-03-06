@@ -30,7 +30,7 @@ declare var commonfun: any;
     key: any = "";
     keyid: number = 0;
     totalRecords: number = 0;
-    isactive: boolean = false;
+    // isactive: boolean = false;
     AttributeAutodata: any[];
 
     //user details
@@ -190,7 +190,7 @@ declare var commonfun: any;
             this.attid = row.autoid;
             this.attName = row.atname;
             this.attrgrp = row.id + ':' + row.key;
-            this.isactive = row.val;
+            // this.isactive = row.val;
             $("#attrdrop").focus();
         }
     }

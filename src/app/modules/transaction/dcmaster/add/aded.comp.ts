@@ -52,7 +52,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     newrate: any = "";
 
     //Declare Table Veriable
-    autoid:number=0;
+    autoid: number = 0;
     DCDetelId: any;
     dis: any = 0;
     Rate: any = 0;
@@ -90,6 +90,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     uploadedFiles: any = [];
     isconfirm: boolean;
     isinvoice: boolean;
+    issaleord: boolean;
 
     CustomerAutodata: any[];
 
@@ -153,7 +154,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
         this.footer = true;
         setTimeout(function () {
-            $('.custname').focus();
+            $('#CustName input').focus();
             commonfun.addrequire();
         }, 0);
 
@@ -197,12 +198,14 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "fy": that.loginUser.fy,
                 "keyname": "is_confirm_salesorder",
                 "negative": "is_invoice_salesorder",
+                "salesord": "is_so_stock",
                 "flag1": "negative",
                 "createdby": that.loginUser.login
             }).subscribe(isproc => {
                 var returnval = isproc.data;
                 that.isinvoice = returnval[0].navigat;
                 that.isconfirm = returnval[0].val;
+                that.issaleord = returnval[0].salesord;
             }, err => {
                 console.log("Error");
             }, () => {
@@ -231,7 +234,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.Traspoter = 0;
         this.newAddRow = [];
         this.addresslist = [];
-        $('.custname').focus();
+        $('#CustName input').focus();
     }
 
     salesorderdetailsjson() {
@@ -430,7 +433,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     CustomerSelect(event) {
         this.CustID = event.value;
         this.CustName = event.label;
-        this.CustomerSelected(this.CustID);
+        this.CustomerSelected(this.CustID, this.CustName.split(':')[0]);
     }
 
     //AutoCompletd Product Name
@@ -496,33 +499,35 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
 
     // //Selected Customer  Event
-    CustomerSelected(val) {
+    CustomerSelected(custid, custcode) {
+        var that = this;
         try {
-            if (val != "") {
-                this.addresslist = [];
-                this.warehouselist = [];
-                this.Transpoterlist = [];
-                this.custKey = val;
-                this.SalesOrderServies.getdcdetails({
-                    "custid": val,
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy,
-                    "createdby": this.loginUser.login,
+            if (custcode != "") {
+                that.addresslist = [];
+                that.warehouselist = [];
+                that.Transpoterlist = [];
+                that.custKey = custid;
+                that.SalesOrderServies.getdcdetails({
+                    "acid": custid,
+                    "accode": custcode,
+                    "cmpid": that.loginUser.cmpid,
+                    "fy": that.loginUser.fy,
+                    "createdby": that.loginUser.login,
                     "flag": '',
                     "flag1": ''
                 }).subscribe(details => {
                     var dataset = details.data;
-                    this.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
-                    this.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
-                    this.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
-                    this.Salesmanlist = dataset[0]._salesman === null ? [] : dataset[0]._salesman;
-                    this.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
+                    that.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
+                    that.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
+                    that.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
+                    that.Salesmanlist = dataset[0]._salesman === null ? [] : dataset[0]._salesman;
+                    that.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
                 }, err => {
                     console.log('Error');
                 }, () => {
                     // console.log('Complet');
                 });
-                this.CustfilteredList = [];
+                that.CustfilteredList = [];
             }
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
@@ -532,10 +537,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Rate Change Event
     ratechange(qty: any, newrate: any = [], dis: any, row: any = [], agr: number) {
-        debugger;
         try {
             if (agr == 0) {
-                if (qty != "" && newrate != "") {
+                if (qty != "0" && newrate != "") {
                     var amt = 0;
                     var rate = this.rateslist.filter(item => item.id == newrate);
                     amt = +qty * +rate[0].val;
@@ -568,32 +572,37 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     // //Selected Items
     ItemsSelected(val: number, falg: number, counter: number) {
+        var that = this;
+        console.log(that.wareid);
         try {
             if (val != 0) {
                 this.SalesOrderServies.getItemsAutoCompleted({
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy,
+                    "cmpid": that.loginUser.cmpid,
+                    "fy": that.loginUser.fy,
                     "itemsid": val,
-                    "whid": this.wareid,
-                    "createdby": this.loginUser.login
+                    "whid": that.wareid,
+                     "status": that.issaleord,
+                    "createdby": that.loginUser.login
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;
-                    if (falg === 0) {
-                        this.qty = 0;
-                        this.totalqty = ItemsResult[0].qty;
-                        this.dis = ItemsResult[0].dis;
-                        this.rateslist = ItemsResult[0].rates;
-                    }
-                    else {
-                        for (let item of this.newAddRow) {
-                            if (item.counter == counter) {
-                                item.itemsid = val;
-                                item.qty = 0;
-                                item.rateslist = ItemsResult[0].rates;
-                                item.id = "";
-                                item.dis = ItemsResult[0].dis;
-                                item.amount = 0;
-                                break;
+                    if (ItemsResult.length > 0) {
+                        if (falg === 0) {
+                            that.qty = 0;
+                            that.totalqty = ItemsResult[0].qty;
+                            that.dis = ItemsResult[0].dis;
+                            that.rateslist = ItemsResult[0].rates;
+                        }
+                        else {
+                            for (let item of that.newAddRow) {
+                                if (item.counter == counter) {
+                                    item.itemsid = val;
+                                    item.qty = 0;
+                                    item.rateslist = ItemsResult[0].rates;
+                                    item.id = "";
+                                    item.dis = ItemsResult[0].dis;
+                                    item.amount = 0;
+                                    break;
+                                }
                             }
                         }
                     }

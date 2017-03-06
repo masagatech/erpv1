@@ -77,7 +77,7 @@
 			<li class="active"><a data-target="#attr" (click)="attrtab()" role="button" data-toggle="tab">Attribute</a></li>
 			<li><a data-target="#keydata" role="button" (click)="KeyValTab()" data-toggle="tab">Key Data</a></li>
 			<li><a data-target="#itmpric" role="button" (click)="ItemsTab()" data-toggle="tab">Item Price</a></li>
-			<li><a data-target="#ware" role="button" data-toggle="tab">Warehouse</a></li>
+			<li><a data-target="#ware" role="button" (click)="whTab()"  data-toggle="tab">Warehouse</a></li>
 			<li><a data-target="#supp" role="button" (click)="SuppTab()" data-toggle="tab">Supplier</a></li>
 			<li><a data-target="#mate" role="button" (click)="MateTab()" data-toggle="tab">Material</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab">Document Upload</a></li>
@@ -240,7 +240,7 @@
 			<div class="tab-pane" id="ware">
 				<div class="row">
 					<div class="col-md-3" *ngFor="let row of warehouselist">
-						<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" value="row.id"/>
+						<label><p-checkbox [(ngModel)]="row.Warechk"  binary="true"></p-checkbox>
 							{{row.val}} 
 						</label>
 					</div>

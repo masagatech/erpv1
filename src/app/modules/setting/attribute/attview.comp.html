@@ -14,15 +14,9 @@
 			<div class="form-group">
 				<label>Attribute Name</label>
 				<!--<input type="text" class="form-control" tabindex="2" validate="" id="attnam" [(ngModel)]="attName" />-->
-				<p-autoComplete [(ngModel)]="attName" id="attnam"  class="form-controlAutoComplete" (onSelect)="AttributeSelect($event)" [suggestions]="AttributeAutodata" (completeMethod)="AttributeAuto($event)" field="label" [size]="30" placeholder="Attribute" [minLength]="1"></p-autoComplete>
-			</div>
-		</div>
-		<div class="col-md-1 text-center">
-			<div class="form-group">
-				<label>Active</label>
-				<div>
-					<p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>
-				</div>
+				<p-autoComplete [(ngModel)]="attName" id="attnam"  class="form-controlAutoComplete" (onSelect)="AttributeSelect($event)"
+				 [suggestions]="AttributeAutodata" (completeMethod)="AttributeAuto($event)"
+				  field="label" [tabindex]="2" [size]="30" placeholder="Attribute" [minLength]="1" (keyup.enter)="NewRowAdd()"></p-autoComplete>
 			</div>
 		</div>
 		<div class="col-md-2">

@@ -29,7 +29,8 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Supplier</label>
-					<input type="text" class="form-control salesman" tabindex="4" [(ngModel)]="suppname" (keyup)="getAutoCompleteSalesman(this)" />
+					<input type="text" class="form-control salesman" tabindex="4" [(ngModel)]="suppname" (keyup)="getAutoCompleteSalesman(this)"
+					/>
 				</div>
 			</div>
 			<div class="col-md-3">
@@ -50,48 +51,88 @@
 			</div>
 		</div>
 		<div class="col-md-10">
-			<table class="table table-striped table-bordered">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th class="col-md-2">Items Name</th>
-						<th class="col-md-2">Qty</th>
-						<th class="col-md-2">Rate</th>
-						<th class="col-md-2">Amount</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let item of itemslist let i=index">
-						<td>{{i+1}}</td>
-						<td><input type="text" class="form-control ProdName" [(ngModel)]="item.itemname" (keyup)="getAutoCompleteProd(item,1)"
-							/></td>
-						<td><input type="text" class="form-control textalign" [(ngModel)]="item.rate" /></td>
-						<td><input type="text" class="form-control textalign" [(ngModel)]="item.qty" /></td>
-						<td><input type="text" class="form-control textalign amt" value="" [(ngModel)]="item.amt" /></td>
-						<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(item)"><i class="fa fa-trash"></i></button></td>
-					</tr>
-					<tr>
-						<td>#</td>
-						<td class="col-md-3">
-							<input type="text" id="foot_custname" class="form-control ProdName" tabindex="7" autocomplete='off' value="" [(ngModel)]="NewItemsName"
-								(keyup)="getAutoCompleteProd(this,0)" />
-						</td>
-						<td class="col-md-1">
-							<input type="text" class="form-control textalign" value="" name="qty" tabindex="8" [(ngModel)]="qty" />
-						</td>
-						<td class="col-md-1">
-							<input type="text" class="form-control textalign rate" value="" tabindex="9" [(ngModel)]="rate" (click)="AddNewRow()" />
-						</td>
-						<td class="col-md-1">
-							<input type="text" class="form-control textalign amt" value="" tabindex="10" [(ngModel)]="amt" />
-						</td>
-						<td class="col-md-2">
-							<button type="button" class="btn btn-theme btn-sm" tabindex="11" title="Add" (click)="AddNewRow()"><i class="fa fa-plus"></i></button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="table-responsive">
+				<p-dataTable #dt [value]="itemslist" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+					expandableRows="true" [responsive]="true">
+					<p-column header="#" [style]="{'width':'30px'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							{{rowIndex+1}}
+						</template>
+					</p-column>
+					<p-column header="Items Name" [style]="{'text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<input type="text" class="form-control ProdName inlinetextbox" tabindex="6" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
+								autocomplete='off' value="" />
+						</template>
+					</p-column>
+					<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.qty"></numtext>
+						</template>
+					</p-column>
+					<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="8" [(ngModel)]="row.rate"></numtext>
+						</template>
+					</p-column>
+					<p-column header="Dis %" [style]="{'width':'120px','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="9" (keyup)="ratechange(qty,newrate,dis,row,1)" [(ngModel)]="row.dis"></numtext>
+						</template>
+					</p-column>
+					<!--<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="8" (ngModelChange)="ratechange(qty,newrate,dis,row,1)">
+						<option *ngFor="let row of row.rateslist" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
+							</template>
+						</p-column>-->
+					<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+						</template>
+					</p-column>
+					<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<button class="btn btn-danger btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash"></i></button>
+						</template>
+					</p-column>
+					<footer>
+						<table class="tableNoborder" style="height: 60px;">
+							<tbody>
+								<tr>
+									<td style="width:30px;vertical-align: top;">
+										<label>#</label>
+									</td>
+									<td style="vertical-align: top;"><input type="text" tabindex="10" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
+											autocomplete='off' value="" /></td>
+									<td style="width:120px;vertical-align: top;">
+										<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="11" (keyup.enter)="AddNewRow()" [(ngModel)]="qty"></numtext>
+									</td>
+									<td style="width:120px;vertical-align: top;">
+										<!--<select [(ngModel)]="newrate" class="form-control" tabindex="12" (keyup.enter)="NewRowAdd()" (ngModelChange)="ratechange(qty,newrate,dis,this,0)"
+												class="form-control">
+												<option *ngFor="let row of rateslist" [value]="row.id">
+														{{row.val}}
+					    						</option>
+											</select>-->
+										<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="11" (keyup.enter)="AddNewRow()" [(ngModel)]="rate"></numtext>
+									</td>
+									<td style="width:120px;vertical-align: top;">
+										<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="13" (keyup.enter)="AddNewRow()" [(ngModel)]="dis"></numtext>
+									</td>
+									<td style="width:120px;vertical-align: top;">
+										<numtext [iscurrency]="true" css="inlinetextbox" [islabel]="true" [(ngModel)]="amount"></numtext>
+									</td>
+									<td style="width:80px;vertical-align: top;"><button type="button" tabindex="14" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="AddNewRow()"><i class="fa fa-plus"></i></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</footer>
+				</p-dataTable>
+			</div>
 		</div>
 	</div>
 </div>

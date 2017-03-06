@@ -81,7 +81,7 @@ declare var commonfun: any;
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private vendorAddServies: VendorAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) {
-        this.module = "vend";
+        this.module = "vm";
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -549,7 +549,7 @@ declare var commonfun: any;
                 return;
             }
             try {
-                 this.actionButton.find(a => a.id === "save").enabled = false;
+                this.actionButton.find(a => a.id === "save").enabled = false;
                 this.vendorAddServies.saveVendor(
                     this.paramterjson()
                 ).subscribe(result => {
@@ -578,7 +578,7 @@ declare var commonfun: any;
                 this._msg.Show(messageType.error, "error", e.message);
             }
             this.actionButton.find(a => a.id === "save").enabled = true;
-           
+
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
@@ -586,6 +586,8 @@ declare var commonfun: any;
             $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
+            this.addressBook.AddBook(this.code);
+            this.accode = this.code;
             $(".vendor").focus();
         } else if (evt === "delete") {
             alert("delete called");

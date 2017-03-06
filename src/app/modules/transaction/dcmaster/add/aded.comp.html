@@ -5,20 +5,20 @@
 				<div class="col-md-6">
 					<div class='form-group' id="customerAuto">
 						<label>Customer</label>
-						<p-autoComplete [(ngModel)]="CustName"  class="form-controlAutoComplete" (onSelect)="CustomerSelect($event)" [suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" placeholder="Customer" [minLength]="1"></p-autoComplete>
+						<p-autoComplete [(ngModel)]="CustName" id="CustName"  class="form-controlAutoComplete" (onSelect)="CustomerSelect($event)" [suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Customer" [minLength]="1"></p-autoComplete>
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class='form-group'>
 						<label class="control-label">Document Date</label>
-						<calendar #docdatecal [name]="'docdate'"></calendar>
+						<calendar #docdatecal [tabindex]="2" [name]="'docdate'"></calendar>
 					</div>
 				</div>
 
 				<div class="col-md-3">
 					<div class='form-group'>
 						<label class="control-label">Delivery Date</label>
-						<calendar #deldatecal [name]="'deldate'"></calendar>
+						<calendar #deldatecal [tabindex]="3" [name]="'deldate'"></calendar>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -213,7 +213,7 @@
 									<label>LR Date</label>
 									<div class="controls">
 										<div class="input-group">
-											<input type="text" name="date" id="lrDate" tabindex="3" class="date-picker form-control" [(ngModel)]="lrDate" />
+											<input type="text" name="date" id="lrDate" class="date-picker form-control" [(ngModel)]="lrDate" />
 											<label for="date" class="input-group-addon btn">
 												<span class="glyphicon glyphicon-calendar"></span>
 										</label>
@@ -224,7 +224,7 @@
 							<div class="col-md-3">
 								<div class='form-group'>
 									<label>Transpoter</label>
-									<select class="form-control" [(ngModel)]="Traspoter" tabindex="6">
+									<select class="form-control" [(ngModel)]="Traspoter">
 								<option *ngFor="let items of Transpoterlist" [value]="items.val">
 									{{items.label}}
 								</option>

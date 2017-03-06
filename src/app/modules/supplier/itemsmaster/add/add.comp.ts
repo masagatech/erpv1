@@ -8,7 +8,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
-import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { LazyLoadEvent, DataTable, CheckboxModule } from 'primeng/primeng';
 import { NumTextModule } from '../../../usercontrol/numtext';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -146,6 +146,7 @@ declare var commonfun: any;
             var that = this;
             this.itemsaddServies.getdorpdown({ "cmpid": this.loginUser.cmpid }).subscribe(data => {
                 var dswarehaouse = data.data[0].filter(item => item.group === "warehouse");
+                debugger;
                 that.warehouselist = dswarehaouse;
                 var dsshelflife = data.data[0].filter(item => item.group === "shelflife");
                 that.shelflifelist = dsshelflife;
@@ -165,6 +166,10 @@ declare var commonfun: any;
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
+
+    }
+
+    whTab() {
 
     }
 

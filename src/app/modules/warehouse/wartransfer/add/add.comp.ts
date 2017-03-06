@@ -99,7 +99,7 @@ declare var commonfun: any;
         // Check this Ledger True And false
         this.checkLedger();
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
         }, 0);
     }
@@ -195,7 +195,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     if (arg === 1) {
                         me.itemsname = ui.item.label;
                         me.itemsid = ui.item.value;
@@ -239,7 +239,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.fromwareid = ui.item.value;
                     me.fromwarname = ui.item.label;
                 }
@@ -270,7 +270,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.Towarid = ui.item.value;
                     me.Towarname = ui.item.label;
                 }
@@ -284,7 +284,7 @@ declare var commonfun: any;
 
     //Add New Row
     private NewRowAdd() {
-      
+
         var that = this;
         var validateme = commonfun.validate();
         if (!validateme.status) {
@@ -410,6 +410,7 @@ declare var commonfun: any;
             "createdby": this.loginUser.login,
             "docno": docno
         }).subscribe(result => {
+            debugger;
             this.fromwarname = result.data[0].fromware;
             this.fromwareid = result.data[0].fromid;
             this.Towarname = result.data[0].toware;
@@ -520,12 +521,13 @@ declare var commonfun: any;
 
     calculationRow(row: any = []) {
         var culamt = 0;
+        var acrate = row.ratelist.filter(item => item.id = row.id);
         if (row.qty != "") {
-            culamt = +row.qty * +row.rate[0].val;
-            this.amt = culamt.toFixed(2);
+            culamt = +row.qty * +acrate[0].val;
+            row.amt = culamt.toFixed(2);
         }
         else {
-            this.amt = "";
+            row.amt = "";
         }
     }
 

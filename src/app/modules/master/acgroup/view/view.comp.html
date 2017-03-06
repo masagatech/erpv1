@@ -4,8 +4,7 @@
 				<div class="col-md-4">
 					<div class='form-group'>
 						<label>Group Name</label>
-						<input type="text=" class="form-control GroupName" tabindex="1" value="" [(ngModel)]="GroupName" (keyup)="getAutoCompleteGroupName(this)"
-						/>
+						<input type="text=" class="form-control GroupName" tabindex="1" value="" [(ngModel)]="GroupName" (keyup)="getAutoCompleteGroupName(this)"/>
 					</div>
 				</div>
 				<div class="col-md-1">
@@ -20,7 +19,7 @@
 					<tr>
 						<th class="col-sm-1">#</th>
 						<th class="col-sm-1">More</th>
-						<th class="col-sm-10">Nature Of Group</th>
+						<th class="col-sm-10">Parent Group</th>
 					</tr>
 				</thead>
 				<tbody *ngFor="let row of acgrouplist let i=index">

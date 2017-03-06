@@ -1325,12 +1325,7 @@ declare var commonfun: any;
                 this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
-            else if (this.Ctrllist.length == 0) {
-                this._msg.Show(messageType.error, "error", "Please enter control center");
-                return;
-            }
-
-            if (this.warehouselist.length > 0) {
+             if (this.warehouselist.length > 0) {
                 var checkware = false;
                 for (let wareid of this.warehouselist) {
                     if (wareid.Warechk == true) {
@@ -1345,6 +1340,10 @@ declare var commonfun: any;
             }
             else {
                 this._msg.Show(messageType.error, "error", "Please create warehouse master");
+                return;
+            }
+            if (this.Ctrllist.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please enter control center");
                 return;
             }
             this.actionButton.find(a => a.id === "save").enabled = false;
@@ -1444,7 +1443,6 @@ declare var commonfun: any;
         } else {
             that.issh == 0;
         }
-
     }
 
     ngOnDestroy() {

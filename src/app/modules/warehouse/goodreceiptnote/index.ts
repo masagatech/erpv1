@@ -3,13 +3,14 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
-import { goodAdd } from './add/add.comp';                
-import { goodView } from './view/view.comp';             
+import { goodAdd } from './add/add.comp';
+import { goodView } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -39,7 +40,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,DataTableModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
+        FormsModule, CommonModule, DataTableModule, AutoCompleteModule,NumTextModule],
     declarations: [
         goodAdd,
         goodView,
