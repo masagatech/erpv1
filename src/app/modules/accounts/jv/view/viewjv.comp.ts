@@ -128,7 +128,40 @@ export class ViewJV implements OnInit, OnDestroy {
         dt.reset();
     }
 
-    expandDetails(dt, event) {
+    expandDetails(event) {
+        var that = this;
+        if (event.details && event.details.length > 0) { return; }
+
+        try {
+            event.loading = false;
+
+            that._jvservice.getJVDetails({
+                "flag": "details", "jvmid": event.jvmid,
+                "from": event.first, "to": (event.first + event.rows)
+            }).subscribe(details => {
+                var dataset = details.data;
+                
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                    event.totalDetailsRecords = dataset[1][0].recordstotal;
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
+        }
+    }
+
+    expandDetails2(dt, event) {
         var that = this;
         var row = event.data;
 
@@ -139,7 +172,7 @@ export class ViewJV implements OnInit, OnDestroy {
             }).subscribe(details => {
                 that.totalDetailsRecords = details.data[1][0].recordstotal;
                 row.details = details.data[0];
-                
+
                 dt.toggleRow(event.data);
             }, err => {
                 that._msg.Show(messageType.error, "Error", err);

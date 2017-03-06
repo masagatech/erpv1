@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from "../../../../_model/action_buttons";
 import { Subscription } from "rxjs/Subscription";
@@ -7,13 +7,16 @@ import { CommonService } from "../../../../_service/common/common-service" /* ad
 import { ECMService } from "../../../../_service/expensecontrolcentermap/ecm-service" /* add reference for master of master */
 import { MessageService, messageType } from "../../../../_service/messages/message-service";
 import { UserService } from '../../../../_service/user/user-service';
+import { ALSService } from '../../../../_service/auditlock/als-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: "addexpctrlmap.comp.html",
-    providers: [CommonService, ECMService]
+    providers: [CommonService, ECMService, ALSService]
 })
 
 export class AddExpenseComp implements OnInit, OnDestroy {
@@ -29,7 +32,9 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     docno: number = 0;
     expid: number = 0;
     expname: string = "";
-    docdate: any = "";
+
+    @ViewChild("docdate")
+    docdate: CalendarComp;
 
     iscmplevel: boolean = false;
     isemplevel: boolean = false;
@@ -51,10 +56,80 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     uploadedFiles: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _ecmservice: ECMService, private _message: MessageService, private _userService: UserService) {
+        private _commonservice: CommonService, private _ecmservice: ECMService, private _msg: MessageService, private _userService: UserService,
+        private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Expense Control Center Mapping";
         this.getCtrlCenter();
+    }
+
+    setAuditDate() {
+        var that = this;
+
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "eccm", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.docdate.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    ngOnInit() {
+        this.docdate.initialize(this.loginUser);
+        this.docdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params["id"] !== undefined) {
+                $(".expense").focus();
+                this.setActionButtons.setTitle("Edit Expesne Control Mapping");
+                this.expid = params["id"];
+                this.getExpenseCtrlMap(this.expid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = false;
+            }
+            else {
+                $(".expense").focus();
+                this.setActionButtons.setTitle("Add Expesne Control Mapping");
+
+                var date = new Date();
+                this.docdate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveExpenseCtrlMap();
+        } else if (evt === "edit") {
+            this._router.navigate(['/master/expensecontrolcentermap/edit/', this.autoid]);
+        } else if (evt === "delete") {
+            this._msg.confirm('Are you sure that you want to delete?', () => {
+                this.saveExpenseCtrlMap();
+            });
+        } else if (evt === "back") {
+            this._router.navigate(['/master/expensecontrolcentermap']);
+        }
     }
 
     // Expense Head Auto
@@ -62,7 +137,12 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     getExpenseAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "expense", "cmpid": 2, "fy": 5, "search": that.expname }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "expense",
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "search": that.expname
+        }).subscribe(data => {
             $(".expense").autocomplete({
                 source: data.data,
                 width: 300,
@@ -160,45 +240,43 @@ export class AddExpenseComp implements OnInit, OnDestroy {
     saveExpenseCtrlMap() {
         var that = this;
 
-        if (that.docdate === "") {
-            that._message.Show(messageType.warn, "Warning", "Please Enter Doc Date");
-        }
-        else if (that.expid === 0) {
-            that._message.Show(messageType.warn, "Warning", "Please Select Expense");
-        }
-        else {
-            this._message.confirm("Are you sure that you want to save?", () => {
-                var saveExpense = {
-                    "autoid": that.autoid,
-                    "cmpid": that.loginUser.cmpid,
-                    "fy": that.loginUser.fy,
-                    "docdate": that.docdate,
-                    "expid": that.expid,
-                    "iscmplevel": that.iscmplevel,
-                    "isemplevel": that.isemplevel,
-                    "ctrlcentermap": that.getCCMapping(),
-                    "narration": that.narration,
-                    "createdby": "1:admin",
-                    "suppdoc": that.suppdoc
-                }
+        var validateme = commonfun.validate();
 
-                that._ecmservice.saveExpenseCtrlMap(saveExpense).subscribe(data => {
-                    var dataResult = data.data;
-
-                    if (dataResult[0].funsave_expensectrlmap.msgid != "-1") {
-                        that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensectrlmap.msg.toString());
-                        that._router.navigate(["/master/expensecontrolcentermap"]);
-                    }
-                    else {
-                        that._message.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg.toString());
-                    }
-                }, err => {
-                    console.log(err);
-                }, () => {
-                    // console.log("Complete");
-                });
-            });
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
         }
+
+        var saveExpense = {
+            "autoid": that.autoid,
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "docdate": that.docdate,
+            "expid": that.expid,
+            "iscmplevel": that.iscmplevel,
+            "isemplevel": that.isemplevel,
+            "ctrlcentermap": that.getCCMapping(),
+            "narration": that.narration,
+            "uidcode": that.loginUser.login,
+            "suppdoc": that.suppdoc
+        }
+
+        that._ecmservice.saveExpenseCtrlMap(saveExpense).subscribe(data => {
+            var dataResult = data.data;
+
+            if (dataResult[0].funsave_expensectrlmap.msgid != "-1") {
+                that._msg.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensectrlmap.msg.toString());
+                that._router.navigate(["/master/expensecontrolcentermap"]);
+            }
+            else {
+                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg.toString());
+            }
+        }, err => {
+            console.log(err);
+        }, () => {
+            // console.log("Complete");
+        });
     }
 
     // add expense details
@@ -207,7 +285,7 @@ export class AddExpenseComp implements OnInit, OnDestroy {
         var that = this;
 
         that._commonservice.getAutoData({
-            "type": "ctrl", "cmpid": that.loginUser.cmpid,
+            "type": "ccauto", "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy, "search": ""
         }).subscribe(data => {
             that.ctrlcenterDT = data.data;
@@ -240,25 +318,32 @@ export class AddExpenseComp implements OnInit, OnDestroy {
             var _uploadedfile = dataresult[0]._uploadedfile;
             var _suppdoc = dataresult[0]._suppdoc;
 
-            that.expid = _ecmdata[0].expid;
-            that.expname = _ecmdata[0].expname;
-            that.docdate = _ecmdata[0].docdate;
-            that.iscmplevel = _ecmdata[0].iscmplevel;
-            that.isemplevel = _ecmdata[0].isemplevel;
-            that.narration = _ecmdata[0].narration;
+            if (_ecmdata !== null) {
+                that.expid = _ecmdata[0].expid;
+                that.expname = _ecmdata[0].expname;
+                that.docdate = _ecmdata[0].docdate;
+                that.iscmplevel = _ecmdata[0].iscmplevel;
+                that.isemplevel = _ecmdata[0].isemplevel;
+                that.narration = _ecmdata[0].narration;
 
-            var existsccid, newccid;
+                var existsccid, newccid;
 
-            for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
-                for (var j = 0; j < _ecmdata[0].ctrlcentermap.length; j++) {
-                    existsccid = that.ctrlcentermapDT[i].ctrlcenterid;
-                    newccid = _ecmdata[0].ctrlcentermap[j].ccid;
+                for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
+                    for (var j = 0; j < _ecmdata[0].ctrlcentermap.length; j++) {
+                        existsccid = that.ctrlcentermapDT[i].ctrlcenterid;
+                        newccid = _ecmdata[0].ctrlcentermap[j].ccid;
 
-                    if (existsccid === newccid) {
-                        that.ctrlcentermapDT[i].isprofitcenter = _ecmdata[0].ctrlcentermap[j].ispc;
-                        that.ctrlcentermapDT[i].iscostcenter = _ecmdata[0].ctrlcentermap[j].iscc;
+                        if (existsccid === newccid) {
+                            that.ctrlcentermapDT[i].isprofitcenter = _ecmdata[0].ctrlcentermap[j].ispc;
+                            that.ctrlcentermapDT[i].iscostcenter = _ecmdata[0].ctrlcentermap[j].iscc;
+                        }
                     }
                 }
+            }
+            else {
+                that.iscmplevel = false;
+                that.isemplevel = false;
+                that.narration = "";
             }
 
             that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
@@ -268,45 +353,6 @@ export class AddExpenseComp implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    ngOnInit() {
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params["id"] !== undefined) {
-                this.title = "Expesne Control Mapping : Edit";
-                this.expid = params["id"];
-                this.getExpenseCtrlMap(this.expid);
-            }
-            else {
-                this.title = "Expesne Control Mapping : Add";
-            }
-        });
-
-        setTimeout(function () {
-            var date = new Date();
-            var today = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-
-            // Doc Date 
-
-            $(".docdate").datepicker({
-                dateFormat: "dd/mm/yy",
-                autoclose: true,
-                setDate: new Date()
-            });
-
-            $(".docdate").datepicker('setDate', today);
-        }, 0);
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this.saveExpenseCtrlMap();
-        }
     }
 
     ngOnDestroy() {

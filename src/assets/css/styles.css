@@ -1403,3 +1403,7 @@ table.tableNoborder td {
 .tblexcel>thead>tr>th, .tblexcel>tbody>tr>th, .tblexcel>tfoot>tr>th, .tblexcel>thead>tr>td, .tblexcel>tbody>tr>td, .tblexcel>tfoot>tr>td {
     padding: 4px!important;
 }
+
+.setfltrbtn {
+    padding-top: 28px;
+}

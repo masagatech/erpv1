@@ -109,7 +109,12 @@ export class AddUserRights implements OnInit, OnDestroy {
     getUserAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "userwithcode",
+            "cmpid": 1,
+            "fy": 1,
+            "search": that.uname
+        }).subscribe(data => {
             $(".uname").autocomplete({
                 source: data.data,
                 width: 300,

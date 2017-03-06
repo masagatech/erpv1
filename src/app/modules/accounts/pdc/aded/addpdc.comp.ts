@@ -12,6 +12,7 @@ import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'addpdc.comp.html',
@@ -40,6 +41,7 @@ export class AddPDC implements OnInit, OnDestroy {
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    formvals: string = "";
 
     @ViewChild("chequedate")
     chequedate: CalendarComp;
@@ -87,11 +89,12 @@ export class AddPDC implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                this.setActionButtons.setTitle("Post Dated Cheque > Edit");
+                this.setActionButtons.setTitle("Edit Post Dated Cheque");
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
                 this.actionButton.find(a => a.id === "delete").hide = true;
+                $(".pdctype").focus();
 
                 this.pdcid = params['id'];
                 this.getPDCById(this.pdcid);
@@ -101,7 +104,7 @@ export class AddPDC implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
-                this.setActionButtons.setTitle("Post Dated Cheque > Add");
+                this.setActionButtons.setTitle("Add Post Dated Cheque");
 
                 var date = new Date();
                 this.chequedate.setDate(date);
@@ -109,6 +112,7 @@ export class AddPDC implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
                 this.actionButton.find(a => a.id === "delete").hide = true;
+                $(".pdctype").focus();
 
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');
@@ -203,8 +207,25 @@ export class AddPDC implements OnInit, OnDestroy {
         that.actionButton.find(a => a.id === "save").enabled = true;
     }
 
+    private isFormChange() {
+        return (this.formvals == $("#frmpdc").serialize());
+    }
+
     savePDCData() {
         var that = this;
+
+        if (that.isFormChange()) {
+            that._msg.Show(messageType.info, "info", "No save! There is no change!");
+            return;
+        };
+
+        var validateme = commonfun.validate();
+
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
 
         var savepdc = {
             "pdcid": that.pdcid,

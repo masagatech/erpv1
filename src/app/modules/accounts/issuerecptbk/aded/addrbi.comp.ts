@@ -12,6 +12,7 @@ import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: "addrbi.comp.html",
@@ -21,6 +22,7 @@ declare var $: any;
 export class AddRBI implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    formvals: string = "";
     loginUser: LoginUserModel;
 
     private subscribeParameters: any;
@@ -90,7 +92,7 @@ export class AddRBI implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params["irbid"] !== undefined) {
-                this.setActionButtons.setTitle("Post Dated Cheque > Edit");
+                this.setActionButtons.setTitle("Edit Receipt Book Issued");
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
@@ -102,9 +104,10 @@ export class AddRBI implements OnInit, OnDestroy {
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
+                $(".empname").focus();
             }
             else {
-                this.setActionButtons.setTitle("Post Dated Cheque > Add");
+                this.setActionButtons.setTitle("Add Receipt Book Issued");
 
                 var date = new Date();
                 this.docdate.setDate(date);
@@ -116,6 +119,7 @@ export class AddRBI implements OnInit, OnDestroy {
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');
                 $('textarea').removeAttr('disabled');
+                $(".empname").focus();
             }
         });
     }
@@ -142,7 +146,12 @@ export class AddRBI implements OnInit, OnDestroy {
     getEmpAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.empname }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "userwithcode",
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "search": that.empname
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -301,8 +310,26 @@ export class AddRBI implements OnInit, OnDestroy {
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
+    private isFormChange() {
+        return (this.formvals == $("#frmpdc").serialize());
+    }
+
     saveRBIDetails() {
         var that = this;
+
+        if (that.isFormChange()) {
+            that._msg.Show(messageType.info, "info", "No save! There is no change!");
+            return;
+        };
+
+        var validateme = commonfun.validate();
+
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
+
 
         var saveRBI = {
             "irbid": this.irbid,

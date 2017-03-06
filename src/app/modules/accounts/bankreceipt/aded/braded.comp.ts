@@ -113,8 +113,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        $(".bankid").focus();
-
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
                 this.setActionButtons.setTitle("Bank Receipt > Add");
@@ -123,6 +121,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
+                $(".custcode").focus();
 
                 this.autoid = 0;
                 this.resetBankReceipt();
@@ -138,6 +137,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
+                $(".custcode").focus();
 
                 this.autoid = params['id'];
                 this.GetBankReceipt(this.autoid);

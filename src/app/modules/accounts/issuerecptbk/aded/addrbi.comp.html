@@ -1,135 +1,132 @@
-<div class="middlepan">
-    <div class="panel panel-theme">
-        <div class="panel-body">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label">Issued Date</label>
-                    <calendar #docdate [name]="'docdate'"></calendar>
-                </div>
+<form id="frmrbi">
+    <div class="middlepan">
+        <div class="panel panel-theme">
+            <div class="panel-body">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label">Emp Name</label>
+                        <input validate="" id="empname" name="empname" type="text" [(ngModel)]="empname" class="empname form-control" (keyup)="getEmpAuto(this)" tabindex="1" />
+                    </div>
 
-                <div class="form-group">
-                    <label class="control-label">Emp Name</label>
-                    <input id="empname" type="text" [(ngModel)]="empname" class="empname form-control" (keyup)="getEmpAuto(this)" />
-                </div>
+                    <div class="form-group">
+                        <label class="control-label">Issued Date</label>
+                        <calendar #docdate [name]="'docdate'" tabindex="2" css="docdate"></calendar>
+                    </div>
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">Series No</label>
-                            <select [(ngModel)]="rbid" name="SeriesNo" id="SeriesNo" class="form-control" (ngModelChange)="getFromNo()">
-                                <option [value]="'0'">Series No</option>
-                                <option *ngFor="let row of SeriesNoDT" [value]="row.seriesid">	
-                                    {{row.seriesno}}
-                                </option>
-                            </select>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Series No</label>
+                                <select validate="" id="seriesno" name="seriesno" [(ngModel)]="rbid" class="form-control" (ngModelChange)="getFromNo()" tabindex="3">
+                                    <option [value]="'0'">Series No</option>
+                                    <option *ngFor="let row of SeriesNoDT" [value]="row.seriesid">	
+                                        {{row.seriesno}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">From No</label>
+                                <numtext validate="" name="fromno" [(ngModel)]="fromno" (keyup)="getToNoOnKey()" (keyup.enter)="getToNoOnTab()" tabindex="4"></numtext>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">To No</label>
+                                <input validate="" type="text" name="tono" [(ngModel)]="tono" class="form-control text-right" disabled />
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">From No</label>
-                            <numtext name="fromno" [(ngModel)]="fromno" (keyup)="getToNoOnKey()" (keyup.enter)="getToNoOnTab()"></numtext>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">To No</label>
-                            <input type="text" name="tono" [(ngModel)]="tono" class="form-control text-right" disabled />
-                        </div>
-                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label">Narration</label>
-                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
-                </div>
-                <div class="form-group">
-
-                    <!--<button type="button" (click)="confirm1()" pButton icon="fa-check" label="Confirm"></button>
-                    <button type="button" (click)="confirm2()" pButton icon="fa-trash" label="Delete"></button>-->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label">Narration</label>
+                        <textarea validate="" name="narration" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5" tabindex="5"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="sidepan">
-    <!--widgit-->
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <h3 class="panel-title">Latest Series</h3>
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-4 text-right">
-                    <b>Series</b>
-                </div>
-                <div class="col-md-4 text-right">
-                    <b>From</b>
-                </div>
-                <div class="col-md-4 text-right">
-                    <b>To</b>
-                </div>
+    <div class="sidepan">
+        <!--widgit-->
+        <div class="panel panel-theme">
+            <div class="panel-heading">
+                <h3 class="panel-title">Latest Series</h3>
             </div>
-            <div *ngFor="let row of latestSeriesDT">
+            <div class="panel-body">
                 <div class="row">
                     <div class="col-md-4 text-right">
-                        {{row.seriesno}}
+                        <b>Series</b>
                     </div>
                     <div class="col-md-4 text-right">
-                        {{row.fromno}}
+                        <b>From</b>
                     </div>
                     <div class="col-md-4 text-right">
-                        {{row.tono}}
+                        <b>To</b>
+                    </div>
+                </div>
+                <div *ngFor="let row of latestSeriesDT">
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {{row.seriesno}}
+                        </div>
+                        <div class="col-md-4 text-right">
+                            {{row.fromno}}
+                        </div>
+                        <div class="col-md-4 text-right">
+                            {{row.tono}}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <h3 class="panel-title">Employee Series</h3>
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-4 text-right">
-                    <b>Series</b>
-                </div>
-                <div class="col-md-4">
-                    <b>Date</b>
-                </div>
-                <div class="col-md-4 text-right">
-                    <b>Pages</b>
-                </div>
+        <div class="panel panel-theme">
+            <div class="panel-heading">
+                <h3 class="panel-title">Employee Series</h3>
             </div>
-            <div *ngFor="let row of empSeriesDT">
+            <div class="panel-body">
                 <div class="row">
                     <div class="col-md-4 text-right">
-                        {{row.seriesno}}
+                        <b>Series</b>
                     </div>
                     <div class="col-md-4">
-                        {{row.issueddate}}
+                        <b>Date</b>
                     </div>
                     <div class="col-md-4 text-right">
-                        {{row.noofpage}}
+                        <b>Pages</b>
+                    </div>
+                </div>
+                <div *ngFor="let row of empSeriesDT">
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {{row.seriesno}}
+                        </div>
+                        <div class="col-md-4">
+                            {{row.issueddate}}
+                        </div>
+                        <div class="col-md-4 text-right">
+                            {{row.noofpage}}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
-        (onComplete)="onUploadComplete($event)"></fileupload>
+        <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+            (onComplete)="onUploadComplete($event)"></fileupload>
 
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <h3 class="panel-title">Any Other Details</h3>
+        <div class="panel panel-theme">
+            <div class="panel-heading">
+                <h3 class="panel-title">Any Other Details</h3>
+            </div>
+            <div class="panel-body"></div>
         </div>
-        <div class="panel-body"></div>
-    </div>
-    <div class="panel panel-theme">
-        <div class="panel-heading">
-            <h3 class="panel-title">Any Other Details</h3>
+        <div class="panel panel-theme">
+            <div class="panel-heading">
+                <h3 class="panel-title">Any Other Details</h3>
+            </div>
+            <div class="panel-body"></div>
         </div>
-        <div class="panel-body"></div>
     </div>
-</div>
+</form>

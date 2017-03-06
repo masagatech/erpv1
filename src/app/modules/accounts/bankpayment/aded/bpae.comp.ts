@@ -100,8 +100,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        $(".bankpay").focus();
-
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
