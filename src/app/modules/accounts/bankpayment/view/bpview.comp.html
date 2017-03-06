@@ -4,8 +4,8 @@
 			<div class="form-group">
 				<label>Bank</label>
 				<select class="form-control" [(ngModel)]="bankid">
-					<option *ngFor="let items of banknamelistDT" tabindex="1" [value]="items.value">
-						{{items.label}}
+					<option *ngFor="let items of bankDT" tabindex="1" [value]="items.key">
+						{{items.val}}
 					</option>
 				</select>
 			</div>
@@ -31,9 +31,11 @@
 			</div>
 		</div>
 		<div class="col-md-1">
-			<div class="form-group">
+			<div class="form-group setfltrbtn">
 				<label>&nbsp;</label>
-				<button type="button" class="btn btn-theme btn-sm" (click)="searchBankPayment(dt)">Get</button>
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchBankPayment(dt)">
+					<i class="fa fa-arrow-right"></i>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -41,26 +43,22 @@
 
 <div class="col-md-12">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="bankpaymentDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
+		<p-dataTable #dt [value]="bankpaymentDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
 			(onLazyLoad)="loadBankPaymentGrid($event)" expandableRows="true">
 			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-			<p-column field="issuedate" header="Issue Date" [style]="{'text-align':'left'}"></p-column>
-			<p-column field="partyname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column field="typ" header="Type" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="issuedate" header="Issue Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="acname" header="A/C Name" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="bankname" header="Bank Name" [style]="{'width':'200px','text-align':'left'}"></p-column>
+			<p-column field="banktype" header="Bank Type" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column field="cheqno" header="Cheque No" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column header="Amount" [style]="{'width':'150px','text-align':'left'}">
+			<p-column header="Amount" [style]="{'width':'150px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
 					{{row.amount | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">
-				<template let-row="rowData" pTemplate type="body">
-					{{row.issh == 1 ? row.narration : row.smallnarr}}
-				</template>
-			</p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="OpenBPDetails(row)" class="btn btn-theme btn-sm">
+					<button type="button" (click)="OpenBankPayment(row)" class="btn btn-theme btn-sm">
 						<i class="fa fa-edit"></i>
 					</button>
 				</template>

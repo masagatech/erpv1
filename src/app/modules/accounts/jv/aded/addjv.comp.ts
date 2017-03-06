@@ -218,6 +218,11 @@ export class AddJV implements OnInit, OnDestroy {
             return;
         }
 
+        if ((that.newdramt == "") && (that.newcramt == "")) {
+            that._msg.Show(messageType.error, "Error", "Please Enter Debit Amount / Credit Amount");
+            return;
+        }
+
         // Duplicate items Check
         that.duplicateaccount = that.isDuplicateAccount();
 

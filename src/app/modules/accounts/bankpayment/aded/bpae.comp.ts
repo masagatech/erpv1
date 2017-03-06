@@ -37,8 +37,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     refno: string = "";
     typ: number = 0;
 
-    banknameListDT: any = [];
-    typelistDT: any = [];
+    bankDT: any = [];
+    banktypeDT: any = [];
 
     @ViewChild("issuedate")
     issuedate: CalendarComp;
@@ -60,8 +60,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         private _userService: UserService, private _msg: MessageService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Bank Payment";
-        this.getBankMasterDrop();
-        this.getTypDrop();
+        this.fillDropDownList();
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
@@ -103,13 +102,13 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("A/C Payble > Add");
+                this.setActionButtons.setTitle("Add A/C Payble");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".bankpay").focus();
+                $(".custcode").focus();
 
                 var date = new Date();
                 this.issuedate.setDate(date);
@@ -119,13 +118,13 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("A/C Payble > Edit");
+                this.setActionButtons.setTitle("Edit A/C Payble");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".bankpay").focus();
+                $(".custcode").focus();
 
                 this.autoid = params['id'];
                 this.GetBankPayment(this.autoid);
@@ -179,8 +178,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.amount = 0;
         this.cheqno = "";
         this.narration = "";
-
-        $(".bankpay").focus();
     }
 
     onUploadStart(e) {
@@ -253,28 +250,12 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
     // Get Bank Master And Type
 
-    getBankMasterDrop() {
-        this._bpservice.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            var dataset = BankName.data;
-            this.banknameListDT = BankName.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-    }
-
-    getTypDrop() {
-        this._bpservice.getBankMaster({
-            "type": "banktype"
-        }).subscribe(BankType => {
-            this.typelistDT = BankType.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
+    fillDropDownList() {
+        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            
+            this.bankDT = d.filter(a => a.group === "bank");
+            this.banktypeDT = d.filter(a => a.group === "banktype");
         });
     }
 

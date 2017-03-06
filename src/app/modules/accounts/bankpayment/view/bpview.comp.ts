@@ -29,7 +29,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     bankid: any = 0;
     status: string = "";
     
-    banknamelistDT: any = [];
+    bankDT: any = [];
     bankpaymentDT: any = [];
     statusDT: any = [];
 
@@ -48,7 +48,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _bpservice: BankPaymentService,
         private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
-        this.getBankMasterDrop();
+        this.fillDropDownList();
         this.fillStatusDropDown();
         this.resetBPFields();
     }
@@ -113,19 +113,12 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         }
     }
 
-    //Bank Dropdown Bind
+    // DropDown
 
-    getBankMasterDrop() {
-        this._bpservice.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            var dataset = BankName.data;
-            this.banknamelistDT = BankName.data;
-            //this.Typelist = dataset.Table1;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            // Done Process
+    fillDropDownList() {
+        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            this.bankDT = d.filter(a => a.group === "bank");
         });
     }
 
@@ -169,26 +162,36 @@ export class ViewBankPayment implements OnInit, OnDestroy {
 
     // Expand Grid Button Click
 
-    expandDetails(dt, event) {
+    expandDetails(event) {
         var that = this;
-        var row = event.data;
+        if (event.details && event.details.length > 0) { return; }
 
-        if (row.details.length === 0) {
-            that._bpservice.getBankPayment({
-                "flag": "details", "autoid": row.autoid,
+        try {
+            event.loading = false;
+
+            this._bpservice.getBankPayment({
+                "flag": "details", "autoid": event.autoid,
                 "from": event.first, "to": (event.first + event.rows)
             }).subscribe(details => {
-                that.totalDetailsRecords = details.data[1][0].recordstotal;
-                row.details = details.data[0];
-                
-                dt.toggleRow(event.data);
+                var dataset = details.data;
+                event.totalDetailsRecords = dataset[1][0].recordstotal;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
             }, err => {
-                console.log("Error");
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
             }, () => {
                 // console.log("Complete");
             })
-        } else {
-            dt.toggleRow(event.data);
+        } catch (error) {
+
         }
     }
 

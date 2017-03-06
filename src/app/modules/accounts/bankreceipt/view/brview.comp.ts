@@ -28,7 +28,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
     bankid: number = 0;
     status: string = "";
 
-    banknamelistDT: any = [];
+    bankDT: any = [];
     bankreceiptDT: any = [];
     statusDT: any = [];
 
@@ -47,9 +47,9 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _brService: BankReceiptService,
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
-        this.getBankMasterDrop();
+        this.fillDropDownList();
         this.fillStatusDropDown();
-        this.resetBPFields();
+        //this.resetBPFields();
     }
 
     // Document Ready
@@ -110,21 +110,16 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
             this._msg.Show(messageType.info, "Info", "This Bank Receipt is Deleted");
         }
         else {
-            this._router.navigate(['/accounts/bankreceipt/edit', row.docno]);
+            this._router.navigate(['/accounts/bankreceipt/details', row.docno]);
         }
     }
 
-    //Bank Dropdown Bind
+    // DropDown
 
-    getBankMasterDrop() {
-        this._brService.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            this.banknamelistDT = BankName.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
+    fillDropDownList() {
+        this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            this.bankDT = d.filter(a => a.group === "bank");
         });
     }
 
@@ -139,12 +134,12 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         var params = {
             "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
             // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
-            "from": from, "to": to, "isactive": that.status
+            "from": 0, "to": 10, "isactive": that.status
         }
 
         that._brService.getBankReceipt(params).subscribe(bankreceipt => {
             that.totalRecords = bankreceipt.data[1].recordstotal;
-            
+            debugger;
             if (bankreceipt.data.length !== 0) {
                 that.tableLength = false;
                 that.bankreceiptDT = bankreceipt.data[0];
@@ -168,25 +163,36 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
 
     // Expand Grid Button Click
 
-    expandDetails(dt, event) {
+    expandDetails(event) {
         var that = this;
-        var row = event.data;
+        if (event.details && event.details.length > 0) { return; }
 
-        if (row.details.length === 0) {
-            that._brService.getBankReceipt({
-                "flag": "details", "bankreid": row.docno
+        try {
+            event.loading = false;
+
+            this._brService.getBankReceipt({
+                "flag": "details", "bankreid": event.docno,
+                "from": event.first, "to": (event.first + event.rows)
             }).subscribe(details => {
-                that.totalDetailsRecords = details.data[1][0].recordstotal;
-                row.details = details.data[0];
-                
-                dt.toggleRow(event.data);
+                var dataset = details.data;
+                event.totalDetailsRecords = dataset[1][0].recordstotal;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
             }, err => {
-                console.log("Error");
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
             }, () => {
                 // console.log("Complete");
             })
-        } else {
-            dt.toggleRow(event.data);
+        } catch (error) {
+
         }
     }
 

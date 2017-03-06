@@ -14,8 +14,9 @@
 						<div class="form-group">
 							<label>Bank</label>
 							<select class="form-control" [(ngModel)]="bankid" tabindex="2">
-								<option *ngFor="let items of banknamelistDT" [value]="items.value">
-									{{items.label}}
+								<option [value]="0">Select Bank</option>
+								<option *ngFor="let items of bankDT" [value]="items.key">
+									{{items.val}}
 								</option>
 							</select>
 						</div>
@@ -42,8 +43,9 @@
 						<div class="form-group">
 							<label>Type</label>
 							<select class="form-control" [(ngModel)]="typ" tabindex="5">
-								<option *ngFor="let items of typelistDT" [value]="items.value">
-									{{items.label}}
+								<option [value]="0">Select Type</option>
+								<option *ngFor="let items of banktypeDT" [value]="items.key">
+									{{items.val}}
 								</option>
 							</select>
 						</div>

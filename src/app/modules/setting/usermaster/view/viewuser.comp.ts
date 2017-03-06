@@ -65,10 +65,9 @@ export class ViewUser implements OnInit, OnDestroy {
         this.status = "true";
     }
 
-    getUserData(from: number, to: number) {
-        debugger;
-        this._userservice.getUsers({ "flag": "all", "isactive": this.status, "from": from, "to": to }).subscribe(users => {
-            this.totalRecords = users.data[1].recordstotal;
+    getUserGrid(from: number, to: number) {
+        this._userservice.getUserGrid({ "flag": "all", "isactive": "true", "from": 0, "to": 10 }).subscribe(users => {
+            this.totalRecords = users.data[1][0].recordstotal;
             this.viewUserDT = users.data[0];
         }, err => {
             console.log(err);
@@ -78,7 +77,7 @@ export class ViewUser implements OnInit, OnDestroy {
     }
 
     loadUserGrid(event: LazyLoadEvent) {
-        this.getUserData(event.first, (event.first + event.rows));
+        this.getUserGrid(event.first, (event.first + event.rows));
     }
 
     searchUserData(dt: DataTable) {

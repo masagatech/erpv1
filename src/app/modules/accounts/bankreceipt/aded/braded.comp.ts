@@ -37,8 +37,8 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     refno: string = "";
     narration: string = "";
 
-    banknamelistDT: any = [];
-    typelistDT: any = [];
+    bankDT: any = [];
+    banktypeDT: any = [];
 
     module: string = "";
     suppdoc: any = [];
@@ -52,7 +52,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
     //Page Load
 
-    constructor(private setActionButtons: SharedVariableService, private _nrService: BankReceiptService, private _autoservice: CommonService,
+    constructor(private setActionButtons: SharedVariableService, private _brService: BankReceiptService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _router: Router, private _userService: UserService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
@@ -62,8 +62,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         this.isedit = _router.url.indexOf("edit") > -1;
         this.isdetails = _router.url.indexOf("details") > -1;
 
-        this.getBankMasterDrop();
-        this.getTypDrop();
+        this.fillDropDownList();
     }
 
     resetBankReceipt() {
@@ -180,10 +179,21 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         }
     }
 
+    // DropDown
+
+    fillDropDownList() {
+        this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            
+            this.bankDT = d.filter(a => a.group === "bank");
+            this.banktypeDT = d.filter(a => a.group === "banktype");
+        });
+    }
+
     // Get And Fill Edit Mode
 
     GetBankReceipt(pautoid) {
-        this._nrService.getBankReceipt({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
+        this._brService.getBankReceipt({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
@@ -198,8 +208,8 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
 
-            this.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-            this.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            this.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
+            this.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
         }, err => {
             console.log('Error');
         }, () => {
@@ -269,7 +279,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             "isactive": isactive
         }
 
-        this._nrService.saveBankReceipt(ParamName).subscribe(bank => {
+        this._brService.saveBankReceipt(ParamName).subscribe(bank => {
             var dataResult = bank.data;
 
             if (dataResult[0].funsave_bankreceipt.msgid == 1) {
@@ -305,7 +315,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     me.acid = ui.item.value;
                     me.acname = ui.item.label;
                 }
@@ -315,32 +325,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    // Get Bank Master And Type
-
-    getBankMasterDrop() {
-        this._nrService.getBankMaster({
-            "type": "bank"
-        }).subscribe(bank => {
-            this.banknamelistDT = bank.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-    }
-
-    getTypDrop() {
-        this._nrService.getBankMaster({
-            "type": "banktype"
-        }).subscribe(banktype => {
-            this.typelistDT = banktype.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
     }
 
     ngOnDestroy() {
