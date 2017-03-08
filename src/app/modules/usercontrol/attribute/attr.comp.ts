@@ -13,7 +13,7 @@ declare var $: any;
 @Component({
     selector: '<attribute></attribute>',
     templateUrl: 'attr.comp.html',
-    providers: [AttributeService]
+    providers: [AttributeService, CommonService]
 })
 
 export class AttributeComp implements OnInit, OnDestroy {
@@ -73,7 +73,7 @@ export class AttributeComp implements OnInit, OnDestroy {
 
     // AttributeAuto(event) {
     //     let query = event.query;
-    //     this._commonservice.getAutoData({
+    //     this._commonservice.getAutoDataGET({
     //         "type": this.attrtype,
     //         "search": query,
     //         "cmpid": this.loginUser.cmpid,
@@ -85,7 +85,7 @@ export class AttributeComp implements OnInit, OnDestroy {
     //     });
     // }
 
-    //Selected Attribute
+    // //Selected Attribute
     // AttributeSelect(event) {
     //     this.attrid = event.value;
     //     this.attrname = event.label;

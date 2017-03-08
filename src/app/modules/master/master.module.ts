@@ -52,6 +52,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+           {
+            path: 'acledger', loadChildren: () => System.import('./accountledger').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]

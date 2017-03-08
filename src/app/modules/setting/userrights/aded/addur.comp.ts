@@ -111,7 +111,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         that._commonservice.getAutoData({
             "type": "userwithcode",
-            "cmpid": 1,
+            "cmpid": 2,
             "fy": 1,
             "search": that.uname
         }).subscribe(data => {

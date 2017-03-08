@@ -16,9 +16,14 @@
 			</div>
 		</div>
 		<div class='col-md-8'>
-			<div class="col-md-1">
-				<!--<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="chkall" name="chkall" (change)="checkall()" value="">All</label>-->
-				<p-checkbox [(ngModel)]="chkall" name="chkall" (change)="checkall()" binary="true"></p-checkbox>All
+
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Parent of group</label>
+					<p-autoComplete [(ngModel)]="neturname" id="neturname" class="form-controlAutoComplete" (onSelect)="AcGroupSelect($event)"
+						[suggestions]="AcGroupAutodata" (completeMethod)="AcGroupAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Parent Group"
+						[minLength]="1"></p-autoComplete>
+				</div>
 			</div>
 			<div class="col-md-3">
 				<div class='form-group'>
@@ -30,12 +35,8 @@
 					</select>
 				</div>
 			</div>
-			<div class="col-md-4">
-				<div class='form-group'>
-					<label>Nature of group</label>
-					<input type="text=" class="form-control neturofgr" validate="" tabindex="4" value="" name="neturname" [(ngModel)]="neturname"
-						(keyup)="getAutoCompleteNature(this)" />
-				</div>
+			<div class="col-md-1 setfltrbtn">
+				<p-checkbox [(ngModel)]="chkall" name="chkall" (change)="checkall()" binary="true"></p-checkbox>All
 			</div>
 		</div>
 		<div class="col-md-8">

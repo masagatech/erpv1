@@ -393,7 +393,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             var dataset = data.data;
             var CustomerMaster = dataset[0];
             if (CustomerMaster.length > 0) {
-                this.CustomerSelected(CustomerMaster[0].acid);
+                this.CustomerSelected(CustomerMaster[0].acid,CustomerMaster[0].acname.split(':')[0]);
                 this.CustName = CustomerMaster[0].acname;
                 this.CustID = CustomerMaster[0].acid;
                 this.Remark = CustomerMaster[0].remark;

@@ -3,7 +3,7 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { itemGroupService } from "../../../../_service/itemgroup/itemgroup-service";
+import { accountledger } from "../../../../_service/accountledger/account-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
@@ -14,23 +14,27 @@ import { Router } from '@angular/router';
 declare var $: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [itemGroupService, CommonService]
+    providers: [accountledger, CommonService]
     //,AutoService
-}) export class itemgroupView implements OnInit, OnDestroy {
+}) export class aclview implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-    itemgrouplist: any = [];
+
+    // FromDate: any;
+    // ToDate: any;
+    GroupName: any = "";
+    Groupcode: any = 0;
+    accountledgerlist: any = [];
+
+    //Grid Veriable
     totalRecords: number = 0;
-    totalDetailsRecords: number = 0;
-    totalqty: any = 0
-    totalamt: any = 0
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private ItemgroupServies: itemGroupService, private _autoservice: CommonService,
+        private acledgerServies: accountledger, private _autoservice: CommonService,
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
@@ -40,89 +44,51 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.setActionButtons.setTitle("Item Group");
+        this.setActionButtons.setTitle("Account Ledger");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        $(".GroupName").focus();
     }
 
-    getItemgroup(from: number, to: number) {
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getAccountLedbgerView(event.first, (event.first + event.rows));
+    }
+
+    //Get Edit And View
+    getAccountLedbgerView(from: number, to: number) {
         try {
-            var that = this;
-            that.ItemgroupServies.getitemdetail({
-                "cmpid": that.loginUser.cmpid,
-                "fy": that.loginUser.fy,
+            this.acledgerServies.getaccountledger({
+                "groupid": 0,
+                "groupcode": "0",
                 "from": from,
                 "to": to,
-                "createdby": that.loginUser.login
-            }).subscribe(result => {
-                that.totalRecords = result.data[1][0].recordstotal;
-                that.itemgrouplist = result.data[0];
-            }, err => {
-                console.log("Error");
-            }, () => {
-                'Final'
-            });
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
-    }
-
-    //Pagination Grid View 
-    loadRBIGrid(event: LazyLoadEvent) {
-        try {
-            this.getItemgroup(event.first, (event.first + event.rows));
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
-    }
-
-    //More Button Click Event
-    expandDetails(event) {
-        if (event.details && event.details.length > 0) { return; }
-        try {
-            var that = this;
-            var row = event;
-            row.loading = false;
-            that.ItemgroupServies.getitemdetail({
-                "cmpid": that.loginUser.cmpid,
-                "fy": that.loginUser.fy,
-                "createdby": that.loginUser.login,
-                "docno": row.docno,
-                "flag": "expdetails"
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "CreatedBy": this.loginUser.login,
+                "flag": ""
             }).subscribe(result => {
                 var dataset = result.data;
-                if (dataset[0].length > 0) {
-                    that.totalDetailsRecords = dataset[1][0].recordstotal;
-                    row.loading = true;
-                    row.details = dataset[0];
-
-                    for (let item of row.details) {
-                        that.totalqty += parseFloat(item.qty);
-                        that.totalamt += parseFloat(item.amt);
-                    }
-                    $(".get").prop("disabled", false);
+                if (dataset.length > 0) {
+                    this.totalRecords = dataset[1][0].recordstotal;
+                    this.accountledgerlist = dataset[0];
                 }
                 else {
-                    that._msg.Show(messageType.info, "info", "Record Not Found");
-                    $(".get").prop("disabled", false);
-                    $(".item").focus();
+                    $(".GroupName").focus();
                     return;
                 }
 
             }, err => {
                 console.log("Error");
-                $(".get").prop("disabled", false);
-            }, () => {
-                'Final'
-            });
-        } catch (error) {
 
+            }, () => {
+                //Done
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
-    // //Group Code (Edit) Group
+    //Group Code (Edit) Group
     EditItem(event) {
         try {
             var data = event.data;
@@ -132,10 +98,10 @@ declare var $: any;
             else {
                 data = event;
             }
-            if (!data.islocked) {
-                this._router.navigate(['/supplier/itemgroup/edit', data.docno]);
+            if (!data.IsLocked) {
+                this._router.navigate(['/master/acledger/edit', data.id]);
             }
-        } catch (e) {
+        } catch (error) {
             this._msg.Show(messageType.error, "error", e.message);
         }
 
@@ -144,7 +110,7 @@ declare var $: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/supplier/itemgroup/add']);
+            this._router.navigate(['/master/acledger/add']);
         }
         else if (evt === "save") {
             //Save CLick Event

@@ -7,6 +7,7 @@ import { acgroupview } from "../../../../_service/acgroup/view/view-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
@@ -24,6 +25,11 @@ declare var $: any;
     GroupName: any = "";
     Groupcode: any = 0;
     acgrouplist: any = [];
+
+    //Grid Veriable
+    totalRecords: number = 0;
+    totalDetailsRecords: number = 0;
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -43,31 +49,28 @@ declare var $: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".GroupName").focus();
-        this.getAccountGroupView();
     }
 
-    //Json Param
-    jsonPram() {
-        var Param = {
-            "groupid": 0,
-            "groupcode": "0",
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "CreatedBy": this.loginUser.login,
-            "flag": "all"
-        }
-        return Param;
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getAccountGroupView(event.first, (event.first + event.rows));
     }
 
     //Get Edit And View
-    getAccountGroupView() {
+    getAccountGroupView(from: number, to: number) {
         try {
-            this.acgroupServies.acGroupView(
-                this.jsonPram()
-            ).subscribe(result => {
+            this.acgroupServies.acGroupView({
+                "groupid": 0,
+                "groupcode": "0",
+                "from": from,
+                "to": to,
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "CreatedBy": this.loginUser.login,
+                "flag": "all"
+            }).subscribe(result => {
                 var dataset = result.data;
                 if (dataset.length > 0) {
-                    this.acgrouplist = dataset;
+                    this.acgrouplist = dataset[0];
                 }
                 else {
                     $(".GroupName").focus();
@@ -87,32 +90,34 @@ declare var $: any;
     }
 
     //More Button Click Event
-    expandDetails(row) {
-        row.Details = [];
-        if (row.issh == 0) {
-            row.issh = 1;
-            if (row.Details.length === 0) {
-                this.acgroupServies.acGroupView({
-                    "flag": "",
-                    "neturid": row.autoid,
-                    "groupid": 0,
-                    "fromdate": "",
-                    "todate": "",
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy,
-                    "createdBy": this.loginUser.login
-                }).subscribe(data => {
-                    var dataset = data.data;
-                    row.Details = dataset;
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
+    expandDetails(event) {
+        if (event.details && event.details.length > 0) { return; }
+        var that = this;
+        var row = event;
+        row.loading = false;
+        this.acgroupServies.acGroupView({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdBy": this.loginUser.login,
+            "flag": "details",
+            "groupid": 0,
+            "neturid": row.autoid
+        }).subscribe(data => {
+            var dataset = data.data;
+            debugger;
+            if (dataset.length > 0) {
+                row.totalDetailsRecords = dataset[1][0].recordstotal;
+                row.loading = true;
+                row.details = dataset[0];
             }
-        } else {
-            row.issh = 0;
-        }
+            else {
+                that._msg.Show(messageType.info, "info", "Record Not Found");
+            }
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     //Group Code (Edit) Group

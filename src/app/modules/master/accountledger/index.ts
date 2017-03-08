@@ -3,8 +3,8 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
-import { acadd } from './add/add.comp';                
-import { acview } from './view/view.comp';             
+import { acladd } from './add/add.comp';                
+import { aclview } from './view/view.comp';             
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ import { LazyLoadEvent,DataTableModule,CheckboxModule,AutoCompleteModule } from 
 @Component({
     template: '<router-outlet></router-outlet>'
 })
-export class AcGrouptComp {
+export class AcLedgerComp {
     constructor() {
     }
 }
@@ -21,16 +21,16 @@ export class AcGrouptComp {
 const routerConfig = [
     {
         path: '',
-        component: AcGrouptComp,
+        component: AcLedgerComp,
         canActivate: [AuthGuard],
         data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: acadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "add", "urlname": "/add" } },
-                    { path: 'edit/:id', component: acadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: acview, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "ag", "rights": "view", "urlname": "/acgroup" } },
+                    { path: 'add', component: acladd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "al", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: acladd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "al", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: aclview, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "al", "rights": "view", "urlname": "/acledger" } },
                 ]
             }
         ]
@@ -41,12 +41,12 @@ const routerConfig = [
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
      FormsModule, CommonModule, CheckboxModule,DataTableModule,AutoCompleteModule],
     declarations: [
-        acadd,
-        acview,
-        AcGrouptComp
+        acladd,
+        aclview,
+        AcLedgerComp
     ],
     providers: [AuthGuard]
 })
 
-export default class AcGrouptModule {
+export default class AcLedgerModule {
 }

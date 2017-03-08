@@ -1,0 +1,208 @@
+<!--<form id="acgroup">-->
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class='col-md-8'>
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Account Code</label>
+					<input type="text" validate="" class="form-control accode" maxlength="10" tabindex="1" name="accode" [(ngModel)]="acledcode"
+						(blur)="Getcode()">
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Account Name</label>
+					<input type="text" validate="" class="form-control acName" tabindex="2" name="acName" [(ngModel)]="acledName">
+				</div>
+			</div>
+		</div>
+		<div class='col-md-8'>
+			<div class="col-md-8">
+				<div class='form-group'>
+					<label>Parent of group</label>
+					<p-autoComplete [(ngModel)]="parentname" id="parentname" class="form-controlAutoComplete" (onSelect)="AcledgerSelect($event)"
+						[suggestions]="AcledgerAutodata" (completeMethod)="AcledgerAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Parent Group"
+						[minLength]="1"></p-autoComplete>
+				</div>
+			</div>
+		</div>
+		<div class='col-md-8'>
+			<div class="col-md-8">
+				<div class='form-group'>
+					<label>Remark</label>
+					<div class="input-group">
+						<textarea [(ngModel)]="remark" tabindex="4" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
+							rows="2"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<ul class="nav nav-tabs" id="headtab">
+			<li class="active"><a data-target="#adr" role="button" data-toggle="tab"><i class="fa fa-address-book-o" aria-hidden="true"></i> Contacts</a></li>
+			<li><a data-target="#attr" role="button" (click)="Attr()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
+			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab"><i class="fa fa-cc" aria-hidden="true"></i> Control Center</a></li>
+			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
+			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="adr">
+				<div class="row">
+					<addressbook #addrbook [adrbookid]="adrbookid" [tabindex]="5" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
+				</div>
+			</div>
+			<div class="tab-pane" id="attr">
+				<attribute #attribute></attribute>
+			</div>
+			<div class="tab-pane" id="control">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="col-md-4">
+							<div class='form-group'>
+								<label>Control Name</label>
+								<p-autoComplete [(ngModel)]="ctrlname" id="ctrlname" class="form-controlAutoComplete" (onSelect)="CtrlSelect($event)" [suggestions]="CtrlAutodata"
+									(completeMethod)="CtrlAuto($event)" (keyup.enter)="AddNewCtrl()" [tabindex]="3" field="label" [size]="30" placeholder="Control Center"
+									[minLength]="1"></p-autoComplete>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class='form-group'>
+								<div style="padding-top: 28px;">
+									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="4" (click)="AddNewCtrl()" title="Add">
+							<i class="fa fa-plus"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-8" *ngIf="Ctrllist.length>0">
+							<div class="table-responsive">
+								<p-dataTable #dt [value]="Ctrllist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+									expandableRows="true">
+									<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+										<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+											{{rowIndex+1}}
+										</template>
+									</p-column>
+									<p-column field="ctrlname" header="Ctrl Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+									<p-column header="Profit" [style]="{'width':'120px','text-align':'left'}">
+										<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+											<input type="checkbox" [(ngModel)]="row.profflag" value="row.proftcode" />
+										</template>
+									</p-column>
+									<p-column header="Cost" [style]="{'width':'120px','text-align':'left'}">
+										<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+											<input type="checkbox" [(ngModel)]="row.constflag" value="row.constflag" />
+										</template>
+									</p-column>
+									<p-column header="Action" [style]="{'width':'80px','text-align':'left'}">
+										<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+											<button class="btn btn-theme btn-sm" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button>
+										</template>
+									</p-column>
+								</p-dataTable>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="acinfo">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-theme">
+							<div class="panel-body">
+								<div class="col-md-4">
+									<div class="col-md-4">
+										<div class='form-group'>
+											<label>Key</label>
+											<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfoKey" />
+
+										</div>
+									</div>
+									<div class="col-md-5">
+										<div class='form-group'>
+											<label>Value</label>
+											<input type="text" class="form-control val" (keyup.enter)="AddNewKyeval()" tabindex="21" [(ngModel)]="acvalue">
+										</div>
+									</div>
+									<div class="col-md-1">
+										<div class='form-group'>
+											<div style="padding-top: 28px;">
+												<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="AddNewKyeval()" title="Add">
+										<i class="fa fa-plus"></i></button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8" *ngIf="keyvallist.length>0">
+								<div class="table-responsive">
+									<p-dataTable #dt [value]="keyvallist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+										expandableRows="true">
+										<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+											<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+												{{rowIndex+1}}
+											</template>
+										</p-column>
+										<p-column field="key" header="Key" [style]="{'width':'120px','text-align':'left'}"></p-column>
+										<p-column header="Value" [style]="{'width':'120px','text-align':'left'}">
+											<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+												<input type="text" class="form-control" [(ngModel)]="row.value" />
+											</template>
+										</p-column>
+										<p-column header="Action" [style]="{'width':'80px','text-align':'left'}">
+											<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+												<button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+											</template>
+										</p-column>
+									</p-dataTable>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="panel panel-theme">
+							<div class="panel-body">
+								<div class="col-md-4 hide">
+									<div class='form-group'>
+										<label>Debit</label>
+										<select [(ngModel)]="debit" class="form-control" tabindex="23">
+										<option [value]="'0'">Select Debit</option>
+										<option *ngFor="let row of debitlist" [value]="row.value">
+											{{row.label}}
+										</option>
+									</select>
+									</div>
+								</div>
+								<div class="col-md-4 hide">
+									<div class='form-group'>
+										<label>Credit</label>
+										<select [(ngModel)]="credit" class="form-control" tabindex="24">
+										<option [value]="'0'">Select Credit</option>
+										<option *ngFor="let row of creditlist" [value]="row.value">
+											{{row.label}}
+										</option>
+									</select>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class='form-group'>
+										<label>Opening Balance</label>
+										<input type="text" class="form-control text-right" tabindex="25" [(ngModel)]="ope">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="docup">
+				<div class="row">
+					<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+						(onComplete)="onUploadComplete($event)"></fileupload>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
