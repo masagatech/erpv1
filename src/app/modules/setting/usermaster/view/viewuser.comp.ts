@@ -66,7 +66,7 @@ export class ViewUser implements OnInit, OnDestroy {
     }
 
     getUserGrid(from: number, to: number) {
-        this._userservice.getUserGrid({ "flag": "all", "isactive": "true", "from": 0, "to": 10 }).subscribe(users => {
+        this._userservice.getUserGrid({ "flag": "all", "isactive": this.status, "from": from, "to": to }).subscribe(users => {
             this.totalRecords = users.data[1][0].recordstotal;
             this.viewUserDT = users.data[0];
         }, err => {

@@ -389,6 +389,7 @@ export class AddInitiateComp implements OnInit, OnDestroy {
             "bid": that.bid,
             "btitle": that.btitle,
             "bobj": that.bobj,
+            "cmpid": that.loginUser.cmpid,
             "fy": that.fy,
             "frmdt": that.frmdt.getDate(),
             "todt": that.todt.getDate(),

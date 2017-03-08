@@ -1404,6 +1404,23 @@ table.tableNoborder td {
     padding: 4px!important;
 }
 
+.tblexcel-grid>thead>tr>th, .tblexcel-grid>tbody>tr>th, .tblexcel-grid>tfoot>tr>td {
+    padding: 4px!important;
+    background: #ebedf0;
+    border-color: #d9d9d9;
+}
+
+.tblexcel-grid>tbody>tr>td {
+    padding: 4px!important;
+    border: 1px solid #D5D5D5;
+    background: #ffffff;
+    color: #222222;
+}
+
+.tblexcel-grid>tbody>tr>td a {
+    color: #000000 !important;
+}
+
 .setfltrbtn {
     padding-top: 28px;
 }
