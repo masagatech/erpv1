@@ -101,7 +101,7 @@ declare var $: any;
             if (!data.IsLocked) {
                 this._router.navigate(['/master/acledger/edit', data.id]);
             }
-        } catch (error) {
+        } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
 
