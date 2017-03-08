@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
@@ -45,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule, NumTextModule],
+        DataTableModule, DataListModule, NumTextModule],
     declarations: [
         AddStartForecastingComp,
         ViewStartForecastingComp,

@@ -4,7 +4,7 @@ import { ActionBtnProp } from "../../../../_model/action_buttons";
 import { Subscription } from "rxjs/Subscription";
 import { Router, ActivatedRoute } from "@angular/router";
 import { CommonService } from "../../../../_service/common/common-service" /* add reference for master of master */
-import { ExpBudgetService } from "../../../../_service/expensebudget/expbudget-service" /* add reference for Expense Budget */
+import { BudgetService } from '../../../../_service/budget/budget-service'; /* add reference for view budget */
 import { MessageService, messageType } from "../../../../_service/messages/message-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
@@ -13,7 +13,7 @@ declare var $: any;
 
 @Component({
     templateUrl: "addbdsf.comp.html",
-    providers: [CommonService, ExpBudgetService]
+    providers: [CommonService, BudgetService]
 })
 
 export class AddStartForecastingComp implements OnInit, OnDestroy {
@@ -43,7 +43,7 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _expbudgetservice: ExpBudgetService, private _message: MessageService,
+        private _commonservice: CommonService, private _budgetservice: BudgetService, private _msg: MessageService,
         private _userService: UserService) {
 
         this.loginUser = this._userService.getUser();
@@ -64,11 +64,11 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
     fillDropDownList() {
         var that = this;
 
-        that._expbudgetservice.getExpenseBudget({ "flag": "dropdown" }).subscribe(data => {
+        that._budgetservice.getExpenseBudget({ "flag": "dropdown" }).subscribe(data => {
             that.bdginitiateDT = data.data[0]._bdgddl;
             that.statusDT = data.data[0]._statusddl;
         }, err => {
-            that._message.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -77,12 +77,12 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
     BindFinancialMonthDT() {
         var that = this;
 
-        that._expbudgetservice.getExpenseBudget({
+        that._budgetservice.getExpenseBudget({
             "flag": "monthhead", "fy": that.loginUser.fy, "bid": that.bid, "ccid": that.ccid
         }).subscribe(data => {
             that.financialmonthDT = data.data;
         }, err => {
-            that._message.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -91,12 +91,12 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
     BindControlCenterDT() {
         var that = this;
 
-        that._expbudgetservice.getExpenseBudget({
+        that._budgetservice.getExpenseBudget({
             "flag": "ccval", "uid": that.loginUser.uid, "fy": that.loginUser.fy, "bid": that.bid
         }).subscribe(data => {
             that.ctrlcenterDT = data.data;
         }, err => {
-            that._message.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -111,12 +111,12 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
             row.issh = 1;
 
             if (row.envtitledt.length === 0) {
-                that._expbudgetservice.getExpenseBudget({
-                    "flag": "envtitle", "uid": that.loginUser.uid, "fy": that.loginUser.fy, "bid": that.bid, "ccid": row.ccid
+                that._budgetservice.getExpenseBudget({
+                    "flag": "envtitle", "fy": that.loginUser.fy, "bid": that.bid, "ccid": row.ccid, "uid": that.loginUser.uid
                 }).subscribe(data => {
                     row.envtitledt = data.data;
                 }, err => {
-                    that._message.Show(messageType.error, "Error", err);
+                    that._msg.Show(messageType.error, "Error", err);
                 }, () => {
                     // console.log("Complete");
                 })
@@ -135,24 +135,12 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
             etrow.issh = 1;
 
             if (etrow.subitemsdt.length === 0) {
-                that._expbudgetservice.getExpenseBudget({
-                    "flag": "subitems", "fy": that.loginUser.fy, "beid": etrow.envid, "ccid": etrow.ccid
+                that._budgetservice.getExpenseBudget({
+                    "flag": "subitems", "fy": that.loginUser.fy, "bid": that.bid, "beid": etrow.envid, "ccid": etrow.ccid, "uid": that.loginUser.uid
                 }).subscribe(data => {
                     etrow.subitemsdt = data.data;
-                    // var MonthAmtTotal = 0;
-
-                    // for (var i = 0; i <= etrow.subitemsdt.length - 1; i++) {
-                    //     var envtitle = etrow.subitemsdt[i].monthdetails;
-                    //     var sititle = etrow.monthdetails[i];
-
-                    //     for (var j = 0; j <= envtitle.length - 1; j++) {
-                    //         MonthAmtTotal += parseFloat(envtitle[j].monthvalue);
-                    //     }
-
-                    //     sititle.monthvalue = MonthAmtTotal / etrow.subitemsdt.length;
-                    // }
                 }, err => {
-                    that._message.Show(messageType.error, "Error", err);
+                    that._msg.Show(messageType.error, "Error", err);
                 }, () => {
                     // console.log("Complete");
                 })
@@ -242,7 +230,6 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
     }
 
     getTotalSubItemWise(event, ccrow, etrow, sirow, colindex) {
-
         var colTotal = 0.00, _rowTotal = 0.00;
         var envItems = etrow.subitemsdt;
 
@@ -266,7 +253,7 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
     getAmtMonthWise() {
         var that = this;
 
-        that._expbudgetservice.getExpenseBudget({
+        that._budgetservice.getExpenseBudget({
             "flag": "subitems", "bid": this.bid, "ccid": that.ccid, "fy": this.loginUser.fy
         }).subscribe(data => {
             that.amtMonthWise = data.data[2];
@@ -275,6 +262,22 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
 
     saveExpenseBudget() {
         var that = this;
+
+        if (that.bid === 0) {
+            that._msg.Show(messageType.error, "Error", "Please select Budget");
+            return;
+        }
+
+        if (that.status === "") {
+            that._msg.Show(messageType.error, "Error", "Please select Status");
+            return;
+        }
+
+        if (that.narration === "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Narration");
+            return;
+        }
+
         var monthpriceDT: any = [];
         var monthDetailsDT: any = [];
         var expbDetails: any = [];
@@ -400,17 +403,17 @@ export class AddStartForecastingComp implements OnInit, OnDestroy {
             "startforecasting": expbDetails
         }
 
-        that._expbudgetservice.saveExpenseBudget(saveEB).subscribe(data => {
+        that._budgetservice.saveExpenseBudget(saveEB).subscribe(data => {
             var dataResult = data.data;
 
             if (dataResult[0].funsave_startforecasting.msgid != "-1") {
-                that._message.Show(messageType.success, "Confirmed", dataResult[0].funsave_startforecasting.msg.toString());
+                that._msg.Show(messageType.success, "Confirmed", dataResult[0].funsave_startforecasting.msg.toString());
             }
             else {
-                that._message.Show(messageType.error, "Error", dataResult[0].funsave_startforecasting.msg.toString());
+                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_startforecasting.msg.toString());
             }
         }, err => {
-            that._message.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         });
