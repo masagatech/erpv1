@@ -7,13 +7,14 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Code</label>
-								<input id="cmpcode" name="cmpcode" type="text" [(ngModel)]="cmpcode" class="form-control input-sm" size="20">
+								<input validate="" id="cmpcode" name="cmpcode" type="text" [(ngModel)]="cmpcode" class="form-control input-sm" size="20"
+									(blur)="EnableAddress()">
 							</div>
 						</div>
 						<div class="col-md-8">
 							<div class="form-group">
 								<label class="control-label">Name</label>
-								<input name="cmpname" type="text" [(ngModel)]="cmpname" class="form-control input-sm" size="20">
+								<input validate="" name="cmpname" type="text" [(ngModel)]="cmpname" class="form-control input-sm" size="20">
 							</div>
 						</div>
 					</div>
@@ -22,7 +23,7 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="control-label">Industries</label>
-								<select name="industries" [(ngModel)]="industries" class="form-control">
+								<select validate="0" name="industries" [(ngModel)]="industries" class="form-control">
 									<option [value]="0">-- Select Industries --</option>
 									<option *ngFor="let row of industriesDT" [value]="row.key">
 										{{row.val}}
@@ -33,7 +34,7 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="control-label">Type Of Organisation</label>
-								<select name="cmptype" [(ngModel)]="cmptype" class="form-control">
+								<select validate="0" name="cmptype" [(ngModel)]="cmptype" class="form-control">
 									<option [value]="0">-- Select Organisation Type --</option>
 									<option *ngFor="let row of cmptypeDT" [value]="row.key">
 										{{row.val}}
@@ -45,7 +46,7 @@
 
 					<div class="form-group">
 						<label class="control-label">Description</label>
-						<textarea name="cmpdesc" [(ngModel)]="cmpdesc" class="form-control small-text-box" cols="150" rows="5"></textarea>
+						<textarea validate="" name="cmpdesc" [(ngModel)]="cmpdesc" class="form-control small-text-box" cols="150" rows="5"></textarea>
 					</div>
 				</div>
 			</div>
@@ -72,97 +73,7 @@
 				<div class="tab-content">
 					<div class="tab-pane active" id="contact">
 						<div class="row">
-							<div class="col-md-12">
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Contact Person</label>
-											<input name="contactperson" type="text" [(ngModel)]="contactperson" class="form-control input-sm" size="20">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Designation</label>
-											<select name="desigid" [(ngModel)]="desigid" class="form-control">
-												<option [value]="0">-- Select Designation --</option>
-												<option *ngFor="let row of desigDT" [value]="row.key">
-													{{row.val}}
-												</option>
-											</select>
-										</div>
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Mobile No</label>
-											<input name="mobileno" type="number" [(ngModel)]="mobileno" class="form-control input-sm" size="20" />
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Alt Mobile No</label>
-											<input name="altmobileno" type="number" [(ngModel)]="altmobileno" class="form-control input-sm" size="20">
-										</div>
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Email ID</label>
-											<input name="emailid" type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Alt Email ID</label>
-											<input name="altemailid" type="email" [(ngModel)]="altemailid" class="form-control input-sm" size="20">
-										</div>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="control-label">Address</label>
-									<textarea name="address" [(ngModel)]="address" class="form-control small-text-box" cols="150" rows="5"></textarea>
-								</div>
-
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Country</label>
-											<select name="country" [(ngModel)]="country" class="form-control">
-												<option [value]="">-- Select Country --</option>
-												<option *ngFor="let row of countryDT" [value]="row.key">
-													{{row.val}}
-												</option>
-											</select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">State</label>
-											<input name="state" type="text" [(ngModel)]="state" class="form-control input-sm" size="20">
-										</div>
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">City</label>
-											<input name="city" type="text" [(ngModel)]="city" class="form-control input-sm" size="20">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label class="control-label">Pin Code</label>
-											<input name="pincode" type="text" [(ngModel)]="pincode" class="form-control input-sm" size="20">
-										</div>
-									</div>
-								</div>
-							</div>
+							<addressbook #addrbook [adrbookid]="adrbookid" [adrid]="adrid" [module]="module" [accode]="accode"></addressbook>
 						</div>
 					</div>
 					<div class="tab-pane" id="remarks">
@@ -180,7 +91,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Date Format</label>
-											<select name="dateformat" [(ngModel)]="dateformat" class="form-control">
+											<select validate="0" name="dateformat" [(ngModel)]="dateformat" class="form-control">
 												<option [value]="0">-- Select Date Format --</option>
 												<option *ngFor="let row of dateformatDT" [value]="row.key">
 													{{row.val}}
@@ -193,7 +104,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Currency</label>
-											<select name="currency" [(ngModel)]="currency" (ngModelChange)="fillDropDownByCurrency()" class="form-control">
+											<select validate="0" name="currency" [(ngModel)]="currency" (ngModelChange)="fillDropDownByCurrency(currency)" class="form-control">
 												<option [value]="0">-- Select Currency --</option>
 												<option *ngFor="let row of currencyDT" [value]="row.key">
 													{{row.val}}
@@ -204,7 +115,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Currency Symbol</label>
-											<input type="text" name="currsym" [(ngModel)]="currsym" class="form-control" />
+											<input validate="" type="text" name="currsym" [(ngModel)]="currsym" class="form-control" />
 										</div>
 									</div>
 								</div>
@@ -212,7 +123,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Currency Symbol Placement</label>
-											<select name="currsymplace" [(ngModel)]="currsymplace" class="form-control">
+											<select validate="0" name="currsymplace" [(ngModel)]="currsymplace" class="form-control">
 												<option [value]="0">-- Select Currency Symbol Placement --</option>
 												<option *ngFor="let row of currsymplaceDT" [value]="row.key">
 													{{row.val}}
@@ -223,7 +134,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Decimals</label>
-											<select name="decimals" [(ngModel)]="decimals" class="form-control">
+											<select validate="0" name="decimals" [(ngModel)]="decimals" class="form-control">
 												<option [value]="0">-- Select Decimals --</option>
 												<option *ngFor="let row of decimalsDT" [value]="row.key">
 													{{row.val}}
@@ -236,7 +147,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Decimal Separator</label>
-											<select name="decsep" [(ngModel)]="decsep" (ngModelChange)="setThSep()" class="form-control">
+											<select validate="0" name="decsep" [(ngModel)]="decsep" (ngModelChange)="setThSep()" class="form-control">
 												<option [value]="0">-- Select Currency Symbol --</option>
 												<option *ngFor="let row of decsepDT" [value]="row.key">
 													{{row.val}}
@@ -247,7 +158,7 @@
 									<div class="col-md-6">
 										<div class="form-group">
 											<label class="control-label">Thousand Separator</label>
-											<select name="thsep" [(ngModel)]="thsep" (ngModelChange)="setDecSep()" class="form-control">
+											<select validate="0" name="thsep" [(ngModel)]="thsep" (ngModelChange)="setDecSep()" class="form-control">
 												<option [value]="0">-- Select Thousand Separator --</option>
 												<option *ngFor="let row of thsepDT" [value]="row.key">
 													{{row.val}}
