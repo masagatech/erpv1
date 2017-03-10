@@ -56,6 +56,7 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     @Input() grpseperator: string = ",";
     @Input() islabel: boolean = false;
     @Input() tabindex: number = 500;
+    @Input() isfocus: boolean = false;
 
     @Output() blur = new EventEmitter<any>();
 
@@ -147,6 +148,10 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
             $("#" + that.id).autoNumeric('set', that.innerValue);
             that.isReady = true;
             that.updateModel();
+
+            if (that.isfocus) {
+                $("#" + that.id).focus();
+            }
         }, 100);
     }
 

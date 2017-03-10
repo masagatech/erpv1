@@ -17,6 +17,7 @@ export class CalendarComp implements OnInit {
     @Input() name: string = "";
     @Input() module: string = "";
     @Input() islabel: boolean = false;
+    @Input() isfocus: boolean = false;
 
     loginUser: any = {};
 
@@ -39,7 +40,7 @@ export class CalendarComp implements OnInit {
 
     setMinMaxDate(min: any, max: any) {
         var that = this;
-        
+
         setTimeout(function () {
             if (min != null)
                 $("[name='" + that.name + "']").datepicker('option', 'minDate', min);
@@ -91,6 +92,11 @@ export class CalendarComp implements OnInit {
     }
 
     ngOnInit() {
+        setTimeout(function () {
+            if (this.isfocus) {
+                $("[name='" + this.name + "']").focus();
+            }
+        }, 0);
     }
 }
 
