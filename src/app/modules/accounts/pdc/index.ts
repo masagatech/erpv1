@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataListModule, CheckboxModule } from 'primeng/primeng';
+import { DataListModule, CheckboxModule, ScheduleModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -45,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, CheckboxModule, CalendarModule, NumTextModule],
+        DataListModule, CheckboxModule, ScheduleModule, CalendarModule, NumTextModule],
     declarations: [
         AddPDC,
         ViewPDC,
