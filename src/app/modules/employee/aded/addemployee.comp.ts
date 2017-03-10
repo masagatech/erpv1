@@ -14,6 +14,7 @@ import { AddrbookComp } from "../../usercontrol/addressbook/adrbook.comp";
 import { DynamicTabModule } from "../../usercontrol/dynamictab";
 import { AddDynamicTabComp } from "../../usercontrol/adddynamictab";
 import { CalendarComp } from '../../usercontrol/calendar';
+import { AttributeComp } from "../../usercontrol/attribute/attr.comp";
 
 declare var $: any;
 declare var commonfun: any;
@@ -60,6 +61,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     sccid: number = 0;
     sccname: string = "";
 
+    @ViewChild('attribute')
+    attribute: AttributeComp;
+
     module: string = "";
     attachfile: string = "";
     uploadedFiles: any = [];
@@ -78,7 +82,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     designationDT: any[];
     salarymodeDT: any[];
     ctrlcenterDT: any[];
+    warehouseDT: any = [];
 
+    warehouse: any = 0;
     DuplicateCtrlCenter: boolean = false;
 
     // tab panel
@@ -112,6 +118,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
         this.fillDropDownList();
         this.fillCtrlCenterDDL();
+        this.atttype = "Employee Attribute";
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
@@ -140,9 +147,11 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.setDOB();
         this.setDOJ();
 
-        this.atttype = "Employee Attribute";
         this.setActionRights();
         this.setEmployeeFields();
+
+        this.atttype = "Employee Attribute";
+        this.attribute.attrparam = ["empinfo_attr"];
     }
 
     // add, edit, delete button
@@ -199,7 +208,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     }
 
                     if (that.isadd) {
-                        this.setActionButtons.setTitle("Employee > Add");
+                        this.setActionButtons.setTitle("Add Employee");
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -210,7 +219,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else if (that.isedit) {
-                        this.setActionButtons.setTitle("Employee > Edit");
+                        this.setActionButtons.setTitle("Edit Employee");
                         $('button').prop('disabled', false);
                         $('input').prop('disabled', false);
                         $('select').prop('disabled', false);
@@ -221,7 +230,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                         this.actionButton.find(a => a.id === "edit").hide = true;
                     }
                     else {
-                        this.setActionButtons.setTitle("Employee > Details");
+                        this.setActionButtons.setTitle("Details of Employee");
                         $('button').prop('disabled', true);
                         $('input').prop('disabled', true);
                         $('select').prop('disabled', true);
@@ -257,7 +266,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     getUserAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+        that._commonservice.getAutoData({ "type": "userwithcode", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "search": that.uname }).subscribe(data => {
             $(".username").autocomplete({
                 source: data.data,
                 width: 300,
@@ -283,7 +292,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
     // Fill Gender, MaritalStatus, bldgrp, Country, Department, Designation, SalaryMode Drop Down
 
     fillDropDownList() {
-        this._empservice.getEmployee({ "flag": "dropdown" }).subscribe(data => {
+        this._empservice.getEmployee({ "flag": "dropdown", "cmpid": this.loginUser.cmpid }).subscribe(data => {
             var d = data.data;
 
             // BIND Gender TO DROPDOWN
@@ -306,6 +315,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
             // BIND Salary Mode TO DROPDOWN
             this.salarymodeDT = d.filter(a => a.group === "salarymode");
+
+            // BIND Salary Mode TO DROPDOWN
+            this.warehouseDT = d.filter(a => a.group === "warehouse");
         }, err => {
             console.log(err);
         }, () => {
@@ -398,6 +410,41 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.cclist.splice(this.cclist.indexOf(row), 1);
     }
 
+    // attributes
+
+    attrTab() {
+        setTimeout(function () {
+            $(".attr").val("");
+            $(".attr").focus();
+        }, 0);
+    }
+
+    setAttributes() {
+        var attrid = [];
+
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
+                attrid.push({ "id": items.value });
+            }
+
+            return attrid;
+        }
+    }
+
+    // warehouse
+
+    setWarehouse() {
+        var warehouseid = [];
+
+        for (let wh of this.warehouseDT) {
+            if (wh.Warechk == true) {
+                warehouseid.push({ "id": wh.key });
+            }
+        }
+
+        return warehouseid;
+    }
+
     // Upload Photo
 
     onUploadStart(e) {
@@ -465,7 +512,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
             // control center
             "cc": allcc,
             "uidcode": that.loginUser.login,
-            "dynamicfields": that.tabListDT
+            "dynamicfields": that.tabListDT,
+            "attributes": that.setAttributes(),
+            "warehouse": that.setWarehouse()
         }
 
         this._empservice.saveEmployee(saveEmp).subscribe(data => {
@@ -506,6 +555,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     var EmpDetails = data.data[0]._empdata;
                     var SecondayCC = data.data[0]._secondarycc === null ? [] : data.data[0]._secondarycc;
                     var dynFields = data.data[0]._dynfields === null ? [] : data.data[0]._dynfields;
+                    var attrfields = data.data[0]._attributejson === null ? [] : data.data[0]._attributejson;
 
                     that.empid = EmpDetails[0].empid;
                     that.uid = EmpDetails[0].uid;
@@ -539,6 +589,17 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
                     that.doj.setDate(doj);
                     that.pccid = EmpDetails[0].pctrlid;
                     that.cclist = SecondayCC;
+                    that.attribute.attrlist = attrfields;
+
+                    if (that.warehouseDT.length > 0) {
+                        var wareedit = EmpDetails[0].warehouse;
+
+                        for (var j = 0; j <= wareedit.length - 1; j++) {
+                            var chk = that.warehouseDT.find(a => a.key === wareedit[j].id);
+                            chk.Warechk = true;
+                        }
+                    }
+
                     that.tabListDT = dynFields;
                 }, err => {
                     console.log("Error");
