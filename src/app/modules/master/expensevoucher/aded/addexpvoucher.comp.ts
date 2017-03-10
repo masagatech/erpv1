@@ -146,6 +146,11 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         else {
             that.expenseheadDT.push({
                 "expvid": 0,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "ccid": that.ccid,
+                "empid": that.empid,
+                "noofdocs": that.noofdocs,
                 "expheadid": that.expheadid,
                 "amount": that.amount
             });
@@ -253,7 +258,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
             that.docno = _expvdata[0].docno;
             that.period = _expvdata[0].period;
             that.noofdocs = _expvdata[0].noofdocs;
-            that.ccid = _expvdata[0].ccid;
+            that.ccid = _expvdata[0].ctrlcenterid;
 
             that.fillEmployeeDDL();
             that.empid = _expvdata[0].empid;

@@ -269,7 +269,7 @@ export class AddRBI implements OnInit, OnDestroy {
         var noptno = 0;
 
         that._rbservice.getRBDetails({
-            "flag": "id", "rbid": this.rbid
+            "flag": "id", "docno": this.rbid
         }).subscribe(seriesno => {
             nopfno = seriesno.data[0].noofpage;
             noptno = that.fromno + nopfno;
@@ -284,7 +284,7 @@ export class AddRBI implements OnInit, OnDestroy {
         var that = this;
 
         that._commonservice.checkValidate({
-            "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": "2", "fy": "7"
+            "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             var dataResult = data.data;
 
@@ -317,11 +317,6 @@ export class AddRBI implements OnInit, OnDestroy {
     saveRBIDetails() {
         var that = this;
 
-        if (that.isFormChange()) {
-            that._msg.Show(messageType.info, "info", "No save! There is no change!");
-            return;
-        };
-
         var validateme = commonfun.validate();
 
         if (!validateme.status) {
@@ -329,7 +324,6 @@ export class AddRBI implements OnInit, OnDestroy {
             validateme.data[0].input.focus();
             return;
         }
-
 
         var saveRBI = {
             "irbid": this.irbid,

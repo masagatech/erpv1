@@ -252,11 +252,11 @@ export class AddExpenseComp implements OnInit, OnDestroy {
             "autoid": that.autoid,
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
-            "docdate": that.docdate,
+            "docdate": that.docdate.getDate(),
             "expid": that.expid,
             "iscmplevel": that.iscmplevel,
             "isemplevel": that.isemplevel,
-            "ctrlcentermap": that.getCCMapping(),
+            "cc": that.getCCMapping(),
             "narration": that.narration,
             "uidcode": that.loginUser.login,
             "suppdoc": that.suppdoc
@@ -266,11 +266,11 @@ export class AddExpenseComp implements OnInit, OnDestroy {
             var dataResult = data.data;
 
             if (dataResult[0].funsave_expensectrlmap.msgid != "-1") {
-                that._msg.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensectrlmap.msg.toString());
+                that._msg.Show(messageType.success, "Confirmed", dataResult[0].funsave_expensectrlmap.msg);
                 that._router.navigate(["/master/expensecontrolcentermap"]);
             }
             else {
-                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg.toString());
+                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_expensectrlmap.msg);
             }
         }, err => {
             console.log(err);
@@ -315,35 +315,43 @@ export class AddExpenseComp implements OnInit, OnDestroy {
             var dataresult = data.data;
 
             var _ecmdata = dataresult[0]._ecmdata;
+            var _ccdata = dataresult[0]._ccdata;
             var _uploadedfile = dataresult[0]._uploadedfile;
             var _suppdoc = dataresult[0]._suppdoc;
 
             if (_ecmdata !== null) {
                 that.expid = _ecmdata[0].expid;
                 that.expname = _ecmdata[0].expname;
-                that.docdate = _ecmdata[0].docdate;
+                var date = new Date(_ecmdata[0].docdate);
+                that.docdate.setDate(date);
                 that.iscmplevel = _ecmdata[0].iscmplevel;
                 that.isemplevel = _ecmdata[0].isemplevel;
                 that.narration = _ecmdata[0].narration;
-
-                var existsccid, newccid;
-
-                for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
-                    for (var j = 0; j < _ecmdata[0].ctrlcentermap.length; j++) {
-                        existsccid = that.ctrlcentermapDT[i].ctrlcenterid;
-                        newccid = _ecmdata[0].ctrlcentermap[j].ccid;
-
-                        if (existsccid === newccid) {
-                            that.ctrlcentermapDT[i].isprofitcenter = _ecmdata[0].ctrlcentermap[j].ispc;
-                            that.ctrlcentermapDT[i].iscostcenter = _ecmdata[0].ctrlcentermap[j].iscc;
-                        }
-                    }
-                }
             }
             else {
                 that.iscmplevel = false;
                 that.isemplevel = false;
                 that.narration = "";
+            }
+
+            //that.ctrlcentermapDT = _ccdata;
+
+            var existsccid, newccid;
+
+            for (var i = 0; i < that.ctrlcentermapDT.length; i++) {
+                for (var j = 0; j < _ccdata.length; j++) {
+                    existsccid = that.ctrlcentermapDT[i].ctrlcenterid;
+                    newccid = _ccdata[j].ccid;
+
+                    if (existsccid === newccid) {
+                        that.isselectall = true;
+                        that.isselectpc = true;
+                        that.isselectcc = true;
+
+                        that.ctrlcentermapDT[i].isprofitcenter = _ccdata[j].ispc;
+                        that.ctrlcentermapDT[i].iscostcenter = _ccdata[j].iscc;
+                    }
+                }
             }
 
             that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;

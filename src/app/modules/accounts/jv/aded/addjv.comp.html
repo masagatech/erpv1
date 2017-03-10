@@ -6,7 +6,7 @@
 					<div class="col-md-3">
 						<div class="form-group">
 							<label class="control-label">JV Date</label>
-							<calendar #jvdate [name]="'jvdate'"></calendar>
+							<calendar #jvdate [name]="'jvdate'" [isfocus]="true" [tabindex]="1"></calendar>
 						</div>
 						<div class="form-group" style="display:none;">
 							<p-checkbox [(ngModel)]="isactive" name="chkIsActive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
@@ -15,7 +15,7 @@
 					<div class="col-md-9">
 						<div class="form-group">
 							<label class="control-label">Narration</label>
-							<textarea name="jvnarr" validate="" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+							<textarea name="jvnarr" validate="" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5" tabindex="2"></textarea>
 						</div>
 					</div>
 				</div>
