@@ -5,13 +5,13 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Group Code</label>
-					<input type="text" validate="" class="form-control groupcode" maxlength="10" tabindex="1" name="groupcode" [(ngModel)]="groupcode">
+					<input type="text" validate="" class="form-control groupcode" placeholder="Group code" maxlength="10" tabindex="1" name="groupcode" [(ngModel)]="groupcode">
 				</div>
 			</div>
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Group Name</label>
-					<input type="text" validate="" class="form-control groupName" tabindex="2" name="groupName" [(ngModel)]="groupName">
+					<input type="text" validate="" class="form-control groupName" placeholder="Group name" tabindex="2" name="groupName" [(ngModel)]="groupName">
 				</div>
 			</div>
 		</div>
@@ -21,14 +21,14 @@
 				<div class='form-group'>
 					<label>Parent of group</label>
 					<p-autoComplete [(ngModel)]="neturname" id="neturname" class="form-controlAutoComplete" (onSelect)="AcGroupSelect($event)"
-						[suggestions]="AcGroupAutodata" (completeMethod)="AcGroupAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Parent Group"
+						[suggestions]="AcGroupAutodata" (completeMethod)="AcGroupAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Parent Group"
 						[minLength]="1"></p-autoComplete>
 				</div>
 			</div>
 			<div class="col-md-3">
 				<div class='form-group'>
 					<label>Applicable From</label>
-					<select class="form-control" tabindex="3" [(ngModel)]="appfrom" [disabled]="chkall==true">
+					<select class="form-control" tabindex="4" [(ngModel)]="appfrom" [disabled]="chkall==true">
 							<option *ngFor="let items of financiallist"  [value]="items.fy">
 							{{items.years}}
 							</option>
@@ -43,7 +43,7 @@
 			<div class='form-group'>
 				<label>Remark</label>
 				<div class="input-group">
-					<textarea [(ngModel)]="remark" tabindex="5" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
+					<textarea [(ngModel)]="remark" placeholder="Remark" tabindex="5" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
 						rows="2"></textarea>
 				</div>
 			</div>

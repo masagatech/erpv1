@@ -1,0 +1,209 @@
+<div class="middlepan">
+	<div class="panel panel-theme" style="{{ transferdetails.length>0 ? '':'none;' }} ">
+		<div class="panel-body">
+			<div class="col-md-10">
+				<div class="col-md-4">
+					<div class='form-group'>
+						<label>From</label>
+						<!--<input type="text" validate="" class="form-control wha" tabindex="1" validate="" [(ngModel)]="fromwh" (keyup)="getAutoCompleteWha(this)">-->
+						<!--<p-autoComplete [(ngModel)]="fromwh" id="fromwh" class="form-controlAutoComplete" (onSelect)="FromWarehouseSelect($event)"
+							[suggestions]="FromWarehouseAutodata" (completeMethod)="FromWarehouseAuto($event)" [tabindex]="1" field="label" [size]="30"
+							placeholder="From Warehouse" [minLength]="1"></p-autoComplete>-->
+						<!--<span>{{fromwh}}</span>-->
+						<input type="text" class="form-control" readonly="true" [(ngModel)]="fromwh" />
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class='form-group'>
+						<label>To</label>
+						<!--<input type="text" validate="" class="form-control whb" tabindex="2" validate="" [(ngModel)]="towh" (keyup)="getAutoCompleteWhb(this)">-->
+						<!--<p-autoComplete [(ngModel)]="towh" id="towh" class="form-controlAutoComplete" (onSelect)="ToWarehouseSelect($event)" [suggestions]="ToWarehouseAutodata"
+							(completeMethod)="ToWarehouseAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="To Warehouse" [minLength]="1"></p-autoComplete>-->
+						<!--<span>{{towh}}</span>-->
+						<input type="text" class="form-control" readonly="true" [(ngModel)]="towh" />
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class='form-group'>
+						<label>Document No</label>
+						<!--<input type="text" id="docdate" class="form-control" tabindex="1" [(ngModel)]="docno" />-->
+						<input type="text" class="form-control" readonly="true" [(ngModel)]="docno" />
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class='form-group'>
+						<label>Doc Date</label>
+					
+						<!--<span>{{docdate}}</span>-->
+						<input type="text" class="form-control" readonly="true" [(ngModel)]="docdate" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="table-responsive" style="{{ transferdetails.length>0 ? '':'none;' }}">
+			<p-dataTable #dt [value]="transferdetails" [lazy]="true" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+				[(selection)]="selectedRB1" expandableRows="true">
+				<p-column header="#" [style]="{'width':'10px','text-align':'left'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						{{rowIndex+1}}
+					</template>
+				</p-column>
+				<p-column field="itemcode" header="Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
+				<p-column field="itemname" header="Item Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+				<p-column field="qty" header="Qty" [style]="{'width':'40px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [decimals]="2" [(ngModel)]="row.qty" (keyup)="CulculateQty(row)"></numtext>
+					</template>
+				</p-column>
+				<p-column field="rate" header="Rate" [style]="{'width':'50px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" [decimals]="2" [(ngModel)]="row.rate"></numtext>
+					</template>
+				</p-column>
+				<p-column field="amount" header="Amount" [style]="{'width':'50px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="true" [decimals]="2" [islabel]="true" [(ngModel)]="row.amount"></numtext>
+					</template>
+				</p-column>
+				<footer>
+					<table class="tableNoborder">
+						<tbody>
+							<tr>
+								<td style="width:40px;text-align:left"></td>
+								<td style="width:30px;text-align:left"></td>
+								<td style="width:30px;text-align:left"></td>
+								<td style="width:30px;text-align:right">
+									{{TotalQty()}}
+								</td>
+								<td style="width:30px;text-align:right"></td>
+								<td style="width:30px;text-align:right">
+									{{TotalAmt() | currency:loginUser._globsettings.currency:true}}
+								</td>
+
+							</tr>
+						</tbody>
+					</table>
+				</footer>
+			</p-dataTable>
+		</div>
+	</div>
+	<div class="panel panel-theme" style="{{ transferdetails.length > 0 ? '':'none;' }}">
+		<div class="panel-body">
+			<ul class="nav nav-tabs" id="headtab">
+				<li class="active"><a data-target="#trans" role="button" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
+			</ul>
+			<div class="tab-content" style="min-height:240px;">
+				<div class="tab-pane active" id="trans">
+					<div class="row">
+						<div class="col-md-4">
+							<div class='form-group'>
+								<label>Transpotr</label>
+								<p-autoComplete [(ngModel)]="transname" class="form-controlAutoComplete trans" (onSelect)="TranspoterSelect($event)"
+									[suggestions]="TranspoterAutodata" (completeMethod)="TranspoterAuto($event)" [tabindex]="1" field="label" [size]="30"
+									placeholder="Transpoter" [minLength]="1"></p-autoComplete>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class='form-group'>
+								<label>LR No</label>
+								<input type="text" id="lrno" class="form-control" [(ngModel)]="lrno">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class='form-group'>
+								<label>LR Date</label>
+								
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class='form-group'>
+								<div class="ui-g-12">
+									<p-radioButton name="group1" value="paid" id="paid"  label="Paid" [(ngModel)]="paid"></p-radioButton>
+									<p-radioButton name="group1" value="tobepaid" id="tobepaid" label="To be paid" [(ngModel)]="paid"></p-radioButton>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-2" *ngIf="paid=='tobepaid'">
+							<div class="form-group">
+								<label>Amount</label>
+								<input type="text" class="form-control amount" [(ngModel)]="amount">
+							</div>
+						</div>
+					</div>
+					<div class="col-md-8">
+						<div class='form-group'>
+							<label>Remark</label>
+							<textarea [(ngModel)]="remark" class="form-control medium-text-box" cols="75" tabindex="8" autocomplete='off' rows="3"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="sidepan">
+	<!--widgit-->
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">From Warehouse</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+
+			<div class="panel-body">
+				{{fromwhadr}} {{fromemail}} {{frommob}}
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">To Warehouse</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+				{{towhadr}} {{toemial}} {{tomob}}
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Document No</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<!--<div style="height: 320px !important;overflow-y: scroll;">-->
+				<table class='table table-bordered table-condensed table-striped table-hover'>
+					<tbody>
+						<tr>
+							<input type="text" [(ngModel)]="DcNo" class="form-control" placeholder="Search Doc No">
+						</tr>
+						<tr>
+							<th>Doc No</th>
+						</tr>
+						<tr class="table-row" *ngFor="let item of doclist">
+							<td><a role="button" (click)=GetDetails(item)>{{item.docno}}</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<!--</div>-->
+			</div>
+		</div>
+	</div>
+</div>

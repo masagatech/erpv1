@@ -1097,7 +1097,7 @@ html select[disabled] {
 }
 
 .middlepan {
-    width: calc(100% - 193px)!important;
+    width: calc(100% - 202px)!important;
     float: left;
 }
 

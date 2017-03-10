@@ -13,6 +13,9 @@ export class accountledger {
     getaccountledger(req: any) {
         return this._dataserver.post("getAccountLedger", req);
     }
+    getAccountLedgeracinfo(req: any) {
+        return this._dataserver.post("getAccountLedgeracinfo", req);
+    }
 
     saveAcLedger(req: any) {
         return this._dataserver.post("saveAccountLedger", req);

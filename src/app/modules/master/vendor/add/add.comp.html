@@ -4,13 +4,13 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
+					<input type="text" class="form-control code" placeholder="Code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Vendor Name</label>
-					<input type="text" class="form-control vendor" validate="" tabindex="2" [(ngModel)]="vendor">
+					<input type="text" class="form-control vendor" placeholder="Vendor name" validate="" tabindex="2" [(ngModel)]="vendor">
 				</div>
 			</div>
 		</div>
@@ -18,13 +18,13 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Parent Code</label>
-					<input type="text" class="form-control parentcode" maxlength="10" tabindex="3" [(ngModel)]="parentcode" (keyup)="getAutoCompleteParentCode(this)">
+					<input type="text" class="form-control parentcode" placeholder="Parent code" maxlength="10" tabindex="3" [(ngModel)]="parentcode" (keyup)="getAutoCompleteParentCode(this)">
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Parent Name</label>
-					<input type="text" class="form-control parentname" tabindex="4" readonly="true" [(ngModel)]="parentname">
+					<input type="text" class="form-control parentname" placeholder="Parent name" tabindex="4" readonly="true" [(ngModel)]="parentname">
 				</div>
 			</div>
 		</div>
@@ -43,7 +43,7 @@
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Remark</label>
-					<input type="text" class="form-control" tabindex="4" [(ngModel)]="remark">
+					<input type="text" class="form-control" placeholder="Remark" tabindex="4" [(ngModel)]="remark">
 				</div>
 			</div>
 		</div>
@@ -79,13 +79,13 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Key</label>
-										<input type="text" class="form-control key" tabindex="5" [(ngModel)]="key" (keyup)="getAutoCompletekey(this)">
+										<input type="text" class="form-control key" placeholder="Any key" tabindex="5" [(ngModel)]="key" (keyup)="getAutoCompletekey(this)">
 									</div>
 								</div>
 								<div class="col-md-5">
 									<div class='form-group'>
 										<label>Value</label>
-										<input type="text" class="form-control val" (keyup.enter)="AddNewKyeval()" tabindex="6" [(ngModel)]="value">
+										<input type="text" class="form-control val" placeholder="Value" (keyup.enter)="AddNewKyeval()" tabindex="6" [(ngModel)]="value">
 									</div>
 								</div>
 								<div class="col-md-1">

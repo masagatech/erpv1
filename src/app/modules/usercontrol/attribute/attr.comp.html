@@ -3,7 +3,7 @@
 		<div class="col-md-5">
 			<div class='form-group'>
 				<label>{{labelname}}</label>
-				<input type="text=" class="form-control attr" tabindex="300" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+				<input type="text=" class="form-control attr" placeholder="Attribute name" tabindex="300" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
 					(keyup)="getAutoCompleteattr(this)" />
 			<!--<p-autoComplete [(ngModel)]="CustName"  class="form-controlAutoComplete" (onSelect)="AttributeSelect($event)" [suggestions]="AttributeAutodata" (completeMethod)="AttributeAuto($event)" field="label" [size]="30" placeholder="Attribute Name" [minLength]="1"></p-autoComplete>-->
 			</div>

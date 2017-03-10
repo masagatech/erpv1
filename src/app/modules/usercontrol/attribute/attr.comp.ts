@@ -38,7 +38,7 @@ export class AttributeComp implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
     }
 
-    //Autocompleted Attribute Name
+   // Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
         this._commonservice.getAutoData({
