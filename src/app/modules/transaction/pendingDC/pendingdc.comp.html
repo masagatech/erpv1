@@ -102,37 +102,6 @@
 									<numtext [iscurrency]="true" [islabel]="true" [css]="inlinetextbox"></numtext>
 								</p-column>
 							</p-dataTable>
-							<!--</div>-->
-							<!--<table class="table table-striped table-bordered">
-						<thead>
-							<tr>
-								<th>#No</th>
-								<th>Item Code</th>
-								<th>Item Name</th>
-								<th class="textCenter">Qty</th>
-								<th class="textCenter">Rate</th>
-								<th class="textCenter">Dis</th>
-								<th class="textCenter">Total</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr *ngFor="let item of DocDetailslist let i=index">
-								<td><span>{{i+1}}</span><span class="displayNone">{{item.docno}}</span><span class="hide">{{item.detaiid}}</span></td>
-								<td>{{item.code}}</td>
-								<td>{{item.itemname}}</td>
-								<td class="col-xs-1"><input type="text" class="form-control  textalign" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
-										(change)="CulculateQty(item.code,item.oldqty,item.ordqty)" [(ngModel)]="item.ordqty"></td>
-								<td class="textalign col-xs-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.rate"></td>
-								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.dis"></td>
-								<td class="textalign col-md-1"><input type="text" readonly="true" class="form-control  textalign" [(ngModel)]="item.amount"></td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<tr class="bg-warning">
-								<td colspan="7" class="textalign"><b>{{SubTotal()|number}}</b></td>
-							</tr>
-						</tfoot>
-					</table>-->
 						</div>
 					</div>
 				</div>
@@ -147,8 +116,8 @@
 							<tr>
 								<th>Doc No</th>
 							</tr>
-							<tr class="table-row" *ngFor="let item of doclist">
-								<td><a role="button" (click)=GetDetails(item)>{{item.docno}}</a></td>
+							<tr class="table-row" *ngFor="let item of doclist" (click)="GetDetails(item)">
+								<td><a role="button" (click)="GetDetails(item)">{{item.docno}}</a></td>
 							</tr>
 						</tbody>
 					</table>

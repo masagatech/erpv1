@@ -1,1 +1,52 @@
-<h1>View</h1>
+<div class="table-responsive">
+	<p-dataTable #dt [value]="inwordlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+		(onRowExpand)="expandDetails($event)" (onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
+		<p-column header="#" [style]="{'width':'10px','text-align':'left'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				{{rowIndex+1}}
+			</template>
+		</p-column>
+		<p-column header="More" expander="true" [style]="{'width':'20px','text-align':'left'}"></p-column>
+		<p-column field="newdocno" header="Doc No" [style]="{'width':'30px','text-align':'right'}"></p-column>
+		<p-column field="fromname" header="From Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+		<p-column field="toname" header="To Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="totalqty" header="Total Qty" [style]="{'width':'50px','text-align':'right'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '1'}}" css="inlinetextbox" [(ngModel)]="row.totalqty"></numtext>
+			</template>
+		</p-column>
+		<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				<button type="button" (click)="EditItem(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
+			</template>
+		</p-column>
+		<template let-row pTemplate="rowexpansion">
+			<span *ngIf="!row.loading">Loading....</span>
+			<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="false" expandableRows="true"
+				[totalRecords]="row.totalDetailsRecords" (onRowClick)="Editacgroup($event)">
+				<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						{{rowIndex+1}}
+					</template>
+				</p-column>
+				<p-column field="code" header="Item code" [style]="{'width':'30px','text-align':'left'}"></p-column>
+				<p-column field="itemname" header="Item Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+				<p-column field="qty" header="Qty" [style]="{'width':'20px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '2'}}" css="inlinetextbox" [(ngModel)]="row.qty"></numtext>
+					</template>
+				</p-column>
+				<p-column field="rate" header="Rate" [style]="{'width':'20px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '3'}}" css="inlinetextbox" [(ngModel)]="row.rate"></numtext>
+					</template>
+				</p-column>
+				<p-column field="amount" header="Amount" [style]="{'width':'30px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="true" [islabel]="true" id="{{'nmtxt_' + rowIndex + '4'}}" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+					</template>
+				</p-column>
+			</p-dataTable>
+		</template>
+	</p-dataTable>
+</div>

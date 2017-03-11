@@ -7,6 +7,7 @@ import { grnInwordService } from "../../../../_service/grninword/grninword-servi
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -20,7 +21,8 @@ declare var $: any;
     subscr_actionbarevt: Subscription;
 
     // local veriable 
-
+    totalRecords: number = 0;
+    inwordlist: any = [];
 
     //user details
     loginUser: LoginUserModel;
@@ -39,28 +41,95 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+    }
 
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
+    //Pagination Grid View 
+    loadRBIGrid(event: LazyLoadEvent) {
+        this.getInworddetails(event.first, (event.first + event.rows));
+    }
 
-                // this.docno = params['id'];
-                // this.editMode(this.docno);
+    //Get all detail
+    getInworddetails(from: number, to: number) {
+        try {
+            var that = this;
+            that.grnServies.getInwordgriddetail({
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "from": from,
+                "to": to,
+                "createdby": that.loginUser.login,
+                "flag": ""
+            }).subscribe(result => {
+                that.totalRecords = result.data[1][0].recordstotal;
+                that.inwordlist = result.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
 
-                $('input').attr('disabled', 'disabled');
-                $('select').attr('disabled', 'disabled');
-                $('textarea').attr('disabled', 'disabled');
-
+    //Row edit event
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
             }
             else {
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
+                data = event;
             }
-        });
+            debugger;
+            if (!data.islocked) {
+                this._router.navigate(['warehouse/grninword/edit', data.newdocno]);
+            }
+            else {
+                this._msg.Show(messageType.error, "error", "this record locked");
+            }
+
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
+    }
+
+    //expand click event
+    expandDetails(event) {
+        try {
+            if (event.details && event.details.length > 0) { return; }
+            var that = this;
+            var row = event;
+            row.loading = false;
+            this.grnServies.getgrninworddetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdBy": this.loginUser.login,
+                "docno": row.newdocno,
+                "flag": "expanddetail",
+            }).subscribe(data => {
+                var dataset = data.data;
+                debugger;
+                if (dataset.length > 0) {
+                    row.loading = true;
+                    row.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.error, "error", "Record Not Found");
+                }
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     actionBarEvt(evt) {

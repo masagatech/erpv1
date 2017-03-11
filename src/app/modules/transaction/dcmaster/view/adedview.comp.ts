@@ -139,7 +139,7 @@ export class dcview implements OnInit, OnDestroy {
                     this.salesorderview = dataset[0];
                 }
                 else {
-                    this._msg.Show(messageType.info, "info", "Record Not Found");
+                    this._msg.Show(messageType.error, "error", "Record Not Found");
                     $("#Custcode input").focus();
                 }
             }, err => {

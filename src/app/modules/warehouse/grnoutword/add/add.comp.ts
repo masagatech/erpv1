@@ -86,10 +86,6 @@ declare var commonfun: any;
 
     //Add Save Edit Delete Button
     ngOnInit() {
-
-
-
-
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
@@ -103,8 +99,8 @@ declare var commonfun: any;
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
-                // this.docno = params['id'];
-                // this.editMode(this.docno);
+                this.docno = params['id'];
+                this.Edit(this.docno);
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
@@ -128,17 +124,22 @@ declare var commonfun: any;
 
     //Page Load Event Get Document No 
     getdocumentno() {
-        this.grnServies.getgrndetal({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "flag": "docno"
-        }).subscribe(result => {
-            this.doclist = result.data[0];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //compeletd
-        })
+        try {
+            this.grnServies.getgrndetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "flag": "docno"
+            }).subscribe(result => {
+                this.doclist = result.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Get type
@@ -148,78 +149,153 @@ declare var commonfun: any;
 
     //Transpoter Auto Extender
     TranspoterAuto(event) {
-        let query = event.query;
-        this._autoservice.getAutoDataGET({
-            "type": "transpoter",
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "search": query
-        }).then(data => {
-            this.TranspoterAutodata = data;
-        });
+        try {
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
+                "type": "transpoter",
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.TranspoterAutodata = data;
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //Transpoter Selectec
     TranspoterSelect(event) {
-        this.transid = event.value;
-        this.transname = event.label;
+        try {
+            this.transid = event.value;
+            this.transname = event.label;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Documenty No Click Event
     GetDetails(item) {
-        this.grnServies.getgrndetal({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "docno": item.docno,
-            "flag": ""
-        }).subscribe(result => {
-            var dataset = result.data;
+        try {
+            this.grnServies.getgrndetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "docno": item.docno,
+                "flag": ""
+            }).subscribe(result => {
+                var dataset = result.data;
+                this.fromwh = dataset[0][0]._fromwhdetai[0].fromwhname;
+                this.fromwhid = dataset[0][0]._fromwhdetai[0].fromid;
+                this.fromemail = dataset[0][0]._fromwhdetai[0].email;
+                this.frommob = dataset[0][0]._fromwhdetai[0].mob
+                this.fromwhadr = dataset[0][0]._fromwhdetai[0].address;
+                this.docdate = dataset[0][0]._fromwhdetai[0].docdate;
+                this.docno = item.docno;
 
-            this.fromwh = dataset[0][0]._fromwhdetai[0].fromwhname;
-            this.fromwhid = dataset[0][0]._fromwhdetai[0].fromid;
-            this.fromemail = dataset[0][0]._fromwhdetai[0].email;
-            this.frommob = dataset[0][0]._fromwhdetai[0].mob
-            this.fromwhadr = dataset[0][0]._fromwhdetai[0].address;
-            this.docdate = dataset[0][0]._fromwhdetai[0].docdate;
-            this.docno = item.docno;
+                this.towh = dataset[0][0].towhdetail[0].towhname;
+                this.towhid = dataset[0][0].towhdetail[0].toid;
+                this.toemial = dataset[0][0].towhdetail[0].email;
+                this.tomob = dataset[0][0].towhdetail[0].mob;
+                this.towhadr = dataset[0][0].towhdetail[0].address;
+                this.actionButton.find(a => a.id === "save").hide = false;
 
-            this.towh = dataset[0][0].towhdetail[0].towhname;
-            this.towhid = dataset[0][0].towhdetail[0].toid;
-            this.toemial = dataset[0][0].towhdetail[0].email;
-            this.tomob = dataset[0][0].towhdetail[0].mob;
-            this.towhadr = dataset[0][0].towhdetail[0].address;
-            this.actionButton.find(a => a.id === "save").hide = false;
+                this.transferdetails = dataset[1];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
 
-            this.transferdetails = dataset[1];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //compeletd
-        })
+    //Edit Data
+    Edit(docno) {
+        try {
+            this.grnServies.getgrndetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "docno": docno,
+                "flag": "edit"
+            }).subscribe(result => {
+                var dataset = result.data;
+                this.fromwh = dataset[0][0]._fromwhdetai[0].fromwhname;
+                this.fromwhid = dataset[0][0]._fromwhdetai[0].fromid;
+                this.fromemail = dataset[0][0]._fromwhdetai[0].email;
+                this.frommob = dataset[0][0]._fromwhdetai[0].mob
+                this.fromwhadr = dataset[0][0]._fromwhdetai[0].address;
+                this.docdate = dataset[0][0]._fromwhdetai[0].docdate;
+                this.docno = docno;
+                this.transname = dataset[0][0].label;
+                this.transid = dataset[0][0].value;
+                this.lrno = dataset[0][0].lrno;
+                this.amount = dataset[0][0].transamt;
+
+                this.towh = dataset[0][0].towhdetail[0].towhname;
+                this.towhid = dataset[0][0].towhdetail[0].toid;
+                this.toemial = dataset[0][0].towhdetail[0].email;
+                this.tomob = dataset[0][0].towhdetail[0].mob;
+                this.towhadr = dataset[0][0].towhdetail[0].address;
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.transferdetails = dataset[1];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
+
     }
 
     //Quntity Culculation
     CulculateQty(row) {
-        return row.amount = row.qty * row.rate;
+        try {
+            if (row.qty <= row.oldqty) {
+                return row.amount = row.qty * row.rate;
+            }
+            else {
+                this._msg.Show(messageType.error, "error", "Invalid Quntity");
+                row.qty = row.oldqty;
+                return;
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Total Quntity
     TotalQty() {
-        var tqty = 0;
-        for (let item of this.transferdetails) {
-            tqty += parseFloat(item.qty);
+        try {
+            var tqty = 0;
+            for (let item of this.transferdetails) {
+                tqty += parseFloat(item.qty);
+            }
+            return tqty;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return tqty;
+
     }
 
     //Total Amount
     TotalAmt() {
-        var tamt = 0;
-        for (let item of this.transferdetails) {
-            tamt += parseFloat(item.amount);
+        try {
+            var tamt = 0;
+            for (let item of this.transferdetails) {
+                tamt += parseFloat(item.amount);
+            }
+            return tamt;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return tamt;
+
     }
 
     //Clear Control
@@ -242,46 +318,55 @@ declare var commonfun: any;
 
     //Detail Paramter
     paramdetails() {
-        var param = [];
-        for (let item of this.transferdetails) {
-            param.push({
-                "autoid": 0,
-                "docno": item.docno,
-                "docdate": this.docdate,
-                "fromid": this.fromwhid,
-                "toid": this.towhid,
-                "itemid": item.itemsid,
-                "qty": item.qty,
-                "rate": item.rate,
-                "rateid": item.rateid,
-                "amt": item.amount,
-                "transid": this.transid,
-                "tranferid": item.transferid,
-                "lrno": this.lrno,
-                "lrdate": this.docdate,
-                "transamt": this.paid === "Paid" ? 0 : this.amount,
-                "paid": this.paid === "Paid" ? true : false,
-                "createdby": this.loginUser.login,
-                "remark": this.remark,
-                "remark1": "",
-                "remark2": "",
-                "remark3": []
-            })
+        try {
+            var param = [];
+            for (let item of this.transferdetails) {
+                param.push({
+                    "autoid": item.autoid,
+                    "docno": item.docno,
+                    "docdate": this.docdate,
+                    "fromid": this.fromwhid,
+                    "toid": this.towhid,
+                    "itemid": item.itemsid,
+                    "qty": item.qty,
+                    "rate": item.rate,
+                    "rateid": item.rateid,
+                    "amt": item.amount,
+                    "transid": this.transid,
+                    "tranferid": item.transferid,
+                    "lrno": this.lrno,
+                    "lrdate": this.docdate,
+                    "transamt": this.paid === "Paid" ? 0 : this.amount,
+                    "paid": this.paid === "Paid" ? true : false,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+            }
+            return param;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return param;
+
     }
 
     //Saveing Paramter
     paramjson() {
-        var param = {
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "docno": this.docno,
-            "newdocno":this.newdocno,
-            "grndetails": this.paramdetails()
+        try {
+            var param = {
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "docno": this.docno,
+                "newdocno": this.newdocno,
+                "grndetails": this.paramdetails()
+            }
+            return param;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        console.log(param);
-        return param;
+
     }
 
     actionBarEvt(evt) {
@@ -314,25 +399,33 @@ declare var commonfun: any;
                 return;
             }
             this.actionButton.find(a => a.id === "save").enabled = false;
-            this.grnServies.savegrnoutword(
-                this.paramjson()
-            ).subscribe(result => {
-                var dataset = result.data[0];
-                if (dataset.funsave_grnoutword.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", dataset.funsave_grnoutword.msg);
-                    this.ClearControl();
-                }
-                else {
-                    this._msg.Show(messageType.error, "error", "Data Not Saveing");
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //compeletd
-            })
+            try {
+                this.grnServies.savegrnoutword(
+                    this.paramjson()
+                ).subscribe(result => {
+                    var dataset = result.data[0];
+                    if (dataset.funsave_grnoutword.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", dataset.funsave_grnoutword.msg);
+                        this.ClearControl();
+                    }
+                    else {
+                        this._msg.Show(messageType.error, "error", "Data Not Saveing");
+                    }
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //compeletd
+                })
+            } catch (e) {
+                this._msg.Show(messageType.error, "error", e.message);
+            }
             this.actionButton.find(a => a.id === "save").enabled = true;
         } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
         }

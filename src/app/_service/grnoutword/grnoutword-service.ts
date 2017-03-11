@@ -14,4 +14,8 @@ export class grnOutwordService {
         return this._dataserver.post("savegrnoutword", req);
     }
 
+    getoutwordgriddetail(req: any) {
+        return this._dataserver.post("getviewdetails", req);
+    }
+
 }
