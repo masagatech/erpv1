@@ -66,7 +66,7 @@ export class ViewJV implements OnInit, OnDestroy {
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
-            console.log("Error");
+            // console.log("Error");
         }, () => {
             // console.log("Complete");
         });

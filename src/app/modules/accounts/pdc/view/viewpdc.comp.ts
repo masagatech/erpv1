@@ -145,6 +145,10 @@ export class ViewPDC implements OnInit, OnDestroy {
         this._router.navigate(['/accounts/bankreceipt/pdc/', row.pdcid]);
     }
 
+    openPDCDetails(row) {
+        this._router.navigate(['/accounts/pdc/edit/', row.pdcid]);
+    }
+
     handleDayClick(event) {
         this.event = new MyEvent();
         this.event.start = event.date.format();

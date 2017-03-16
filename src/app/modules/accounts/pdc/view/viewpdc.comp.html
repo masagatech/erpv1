@@ -12,7 +12,7 @@
                                 <td>
                                     {{row.pdctype}}
                                 </td>
-                                <td>
+                                <td align="right">
                                     {{row.totamt | currency:loginUser._globsettings.currency:true}}
                                 </td>
                             </tr>
@@ -40,14 +40,14 @@
                                 <td>
                                     {{row.bankname}}
                                 </td>
-                                <td>
+                                <td align="right">
                                     {{row.amount | currency:loginUser._globsettings.currency:true}}
                                 </td>
                                 <td *ngIf="row.pdctype === 'received'">
                                     <button type="button" class="btn btn-theme btn-sm" (click)="openBankReceipt(row)">Post</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-theme btn-sm"><i class="fa fa-edit"></i></button>
+                                    <button type="button" class="btn btn-theme btn-sm" (click)="openPDCDetails(row)"><i class="fa fa-edit"></i></button>
                                 </td>
                             </tr>
                         </tbody>

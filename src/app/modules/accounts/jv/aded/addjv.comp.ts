@@ -20,11 +20,9 @@ declare var commonfun: any;
 })
 
 export class AddJV implements OnInit, OnDestroy {
-    viewCustomerDT: any[];
     loginUser: LoginUserModel;
 
     jvmid: number = 0;
-    docdate: any = "";
     narration: string = "";
     isactive: boolean = false;
 
@@ -99,7 +97,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Journal Voucher > Add");
+                this.setActionButtons.setTitle("Add Journal Voucher");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -114,7 +112,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Journal Voucher > Edit");
+                this.setActionButtons.setTitle("Edit Journal Voucher");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -129,7 +127,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("Journal Voucher > Details");
+                this.setActionButtons.setTitle("Details Of Journal Voucher");
 
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);
