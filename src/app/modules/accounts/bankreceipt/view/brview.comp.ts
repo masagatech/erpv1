@@ -26,7 +26,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
     // Veriable Declare
     bankreid: number = 0;
     bankid: number = 0;
-    status: string = "";
+    status: boolean = false;
 
     bankDT: any = [];
     bankreceiptDT: any = [];
@@ -49,7 +49,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
         this.fillDropDownList();
         this.fillStatusDropDown();
-        //this.resetBPFields();
+        this.resetBPFields();
     }
 
     // Document Ready
@@ -97,7 +97,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
 
     resetBPFields() {
         this.bankid = 0;
-        this.status = "true";
+        this.status = true;
     }
 
     //Open Edit Mode
@@ -134,12 +134,12 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         var params = {
             "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
             // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
-            "from": 0, "to": 10, "isactive": that.status
+            "isactive": that.status, "from": 0, "to": 10
         }
 
         that._brService.getBankReceipt(params).subscribe(bankreceipt => {
             that.totalRecords = bankreceipt.data[1].recordstotal;
-            debugger;
+            
             if (bankreceipt.data.length !== 0) {
                 that.tableLength = false;
                 that.bankreceiptDT = bankreceipt.data[0];

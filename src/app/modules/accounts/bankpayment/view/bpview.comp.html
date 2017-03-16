@@ -4,6 +4,7 @@
 			<div class="form-group">
 				<label>Bank</label>
 				<select class="form-control" [(ngModel)]="bankid">
+					<option [value]="0">Select Bank</option>
 					<option *ngFor="let items of bankDT" tabindex="1" [value]="items.key">
 						{{items.val}}
 					</option>

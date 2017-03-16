@@ -195,7 +195,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     //Get Data With Row
 
     GetBankPayment(pautoid) {
-        this._bpservice.getBankPayment({ "autoid": pautoid, "flag": "edit" }).subscribe(data => {
+        this._bpservice.getBankPayment({ "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
             var _bankpayment = data.data[0]._bankpayment;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
@@ -253,7 +253,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     fillDropDownList() {
         this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
             var d = data.data;
-            
+
             this.bankDT = d.filter(a => a.group === "bank");
             this.banktypeDT = d.filter(a => a.group === "banktype");
         });

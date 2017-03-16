@@ -171,7 +171,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $('input').prop('disabled', true);
+                $('.chequeno').prop('disabled', true);
 
                 this.autoid = params['pdcid'];
                 this.GetBankReceiptByPDC(this.autoid);
@@ -225,7 +225,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.acid = _bankreceipt[0].acid;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
-            this.chequeno = _bankreceipt[0].chequeno;
+            this.chequeno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
 
@@ -293,6 +293,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         }
 
         var ParamName = {
+            "autoid": this.autoid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "depdate": this.depdate.getDate(),
@@ -300,7 +301,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             "bankid": this.bankid,
             "typ": this.typ,
             "acid": this.acid,
-            "chequeno": this.chequeno,
+            "cheqno": this.chequeno,
             "amount": this.amount,
             "narration": this.narration,
             "uidcode": this.loginUser.login,

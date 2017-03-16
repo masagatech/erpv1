@@ -27,7 +27,7 @@
 				<div class="row">
 					<div class="col-md-6">
 						<label>Deposit Date</label>
-						<calendar class="depdate" #depdate [name]="'depdate'" tabindex="3"></calendar>
+						<calendar #depdate [name]="'depdate'" [islabel]="isdetails" tabindex="3" class="depdate"></calendar>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
@@ -59,7 +59,7 @@
 					<div class="col-md-2">
 						<div class="form-group">
 							<label>Cheque No</label>
-							<input type="text" class="form-control" tabindex="7" [(ngModel)]="chequeno" />
+							<input type="text" class="form-control chequeno" tabindex="7" [(ngModel)]="chequeno" />
 						</div>
 					</div>
 					<div class="col-md-6">

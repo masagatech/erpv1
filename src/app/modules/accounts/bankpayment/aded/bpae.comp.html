@@ -23,8 +23,10 @@
 				</div>
 				<div class="row">
 					<div class="col-xs-6">
-						<label>Issue Date</label>
-						<calendar #issuedate [name]="'issuedate'" tabindex="3"></calendar>
+						<div class="form-group">
+							<label>Issue Date</label>
+							<calendar #issuedate [name]="'issuedate'" [islabel]="isdetails" tabindex="3"></calendar>
+						</div>
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
