@@ -1,0 +1,85 @@
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-3">
+			<!--<div class="form-group">
+			<label>Range Wise</label>
+			<select class="form-control" [(ngModel)]="rangewise">
+				<option [value]="'docrange'">Doc Range</option>
+				<option [value]="'daterange'">Date Range</option>
+			</select>
+		</div>-->
+		</div>
+		<!--<div class="col-md-5">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>From Date</label>
+					<calendar #fromdate [name]="'fromdate'"></calendar>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>To Date</label>
+					<calendar #todate [name]="'todate'"></calendar>
+				</div>
+			</div>
+		</div>
+	</div>-->
+		<div class="col-md-5">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>From No</label>
+						<numtext name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>To No</label>
+						<numtext name="tono" [(ngModel)]="tono" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Status</label>
+				<select class="form-control" [(ngModel)]="status" (ngModelChange)="searchCashFlow(dt)">
+					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class="form-group setfltrbtn">
+				<label>&nbsp;</label>
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchCashFlow(dt)">
+					<i class="fa fa-arrow-right"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="viewCFDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
+			(onLazyLoad)="loadCFGrid($event)" expandableRows="true">
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'30px'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="cftitle" header="Heading" [style]="{'text-align':'left'}"></p-column>
+			<p-column [style]="{'width':'45px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					<button type="button" (click)="openCashFlow(row)" class="btn btn-theme btn-sm">
+						<i class="fa fa-edit"></i>
+					</button>
+				</template>
+			</p-column>
+			<template let-row pTemplate="rowexpansion">
+				<p-dataTable [value]="row.details" [lazy]="true">
+					<p-column field="coanm" header="Chart of Accounts" [style]="{'width':'450px','text-align':'left'}"></p-column>
+					<p-column field="dispnm" header="Diplay Name" [style]="{'width':'450px','text-align':'left'}"></p-column>
+				</p-dataTable>
+			</template>
+		</p-dataTable>
+	</div>
+</div>

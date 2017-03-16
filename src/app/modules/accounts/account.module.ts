@@ -57,6 +57,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'cashflow', loadChildren: () => System.import('./cashflow').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]
