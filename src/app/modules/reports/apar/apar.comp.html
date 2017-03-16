@@ -1,0 +1,115 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-8">
+            <p-schedule [events]="events" [header]="header" defaultDate="{{defaultDate}}" [eventLimit]="4" [editable]="true" (viewRender)="getMonthWiseAPAR($event)"
+                (onEventClick)="getAPARByType($event);"></p-schedule>
+        </div>
+        <div class="col-md-4">
+            <div class="col-md-12">
+                <div class="row">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li class="dropdown">
+                            <a role="button" class="dropdown-toggle btn btn-theme btn-sm" data-toggle="dropdown"><i class="fa fa-filter"></i></a>
+                            <ul class="dropdown-menu dropdown-lr" role="menu">
+                                <div class="col-md-12">
+                                    <form id="frmBank" method="post" role="form" autocomplete="off">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p-checkbox name="selectall" value="selectall" label="Select All" [(ngModel)]="selectedAll" (ngModelChange)="selectAllCheckboxes()"
+                                                    binary="true"></p-checkbox>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <button id="btnSearch" type="button" class="btn btn-theme btn-sm" (click)="getAPARReports()">
+                                                    <i class="fa fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="text-left">
+                                            <h6>AP / AR</h6>
+                                        </div>
+                                        <div *ngFor="let item of fliterAPARDT">
+                                            <p-checkbox name="apartype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedAPARType"></p-checkbox>
+                                        </div>
+                                        <div class="text-left">
+                                            <h6>Bank Type</h6>
+                                        </div>
+                                        <div *ngFor="let item of fliterBankTypeDT">
+                                            <p-checkbox name="banktype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBankType"></p-checkbox>
+                                        </div>
+                                        <div class="text-left">
+                                            <h6>Bank</h6>
+                                        </div>
+                                        <div *ngFor="let item of fliterBankDT">
+                                            <p-checkbox name="bank" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBank"></p-checkbox>
+                                        </div>
+                                    </form>
+                                </div>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-12" style="padding-top: 20px;">
+                <div class="row">
+                    <table class="table table-striped table-bordered table-hover tblcalendar">
+                        <tbody *ngFor="let row of monthwiseapar">
+                            <tr class="{{row.class}}">
+                                <td>
+                                    {{row.apartype}}
+                                </td>
+                                <td align="right">
+                                    {{row.totamt | _currency:loginUser._globsettings[0] }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12" *ngIf="viewaparDT.length">
+                <div class="panel panel-theme">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span title="{{rowname}}">{{rowheader}}</span>
+                            </div>
+                            <div class="col-md-6" align="right">
+                                Date : {{rowdate}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <p-dataTable #dt [value]="viewaparDT" [lazy]="true">
+                                <p-column field="acname" header="Party" [style]="{'text-align':'left'}"></p-column>
+                                <p-column field="banktype" header="Type" [style]="{'width':'80px','text-align':'left'}"></p-column>
+                                <p-column field="amount" header="Amount" [style]="{'width':'100px','text-align':'right'}">
+                                    <template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+                                        {{row.amount | _currency:loginUser._globsettings[0] }}
+                                    </template>
+                                </p-column>
+                                <p-column [style]="{'width':'40px'}">
+                                    <template let-row="rowData" pTemplate type="body">
+                                        <button type="button" (click)="openDetailsForm(row)" class="btn btn-theme btn-sm">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                    </template>
+                                </p-column>
+                                <footer>
+                                    <table class="table table-striped table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="2">Total Amount</td>
+                                                <td width="100px">{{TotalAPARAmt() | _currency:loginUser._globsettings[0] }}</td>
+                                                <td width="40px"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </footer>
+                            </p-dataTable>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -70,7 +70,13 @@ const routerConfig =
                             path: 'warehouse', loadChildren: () => System.import('./warehouse/warehouse.module').then((comp: any) => {
                                 return comp.default;
                             })
-                        },{
+                        },
+                        {
+                            path: 'reports', loadChildren: () => System.import('./reports/reports.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
+                        {
                             path: 'testing', loadChildren: () => System.import('./testing').then((comp: any) => {
                                 return comp.default;
                             })
