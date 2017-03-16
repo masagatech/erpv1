@@ -7,7 +7,7 @@ import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, DataListModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, AutoCompleteModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -45,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule, DataListModule,
-        CalendarModule, NumTextModule],
+        AutoCompleteModule, CalendarModule, NumTextModule],
     declarations: [
         AddEnvelopeComp,
         EnvelopeComp,
