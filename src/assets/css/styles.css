@@ -1097,7 +1097,7 @@ html select[disabled] {
 }
 
 .middlepan {
-    width: calc(100% - 193px)!important;
+    width: calc(100% - 202px)!important;
     float: left;
 }
 
@@ -1423,4 +1423,41 @@ table.tableNoborder td {
 
 .setfltrbtn {
     padding-top: 28px;
+}
+
+.tblcalendar>tbody>tr.received {
+    background-color: green;
+    color: #FFFFFF;
+}
+
+.tblcalendar>tbody>tr.issued {
+    background-color: black;
+    color: #FFFFFF;
+}
+
+.tblcalendar>tbody>tr.ap {
+    background-color: green;
+    color: #FFFFFF;
+}
+
+.tblcalendar>tbody>tr.ar {
+    background-color: black;
+    color: #FFFFFF;
+}
+
+.navbar-nav .dropdown-menu.dropdown-lr {
+    width: 325px;
+    background-color: #FFFFFF !important;
+    height: 500px;
+    overflow: auto;
+}
+
+/* mobile fix */
+@media (max-width: 768px) {
+	.navbar-nav .dropdown-menu.dropdown-lr h6 {
+		color: #eee;
+	}
+	.navbar-nav .dropdown-menu.dropdown-lr label {
+		color: #eee;
+	}
 }
