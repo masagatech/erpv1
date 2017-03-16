@@ -15,11 +15,11 @@ import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
-    templateUrl: 'adedview.comp.html',
+    templateUrl: 'view.comp.html',
     providers: [dcviewService, CommonService, ALSService]
 })
 
-export class dcview implements OnInit, OnDestroy {
+export class salesOrdView implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
@@ -81,9 +81,9 @@ export class dcview implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
-        this.setActionButtons.setTitle("Sales Order");
+        this.setActionButtons.setTitle("Sales Order Sample");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        setTimeout(function () {
+        setTimeout(function() {
             $("#Custcode input").focus();
         }, 0);
         var date = new Date();
@@ -97,7 +97,7 @@ export class dcview implements OnInit, OnDestroy {
             this.ClearControl();
         }
         if (evt === "add") {
-            this._router.navigate(['/transaction/dcmaster/add']);
+            this._router.navigate(['/transaction/salesordsample/add']);
             //this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             // alert("edit called");
@@ -134,7 +134,7 @@ export class dcview implements OnInit, OnDestroy {
                 "acid": this.CustID,
                 "from": this.fromdatecal.getDate(),
                 "to": this.todatecal.getDate(),
-                "typ": "order"
+                "typ":"sample"
             }).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].length > 0) {
@@ -151,6 +151,8 @@ export class dcview implements OnInit, OnDestroy {
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
+
+
     }
 
     //Row Click 
@@ -174,7 +176,7 @@ export class dcview implements OnInit, OnDestroy {
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
-                "typ": "order"
+                "typ":"sample"
             }).subscribe(data => {
                 row.loading = true;
                 row.details = data.data[0];

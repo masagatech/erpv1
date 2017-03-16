@@ -742,12 +742,18 @@ p-togglebutton.ng-dirty.ng-invalid .ui-button {
         padding: 3px 4px!important;
 }
 
-.ui-datatable .form-control{
-    padding: 0px 4px;
+.ui-datatable .form-control,
+.ui-datatable .form-controlAutoComplete input{
+        padding: 0px 4px;
         height: 23px !important;
-    
+      
+}
+.ui-datatable .form-controlAutoComplete{
+     height: 23px !important;
+  border-radius: 4px;
 }
 .ui-datatable .inlinetextbox{
     padding: 0px 0px;
     
 }
+

@@ -85,7 +85,6 @@ declare var $: any;
             else {
                 data = event;
             }
-            debugger;
             if (!data.islocked) {
                 this._router.navigate(['warehouse/grninword/edit', data.newdocno]);
             }
@@ -114,10 +113,11 @@ declare var $: any;
                 "flag": "expanddetail",
             }).subscribe(data => {
                 var dataset = data.data;
-                debugger;
                 if (dataset.length > 0) {
                     row.loading = true;
                     row.details = dataset[0];
+                    this.TotalQty(row.details);
+                    this.TotalAmt(row.details);
                 }
                 else {
                     that._msg.Show(messageType.error, "error", "Record Not Found");
@@ -130,6 +130,22 @@ declare var $: any;
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
+    }
+
+    TotalQty(details) {
+        var totalqty = 0;
+        for (let item of details) {
+            totalqty += parseFloat(item.qty);
+        }
+        return totalqty;
+    }
+
+    TotalAmt(details) {
+        var totalamt = 0;
+        for (let item of details) {
+            totalamt += parseFloat(item.amount);
+        }
+        return totalamt;
     }
 
     actionBarEvt(evt) {

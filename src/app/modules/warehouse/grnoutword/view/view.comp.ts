@@ -86,7 +86,6 @@ declare var $: any;
                 "createdby": that.loginUser.login,
                 "flag": ""
             }).subscribe(result => {
-                debugger;
                 that.totalRecords = result.data[1][0].recordstotal;
                 that.outwordlist = result.data[0];
             }, err => {
@@ -106,10 +105,10 @@ declare var $: any;
             var that = this;
             var row = event;
             row.loading = false;
-            this.grnServies.getgrndetal({
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdBy": this.loginUser.login,
+            that.grnServies.getgrndetal({
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "createdBy": that.loginUser.login,
                 "docno": row.newdocno,
                 "flag": "expanddetail",
             }).subscribe(data => {
@@ -117,9 +116,8 @@ declare var $: any;
                 if (dataset.length > 0) {
                     row.loading = true;
                     row.details = dataset[0];
-                    for (let item of row.details) {
-                        
-                    }
+                    this.TotalQty(row.details);
+                    this.TotalAmt(row.details);
                 }
                 else {
                     that._msg.Show(messageType.error, "error", "Record Not Found");
@@ -132,6 +130,22 @@ declare var $: any;
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
+    }
+
+    TotalQty(details) {
+        var totalqty = 0;
+        for (let item of details) {
+            totalqty += parseFloat(item.qty);
+        }
+        return totalqty;
+    }
+
+    TotalAmt(details) {
+        var totalamt = 0;
+        for (let item of details) {
+            totalamt += parseFloat(item.amount);
+        }
+        return totalamt;
     }
 
     //Button Action

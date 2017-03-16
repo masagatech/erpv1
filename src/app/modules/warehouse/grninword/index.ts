@@ -12,8 +12,6 @@ import { CommonModule } from '@angular/common';
 import { LazyLoadEvent, DataTableModule, AutoCompleteModule, RadioButtonModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
 
-import { _currencyPipe } from '../../../_pipe/currency.pipe';
-
 @Component({
     template: '<router-outlet></router-outlet>'
 })
@@ -47,8 +45,7 @@ const routerConfig = [
     declarations: [
         grnInwordAdd,
         grnInwordView,
-        grninwordComp,
-        _currencyPipe
+        grninwordComp
     ],
     providers: [AuthGuard],
     

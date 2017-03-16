@@ -3,7 +3,7 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";
+import {dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
@@ -16,12 +16,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 declare var commonfun: any;
 @Component({
-    templateUrl: 'aded.comp.html',
+    templateUrl: 'add.comp.html',
     providers: [dcmasterService, CommonService, ALSService]
     //,AutoService
 })
 
-export class dcADDEdit implements OnInit, OnDestroy {
+export class salesordadd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
@@ -105,6 +105,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
     @ViewChild("deldatecal")
     deldatecal: CalendarComp;
 
+
+
     //, private _autoservice:AutoService
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private SalesOrderServies: dcmasterService, private _autoservice: CommonService,
@@ -126,7 +128,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             var lockdate = dataResult[0].lockdate;
             if (lockdate != "")
                 that.docdatecal.setMinMaxDate(new Date(lockdate), null);
-            that.deldatecal.setMinMaxDate(new Date(lockdate), null);
+                that.deldatecal.setMinMaxDate(new Date(lockdate), null);
         }, err => {
             console.log("Error");
         }, () => {
@@ -147,7 +149,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
-        this.setActionButtons.setTitle("Sales Order");
+        this.setActionButtons.setTitle("Sales Order Sample");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.footer = true;
@@ -236,46 +238,36 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
 
     salesorderdetailsjson() {
-        try {
-            var jsonparam = [];
-            for (let item of this.newAddRow) {
-                var rate = item.rateslist.filter(itemval => itemval.id == item.id)
-                jsonparam.push({
-                    "autoid": item.autoid,
-                    "itemsid": item.itemsid,
-                    "qty": item.qty,
-                    "rate": rate[0].val,
-                    "rateid": rate[0].id,
-                    "dis": item.dis,
-                    "typ": "order",
-                    "amount": item.amount
-                })
-            }
-            return jsonparam;
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
+        var jsonparam = [];
+        for (let item of this.newAddRow) {
+            var rate = item.rateslist.filter(itemval => itemval.id == item.id)
+            jsonparam.push({
+                "autoid": item.autoid,
+                "itemsid": item.itemsid,
+                "qty": item.qty,
+                "rate": rate[0].val,
+                "rateid": rate[0].id,
+                "dis": item.dis,
+                "typ":"sample",
+                "amount": item.amount
+            })
         }
+        return jsonparam;
     }
 
     //Auto Confirm Sales Order Confirm 
     confirmparam() {
-        try {
-            var confparam = {
-                "autoid": 0,
-                "fy": this.loginUser.fy,
-                "cmpid": this.loginUser.cmpid,
-                "createdby": this.loginUser.login,
-                "confimstatus": "auto confirm",
-                "autoconfirm": this.isconfirm
-            }
-            return confparam;
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
+        var confparam = {
+            "autoid": 0,
+            "fy": this.loginUser.fy,
+            "cmpid": this.loginUser.cmpid,
+            "createdby": this.loginUser.login,
+            "confimstatus": "auto confirm",
+            "autoconfirm": this.isconfirm
         }
-
+        return confparam;
     }
 
-    //Salesorder Invoice Paramter
     paramterjson() {
         var that = this;
         try {
@@ -288,8 +280,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "salesid": that.salesid,
                 "whid": that.wareid,
                 "traspo": that.Traspoter,
+                 "typ":"sample",
                 "status": "",
-                "typ": "order",
                 "fy": that.loginUser.fy,
                 "cmpid": that.loginUser.cmpid,
                 "createdby": that.loginUser.login,
@@ -307,6 +299,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this._msg.Show(messageType.error, "error", e.message);
             return;
         }
+        console.log(param);
         return param;
     }
 
@@ -317,7 +310,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.ClearControll();
         }
         if (evt === "back") {
-            this._router.navigate(['transaction/dcmaster']);
+            this._router.navigate(['transaction/salesordsample']);
         }
         if (evt === "save") {
             var validateme = commonfun.validate();
@@ -336,7 +329,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 ).subscribe(result => {
                     var returndata = result.data;
                     if (returndata[0].funsave_salesorder.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", returndata[0].funsave_salesorder.msg + ' : ' + returndata[0].funsave_salesorder.maxid)
+                        this._msg.Show(messageType.success, "success", returndata[0].funsave_salesorder.msg + ':' + returndata[0].funsave_salesorder.maxid)
                         this.ClearControll();
                         $('.custname').focus();
                     }
@@ -365,7 +358,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             //     "DCNo": this.DocNo,
             //     "DCDetelId": 0,
             //     "CmpCode": "Mtech",
-            //     "FY": 5,
+            //     "fy": 5,
             //     "UserCode": "Admin",
             //     "Flag": "DC"
             // }).subscribe(data => {
@@ -391,70 +384,58 @@ export class dcADDEdit implements OnInit, OnDestroy {
         }
     }
 
-    //Edit Salesoder
     GetEditData(Docno) {
-        try {
-            this.SalesOrderServies.GetSalesOrderView({
-                "flag": "edit",
-                "docno": Docno,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                var dataset = data.data;
-                var CustomerMaster = dataset[0];
-                if (CustomerMaster.length > 0) {
-                    this.CustomerSelected(CustomerMaster[0].acid, CustomerMaster[0].acname.split(':')[0]);
-                    this.CustName = CustomerMaster[0].acname;
-                    this.CustID = CustomerMaster[0].acid;
-                    this.Remark = CustomerMaster[0].remark;
-                    this.salesid = CustomerMaster[0].salesid;
-                    this.docdatecal.setDate(new Date(CustomerMaster[0].docdate));
-                    this.deldatecal.setDate(new Date(CustomerMaster[0].deldate));
-                    this.wareid = CustomerMaster[0].whid;
-                    this.Traspoter = CustomerMaster[0].transid;
-                    this.newAddRow = dataset[1];
-                }
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
+        this.SalesOrderServies.GetSalesOrderView({
+            "flag": "edit",
+            "docno": Docno,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login
+        }).subscribe(data => {
+            var dataset = data.data;
+            var CustomerMaster = dataset[0];
+            if (CustomerMaster.length > 0) {
+                this.CustomerSelected(CustomerMaster[0].acid,CustomerMaster[0].acname.split(':')[0]);
+                this.CustName = CustomerMaster[0].acname;
+                this.CustID = CustomerMaster[0].acid;
+                this.Remark = CustomerMaster[0].remark;
+                this.salesid = CustomerMaster[0].salesid;
+                this.docdatecal.setDate(new Date(CustomerMaster[0].docdate));
+                this.deldatecal.setDate(new Date(CustomerMaster[0].deldate));
+                this.wareid = CustomerMaster[0].whid;
+                this.Traspoter = CustomerMaster[0].transid;
+                this.newAddRow = dataset[1];
+            }
+            else {
+                console.log('Error');
+            }
 
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     //AutoCompletd Customer
     CustomerAuto(event) {
-        try {
-            let query = event.query;
-            this._autoservice.getAutoDataGET({
-                "type": "customer",
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login,
-                "search": query
-            }).then(data => {
-                this.CustomerAutodata = data;
-            });
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "customer",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.CustomerAutodata = data;
+        });
     }
 
     //Selected Customer
     CustomerSelect(event) {
-        try {
-            this.CustID = event.value;
-            this.CustName = event.label;
-            this.CustomerSelected(this.CustID, this.CustName.split(':')[0]);
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
+        this.CustID = event.value;
+        this.CustName = event.label;
+        this.CustomerSelected(this.CustID, this.CustName.split(':')[0]);
     }
 
     //AutoCompletd Product Name
@@ -559,26 +540,25 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Rate Change Event
     ratechange(qty: any, newrate: any = [], dis: any, row: any = [], agr: number) {
         try {
-            var amt = 0;
-            var disTotal = 0;
             if (agr == 0) {
                 if (qty != "0" && newrate != "") {
+                    var amt = 0;
                     var rate = this.rateslist.filter(item => item.id == newrate);
                     amt = +qty * +rate[0].val;
-                    disTotal = amt * this.dis / 100;
-                    this.amount = Math.round(amt - disTotal);
+                    this.disTotal = amt * this.dis / 100;
+                    this.amount = Math.round(amt - this.disTotal);
                 }
             }
             else {
                 if (row.qty != "" && row.id != "") {
-                    disTotal = 0;
+                    this.disTotal = 0;
                     amt = 0;
                     for (let item of this.newAddRow) {
                         if (item.counter == row.counter) {
                             var rate = item.rateslist.filter(itemval => itemval.id == row.id);
                             amt = +item.qty * +rate[0].val;
-                            disTotal = amt * item.dis / 100;
-                            item.amount = Math.round(amt - disTotal);
+                            this.disTotal = amt * item.dis / 100;
+                            item.amount = Math.round(amt - this.disTotal);
                             break;
                         }
                     }
@@ -595,7 +575,6 @@ export class dcADDEdit implements OnInit, OnDestroy {
     // //Selected Items
     ItemsSelected(val: number, falg: number, counter: number) {
         var that = this;
-        console.log(that.wareid);
         try {
             if (val != 0) {
                 this.SalesOrderServies.getItemsAutoCompleted({
@@ -603,7 +582,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     "fy": that.loginUser.fy,
                     "itemsid": val,
                     "whid": that.wareid,
-                    "status": that.issaleord,
+                     "status": that.issaleord,
                     "createdby": that.loginUser.login
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;

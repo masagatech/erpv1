@@ -57,6 +57,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'purchase', loadChildren: () => System.import('./purchase').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]

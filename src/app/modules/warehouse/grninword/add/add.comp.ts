@@ -281,74 +281,123 @@ declare var commonfun: any;
         return param;
     }
 
-    //Saveing Paramter
-    paramjson() {
+    ledgerparam() {
+        var ledparam = [];
         try {
-            var param = {
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "docno": this.docno,
-                "subdoc": this.subdoc,
-                "grnindetails": this.paramdetails()
+            var param = [];
+            for (let item of this.inworddetails) {
+                param.push({
+                    "ledger": 0,
+                    "whid": this.towhid,
+                    "typ": "inreg",
+                    "itemid": item.itemsid,
+                    "rate": item.rate,
+                    "amt": item.amount,
+                    "inword": item.qty,
+                    "outward": 0,
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
             }
-            return param;
+            for (let item of this.inworddetails) {
+                param.push({
+                    "ledger": 0,
+                    "whid": this.towhid,
+                    "typ": "inreg",
+                    "itemid": item.itemsid,
+                    "rate": item.rate,
+                    "amt": item.amount,
+                    "inword": 0,
+                    "outward": item.qty,
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+        }
+        } catch(e) {
+        this._msg.Show(messageType.error, "error", e.message);
+    }
+        return param;
+    }
+
+//Saveing Paramter
+paramjson() {
+    try {
+        var param = {
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "docno": this.docno,
+            "subdoc": this.subdoc,
+            "grnindetails": this.paramdetails(),
+            "ledgerinword": this.ledgerparam()
+        }
+        return param;
+    } catch (e) {
+        this._msg.Show(messageType.error, "error", e.message);
+    }
+
+}
+
+actionBarEvt(evt) {
+    if (evt === "clear") {
+        this.ClearControl();
+    }
+    else if (evt === "back") {
+        this._router.navigate(['warehouse/grninword']);
+    }
+    else if (evt === "save") {
+        var validateme = commonfun.validate();
+        if (!validateme.status) {
+            this._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
+        try {
+            this.actionButton.find(a => a.id === "save").enabled = false;
+            this.grnServies.savegrninword(
+                this.paramjson()
+            ).subscribe(result => {
+                var dataset = result.data[0];
+                if (dataset.funsave_grninword.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", dataset.funsave_grninword.msg);
+                    this.ClearControl();
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Data Not Saveing");
+                }
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
-
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    } else if (evt === "edit") {
+        $('input').removeAttr('disabled');
+        $('select').removeAttr('disabled');
+        $('textarea').removeAttr('disabled');
+        this.actionButton.find(a => a.id === "save").hide = false;
+        this.actionButton.find(a => a.id === "edit").hide = true;
+    } else if (evt === "delete") {
+        alert("delete called");
     }
+}
 
-    actionBarEvt(evt) {
-        if (evt === "clear") {
-            this.ClearControl();
-        }
-        else if (evt === "back") {
-            this._router.navigate(['warehouse/grninword']);
-        }
-        else if (evt === "save") {
-            var validateme = commonfun.validate();
-            if (!validateme.status) {
-                this._msg.Show(messageType.error, "error", validateme.msglist);
-                validateme.data[0].input.focus();
-                return;
-            }
-            try {
-                this.actionButton.find(a => a.id === "save").enabled = false;
-                this.grnServies.savegrninword(
-                    this.paramjson()
-                ).subscribe(result => {
-                    var dataset = result.data[0];
-                    if (dataset.funsave_grninword.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", dataset.funsave_grninword.msg);
-                        this.ClearControl();
-                    }
-                    else {
-                        this._msg.Show(messageType.error, "error", "Data Not Saveing");
-                    }
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    //compeletd
-                })
-            } catch (e) {
-                this._msg.Show(messageType.error, "error", e.message);
-            }
-            this.actionButton.find(a => a.id === "save").enabled = true;
-        } else if (evt === "edit") {
-            $('input').removeAttr('disabled');
-            $('select').removeAttr('disabled');
-            $('textarea').removeAttr('disabled');
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
-    ngOnDestroy() {
-        this.actionButton = [];
-        this.subscr_actionbarevt.unsubscribe();
-        this.setActionButtons.setTitle("")
-    }
+ngOnDestroy() {
+    this.actionButton = [];
+    this.subscr_actionbarevt.unsubscribe();
+    this.setActionButtons.setTitle("")
+}
 
 }

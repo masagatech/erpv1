@@ -14,10 +14,10 @@ import { ALSService } from '../../../_service/auditlock/als-service';
 
 declare var $: any;
 @Component({
-    templateUrl: 'pendingdc.comp.html',
+    templateUrl: 'view.comp.html',
     providers: [pendingdcService, CommonService, ALSService]
     //,AutoService
-}) export class pendingdc implements OnInit, OnDestroy {
+}) export class pendingsalessimple implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
@@ -94,7 +94,7 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
-        this.setActionButtons.setTitle("Pending Sales Order");
+        this.setActionButtons.setTitle("Pending Order Sample");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         setTimeout(function () {
@@ -128,10 +128,10 @@ declare var $: any;
                     "itemid": item.itemsid,
                     "ordqty": item.ordqty,
                     "rate": item.rate,
+                    "typ": "sample",
                     "rateid": item.dcrate,
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
-                    "typ":"order",
                     "createdby": this.loginUser.login,
                     "confimstatus": 'Menual',
                     "autoconfirm": false
@@ -188,7 +188,7 @@ declare var $: any;
                 "createdby": this.loginUser.login,
                 "from": this.fromcal.getDate(),
                 "to": this.tocal.getDate(),
-                "typ":"order"
+                "typ": "sample"
             }).subscribe(ordno => {
                 var dataset = ordno.data === null ? [] : ordno.data;
                 if (dataset.length > 0) {
@@ -220,7 +220,7 @@ declare var $: any;
                 "docno": items.docno,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
-                "typ":"order"
+                "typ": "sample"
             }).subscribe(documentno => {
                 this.CustomerDetails = documentno.data[0] === null ? [] : documentno.data[0];
                 this.dcdetails = documentno.data[1] === null ? [] : documentno.data[1];

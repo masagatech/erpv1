@@ -50,8 +50,6 @@ declare var commonfun: any;
     paid: any = "paid";
     amount: any = 0;
     radioflag: boolean = false;
-    // ToWarehouseAutodata: any = [];
-    // FromWarehouseAutodata: any = [];
     TranspoterAutodata: any = [];
 
     //user details
@@ -66,22 +64,6 @@ declare var commonfun: any;
         private _routeParams: ActivatedRoute, private _msg: MessageService
         , private _userService: UserService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
-    }
-
-    setAuditDate() {
-        var that = this;
-        that._alsservice.getAuditLockSetting({
-            "flag": "modulewise", "dispnm": "jv", "fy": that.loginUser.fy
-        }).subscribe(data => {
-            var dataResult = data.data;
-            var lockdate = dataResult[0].lockdate;
-            if (lockdate != "")
-                that.lrdatecal.setMinMaxDate(new Date(lockdate), null);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 
     //Add Save Edit Delete Button
@@ -107,12 +89,12 @@ declare var commonfun: any;
 
             }
             else {
-
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-        this.actionButton.find(a => a.id === "save").hide = true;
+
+        //this.actionButton.find(a => a.id === "save").hide = true;
 
         setTimeout(function () {
             commonfun.addrequire();
@@ -352,6 +334,55 @@ declare var commonfun: any;
 
     }
 
+    ledgerparam() {
+        var ledparam = [];
+        try {
+            var param = [];
+            for (let item of this.transferdetails) {
+                param.push({
+                    "ledger": item.ledautoid,
+                    "whid": this.fromwhid,
+                    "typ": "outreg",
+                    "itemid": item.itemsid,
+                    "rate": item.rate,
+                    "amt": item.amount,
+                    "inword": 0,
+                    "outward": item.qty,
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+            }
+
+            for (let item of this.transferdetails) {
+                param.push({
+                    "ledger": item.ledautoid,
+                    "whid": this.fromwhid,
+                    "typ": "outreg",
+                    "itemid": item.itemsid,
+                    "rate": item.rate,
+                    "amt": item.amount,
+                    "inword": item.qty,
+                    "outward": 0,
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+        return param;
+    }
+
     //Saveing Paramter
     paramjson() {
         try {
@@ -360,14 +391,16 @@ declare var commonfun: any;
                 "fy": this.loginUser.fy,
                 "docno": this.docno,
                 "newdocno": this.newdocno,
-                "grndetails": this.paramdetails()
+                "grndetails": this.paramdetails(),
+                "ledgeroutword": this.ledgerparam()
             }
             return param;
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
-
     }
+
+
 
     actionBarEvt(evt) {
         if (evt === "clear") {

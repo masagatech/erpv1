@@ -2,21 +2,17 @@ import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-
-import { generateInv } from '../generateinvoice/generateinv.comp';
-
+import { pendingsalessimple } from '../pendingsalessimple/view.comp';
+import { CalendarModule } from '../../usercontrol/calendar';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-import { CalendarModule } from '../../usercontrol/calendar';
-
-import { LazyLoadEvent, DataTableModule, AutoCompleteModule, SplitButtonModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
 })
-export class generateInvComp {
+export class PendingSalesSimpleComp {
     constructor() {
     }
 }
@@ -24,14 +20,14 @@ export class generateInvComp {
 const routerConfig = [
     {
         path: '',
-        component: generateInvComp,
+        component: PendingSalesSimpleComp,
         canActivate: [AuthGuard],
         data: { "module": "dcm" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: '', component: generateInv, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "ginv", "rights": "view", "urlname": "generateinv" } },
+                    { path: '', component: pendingsalessimple, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "pords", "rights": "view", "urlname": "/penordsample" } },
                 ]
             }
         ]
@@ -40,13 +36,13 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
-        FormsModule, CommonModule, CalendarModule, DataTableModule, AutoCompleteModule, NumTextModule, SplitButtonModule],
+        FormsModule, CommonModule, DataTableModule, AutoCompleteModule, CalendarModule, NumTextModule],
     declarations: [
-        generateInv,
-        generateInvComp
+        pendingsalessimple,
+        PendingSalesSimpleComp
     ],
     providers: [AuthGuard]
 })
 
-export default class GenerateinvModule {
+export default class PendingSalesSimpleModule {
 }

@@ -5,9 +5,6 @@ import { AuthGuard } from '../../_service/authguard-service';
 import { SharedComponentModule } from '../../_shared/sharedcomp.module';
 import { SupplierDashboardComp } from '../supplier/dashboard/dashboard.comp';
 
-import { purchaseadd } from '../supplier/purchase/add/purchaseadd.comp';                //Purchase Add
-import { purchaseview } from '../supplier/purchase/view/purchaseview.comp';             //Purchase View
-
 import { billadd } from '../supplier/bill/add/billadd.comp';                            //Bill Add
 import { billview } from '../supplier/bill/view/billview.comp';                         //Bill View
 
@@ -33,11 +30,6 @@ const routerConfig = [
       {
         path: '',
         children: [
-          //Suppler Purchase Add Edit And View
-          { path: 'purchaseadd', component: purchaseadd, canActivateChid: [AuthGuard], },
-          { path: 'purchaseedit/:id', component: purchaseadd, canActivateChid: [AuthGuard], },
-          { path: 'purchaseview', component: purchaseview, canActivateChid: [AuthGuard], },
-
           //Suppler Bill Add Edit And View
           { path: 'billadd', component: billadd, canActivateChid: [AuthGuard], },
           { path: 'billedit/:id', component: billadd, canActivateChid: [AuthGuard], },
@@ -86,10 +78,6 @@ const routerConfig = [
     //Common Module
     SupplierComp,
     SupplierDashboardComp,
-
-    //Supplier Purchase 
-    purchaseadd,
-    purchaseview,
 
     //Supplier Bill 
     billadd,

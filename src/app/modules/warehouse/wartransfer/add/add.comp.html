@@ -24,7 +24,7 @@
 				</div>
 			</div>
 			<div class="col-md-12">
-				<div class="table-responsive">
+				<div>
 					<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
 						expandableRows="true">
 						<p-column header="#" [style]="{'width':'30px'}">

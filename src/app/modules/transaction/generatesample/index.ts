@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
-import { generateInv } from '../generateinvoice/generateinv.comp';
+import { generatesample } from '../generatesample/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,10 +13,12 @@ import { CalendarModule } from '../../usercontrol/calendar';
 import { LazyLoadEvent, DataTableModule, AutoCompleteModule, SplitButtonModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
 
+// import { _currencyPipe } from '../../../_pipe/currency.pipe';
+
 @Component({
     template: '<router-outlet></router-outlet>'
 })
-export class generateInvComp {
+export class GenerateSampleComp {
     constructor() {
     }
 }
@@ -24,14 +26,14 @@ export class generateInvComp {
 const routerConfig = [
     {
         path: '',
-        component: generateInvComp,
+        component: GenerateSampleComp,
         canActivate: [AuthGuard],
         data: { "module": "dcm" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: '', component: generateInv, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "ginv", "rights": "view", "urlname": "generateinv" } },
+                    { path: '', component: generatesample, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "invords", "rights": "view", "urlname": "invordsample" } },
                 ]
             }
         ]
@@ -42,11 +44,12 @@ const routerConfig = [
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
         FormsModule, CommonModule, CalendarModule, DataTableModule, AutoCompleteModule, NumTextModule, SplitButtonModule],
     declarations: [
-        generateInv,
-        generateInvComp
+        generatesample,
+        GenerateSampleComp,
+        //_currencyPipe
     ],
     providers: [AuthGuard]
 })
 
-export default class GenerateinvModule {
+export default class GenerateSampleModule {
 }

@@ -9,11 +9,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FileUploadModule, GrowlModule, DialogModule } from 'primeng/primeng';
 import { FilterByPipe } from '../_pipe/filterby.pipe';
+import { _currencyPipe } from '../_pipe/currency.pipe';
 
 @NgModule({
     imports: [RouterModule, FormsModule, CommonModule, FileUploadModule, GrowlModule, DialogModule],
-    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe],
-    exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe]
+    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe,_currencyPipe],
+    exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe,
+    _currencyPipe]
 })
 
 export class SharedComponentModule { }
