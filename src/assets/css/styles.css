@@ -1426,12 +1426,12 @@ table.tableNoborder td {
 }
 
 .tblcalendar>tbody>tr.received {
-    background-color: green;
+    background-color: #B2FFA4;
     color: #FFFFFF;
 }
 
 .tblcalendar>tbody>tr.issued {
-    background-color: black;
+    background-color: #FFC6A4;
     color: #FFFFFF;
 }
 
