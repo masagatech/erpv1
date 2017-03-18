@@ -126,7 +126,7 @@
 									</div>
 								</div>
 								<div class="col-md-3">
-									<div style="padding-top:28px;">
+									<div class="setfltrbtn">
 										<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>Applicable on sales invoice</label>
 									</div>
 								</div>
@@ -145,7 +145,7 @@
 									</div>
 								</div>
 								<div class="col-md-2">
-									<div style="padding-top:28px;">
+									<div class="setfltrbtn">
 										<button class="btn btn-theme btn-sm"><i class="fa fa-plus"></i></button>
 									</div>
 								</div>
@@ -194,7 +194,7 @@
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<div style="padding-top: 28px;">
+										<div class="setfltrbtn">
 											<button class="btn btn-theme btn-sm" type="button" tabindex="10" (click)="Additems()" title="Add">
 												<i class="fa fa-plus"></i>
 											</button>
@@ -255,7 +255,7 @@
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<div style="padding-top: 28px;">
+										<div class="setfltrbtn">
 											<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="15" (click)="AddNewdisattr()" title="Add">
 										<i class="fa fa-plus"></i></button>
 										</div>
@@ -290,11 +290,24 @@
 			</div>
 			<div class="tab-pane" id="sales">
 				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Salesman</label>
-							<input type="text=" class="form-control sales" placeholder="Salesman" tabindex="16" value="" [(ngModel)]="salename" (keyup.enter)="SalemanAdd()"
-								(keyup)="getAutoCompleteSales(this)" />
+					<div class="col-md-10">
+						<div class="col-md-5">
+							<div class='form-group'>
+								<label>Salesman</label>
+								<!--<input type="text=" class="form-control sales" placeholder="Salesman" tabindex="16" value="" [(ngModel)]="salename" (keyup.enter)="SalemanAdd()"
+								(keyup)="getAutoCompleteSales(this)" />-->
+								<p-autoComplete [(ngModel)]="salename" class="form-controlAutoComplete sales" (onSelect)="SalesmanSelect($event)"
+									[suggestions]="SalesmanAutodata" (keyup.enter)="SalemanAdd()" (completeMethod)="SalesmanAuto($event)" [tabindex]="3"
+									field="label" [size]="30" placeholder="Salesman" [minLength]="1"></p-autoComplete>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class='form-group'>
+								<div class="setfltrbtn">
+									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="SalemanAdd()" title="Add">
+										<i class="fa fa-plus"></i></button>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="col-md-10">
@@ -310,11 +323,22 @@
 			</div>
 			<div class="tab-pane" id="trans">
 				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Transpoter</label>
-							<input type="text=" class="form-control transname" placeholder="Transpoter" tabindex="17" value="" [(ngModel)]="transname"
-								(keyup.enter)="TranspoterAdd()" (keyup)="getAutoCompletetrans(this)" />
+					<div class="col-md-10">
+						<div class="col-md-5">
+							<div class='form-group'>
+								<label>Transpoter</label>
+								<p-autoComplete [(ngModel)]="transname" class="form-controlAutoComplete transname" (onSelect)="TranspoterSelect($event)"
+									[suggestions]="TranspoterAutodata" (keyup.enter)="TranspoterAdd()" (completeMethod)="TranspoterAuto($event)" [tabindex]="3"
+									field="label" [size]="30" placeholder="Transpoter" [minLength]="1"></p-autoComplete>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class='form-group'>
+								<div class="setfltrbtn">
+									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="TranspoterAdd()" title="Add">
+										<i class="fa fa-plus"></i></button>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="col-md-10">
@@ -355,7 +379,7 @@
 						</div>
 						<div class="col-md-1">
 							<div class='form-group'>
-								<div style="padding-top: 28px;">
+								<div class="setfltrbtn">
 									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="19" (click)="AddNewCtrl()" title="Add">
 							<i class="fa fa-plus"></i></button>
 								</div>
@@ -404,7 +428,7 @@
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<div style="padding-top: 28px;">
+										<div class="setfltrbtn">
 											<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="AddNewKyeval()" title="Add">
 										<i class="fa fa-plus"></i></button>
 										</div>
@@ -422,7 +446,7 @@
 									<p-column field="key" header="Key" [style]="{'width':'120px','text-align':'left'}"></p-column>
 									<p-column header="Value" [style]="{'width':'120px','text-align':'left'}">
 										<template let-col let-row="rowData" pTemplate="editor">
-											<input type="text" class="form-control" [(ngModel)]="row.value"/>
+											<input type="text" class="form-control" [(ngModel)]="row.value" />
 										</template>
 									</p-column>
 									<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
@@ -481,7 +505,7 @@
 					</div>
 					<div class='col-md-2'>
 						<div class='form-group'>
-							<div style="padding-top:28px">
+							<div class="setfltrbtn">
 								<button class="btn btn-theme btn-sm get" tabindex="3"><i class="fa fa-arrow-right"></i></button>
 							</div>
 						</div>

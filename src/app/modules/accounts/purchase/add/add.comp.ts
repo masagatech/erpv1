@@ -461,7 +461,7 @@ declare var $: any;
     }
 
 
-    ItemsSelected(Itemsid, counter) {
+    ItemsSelected(Itemsid, code) {
         this.PurchaseServies.getitemsDetails({
             "itemsid": Itemsid,
             "cmpid": this.loginUser.cmpid,
@@ -470,13 +470,14 @@ declare var $: any;
             "createdby": this.loginUser.login
         }).subscribe(result => {
             var returndata = result.data;
-            if (counter == 0) {
+            debugger;
+            if (this.newAddRow.length == 0) {
                 this.itemsid = Itemsid;
                 this.rateslist = returndata[0].rates;
             }
             else {
                 for (let item of this.newAddRow) {
-                    if (item.autoid === counter) {
+                    if (item.itemsname.split(':')[0] === code) {
                         item.rateslist = [];
                         item.qty = 0;
                         item.amount = 0;
@@ -514,11 +515,11 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    _me.ItemsName = ui.item.label;
+                    _me.itemsname = ui.item.label;
                     if (arg === 1) {
                         _me.itemsname = ui.item.label;
                         _me.itemsid = ui.item.value;
-                        that.ItemsSelected(_me.itemsid, _me.autoid);
+                        that.ItemsSelected(_me.itemsid, _me.itemsname.split(':')[0]);
                     } else {
                         _me.NewItemsName = ui.item.label;
                         _me.NewItemsid = ui.item.value;

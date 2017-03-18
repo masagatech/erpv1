@@ -5,8 +5,8 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Account Code</label>
-					<input type="text" validate="" placeholder="Account code" class="form-control accode" maxlength="10" tabindex="1" name="accode" [(ngModel)]="acledcode"
-						(blur)="Getcode()">
+					<input type="text" validate="" placeholder="Account code" class="form-control accode" maxlength="10" tabindex="1" name="accode"
+						[(ngModel)]="acledcode" (blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-4">
@@ -31,8 +31,8 @@
 				<div class='form-group'>
 					<label>Remark</label>
 					<div class="input-group">
-						<textarea [(ngModel)]="remark" placeholder="Remark" tabindex="4" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
-							rows="2"></textarea>
+						<textarea [(ngModel)]="remark" placeholder="Remark" tabindex="4" class="form-control medium-text-box" name="remark" cols="75"
+							autocomplete='off' rows="2"></textarea>
 					</div>
 				</div>
 			</div>
@@ -116,9 +116,9 @@
 									<div class="col-md-4">
 										<div class='form-group'>
 											<label>Key</label>
-											<!--<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfoKey" />-->
-											<input type="text" class="form-control key" placeholder="Any key" tabindex="20" value="" [(ngModel)]="acinfoKey" (keyup)="getAutoCompletekey(this)"/>
-
+											<p-autoComplete [(ngModel)]="acinfoKey" class="form-controlAutoComplete key" (onSelect)="AccountinfoSelect($event)"
+												[suggestions]="AccountinfoAutodata" (completeMethod)="AccountinfoAuto($event)" [tabindex]="3" field="label" [size]="30"
+												placeholder="Any Key" [minLength]="1"></p-autoComplete>
 										</div>
 									</div>
 									<div class="col-md-5">

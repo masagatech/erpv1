@@ -37,6 +37,7 @@ declare var commonfun: any;
     //New Auto Completed
     AcledgerAutodata: any = [];
     CtrlAutodata: any = [];
+    AccountinfoAutodata: any = [];
 
     //Address Book
     accode: any = "";
@@ -138,8 +139,7 @@ declare var commonfun: any;
             this.acledgerServies.getAccountLedgeracinfo({
                 "cmpid": this.loginUser.cmpid
             }).subscribe(result => {
-                debugger;
-                this.keyvallist = result.data[0].acinfo;
+                this.keyvallist = result.data[0].acinfo === null ? [] : result.data[0].acinfo;
             }, err => {
                 console.log("Error");
             }, () => {
@@ -157,42 +157,30 @@ declare var commonfun: any;
         this.adrbookid = [];
     }
 
-    //Autocompleted Control Center
-    getAutoCompletekey(me: any) {
+    //Account Info Key Auto extender
+    AccountinfoAuto(event) {
         try {
-            var that = this;
-            this._autoservice.getAutoData({
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
                 "type": "attribute",
-                "search": that.acinfoKey,
                 "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.fy,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
                 "filter": "acinfo_attr",
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".key").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.acinfoKeyid = ui.item.value;
-                        me.acinfoKey = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
+                "search": query
+            }).then(data => {
+                this.AccountinfoAutodata = data;
+            });
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
 
+    }
+
+    //Account Info Key Selected
+    AccountinfoSelect(event) {
+        this.acinfoKeyid = event.value;
+        this.acinfoKey = event.label;
     }
 
     //AutoCompletd Parent Group
@@ -278,7 +266,7 @@ declare var commonfun: any;
         setTimeout(function () {
             $(".key").val("");
             $(".val").val("");
-            $(".key").focus();
+            $(".key input").focus();
         }, 0);
     }
 
@@ -562,13 +550,13 @@ declare var commonfun: any;
             ).subscribe(result => {
                 try {
                     var dataset = result.data;
-                    if (dataset[0].funsave_accountledger.maxid === "-1") {
-                        this._msg.Show(messageType.error, "error", dataset[0].funsave_accountledger.msg);
+                    if (dataset[0].funsave_coa.maxid === "-1") {
+                        this._msg.Show(messageType.error, "error", dataset[0].funsave_coa.msg);
                         $(".accode").focus();
                         return;
                     }
-                    if (dataset[0].funsave_accountledger.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", dataset[0].funsave_accountledger.msg);
+                    if (dataset[0].funsave_coa.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", dataset[0].funsave_coa.msg);
                         this.ClearControll();
                         if (this.acledid > 0) {
                             this._router.navigate(['master/acledger']);

@@ -51,24 +51,19 @@ declare var $: any;
         this.setActionButtons.setTitle("Account Group");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        setTimeout(function() {
+        setTimeout(function () {
             $(".GroupName input").focus();
         }, 0)
-
-    }
-
-    loadRBIGrid(event: LazyLoadEvent) {
-        this.getAccountGroupView(event.first, (event.first + event.rows));
+        this.getAccountGroupView(0, 0, "p", null);
     }
 
     //Get Edit And View
-    getAccountGroupView(from: number, to: number) {
+    getAccountGroupView(prid: any, natid: any, flg: any, nodeChild: any) {
         try {
             this.acgroupServies.acGroupView({
-                "groupid": 0,
-                "groupcode": "0",
-                "from": from,
-                "to": to,
+                "prgid": prid,
+                "natid": natid,
+                "flag1": flg,
                 "cmpid": this.loginUser.cmpid,
                 "FY": this.loginUser.fy,
                 "CreatedBy": this.loginUser.login,
@@ -76,7 +71,26 @@ declare var $: any;
             }).subscribe(result => {
                 var dataset = result.data;
                 if (dataset.length > 0) {
-                    this.acgrouplist = dataset[0];
+                    var data = dataset[0];
+                    var resolvedD = [];
+                    for (var i = 0; i <= data.length - 1; i++) {
+                        resolvedD.push({
+                            "data": {
+                                "prgid": data[i].id,
+                                "natid": data[i].natid,
+                                "grpcd": data[i].grpcd,
+                                "grp": data[i].grp,
+                                "isf": flg,
+                                "leafcnt": data[i].leafcnt
+                            },
+                            "leaf": (data[i].leafcnt == 0 ? true : false)
+                        })
+                    }
+                    if (flg == "p")
+                        this.acgrouplist = resolvedD;
+                    else {
+                        nodeChild.children = resolvedD;
+                    }
                 }
                 else {
                     $(".GroupName input").focus();
@@ -128,6 +142,19 @@ declare var $: any;
             this._msg.Show(messageType.error, "error", e.message);
         }
 
+    }
+
+    nodeExpand(event) {
+        if (event.node) {
+            console.log(event.node);
+            var data = event.node.data;
+            //in a real application, make a call to a remote url to load children of the current node and add the new nodes as children
+            // this.nodeService.getLazyFilesystem().then(nodes => event.node.children = nodes);
+            var prgid = (data.isf == "p" ? data.natid : data.prgid);
+            var natid = (data.isf == "p" ? data.prgid : data.natid);
+
+            this.getAccountGroupView(prgid, natid, "", event.node);
+        }
     }
 
     //Group Code (Edit) Group

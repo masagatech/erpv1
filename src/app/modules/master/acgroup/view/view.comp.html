@@ -17,37 +17,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="table-responsive">
-		<p-dataTable #dt [value]="acgrouplist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-			(onRowExpand)="expandDetails($event)" expandableRows="true">
-			<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
-				<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-					{{rowIndex+1}}
-				</template>
-			</p-column>
-			<p-column header="More" expander="true" [style]="{'width':'1px','text-align':'left'}"></p-column>
-			<p-column field="pgroup" header="Parent Group" [style]="{'width':'120px','text-align':'left'}"></p-column>
-			<template let-row pTemplate="rowexpansion">
-				<span *ngIf="!row.loading">Loading....</span>
-				<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="false" expandableRows="true"
-					[totalRecords]="row.totalDetailsRecords" (onRowClick)="Editacgroup($event)">
-					<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
-						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-							{{rowIndex+1}}
-						</template>
-					</p-column>
-					<p-column field="groupcode" header="Group Code" [style]="{'width':'100px','text-align':'left'}"></p-column>
-					<p-column field="groupname" header="Group Name" [style]="{'width':'20px','text-align':'right'}"></p-column>
-					<p-column field="val" header="Parent Of Group" [style]="{'width':'20px','text-align':'right'}"></p-column>
-					<p-column field="appfrom" header="Applicable From" [style]="{'width':'20px','text-align':'right'}"></p-column>
-					<p-column field="remark" header="Remark" [style]="{'width':'30px','text-align':'right'}"></p-column>
-					<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
-						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-							<button type="button" (click)="Editacgroup(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
-						</template>
-					</p-column>
-				</p-dataTable>
+	<p-treeTable [value]="acgrouplist" selectionMode="single" [style]="{'margin-top':'50px'}" (onNodeExpand)="nodeExpand($event)">
+		<p-column field="grpcd" header="Code">
+			<template let-node="rowData" pTemplate="body">
+				{{node.data.grpcd}}&nbsp;&nbsp;<span class="label label-primary" *ngIf="node.data.leafcnt > 0">{{node.data.leafcnt}}</span>
 			</template>
-		</p-dataTable>
-	</div>
+
+		</p-column>
+		<p-column field="grp" header="Name"></p-column>
+	</p-treeTable>
 </div>
