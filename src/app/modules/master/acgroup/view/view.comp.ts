@@ -34,6 +34,9 @@ declare var $: any;
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    //Auto Compeletd
+    GroupAutodata: any = [];
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private acgroupServies: acgroupview, private _autoservice: CommonService,
         private _userService: UserService, private _msg: MessageService) {
@@ -48,7 +51,10 @@ declare var $: any;
         this.setActionButtons.setTitle("Account Group");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".GroupName").focus();
+        setTimeout(function() {
+            $(".GroupName input").focus();
+        }, 0)
+
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -73,7 +79,7 @@ declare var $: any;
                     this.acgrouplist = dataset[0];
                 }
                 else {
-                    $(".GroupName").focus();
+                    $(".GroupName input").focus();
                     return;
                 }
 
@@ -91,71 +97,75 @@ declare var $: any;
 
     //More Button Click Event
     expandDetails(event) {
-        if (event.details && event.details.length > 0) { return; }
-        var that = this;
-        var row = event;
-        row.loading = false;
-        this.acgroupServies.acGroupView({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdBy": this.loginUser.login,
-            "flag": "details",
-            "groupid": 0,
-            "neturid": row.autoid
-        }).subscribe(data => {
-            var dataset = data.data;
-            debugger;
-            if (dataset.length > 0) {
-                row.totalDetailsRecords = dataset[1][0].recordstotal;
-                row.loading = true;
-                row.details = dataset[0];
-            }
-            else {
-                that._msg.Show(messageType.info, "info", "Record Not Found");
-            }
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        try {
+            if (event.details && event.details.length > 0) { return; }
+            var that = this;
+            var row = event;
+            row.loading = false;
+            this.acgroupServies.acGroupView({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdBy": this.loginUser.login,
+                "flag": "details",
+                "groupid": 0,
+                "neturid": row.autoid
+            }).subscribe(data => {
+                var dataset = data.data;
+                if (dataset.length > 0) {
+                    row.totalDetailsRecords = dataset[1][0].recordstotal;
+                    row.loading = true;
+                    row.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.error, "error", "Record Not Found");
+                }
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Group Code (Edit) Group
-    Editacgroup(row) {
-        if (!row.IsLocked) {
-            this._router.navigate(['/master/acgroup/edit', row.groupid]);
+    Editacgroup(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.IsLocked) {
+                this._router.navigate(['/master/acgroup/edit', data.groupid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
     }
 
-    //Auto Completed Nature
-    getAutoCompleteGroupName(me: any) {
-        this._autoservice.getAutoData({
-            "type": "nature",
-            "search": this.GroupName,
-            "CmpCode": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "createdBy": this.loginUser.login
-        }).subscribe(data => {
-            $(".GroupName").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.Groupcode = ui.item.value;
-                    me.GroupName = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+    GroupAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "groupname",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.GroupAutodata = data;
+        });
+    }
+
+    //Selected Customer
+    GroupSelect(event) {
+        this.Groupcode = event.value;
+        this.GroupName = event.label;
     }
 
     //Add Top Buttons Add Edit And Save

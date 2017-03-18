@@ -127,18 +127,18 @@ declare var commonfun: any;
         this.acgroupServies.acGroupView({
             "flag": "",
             "groupid": groupid,
-            "neturid": this.neturid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             this.editmode = true;
-            var dataset = data.data;
+            debugger;
+            var dataset = data.data[0];
             this.groupcode = dataset[0].groupcode;
             this.groupName = dataset[0].groupname;
-            this.neturname = dataset[0].val;
-            this.neturid = dataset[0].grnature;
-            this.appfrom = dataset[0].appfromedit;
+            this.neturname = dataset[0].parentname;
+            this.neturid = dataset[0].parentid;
+            this.appfrom = dataset[0].applyfrom;
             this.isactive = dataset[0].isactive;
             if (this.appfrom == 0) {
                 this.chkall = true;

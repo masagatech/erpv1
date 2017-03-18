@@ -13,5 +13,8 @@ export class grnInwordService {
     savegrninword(req: any) {
         return this._dataserver.post("savegrninword", req);
     }
+    getInwordgriddetail(req: any) {
+        return this._dataserver.post("getinwordviewdetails", req);
+    }
 
 }

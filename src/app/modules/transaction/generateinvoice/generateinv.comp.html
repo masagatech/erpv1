@@ -31,7 +31,7 @@
 </div>
 <div class="row">
 	<div class="col-md-10">
-		<div [hidden]="tableDetails">
+		<div *ngIf="invoices.length > 0">
 			<div class="panel panel-theme">
 				<div class="panel-body">
 					<div *ngFor="let InvNoitem of invoices">
@@ -88,20 +88,24 @@
 							</p-column>
 							<p-column field="itemcode" header="Item code" [style]="{'width':'50px','text-align':'left'}"></p-column>
 							<p-column field="itemname" header="Item name" [style]="{'width':'130px','text-align':'left'}"></p-column>
-							<p-column header="Qty." [style]="{'width':'50px','text-align':'left'}">
+							<p-column header="Qty." [style]="{'width':'50px','text-align':'right'}">
 								<template let-col let-row="rowData" pTemplate="editor">
 									<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>
 								</template>
 							</p-column>
-							<p-column header="Rate" [style]="{'width':'50px','text-align':'left'}">
+							<p-column header="Rate" [style]="{'width':'50px','text-align':'right'}">
 								<template let-col let-row="rowData" pTemplate="editor">
 									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.rate"></numtext>
 								</template>
 							</p-column>
-							<p-column field="dis" header="Dis." [style]="{'width':'50px','text-align':'left'}"></p-column>
-							<p-column header="Amount" [style]="{'width':'50px','text-align':'left'}">
+							<p-column field="dis" header="Dis." [style]="{'width':'50px','text-align':'right'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.amount"></numtext>
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [(ngModel)]="row.dis"></numtext>
+								</template>
+							</p-column>
+							<p-column header="Amount" [style]="{'width':'50px','text-align':'right'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<numtext [iscurrency]="true" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.amount"></numtext>
 								</template>
 							</p-column>
 							<footer>
@@ -109,19 +113,19 @@
 									<tbody style="float: right;">
 										<tr class="bg-warning">
 											<td colspan="5"><b style="float:left;">Gross Total</b></td>
-											<td colspan="4"><b>{{Subtotal(InvNoitem.details)}}</b></td>
+											<td colspan="4" class="textalign"><b>{{Subtotal(InvNoitem.details) | _currency:loginUser._globsettings[0] }}</b></td>
 										</tr>
 										<tr class="bg-warning" *ngFor="let item of taxlist">
 											<td colspan="5"><b style="float:left;">{{item.taxname}}</b></td>
 											<td class="textalign">
 												<span>{{item.taxval}}</span>
 											</td>
-											<td class="textalign"><b style="float:left;">{{SubtotalTax(InvNoitem.details,item.taxval)}}</b></td>
+											<td class="textalign"><b style="float:right;">{{SubtotalTax(InvNoitem.details,item.taxval)| _currency:loginUser._globsettings[0] }}</b></td>
 										</tr>
 										<tr class="bg-warning">
 											<td colspan="5" class="textalign"><b style="float:left;">Grand Total</b></td>
 											<td></td>
-											<td class="textalign"><b style="float:left;">{{GrandTotal(InvNoitem.details,taxlist)}}</b></td>
+											<td class="textalign"><b style="float:right;">{{GrandTotal(InvNoitem.details,taxlist)| _currency:loginUser._globsettings[0] }}</b></td>
 										</tr>
 									</tbody>
 								</table>
@@ -129,14 +133,15 @@
 						</p-dataTable>
 						<!--<button type="button" style="float:right" class="btn btn-theme btn-sm">Generate + Print</button>
 						<button type="button" style="float:right" class="btn btn-theme btn-sm" (click)="GenerateInvoice(InvNoitem.details,InvNoitem.header)">Generate Invoice</button>-->
-						<p-splitButton label="Generate" icon="fa-check" [style]="{'float':'right'}" (onClick)="GenerateInvoice(InvNoitem.details,InvNoitem.header,taxlist)" [model]="buttonitems"></p-splitButton>
+						<p-splitButton label="Generate" icon="fa-check" [style]="{'float':'right'}" (onClick)="GenerateInvoice(InvNoitem.details,InvNoitem.header,taxlist)"
+							[model]="buttonitems"></p-splitButton>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-md-2" [hidden]="DocTable">
-		<div style="height: 320px !important;overflow-y: scroll;">
+	<div class="col-md-2" *ngIf="doclist">
+		<div style="height:60% !important;overflow-y: scroll;">
 			<table class='table table-bordered table-condensed table-striped table-hover'>
 				<tbody>
 					<tr>
@@ -145,9 +150,7 @@
 					<tr>
 						<th>Doc No</th>
 					</tr>
-					<tr class="table-row" *ngFor="let item of doclist">
-						<td><a role="button" (click)="getInvDetails(item)">{{item.docno}}</a><span class="hide">{{item.autoid}}</span></td>
-					</tr>
+					<a role="button" *ngFor="let item of doclist" class="btn btn-theme btn-grid" (click)="getInvDetails(item)">{{item.docno}}</a>
 				</tbody>
 			</table>
 		</div>

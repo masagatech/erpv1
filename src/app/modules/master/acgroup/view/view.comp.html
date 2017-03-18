@@ -4,14 +4,15 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Group Name</label>
-					<input type="text=" class="form-control GroupName" tabindex="1" value="" [(ngModel)]="GroupName" (keyup)="getAutoCompleteGroupName(this)"
-					/>
+					<p-autoComplete [(ngModel)]="GroupName" class="form-controlAutoComplete GroupName" (onSelect)="GroupSelect($event)" [suggestions]="GroupAutodata"
+						(completeMethod)="GroupAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Group Name" [minLength]="1"></p-autoComplete>
 				</div>
 			</div>
 			<div class="col-md-1">
 				<div class='form-group'>
-					<label>&nbsp;</label>
-					<button type="button" class="btn btn-primary" tabindex="4" (click)="GetAccountGroup()">Get</button>
+					<div class="setfltrbtn">
+						<button type="button" class="btn btn-primary" tabindex="4" (click)="GetAccountGroup()"><i class="fa fa-arrow-right"></i></button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -29,7 +30,7 @@
 			<template let-row pTemplate="rowexpansion">
 				<span *ngIf="!row.loading">Loading....</span>
 				<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="false" expandableRows="true"
-					[totalRecords]="row.totalDetailsRecords">
+					[totalRecords]="row.totalDetailsRecords" (onRowClick)="Editacgroup($event)">
 					<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
 						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 							{{rowIndex+1}}
@@ -40,6 +41,11 @@
 					<p-column field="val" header="Parent Of Group" [style]="{'width':'20px','text-align':'right'}"></p-column>
 					<p-column field="appfrom" header="Applicable From" [style]="{'width':'20px','text-align':'right'}"></p-column>
 					<p-column field="remark" header="Remark" [style]="{'width':'30px','text-align':'right'}"></p-column>
+					<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							<button type="button" (click)="Editacgroup(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
+						</template>
+					</p-column>
 				</p-dataTable>
 			</template>
 		</p-dataTable>

@@ -131,6 +131,7 @@ declare var $: any;
                     "rateid": item.dcrate,
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
+                    "typ":"order",
                     "createdby": this.loginUser.login,
                     "confimstatus": 'Menual',
                     "autoconfirm": false
@@ -186,7 +187,8 @@ declare var $: any;
                 "acid": this.custid,
                 "createdby": this.loginUser.login,
                 "from": this.fromcal.getDate(),
-                "to": this.tocal.getDate()
+                "to": this.tocal.getDate(),
+                "typ":"order"
             }).subscribe(ordno => {
                 var dataset = ordno.data === null ? [] : ordno.data;
                 if (dataset.length > 0) {
@@ -217,7 +219,8 @@ declare var $: any;
                 "cmpid": this.loginUser.cmpid,
                 "docno": items.docno,
                 "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
+                "createdby": this.loginUser.login,
+                "typ":"order"
             }).subscribe(documentno => {
                 this.CustomerDetails = documentno.data[0] === null ? [] : documentno.data[0];
                 this.dcdetails = documentno.data[1] === null ? [] : documentno.data[1];

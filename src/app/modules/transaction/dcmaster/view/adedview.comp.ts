@@ -83,7 +83,7 @@ export class dcview implements OnInit, OnDestroy {
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        setTimeout(function() {
+        setTimeout(function () {
             $("#Custcode input").focus();
         }, 0);
         var date = new Date();
@@ -126,20 +126,22 @@ export class dcview implements OnInit, OnDestroy {
             if ($("#Custcode input").val() == "") {
                 this.CustID = 0;
             }
+            this.salesorderview = [];
             this.SalesOrdViewServies.GetSalesOrderView({                     //User getdcdropdown
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "acid": this.CustID,
                 "from": this.fromdatecal.getDate(),
-                "to": this.todatecal.getDate()
+                "to": this.todatecal.getDate(),
+                "typ": "order"
             }).subscribe(result => {
                 var dataset = result.data;
                 if (dataset[0].length > 0) {
                     this.salesorderview = dataset[0];
                 }
                 else {
-                    this._msg.Show(messageType.info, "info", "Record Not Found");
+                    this._msg.Show(messageType.error, "error", "Record Not Found");
                     $("#Custcode input").focus();
                 }
             }, err => {
@@ -149,8 +151,6 @@ export class dcview implements OnInit, OnDestroy {
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
-
-
     }
 
     //Row Click 
@@ -173,7 +173,8 @@ export class dcview implements OnInit, OnDestroy {
                 "docno": row.docno,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
+                "createdby": this.loginUser.login,
+                "typ": "order"
             }).subscribe(data => {
                 row.loading = true;
                 row.details = data.data[0];

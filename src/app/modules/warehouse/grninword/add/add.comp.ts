@@ -59,7 +59,7 @@ declare var commonfun: any;
     //Add Save Edit Delete Button
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
@@ -71,8 +71,8 @@ declare var commonfun: any;
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
-                // this.docno = params['id'];
-                // this.editMode(this.docno);
+                this.docno = params['id'];
+                this.Edit(this.docno);
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
@@ -84,7 +84,6 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-        this.actionButton.find(a => a.id === "save").hide = true;
 
         setTimeout(function () {
             commonfun.addrequire();
@@ -96,17 +95,22 @@ declare var commonfun: any;
 
     //Page Load Event Get Document No 
     getdocumentno() {
-        this.grnServies.getgrninworddetal({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "flag": "docno"
-        }).subscribe(result => {
-            this.doclist = result.data[0];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //compeletd
-        })
+        try {
+            this.grnServies.getgrninworddetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "flag": "docno"
+            }).subscribe(result => {
+                this.doclist = result.data[0];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Get type
@@ -116,58 +120,118 @@ declare var commonfun: any;
 
     //Documenty No Click Event
     GetDetails(item) {
-        this.docno = 0;
-        this.grnServies.getgrninworddetal({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "docno": item.docno,
-            "flag": ""
-        }).subscribe(result => {
-            var dataset = result.data;
-            debugger;
-            this.fromwh = dataset[0][0]._fromwhdetai[0].fromwhname;
-            this.fromwhid = dataset[0][0]._fromwhdetai[0].fromid;
-            this.fromemail = dataset[0][0]._fromwhdetai[0].email;
-            this.frommob = dataset[0][0]._fromwhdetai[0].mob
-            this.fromwhadr = dataset[0][0]._fromwhdetai[0].address;
-            this.docdate = dataset[0][0]._fromwhdetai[0].docdate;
-            this.docno = item.docno;
-            this.subdoc = dataset[0][0]._fromwhdetai[0].subdoc;
-            this.towh = dataset[0][0].towhdetail[0].towhname;
-            this.towhid = dataset[0][0].towhdetail[0].toid;
-            this.toemial = dataset[0][0].towhdetail[0].email;
-            this.tomob = dataset[0][0].towhdetail[0].mob;
-            this.towhadr = dataset[0][0].towhdetail[0].address;
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.inworddetails = dataset[1];
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //compeletd
-        })
+        try {
+            this.docno = 0;
+            this.grnServies.getgrninworddetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "docno": item.docno,
+                "flag": ""
+            }).subscribe(result => {
+                var dataset = result.data;
+                this.fromwh = dataset[0][0]._fromwhdetai[0].fromwhname;
+                this.fromwhid = dataset[0][0]._fromwhdetai[0].fromid;
+                this.fromemail = dataset[0][0]._fromwhdetai[0].email;
+                this.frommob = dataset[0][0]._fromwhdetai[0].mob
+                this.fromwhadr = dataset[0][0]._fromwhdetai[0].address;
+                this.docdate = dataset[0][0]._fromwhdetai[0].docdate;
+                this.docno = item.docno;
+                this.subdoc = dataset[0][0]._fromwhdetai[0].subdoc;
+                this.towh = dataset[0][0].towhdetail[0].towhname;
+                this.towhid = dataset[0][0].towhdetail[0].toid;
+                this.toemial = dataset[0][0].towhdetail[0].email;
+                this.tomob = dataset[0][0].towhdetail[0].mob;
+                this.towhadr = dataset[0][0].towhdetail[0].address;
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.inworddetails = dataset[1];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
+
+    //Edit Row 
+    Edit(docno) {
+        try {
+            this.grnServies.getgrninworddetal({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "docno": docno,
+                "flag": "edit"
+            }).subscribe(result => {
+                var dataset = result.data;
+                this.fromwh = dataset[0][0]._fromwhdetai[0].fromwhname;
+                this.fromwhid = dataset[0][0]._fromwhdetai[0].fromid;
+                this.fromemail = dataset[0][0]._fromwhdetai[0].email;
+                this.frommob = dataset[0][0]._fromwhdetai[0].mob
+                this.fromwhadr = dataset[0][0]._fromwhdetai[0].address;
+                this.docdate = dataset[0][0]._fromwhdetai[0].docdate;
+                this.docno = docno;
+                this.subdoc = dataset[0][0].subdoc;
+                this.towh = dataset[0][0].towhdetail[0].towhname;
+                this.towhid = dataset[0][0].towhdetail[0].toid;
+                this.toemial = dataset[0][0].towhdetail[0].email;
+                this.tomob = dataset[0][0].towhdetail[0].mob;
+                this.towhadr = dataset[0][0].towhdetail[0].address;
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.inworddetails = dataset[1];
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //compeletd
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //Quntity Culculation
     CulculateQty(row) {
-        return row.amount = row.qty * row.rate;
+        try {
+            if (parseFloat(row.qty) <= parseFloat(row.oldqty)) {
+                return row.amount = row.qty * row.rate;
+            }
+            else {
+                this._msg.Show(messageType.error, "error", "Invalid Quntity");
+                row.qty = row.oldqty;
+                return;
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Total Quntity
     TotalQty() {
-        var tqty = 0;
-        for (let item of this.inworddetails) {
-            tqty += parseFloat(item.qty);
+        try {
+            var tqty = 0;
+            for (let item of this.inworddetails) {
+                tqty += parseFloat(item.qty);
+            }
+            return tqty;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return tqty;
+
     }
 
     //Total Amount
     TotalAmt() {
-        var tamt = 0;
-        for (let item of this.inworddetails) {
-            tamt += parseFloat(item.amount);
+        try {
+            var tamt = 0;
+            for (let item of this.inworddetails) {
+                tamt += parseFloat(item.amount);
+            }
+            return tamt;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return tamt;
+
     }
 
     //Clear Control
@@ -189,57 +253,115 @@ declare var commonfun: any;
 
     //Detail Paramter
     paramdetails() {
-        var param = [];
-        for (let item of this.inworddetails) {
-            param.push({
-                "autoid": 0,
-                "docno": item.docno,
-                "outwordid": item.outwordid,
-                "docdate": this.docdate,
-                "fromid": this.fromwhid,
-                "toid": this.towhid,
-                "itemid": item.itemsid,
-                "qty": item.qty,
-                "rate": item.rate,
-                "rateid": item.rateid,
-                "amt": item.amount,
-                "createdby": this.loginUser.login,
-                "remark": this.remark,
-                "remark1": "",
-                "remark2": "",
-                "remark3": []
-            })
+        try {
+            var param = [];
+            for (let item of this.inworddetails) {
+                param.push({
+                    "autoid": item.autoid,
+                    "docno": item.docno,
+                    "outwordid": item.outwordid,
+                    "docdate": this.docdate,
+                    "fromid": this.fromwhid,
+                    "toid": this.towhid,
+                    "itemid": item.itemsid,
+                    "qty": item.qty,
+                    "rate": item.rate,
+                    "rateid": item.rateid,
+                    "amt": item.amount,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
         return param;
     }
 
-    //Saveing Paramter
-    paramjson() {
+    ledgerparam() {
+        var ledparam = [];
+        try {
+            var param = [];
+            for (let item of this.inworddetails) {
+                param.push({
+                    "ledger": 0,
+                    "whid": this.towhid,
+                    "typ": "inreg",
+                    "itemid": item.itemsid,
+                    "rate": item.rate,
+                    "amt": item.amount,
+                    "inword": item.qty,
+                    "outward": 0,
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+            }
+            for (let item of this.inworddetails) {
+                param.push({
+                    "ledger": 0,
+                    "whid": this.towhid,
+                    "typ": "inreg",
+                    "itemid": item.itemsid,
+                    "rate": item.rate,
+                    "amt": item.amount,
+                    "inword": 0,
+                    "outward": item.qty,
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "remark": this.remark,
+                    "remark1": "",
+                    "remark2": "",
+                    "remark3": []
+                })
+        }
+        } catch(e) {
+        this._msg.Show(messageType.error, "error", e.message);
+    }
+        return param;
+    }
+
+//Saveing Paramter
+paramjson() {
+    try {
         var param = {
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "docno": this.docno,
             "subdoc": this.subdoc,
-            "grnindetails": this.paramdetails()
+            "grnindetails": this.paramdetails(),
+            "ledgerinword": this.ledgerparam()
         }
-        console.log(param);
         return param;
+    } catch (e) {
+        this._msg.Show(messageType.error, "error", e.message);
     }
 
-    actionBarEvt(evt) {
-        if (evt === "clear") {
-            this.ClearControl();
+}
+
+actionBarEvt(evt) {
+    if (evt === "clear") {
+        this.ClearControl();
+    }
+    else if (evt === "back") {
+        this._router.navigate(['warehouse/grninword']);
+    }
+    else if (evt === "save") {
+        var validateme = commonfun.validate();
+        if (!validateme.status) {
+            this._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
         }
-        else if (evt === "back") {
-            this._router.navigate(['warehouse/grninword']);
-        }
-        else if (evt === "save") {
-            var validateme = commonfun.validate();
-            if (!validateme.status) {
-                this._msg.Show(messageType.error, "error", validateme.msglist);
-                validateme.data[0].input.focus();
-                return;
-            }
+        try {
             this.actionButton.find(a => a.id === "save").enabled = false;
             this.grnServies.savegrninword(
                 this.paramjson()
@@ -257,18 +379,25 @@ declare var commonfun: any;
             }, () => {
                 //compeletd
             })
-            this.actionButton.find(a => a.id === "save").enabled = true;
-        } else if (evt === "edit") {
-            this.actionButton.find(a => a.id === "save").hide = false;
-        } else if (evt === "delete") {
-            alert("delete called");
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    } else if (evt === "edit") {
+        $('input').removeAttr('disabled');
+        $('select').removeAttr('disabled');
+        $('textarea').removeAttr('disabled');
+        this.actionButton.find(a => a.id === "save").hide = false;
+        this.actionButton.find(a => a.id === "edit").hide = true;
+    } else if (evt === "delete") {
+        alert("delete called");
     }
+}
 
-    ngOnDestroy() {
-        this.actionButton = [];
-        this.subscr_actionbarevt.unsubscribe();
-        this.setActionButtons.setTitle("")
-    }
+ngOnDestroy() {
+    this.actionButton = [];
+    this.subscr_actionbarevt.unsubscribe();
+    this.setActionButtons.setTitle("")
+}
 
 }

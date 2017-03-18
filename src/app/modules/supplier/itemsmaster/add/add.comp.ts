@@ -314,7 +314,6 @@ declare var commonfun: any;
 
     }
 
-
     //Autocompleted Attribute Name
     getAutoCompleteSale(me: any) {
         try {
@@ -322,7 +321,7 @@ declare var commonfun: any;
             this._autoservice.getAutoData({
                 "type": "attribute",
                 "search": that.titlesale,
-                "filter": "item_attr",
+                "filter": "salesattr",
                 "cmpid": this.loginUser.cmpid,
                 "FY": this.loginUser.login,
                 "createdby": this.loginUser.login
@@ -360,7 +359,7 @@ declare var commonfun: any;
             this._autoservice.getAutoData({
                 "type": "attribute",
                 "search": that.titlepur,
-                "filter": "item_attr",
+                "filter": "purattr",
                 "cmpid": this.loginUser.cmpid,
                 "FY": this.loginUser.login,
                 "createdby": this.loginUser.login

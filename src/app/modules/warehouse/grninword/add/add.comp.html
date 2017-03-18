@@ -1,29 +1,37 @@
 <div class="middlepan">
-	<div class="panel panel-theme" style="{{ inworddetails.length>0 ? '':'none;' }} ">
+	<div class="panel panel-theme" *ngIf="inworddetails.length > 0">
 		<div class="panel-body">
-			<div class="col-md-10">
-				<div class="col-md-4">
-					<div class='form-group'>
-						<label>From</label>
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="fromwh" />
-					</div>
-				</div>
-				<div class="col-md-4">
-					<div class='form-group'>
-						<label>To</label>
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="towh" />
-					</div>
-				</div>
-				<div class="col-md-2">
-					<div class='form-group'>
+			<div class="col-md-12">
+				<div class="col-md-3">
+					<div class="form-group">
 						<label>Document No</label>
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="docno" />
+						<span>{{docno}}</span>
 					</div>
 				</div>
-				<div class="col-md-2">
-					<div class='form-group'>
-						<label>Doc Date</label>
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="docdate" />
+				<div class="col-md-3">
+					<div class="form-group">
+						<label>Document Date</label>
+						<span>{{docdate}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="col-md-5">
+					<label>From warehouse</label>
+					<div class="panel panel-theme">
+						<div class="panel-heading">{{fromwh}}</div>
+						<div class="panel-body">
+							{{fromwhadr}} {{fromemail}} {{frommob}}
+						</div>
+					</div>
+				</div>
+				<div class="col-md-5">
+					<label>To warehouse</label>
+					<div class="panel panel-theme">
+						<div class="panel-heading">{{towh}}</div>
+						<div class="panel-body">
+							{{towhadr}} {{toemial}} {{tomob}}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -45,7 +53,7 @@
 				</p-column>
 				<p-column field="rate" header="Rate" [style]="{'width':'50px','text-align':'right'}">
 					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="false" id="{{'nmtxt_' + rowIndex + '2'}}"  [islabel]="true"  [(ngModel)]="row.rate"></numtext>
+						<numtext [iscurrency]="false" id="{{'nmtxt_' + rowIndex + '2'}}" [islabel]="true" [(ngModel)]="row.rate"></numtext>
 					</template>
 				</p-column>
 				<p-column field="amount" header="Amount" [style]="{'width':'50px','text-align':'right'}">
@@ -61,16 +69,16 @@
 								<td style="width:30px;text-align:left"></td>
 								<td style="width:30px;text-align:left"></td>
 								<td style="width:30px;text-align:right">
-								<span class="text-right form-control inlinetextbox">
+									<span class="text-right form-control inlinetextbox">
 									{{ TotalQty() | _currency:{'currsym':'','decimals':'2' } }}
 								</span>
 								</td>
 								<td style="width:30px;text-align:right"></td>
 								<td style="width:30px;text-align:right">
-								<span numtext class="text-right form-control inlinetextbox">
+									<span numtext class="text-right form-control inlinetextbox">
 									{{ TotalAmt() | _currency:loginUser._globsettings[0] }}
 									</span>
-								
+
 								</td>
 
 							</tr>
@@ -86,25 +94,37 @@
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">From Warehouse</h3>
+				<h3 class="panel-title">Document No</h3>
 			</a>
 		</div>
 		<div id="Personal" class="panel-collapse collapse in">
 
 			<div class="panel-body">
-				{{fromwhadr}} {{fromemail}} {{frommob}}
+				<table class='table table-bordered table-condensed table-striped table-hover'>
+					<tbody>
+						<tr>
+							<input type="text" [(ngModel)]="DcNo" class="form-control" placeholder="Search Doc No">
+						</tr>
+						<tr>
+							<th>Doc No</th>
+						</tr>
+						<tr class="table-row" *ngFor="let item of doclist" (click)="GetDetails(item)">
+							<td><a role="button" (click)="GetDetails(item)">{{item.docno}}</a></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">To Warehouse</h3>
+				<h3 class="panel-title">Any Other Details</h3>
 			</a>
 		</div>
 		<div id="Personal" class="panel-collapse collapse in">
 			<div class="panel-body">
-				{{towhadr}} {{toemial}} {{tomob}}
+
 			</div>
 		</div>
 	</div>
@@ -121,24 +141,12 @@
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">Document No</h3>
+				<h3 class="panel-title">Any Other Details</h3>
 			</a>
 		</div>
 		<div id="Personal" class="panel-collapse collapse in">
 			<div class="panel-body">
-				<table class='table table-bordered table-condensed table-striped table-hover'>
-					<tbody>
-						<tr>
-							<input type="text" [(ngModel)]="DcNo" class="form-control" placeholder="Search Doc No">
-						</tr>
-						<tr>
-							<th>Doc No</th>
-						</tr>
-						<tr class="table-row" *ngFor="let item of doclist">
-							<td><a role="button" (click)=GetDetails(item)>{{item.docno}}</a></td>
-						</tr>
-					</tbody>
-				</table>
+
 			</div>
 		</div>
 	</div>

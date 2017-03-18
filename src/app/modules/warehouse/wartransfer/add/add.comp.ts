@@ -392,7 +392,6 @@ declare var commonfun: any;
         }
 
         try {
-            debugger;
             that.Duplicateflag = true;
             for (var i = 0; i < that.newAddRow.length; i++) {
                 if (that.newAddRow[i].itemsname == that.NewItemsName) {
@@ -643,7 +642,7 @@ declare var commonfun: any;
             ).subscribe(result => {
                 try {
                     if (result.data[0].funsave_warehousetransfer.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg + ':' + result.data[0].funsave_warehousetransfer.maxid);
+                        this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg + ' : ' + result.data[0].funsave_warehousetransfer.maxid);
                         $(".from").focus();
                         this.ClearControl();
                         return;

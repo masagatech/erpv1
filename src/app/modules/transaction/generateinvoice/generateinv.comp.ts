@@ -95,8 +95,8 @@ export class generateInv implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("generate", "Generate", "save", true, true));
         this.actionButton.push(new ActionBtnProp("print", "Generate & Print", "print", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Generate Invoice");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        this.tableDetails = true;
         setTimeout(function () {
             $(".Custcode input").focus();
         }, 0);
@@ -105,6 +105,7 @@ export class generateInv implements OnInit, OnDestroy {
         this.todatecal.setDate(date);
         this.SettingStatus();
     }
+
     loadRBIGrid(event: LazyLoadEvent) {
 
     }
@@ -135,6 +136,9 @@ export class generateInv implements OnInit, OnDestroy {
 
     //Add Top Buttons
     actionBarEvt(evt) {
+        if (evt === "clear") {
+            this.ClearControl();
+        }
         if (evt === "save") {
 
             this.actionButton.find(a => a.id === "save").hide = false;
@@ -144,6 +148,11 @@ export class generateInv implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         }
+    }
+
+    ClearControl() {
+        this.doclist = [];
+        this.invoices = [];
     }
 
     CustomerAuto(event) {
@@ -172,29 +181,33 @@ export class generateInv implements OnInit, OnDestroy {
 
     //Get Invoice No
     getdocumentNo() {
-        this.InvServies.getInvdocumentNo({
-            "cmpid": this.loginUser.cmpid,
-            "acid": this.CustID,
-            "fy": this.loginUser.fy,
-            // "Fromdate": this.FromData,
-            // "Todate": this.ToData,
-            "createdby": this.loginUser.login,
-            "flag": 'docno'
-        }).subscribe(documentno => {
-            var dataset = documentno.data;
-            if (dataset[0].length > 0) {
-                this.doclist = dataset[0];
-                this.tableDetails = true;
-            }
-            else {
-                alert("Record Not Found");
-                this.doclist = [];
-                $(".Custcode").focus();
-            }
-        }, err => {
-            console.log('Error');
-        }, () => {
-        });
+        try {
+            this.InvServies.getInvdocumentNo({
+                "cmpid": this.loginUser.cmpid,
+                "acid": this.CustID == "" ? 0 : this.CustID,
+                "fy": this.loginUser.fy,
+                "fromdate": this.fromdatecal.getDate(),
+                "todate": this.todatecal.getDate(),
+                "createdby": this.loginUser.login,
+                "flag": 'docno',
+                "typ": "order"
+            }).subscribe(documentno => {
+                var dataset = documentno.data;
+                if (dataset[0].length > 0) {
+                    this.doclist = dataset[0];
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Record Not Found");
+                    this.doclist = [];
+                    $(".Custcode").focus();
+                }
+            }, err => {
+                console.log('Error');
+            }, () => {
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //Document No Click Get Details
@@ -215,67 +228,83 @@ export class generateInv implements OnInit, OnDestroy {
             // {label: 'Theming', icon: 'fa-paint-brush', routerLink: ['/theming']}
         ];
 
+        try {
+            this.InvServies.getInvdocumentNo({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "docno": items.docno,
+                "flag": '',
+                "typ": "order"
+            }).subscribe(details => {
+                var dataset = details.data;
+                if (dataset.length > 0) {
+                    var InvoicelocalNo = dataset[0];
+                    this.invoices = [];
+                    for (var i = 0; i < InvoicelocalNo.length; i++) {
+                        var invoiceModel = { "header": {}, "details": [] };
+                        invoiceModel.header = dataset[1].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
+                        invoiceModel.details = dataset[2].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
+                        this.taxlist = invoiceModel.header[0]._tax == null ? [] : invoiceModel.header[0]._tax;
+                        if (this.taxlist.length == 0) {
+                            this.taxlist.push({
+                                "taxname": "No Tax",
+                                "taxval": 0
+                            })
+                        }
+                        this.invoices.push(invoiceModel);
+                    }
+                }
+            }, err => {
+                console.log('Error');
+            }, () => {
+                //Done Process
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
 
-        this.InvServies.getInvdocumentNo({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "docno": items.docno,
-            "flag": ''
-        }).subscribe(details => {
-            var dataset = details.data;
-            var InvoicelocalNo = dataset[0];
-            this.invoices = [];
-            for (var i = 0; i < InvoicelocalNo.length; i++) {
-                var invoiceModel = { "header": {}, "details": [] };
-                invoiceModel.header = dataset[1].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
-                invoiceModel.details = dataset[2].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
-                this.taxlist = invoiceModel.header[0]._tax;
-                this.invoices.push(invoiceModel);
-            }
-            this.tableDetails = false;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
     }
 
     //Quntity Calculation
     private CulculateQty(items, rowdetails) {
-        var QtyRate = 0;
-        var DisAmt = 0;
-        if (items.DCQty != "" && items.DCQty != "0") {
-            if (items.OldQty < items.DCQty) {
-                alert('Please enter valid quntity');
-                for (var i = 0; i < rowdetails.length; i++) {
-                    if (rowdetails[i].ProductCode === items.ProductCode && rowdetails[i].SubConfId === items.SubConfId) {
-                        rowdetails[i].DCQty = items.OldQty;
-                        QtyRate = items[i].DCQty * items[i].Rate;
-                        DisAmt = QtyRate * items[i].Disount / 100;
-                        rowdetails[i].Amount = Math.round(QtyRate - DisAmt);
-                        break;
+        try {
+            var QtyRate = 0;
+            var DisAmt = 0;
+            if (items.DCQty != "" && items.DCQty != "0") {
+                if (items.OldQty < items.DCQty) {
+                    alert('Please enter valid quntity');
+                    for (var i = 0; i < rowdetails.length; i++) {
+                        if (rowdetails[i].ProductCode === items.ProductCode && rowdetails[i].SubConfId === items.SubConfId) {
+                            rowdetails[i].DCQty = items.OldQty;
+                            QtyRate = items[i].DCQty * items[i].Rate;
+                            DisAmt = QtyRate * items[i].Disount / 100;
+                            rowdetails[i].Amount = Math.round(QtyRate - DisAmt);
+                            break;
+                        }
                     }
-                }
 
-            }
-            else {
-                for (var i = 0; i < rowdetails.length; i++) {
-                    if (rowdetails[i].ProductCode === items.ProductCode && rowdetails[i].SubConfId === items.SubConfId) {
-                        QtyRate = rowdetails[i].DCQty * rowdetails[i].Rate;
-                        DisAmt = QtyRate * rowdetails[i].Disount / 100;
-                        rowdetails[i].Amount = Math.round(QtyRate - DisAmt);
-                        break;
+                }
+                else {
+                    for (var i = 0; i < rowdetails.length; i++) {
+                        if (rowdetails[i].ProductCode === items.ProductCode && rowdetails[i].SubConfId === items.SubConfId) {
+                            QtyRate = rowdetails[i].DCQty * rowdetails[i].Rate;
+                            DisAmt = QtyRate * rowdetails[i].Disount / 100;
+                            rowdetails[i].Amount = Math.round(QtyRate - DisAmt);
+                            break;
+                        }
                     }
                 }
             }
-        }
-        for (var i = 0; i < rowdetails.length; i++) {
-            if (rowdetails[i].ProductCode === items.ProductCode && rowdetails[i].SubConfId === items.SubConfId) {
-                items.DCQty = items.OldQty;
-                DisAmt = QtyRate * items.Disount / 100;
-                items.Amount = Math.round(QtyRate - DisAmt);
-                break;
+            for (var i = 0; i < rowdetails.length; i++) {
+                if (rowdetails[i].ProductCode === items.ProductCode && rowdetails[i].SubConfId === items.SubConfId) {
+                    items.DCQty = items.OldQty;
+                    DisAmt = QtyRate * items.Disount / 100;
+                    items.Amount = Math.round(QtyRate - DisAmt);
+                    break;
+                }
             }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
@@ -290,159 +319,190 @@ export class generateInv implements OnInit, OnDestroy {
 
     //Sub  Total With Tax 
     private SubtotalTax(details, taxval) {
-        var totalTax = 0;
-        for (var i = 0; i < details.length; i++) {
-            totalTax += parseInt(details[i].amount);
+        try {
+            var totalTax = 0;
+            for (var i = 0; i < details.length; i++) {
+                totalTax += parseInt(details[i].amount);
+            }
+            return Math.round(totalTax * taxval / 100);
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return Math.round(totalTax * taxval / 100);;
     }
 
     //Total Tax Save
     private SubtotalTotalTax(details, taxlist) {
-        var amount = 0;
-        var taxval = 0;
-        for (var i = 0; i < details.length; i++) {
-            amount += parseInt(details[i].amount);
-        }
-        if (taxlist.length > 0) {
-            for (var i = 0; i < taxlist.length; i++) {
-                taxval += parseInt(taxlist[i].taxval);
+        try {
+            var amount = 0;
+            var taxval = 0;
+            for (var i = 0; i < details.length; i++) {
+                amount += parseInt(details[i].amount);
             }
-            return Math.round(amount * taxval / 100);
+            if (taxlist.length > 0) {
+                for (var i = 0; i < taxlist.length; i++) {
+                    taxval += parseInt(taxlist[i].taxval);
+                }
+                return Math.round(amount * taxval / 100);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
     //Grand Total
     private GrandTotal(details, taxlist) {
-        var taxvalue = 0;
-        if (taxlist.length > 0) {
-            for (var i = 0; i < taxlist.length; i++) {
-                taxvalue += parseInt(taxlist[i].taxval);
+        try {
+            var taxvalue = 0;
+            if (taxlist.length > 0) {
+                for (var i = 0; i < taxlist.length; i++) {
+                    taxvalue += parseInt(taxlist[i].taxval);
+                }
             }
+            return Math.round(this.Subtotal(details) + this.SubtotalTax(details, taxvalue));
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return Math.round(this.Subtotal(details) + this.SubtotalTax(details, taxvalue));
+
     }
 
 
     //Create Paramter Invoice Table
     paramjson(tabledetails: any = [], CustomerDetails: any = []) {
-        var param = []
-        for (let item of tabledetails) {
-            param.push({
+        try {
+            var param = []
+            for (let item of tabledetails) {
+                param.push({
+                    "autoid": 0,
+                    "docno": item.docno,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "itemid": item.itemid,
+                    "itemcode": item.itemcode,
+                    "itemname": item.itemname,
+                    "qty": item.docqty,
+                    "typ": "order",
+                    "rate": item.rate,
+                    "dis": item.dis,
+                    "tax": 10,
+                    "amt": item.amount,
+                    "status": "manual",
+                    "createdby": this.loginUser.login,
+                    "deldate": CustomerDetails[0].deldate,
+                    "docdate": CustomerDetails[0].docdate,
+                    "subdocid": CustomerDetails[0].subconfid,
+                    "acid": CustomerDetails[0].acid,
+                    "accode": CustomerDetails[0].custname.split(':')[0]
+                })
+            }
+            return param;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
+
+    //Ledger Paramter
+    paramledger(tabledetails, CustomerDetails, taxlist) {
+        try {
+            var ledgerparam = [];
+            var that = this;
+            ledgerparam.push({
                 "autoid": 0,
-                "docno": item.docno,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "itemid": item.itemid,
-                "itemcode": item.itemcode,
-                "itemname": item.itemname,
-                "qty": item.docqty,
-                "rate": item.rate,
-                "dis": item.dis,
-                "tax": 10,
-                "amt": item.amount,
-                "status": "manual",
-                "createdby": this.loginUser.login,
-                "deldate": CustomerDetails[0].deldate,
-                "docdate": CustomerDetails[0].docdate,
-                "subdocid": CustomerDetails[0].subconfid,
+                "cmpid": that.loginUser.cmpid,
                 "acid": CustomerDetails[0].acid,
-                "accode": CustomerDetails[0].custname.split(':')[0]
+                "fy": that.loginUser.fy,
+                "typ": "invoice",
+                "dramt": that.GrandTotal(tabledetails, taxlist),
+                "cramt": 0,
+                "nar": CustomerDetails[0].remark,
+                "createdby": that.loginUser.login
             })
-        }
-        return param;
-    }
-
-    paramledger(tabledetails, CustomerDetails,taxlist) {
-        var ledgerparam = [];
-        var that = this;
-        ledgerparam.push({
-            "autoid": 0,
-            "cmpid": that.loginUser.cmpid,
-            "acid": CustomerDetails[0].acid,
-            "fy": that.loginUser.fy,
-            "typ": "invoice",
-            "dramt": that.GrandTotal(tabledetails,taxlist),
-            "cramt": 0,
-            "nar": CustomerDetails[0].remark,
-            "createdby": that.loginUser.login
-        })
-        ledgerparam.push({
-            "autoid": 0,
-            "cmpid": that.loginUser.cmpid,
-            "acid": that.salesregister,
-            "fy": that.loginUser.fy,
-            "typ": that.salesregister,
-            "cramt": that.GrandTotal(tabledetails,taxlist),
-            "dramt": 0,
-            "nar": CustomerDetails[0].remark,
-            "createdby": that.loginUser.login
-        })
-        return ledgerparam;
-    }
-
-    stockledger(tabledetails, CustomerDetails) {
-        var that = this;
-        var opestock = [];
-        for (let item of tabledetails) {
-            opestock.push({
+            ledgerparam.push({
                 "autoid": 0,
-                "ledger": 0,
-                "itemid": item.itemid,
-                "rateid": item.rate,
-                "rate": item.rate,
-                "inword": 0,
-                "outward": item.docqty,
-                "typ": "IN",
-                "fy": this.loginUser.fy,
-                "cmpid": this.loginUser.cmpid,
-                "createdby": this.loginUser.login,
-                "amt": item.amount,
-                "rem": item.remark,
-                "whid": CustomerDetails[0].whid,
-                "opedate": CustomerDetails[0].docdate,
-                "remark": CustomerDetails[0].remark
+                "cmpid": that.loginUser.cmpid,
+                "acid": that.salesregister,
+                "fy": that.loginUser.fy,
+                "typ": that.salesregister,
+                "cramt": that.GrandTotal(tabledetails, taxlist),
+                "dramt": 0,
+                "nar": CustomerDetails[0].remark,
+                "createdby": that.loginUser.login
             })
+            return ledgerparam;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-        return opestock;
+
+    }
+
+    //Stock Paramter
+    stockledger(tabledetails, CustomerDetails) {
+        try {
+            var that = this;
+            var opestock = [];
+            for (let item of tabledetails) {
+                opestock.push({
+                    "autoid": 0,
+                    "ledger": 0,
+                    "itemid": item.itemid,
+                    "rateid": item.rate,
+                    "rate": item.rate,
+                    "inword": 0,
+                    "outward": item.docqty,
+                    "typ": "inv",
+                    "fy": this.loginUser.fy,
+                    "cmpid": this.loginUser.cmpid,
+                    "createdby": this.loginUser.login,
+                    "amt": item.amount,
+                    "rem": item.remark,
+                    "whid": CustomerDetails[0].whid,
+                    "opedate": CustomerDetails[0].docdate,
+                    "remark": CustomerDetails[0].remark
+                })
+            }
+            return opestock;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     private GenerateInvoice(tabledetails, CustomerDetails, taxlist) {
-        this.param = this.paramjson(tabledetails, CustomerDetails);
-        this.ledgerparam = this.paramledger(tabledetails, CustomerDetails,taxlist);
-        this.stockparam = this.stockledger(tabledetails, CustomerDetails);
-        this.InvServies.GenerateInvoice({
-            "generatedetails": this.param,
-            "docno": CustomerDetails[0].docno,
-            "ledgerparam": this.ledgerparam,
-            "openstockdetails": this.stockparam,
-            "totaltax": this.SubtotalTotalTax(tabledetails, taxlist),
-            "netamt": this.GrandTotal(tabledetails, taxlist),
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy
-        }).subscribe(details => {
-            var dataset = details.data;
-            if (dataset[0].funsave_generateinvoice.maxid > 0) {
-                alert(dataset[0].funsave_generateinvoice.msg + ' :' + dataset[0].funsave_generateinvoice.maxid)
-                var InvoicelocalNo = dataset.Table;
-                this.invoices = [];
-                this.getdocumentNo();
-                this.tableDetails = false;
-            }
-            else {
-                console.log(dataset);
-            }
-
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-        // console.log(xmldata);
+        try {
+            this.InvServies.GenerateInvoice({
+                "generatedetails": this.paramjson(tabledetails, CustomerDetails),
+                "docno": CustomerDetails[0].docno,
+                "ledgerparam": this.paramledger(tabledetails, CustomerDetails, taxlist),
+                "openstockdetails": this.stockledger(tabledetails, CustomerDetails),
+                "totaltax": this.SubtotalTotalTax(tabledetails, taxlist),
+                "netamt": this.GrandTotal(tabledetails, taxlist),
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "ledgerflag": 'true',
+                "stockflag": 'true'
+            }).subscribe(details => {
+                var dataset = details.data;
+                if (dataset[0].funsave_generateinvoice.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", dataset[0].funsave_generateinvoice.msg + ' : ' + dataset[0].funsave_generateinvoice.maxid)
+                    var InvoicelocalNo = dataset.Table;
+                    this.invoices = [];
+                    this.getdocumentNo();
+                }
+                else {
+                    console.log(dataset);
+                }
+            }, err => {
+                console.log('Error');
+            }, () => {
+                //Done Process
+            });
+            // console.log(xmldata);
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

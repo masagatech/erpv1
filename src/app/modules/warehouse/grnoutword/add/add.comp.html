@@ -1,41 +1,37 @@
 <div class="middlepan">
-	<div class="panel panel-theme" style="{{ transferdetails.length>0 ? '':'none;' }} ">
+	<div class="panel panel-theme" *ngIf="transferdetails.length>0">
 		<div class="panel-body">
-			<div class="col-md-10">
-				<div class="col-md-4">
-					<div class='form-group'>
-						<label>From</label>
-						<!--<input type="text" validate="" class="form-control wha" tabindex="1" validate="" [(ngModel)]="fromwh" (keyup)="getAutoCompleteWha(this)">-->
-						<!--<p-autoComplete [(ngModel)]="fromwh" id="fromwh" class="form-controlAutoComplete" (onSelect)="FromWarehouseSelect($event)"
-							[suggestions]="FromWarehouseAutodata" (completeMethod)="FromWarehouseAuto($event)" [tabindex]="1" field="label" [size]="30"
-							placeholder="From Warehouse" [minLength]="1"></p-autoComplete>-->
-						<!--<span>{{fromwh}}</span>-->
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="fromwh" />
-					</div>
-				</div>
-				<div class="col-md-4">
-					<div class='form-group'>
-						<label>To</label>
-						<!--<input type="text" validate="" class="form-control whb" tabindex="2" validate="" [(ngModel)]="towh" (keyup)="getAutoCompleteWhb(this)">-->
-						<!--<p-autoComplete [(ngModel)]="towh" id="towh" class="form-controlAutoComplete" (onSelect)="ToWarehouseSelect($event)" [suggestions]="ToWarehouseAutodata"
-							(completeMethod)="ToWarehouseAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="To Warehouse" [minLength]="1"></p-autoComplete>-->
-						<!--<span>{{towh}}</span>-->
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="towh" />
-					</div>
-				</div>
-				<div class="col-md-2">
-					<div class='form-group'>
+			<div class="col-md-12">
+				<div class="col-md-3">
+					<div class="form-group">
 						<label>Document No</label>
-						<!--<input type="text" id="docdate" class="form-control" tabindex="1" [(ngModel)]="docno" />-->
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="docno" />
+						<span>{{docno}}</span>
 					</div>
 				</div>
-				<div class="col-md-2">
-					<div class='form-group'>
-						<label>Doc Date</label>
-					
-						<!--<span>{{docdate}}</span>-->
-						<input type="text" class="form-control" readonly="true" [(ngModel)]="docdate" />
+				<div class="col-md-3">
+					<div class="form-group">
+						<label>Document Date</label>
+						<span>{{docdate}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="col-md-5">
+					<label>From warehouse</label>
+					<div class="panel panel-theme">
+						<div class="panel-heading">{{fromwh}}</div>
+						<div class="panel-body">
+							{{fromwhadr}} {{fromemail}} {{frommob}}
+						</div>
+					</div>
+				</div>
+				<div class="col-md-5">
+					<label>To warehouse</label>
+					<div class="panel panel-theme">
+						<div class="panel-heading">{{towh}}</div>
+						<div class="panel-body">
+							{{towhadr}} {{toemial}} {{tomob}}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -52,17 +48,17 @@
 				<p-column field="itemname" header="Item Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
 				<p-column field="qty" header="Qty" [style]="{'width':'40px','text-align':'right'}">
 					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="false" [decimals]="2" [(ngModel)]="row.qty" (keyup)="CulculateQty(row)"></numtext>
+						<numtext [iscurrency]="false" [decimals]="2" id="{{'nmtxt_' + rowIndex + '1'}}" [(ngModel)]="row.qty" (keyup)="CulculateQty(row)"></numtext>
 					</template>
 				</p-column>
 				<p-column field="rate" header="Rate" [style]="{'width':'50px','text-align':'right'}">
 					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="false" [islabel]="true" [decimals]="2" [(ngModel)]="row.rate"></numtext>
+						<numtext [iscurrency]="false" id="{{'nmtxt_' + rowIndex + '2'}}" [islabel]="true" [(ngModel)]="row.rate"></numtext>
 					</template>
 				</p-column>
 				<p-column field="amount" header="Amount" [style]="{'width':'50px','text-align':'right'}">
 					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="true" [decimals]="2" [islabel]="true" [(ngModel)]="row.amount"></numtext>
+						<numtext [iscurrency]="true" id="{{'nmtxt_' + rowIndex + '3'}}" [islabel]="true" [(ngModel)]="row.amount"></numtext>
 					</template>
 				</p-column>
 				<footer>
@@ -73,11 +69,11 @@
 								<td style="width:30px;text-align:left"></td>
 								<td style="width:30px;text-align:left"></td>
 								<td style="width:30px;text-align:right">
-									{{TotalQty()}}
+									{{TotalQty()| _currency:{'currsym':'','decimals':'2' } }}
 								</td>
 								<td style="width:30px;text-align:right"></td>
 								<td style="width:30px;text-align:right">
-									{{TotalAmt() | currency:loginUser._globsettings.currency:true}}
+									{{TotalAmt() | _currency:loginUser._globsettings[0] }}
 								</td>
 
 							</tr>
@@ -87,7 +83,7 @@
 			</p-dataTable>
 		</div>
 	</div>
-	<div class="panel panel-theme" style="{{ transferdetails.length > 0 ? '':'none;' }}">
+	<div class="panel panel-theme" *ngIf="transferdetails.length > 0">
 		<div class="panel-body">
 			<ul class="nav nav-tabs" id="headtab">
 				<li class="active"><a data-target="#trans" role="button" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
@@ -98,9 +94,8 @@
 						<div class="col-md-4">
 							<div class='form-group'>
 								<label>Transpotr</label>
-								<p-autoComplete [(ngModel)]="transname" class="form-controlAutoComplete trans" (onSelect)="TranspoterSelect($event)"
-									[suggestions]="TranspoterAutodata" (completeMethod)="TranspoterAuto($event)" [tabindex]="1" field="label" [size]="30"
-									placeholder="Transpoter" [minLength]="1"></p-autoComplete>
+								<p-autoComplete [(ngModel)]="transname" class="form-controlAutoComplete trans" (onSelect)="TranspoterSelect($event)" [suggestions]="TranspoterAutodata"
+									(completeMethod)="TranspoterAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Transpoter" [minLength]="1"></p-autoComplete>
 							</div>
 						</div>
 						<div class="col-md-2">
@@ -112,7 +107,7 @@
 						<div class="col-md-2">
 							<div class='form-group'>
 								<label>LR Date</label>
-								
+
 							</div>
 						</div>
 					</div>
@@ -120,7 +115,7 @@
 						<div class="col-md-4">
 							<div class='form-group'>
 								<div class="ui-g-12">
-									<p-radioButton name="group1" value="paid" id="paid"  label="Paid" [(ngModel)]="paid"></p-radioButton>
+									<p-radioButton name="group1" value="paid" id="paid" label="Paid" [(ngModel)]="paid"></p-radioButton>
 									<p-radioButton name="group1" value="tobepaid" id="tobepaid" label="To be paid" [(ngModel)]="paid"></p-radioButton>
 								</div>
 							</div>
@@ -148,61 +143,21 @@
 	<div class="panel panel-theme">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">From Warehouse</h3>
-			</a>
-		</div>
-		<div id="Personal" class="panel-collapse collapse in">
-
-			<div class="panel-body">
-				{{fromwhadr}} {{fromemail}} {{frommob}}
-			</div>
-		</div>
-	</div>
-	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">To Warehouse</h3>
+				<h3 class="panel-title">Doc No</h3>
 			</a>
 		</div>
 		<div id="Personal" class="panel-collapse collapse in">
 			<div class="panel-body">
-				{{towhadr}} {{toemial}} {{tomob}}
-			</div>
-		</div>
-	</div>
-	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">Any Other Details</h3>
-			</a>
-		</div>
-		<div id="Personal" class="panel-collapse collapse in">
-			<div class="panel-body"></div>
-		</div>
-	</div>
-	<div class="panel panel-theme">
-		<div class="panel-heading">
-			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-				<h3 class="panel-title">Document No</h3>
-			</a>
-		</div>
-		<div id="Personal" class="panel-collapse collapse in">
-			<div class="panel-body">
-				<!--<div style="height: 320px !important;overflow-y: scroll;">-->
 				<table class='table table-bordered table-condensed table-striped table-hover'>
 					<tbody>
 						<tr>
 							<input type="text" [(ngModel)]="DcNo" class="form-control" placeholder="Search Doc No">
 						</tr>
-						<tr>
-							<th>Doc No</th>
-						</tr>
-						<tr class="table-row" *ngFor="let item of doclist">
-							<td><a role="button" (click)=GetDetails(item)>{{item.docno}}</a></td>
+						<tr class="table-row" *ngFor="let item of doclist" (click)="GetDetails(item)">
+							<td><a role="button" (click)="GetDetails(item)">{{item.docno}}</a></td>
 						</tr>
 					</tbody>
 				</table>
-				<!--</div>-->
 			</div>
 		</div>
 	</div>
