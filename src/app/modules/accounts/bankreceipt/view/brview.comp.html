@@ -4,6 +4,7 @@
 			<div class="form-group">
 				<label>Bank</label>
 				<select class="form-control" [(ngModel)]="bankid">
+					<option [value]="0">Select Bank</option>
 					<option *ngFor="let items of bankDT" tabindex="1" [value]="items.key">
 						{{items.val}}
 					</option>
@@ -45,22 +46,22 @@
 	<div class="table-responsive">
 		<p-dataTable #dt [value]="bankreceiptDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
 			(onLazyLoad)="loadBankReceiptGrid($event)" expandableRows="true">
-			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'30px'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'80px','text-align':'left'}"></p-column>
 			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
-			<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="acname" header="A/C Name" [style]="{'text-align':'left'}"></p-column>
 			<p-column field="bankname" header="Bank Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column field="banktype" header="Bank Type" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="banktype" header="Bank Type" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column field="cheqno" header="Cheque No" [style]="{'width':'100px','text-align':'left'}"></p-column>
-			<p-column header="Amount" [style]="{'width':'150px','text-align':'left'}">
+			<p-column header="Amount" [style]="{'width':'100px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
 					{{row.amount | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="OpenBankReceipt(row)" class="btn btn-theme btn-sm">
+					<button type="button" (click)="OpenBankReceipt(row)" class="btn btn-theme btn-sm btn-grid">
 						<i class="fa fa-edit"></i>
 					</button>
 				</template>

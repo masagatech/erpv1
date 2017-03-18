@@ -19,7 +19,7 @@ export class ViewJV implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
-
+    date1: any = "";
     viewJVDT: any = [];
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
@@ -66,7 +66,7 @@ export class ViewJV implements OnInit, OnDestroy {
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
-            console.log("Error");
+            // console.log("Error");
         }, () => {
             // console.log("Complete");
         });
@@ -140,7 +140,7 @@ export class ViewJV implements OnInit, OnDestroy {
                 "from": event.first, "to": (event.first + event.rows)
             }).subscribe(details => {
                 var dataset = details.data;
-                
+
                 if (dataset[0].length > 0) {
                     event.loading = true;
                     event.details = dataset[0];

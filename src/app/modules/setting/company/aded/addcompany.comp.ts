@@ -10,11 +10,13 @@ import { FileUpload, Growl, Message } from 'primeng/primeng';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { DynamicTabModule } from "../../../usercontrol/dynamictab";
 import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
 import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'addCompany.comp.html',
@@ -23,7 +25,9 @@ declare var $: any;
 
 export class AddCompany implements OnInit, OnDestroy {
     title: any = "";
+    module: string = "";
 
+    accode: string = "";
     cmpid: number = 0;
     cmpcode: string = "";
     cmpname: string = "";
@@ -35,15 +39,11 @@ export class AddCompany implements OnInit, OnDestroy {
 
     contactperson: string = "";
     desigid: number = 0;
-    mobileno: string = "";
-    altmobileno: string = "";
-    emailid: string = "";
-    altemailid: string = "";
-    country: string = "";
-    state: string = "";
-    city: string = "";
-    pincode: string = "";
-    address: string = "";
+    @ViewChild('addrbook')
+    addressBook: AddrbookComp;
+    adrbookid: any = [];
+    adrid: number = 0;
+    adrcsvid: any = "";
     isactive: boolean = false;
 
     dateformat: string = "";
@@ -92,6 +92,7 @@ export class AddCompany implements OnInit, OnDestroy {
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _compservice: CompService, private _userService: UserService, private _msg: MessageService) {
+        this.module = "Company";
         this.loginUser = this._userService.getUser();
 
         this.fillDropDownList();
@@ -105,8 +106,6 @@ export class AddCompany implements OnInit, OnDestroy {
     // Page Load
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Company");
-
         this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
@@ -117,7 +116,7 @@ export class AddCompany implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                this.title = "Edit Company Details";
+                this.setActionButtons.setTitle("Edit Company");
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
@@ -130,15 +129,13 @@ export class AddCompany implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
-                this.title = "Add Company Details";
+                this.setActionButtons.setTitle("Add Company");
 
-                setTimeout(function () {
-                    $("#cmpcode").focus();
-                }, 0);
                 this.currsymplace = "s";
                 this.decimals = "2";
                 this.decsep = ".";
                 this.thsep = ",";
+                $("#cmpcode").focus();
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
@@ -146,6 +143,7 @@ export class AddCompany implements OnInit, OnDestroy {
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');
                 $('textarea').removeAttr('disabled');
+                this.fillDropDownByCurrency(this.currency);
             }
         });
 
@@ -166,15 +164,21 @@ export class AddCompany implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
+            var validateme = commonfun.validate();
+
+            if (!validateme.status) {
+                this._msg.Show(messageType.error, "error", validateme.msglist);
+                validateme.data[0].input.focus();
+                return;
+            }
+
             this.saveCompanyData();
         } else if (evt === "edit") {
-            setTimeout(function () {
-                $("#cmpcode").focus();
-            }, 0);
-
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
+            $("#cmpcode").focus();
+            this.addressBook.AddBook(this.cmpcode);
 
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
@@ -200,9 +204,6 @@ export class AddCompany implements OnInit, OnDestroy {
             // BIND Company Type TO DROPDOWN
             this.cmptypeDT = d.filter(a => a.stype === "cmptype");
 
-            // BIND Country TO DROPDOWN
-            this.countryDT = d.filter(a => a.stype === "country");
-
             // BIND Date Format TO DROPDOWN
             this.dateformatDT = d.filter(a => a.stype === "dateformat");
 
@@ -215,21 +216,25 @@ export class AddCompany implements OnInit, OnDestroy {
         })
     }
 
-    fillDropDownByCurrency() {
-        this._compservice.getCompany({ "flag": "dropdownbycurrency", "ptype": this.currency }).subscribe(data => {
+    fillDropDownByCurrency(pcurrency) {
+        this._compservice.getCompany({ "flag": "dropdownbycurrency", "ptype": pcurrency }).subscribe(data => {
             var d = data.data;
 
             // BIND Currency Symbol Placement TO DROPDOWN
             this.currsymplaceDT = d.filter(a => a.stype === "currsymplace");
+            this.currsymplace = "0";
 
             // BIND Decimals TO DROPDOWN
             this.decimalsDT = d.filter(a => a.stype === "decimals");
+            this.decimals = "0";
 
             // BIND Decimal Separator TO DROPDOWN
             this.decsepDT = d.filter(a => a.stype === "decsep");
+            this.decsep = "0";
 
             // BIND Thousand Separator TO DROPDOWN
             this.thsepDT = d.filter(a => a.stype === "thsep");
+            this.thsep = "0";
         }, err => {
             console.log("Error");
         }, () => {
@@ -297,15 +302,7 @@ export class AddCompany implements OnInit, OnDestroy {
             "cmplogo": that.cmplogo,
             "contactperson": that.contactperson,
             "desigid": that.desigid,
-            "emailid": that.emailid,
-            "altemailid": that.altemailid,
-            "mobileno": that.mobileno,
-            "altmobileno": that.altmobileno,
-            "address": that.address,
-            "country": that.country,
-            "state": that.state,
-            "city": that.city,
-            "pincode": that.pincode,
+            "address": that.adrbookid,
             "uidcode": that.loginUser.login,
             "isactive": that.isactive,
             "dynamicfields": that.tabListDT,
@@ -335,16 +332,22 @@ export class AddCompany implements OnInit, OnDestroy {
 
     // Get Company
 
+    //Get Code Blur Event
+    EnableAddress() {
+        this.accode = this.cmpcode;
+        this.addressBook.AddBook(this.cmpcode);
+        this.adrbookid = [];
+    }
+
     getCompanyById(pcmpid: any) {
         var that = this;
 
         that._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
             var company = data.data[0]._cmpdata;
+
             var dynFields = data.data[0]._dynfields === null ? [] : data.data[0]._dynfields;
             var attrfields = data.data[0]._attributejson === null ? [] : data.data[0]._attributejson;
             var globfields = data.data[0]._global === null ? [] : data.data[0]._global;
-
-            console.log(company);
 
             that.cmpid = company[0].cmpid;
             that.cmpcode = company[0].cmpcode;
@@ -357,22 +360,23 @@ export class AddCompany implements OnInit, OnDestroy {
 
             that.contactperson = company[0].contactperson;
             that.desigid = company[0].desigid;
-            that.emailid = company[0].emailid;
-            that.altemailid = company[0].altemailid;
-            that.mobileno = company[0].mobileno;
-            that.altmobileno = company[0].altmobileno;
-            that.address = company[0].address;
-            that.country = company[0].country;
-            that.state = company[0].state;
-            that.city = company[0].city;
-            that.pincode = company[0].pincode;
+
+            that.adrcsvid = "";
+            var addressdt = company[0].address === null ? [] : company[0].address;
+
+            for (let items of addressdt) {
+                that.adrcsvid += items.adrid + ',';
+            }
+
+            that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
+
             that.attribute.attrlist = attrfields;
             that.isactive = company[0].isactive;
             that.tabListDT = dynFields;
 
             that.dateformat = globfields[0].dateformat;
             that.currency = globfields[0].currency;
-            that.fillDropDownByCurrency();
+            that.fillDropDownByCurrency(that.currency);
             that.currsym = globfields[0].currsym;
             that.currsymplace = globfields[0].currsymplace;
             that.decimals = globfields[0].decimals;

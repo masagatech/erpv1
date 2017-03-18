@@ -70,6 +70,8 @@
                 <li><a data-target="#contact" role="button" data-toggle="tab">Contact Details</a></li>
                 <li><a data-target="#jobprofile" role="button" data-toggle="tab">Job Profile</a></li>
                 <li><a data-target="#ctrlcenter" role="button" data-toggle="tab">Control Center</a></li>
+                <li><a data-target="#attribute" role="button" (click)="attrTab()" data-toggle="tab"><i class="fa fa-snowflake-o" aria-hidden="true"></i> Attribute</a></li>
+                <li><a data-target="#warehouse" role="button" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
                 <li><a data-target="#uploadphoto" role="button" data-toggle="tab">Upload Photo</a></li>
                 <li *ngFor="let tab of tabListDT">
                     <a href="#{{tab.fldcode}}" role="button" data-toggle="tab">
@@ -224,6 +226,29 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="attribute">
+                    <attribute #attribute></attribute>
+                </div>
+
+                <div class="tab-pane" id="warehouse">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="panel panel-theme">
+                                <div class="panel-body">
+                                    <div class="col-md-6" *ngFor="let row of warehouseDT">
+                                        <label *ngIf="!isdetails">
+                                            <p-checkbox [(ngModel)]="row.Warechk" binary="true"></p-checkbox> {{row.val}}
+                                        </label>
+                                        <label *ngIf="isdetails">
+                                            <i class="{{row.Warechk === true ? 'fa fa-check' : 'fa fa-remove'}}"></i> {{row.val}}
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -4,6 +4,7 @@
 			<div class="form-group">
 				<label>Bank</label>
 				<select class="form-control" [(ngModel)]="bankid">
+					<option [value]="0">Select Bank</option>
 					<option *ngFor="let items of bankDT" tabindex="1" [value]="items.key">
 						{{items.val}}
 					</option>
@@ -58,7 +59,7 @@
 			</p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="OpenBankPayment(row)" class="btn btn-theme btn-sm">
+					<button type="button" (click)="OpenBankPayment(row)" class="btn btn-theme btn-sm btn-grid">
 						<i class="fa fa-edit"></i>
 					</button>
 				</template>

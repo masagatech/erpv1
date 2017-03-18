@@ -41,7 +41,6 @@ export class UserControlHeadComp implements OnInit {
 
     this._userService.getMenuHead({ "flag": "", "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
       var data1 = data.data;
-      console.log(data1);
 
       this.subMenu = data1[2];
       this.parentMenus = data1[1];

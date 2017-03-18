@@ -9,6 +9,8 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { MessageService, messageType } from "../../../../_service/messages/message-service";
 
+declare var $: any;
+
 @Component({
     templateUrl: 'viewbdsf.comp.html',
     providers: [BudgetService]
@@ -36,8 +38,13 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
     status: boolean = false;
 
     viewSFDT: any = [];
+    viewQSFDT: any = [];
 
     selectedbid: number = 0;
+
+    //monthColumn: any = [{ "month": "jan", "disp": "Jan" }, { "month": "feb", "disp": "Feb" }, { "month": "mar", "disp": "Mar" }, { "month": "apr", "disp": "Apr" }];
+
+    monthColumn: any = [];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _budgetservice: BudgetService,
         private _userService: UserService, private _msg: MessageService) {
@@ -46,6 +53,7 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         this.fillStatusDropDown();
         this.resetFilterFields();
         this.BindFinancialMonthDT();
+        this.getCCMonthColumn();
     }
 
     ngOnInit() {
@@ -59,6 +67,20 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         if (evt === "add") {
             this._router.navigate(['/budget/startforecasting/add']);
         }
+    }
+
+    getCCMonthColumn() {
+        var that = this;
+
+        that._budgetservice.getMonthDetails({
+            "fy": that.loginUser.fy
+        }).subscribe(data => {
+            that.monthColumn = data.data;
+        }, err => {
+            that._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     BindFinancialMonthDT() {
@@ -111,11 +133,25 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         });
     }
 
+    sortByCol() {
+        var rows = $('#tblsf > tbody').children('tr').detach();
+
+        for (var counter = 1; counter <= rows.length; counter++) {
+            $(rows).each(function (index) {
+                if ($(this).find(".sortnr").text() == counter) {
+                    $('#tblsf > tbody:last').append($(this));
+                }
+            });
+        }
+    }
+
+    /* Yearly */
+
     getSFDetails(from: number, to: number) {
         var that = this;
 
         that._budgetservice.viewStartForeCasting({
-            "flag": "ctrlcenter", "bid": that.bid, "status": that.bdgstatus, "isactive": that.status, "from": from, "to": to
+            "flag": "ctrlcenter", "bdgtype": "yearly", "bid": that.bid, "status": that.bdgstatus, "isactive": that.status, "from": from, "to": to
         }).subscribe(sf => {
             that.totalRecords = sf.data[1].recordstotal;
             that.viewSFDT = sf.data[0];
@@ -169,7 +205,7 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
             event.loading = false;
 
             this._budgetservice.viewStartForeCasting({
-                "flag": "subitems", "bid": that.bid, "ccid": event.ccid, "envid": event.envid, "status": that.bdgstatus, "isactive": that.status
+                "flag": "subitems", "bdgtype": "yearly", "bid": that.bid, "ccid": event.ccid, "envid": event.envid, "status": that.bdgstatus, "isactive": that.status
             }).subscribe(details => {
                 var dataset = details.data;
 
@@ -192,13 +228,18 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         }
     }
 
-    BindControlCenterDT() {
+    /* Yearly */
+
+    /* Quarterly */
+
+    getQSFDetails(from: number, to: number) {
         var that = this;
 
-        that._budgetservice.getExpenseBudget({
-            "flag": "ccval", "uid": that.loginUser.uid, "fy": that.loginUser.fy, "bid": that.bid
-        }).subscribe(data => {
-            that.ctrlcenterDT = data.data;
+        that._budgetservice.viewStartForeCasting({
+            "flag": "ctrlcenter", "bdgtype": "quarterly", "bid": that.bid, "status": that.bdgstatus, "isactive": that.status, "from": from, "to": to
+        }).subscribe(sf => {
+            that.totalRecords = sf.data[1].recordstotal;
+            that.viewQSFDT = sf.data[0];
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
         }, () => {
@@ -206,55 +247,167 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         })
     }
 
-    ExpandEnvelopeTypeDT(row) {
+    loadQSFGrid(event: LazyLoadEvent) {
+        this.getQSFDetails(event.first, (event.first + event.rows));
+    }
+
+    expandQCCWise(event) {
         var that = this;
+        if (event.details && event.details.length > 0) { return; }
 
-        if (row.issh == 0) {
-            row.issh = 1;
+        try {
+            event.loading = false;
 
-            if (row.envtitledt.length === 0) {
-                that._budgetservice.getExpenseBudget({
-                    "flag": "envtitle", "fy": that.loginUser.fy, "bid": that.bid, "ccid": row.ccid, "uid": that.loginUser.uid
-                }).subscribe(data => {
-                    row.envtitledt = data.data;
-                }, err => {
-                    that._msg.Show(messageType.error, "Error", err);
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
-        } else {
-            row.issh = 0;
+            this._budgetservice.viewStartForeCasting({
+                "flag": "envelope", "bdgtype": "quarterly", "bid": that.bid, "ccid": event.ccid, "status": that.bdgstatus, "isactive": that.status
+            }).subscribe(details => {
+                var dataset = details.data;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
         }
     }
 
-    ExpandExpenseBudgetDT(etrow) {
+    expandQSubItemWise(event) {
         var that = this;
+        if (event.details && event.details.length > 0) { return; }
 
-        if (etrow.issh == 0) {
-            etrow.issh = 1;
+        try {
+            event.loading = false;
 
-            if (etrow.subitemsdt.length === 0) {
-                that._budgetservice.getExpenseBudget({
-                    "flag": "subitems", "fy": that.loginUser.fy, "bid": that.bid, "beid": etrow.envid, "ccid": etrow.ccid, "uid": that.loginUser.uid
-                }).subscribe(data => {
-                    etrow.subitemsdt = data.data;
-                }, err => {
-                    that._msg.Show(messageType.error, "Error", err);
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
-        } else {
-            etrow.issh = 0;
+            this._budgetservice.viewStartForeCasting({
+                "flag": "subitems", "bdgtype": "quarterly", "bid": that.bid, "ccid": event.ccid, "envid": event.envid, "status": that.bdgstatus, "isactive": that.status
+            }).subscribe(details => {
+                var dataset = details.data;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
         }
     }
+
+    /* Quarterly */
+
+    /* Monthly */
+
+    getCCDetails(from: number, to: number) {
+        var that = this;
+
+        that._budgetservice.viewStartForeCasting({
+            "flag": "ctrlcenter", "bdgtype": "monthly", "bid": that.bid,
+            "status": that.bdgstatus, "isactive": "true", "from": from, "to": to
+        }).subscribe(data => {
+            that.ctrlcenterDT = data.data[0];
+            that.sortByCol();
+        }, err => {
+            that._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    loadCCGrid(event: LazyLoadEvent) {
+        this.getCCDetails(event.first, (event.first + event.rows));
+    }
+
+    expandEnvelopeTypeDT(event) {
+        var that = this;
+        //if (event.details && event.details.length > 0) { return; }
+
+        try {
+            event.loading = false;
+
+            this._budgetservice.viewStartForeCasting({
+                "flag": "envelope", "bdgtype": "monthly", "bid": that.bid, "ccid": event.ccid,
+                "status": that.bdgstatus, "isactive": "true", "from": 0, "to": 10
+            }).subscribe(details => {
+                var dataset = details.data;
+                
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
+        }
+    }
+
+    expandExpenseBudgetDT(event) {
+        var that = this;
+        if (event.details && event.details.length > 0) { return; }
+
+        try {
+            event.loading = false;
+
+            this._budgetservice.viewStartForeCasting({
+                "flag": "subitems", "bdgtype": "monthly", "bid": that.bid, "ccid": event.ccid, "envid": event.envid,
+                "status": that.bdgstatus, "isactive": "true", "from": 0, "to": 10
+            }).subscribe(details => {
+                var dataset = details.data;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
+        }
+    }
+
+    /* Monthly */
 
     totalAmtEnvelopeWise(ccrow) {
         var MonthAmtTotal = 0;
 
-        for (var i = 0; i < ccrow.envtitledt.length; i++) {
-            var monthdtls = ccrow.envtitledt[i].monthdetails;
+        for (var i = 0; i < ccrow.envtitlesdt.length; i++) {
+            var monthdtls = ccrow.envtitlesdt[i].monthdetails;
 
             for (var j = 0; j < monthdtls.length; j++) {
                 MonthAmtTotal += parseInt(monthdtls[j].monthvalue);
@@ -291,12 +444,7 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
     }
 
     searchSFDetails(dt: DataTable) {
-        if (this.bdgtype === "12") {
-            dt.reset();
-        }
-        else{
-            this.BindControlCenterDT();
-        }
+        dt.reset();
     }
 
     openSFDetails(row) {

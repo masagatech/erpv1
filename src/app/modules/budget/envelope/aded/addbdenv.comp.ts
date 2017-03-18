@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { BudgetService } from '../../../../_service/budget/budget-service'; /* add reference for view budget */
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { CommonService } from '../../../../_service/common/common-service'
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
@@ -15,12 +16,13 @@ declare var commonfun: any;
 
 @Component({
     templateUrl: 'addbdenv.comp.html',
-    providers: [BudgetService]
+    providers: [BudgetService, CommonService]
 })
 
 export class AddEnvelopeComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
+    autocoaDT: any = [];
     BudgetDT: any = [];
     envelopeDT: any = [];
 
@@ -48,7 +50,7 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _budgetservice: BudgetService, private _userService: UserService, private _msg: MessageService) {
+        private _budgetservice: BudgetService, private _userService: UserService, private _autoservice: CommonService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillBudgetDropDown();
 
@@ -158,7 +160,24 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
         return false;
     }
 
-    getAutoCOA(me: any) {
+    //AutoCompletd Customer
+    getAutoCOA(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "autocoa",
+            "search": query
+        }).then(data => {
+            this.autocoaDT = data;
+        });
+    }
+
+    //Selected Customer
+    selectAutoCOA(event) {
+        this.coaid = event.value;
+        this.coaname = event.label;
+    }
+
+    getAutoCOAOld(me: any) {
         var that = this;
 
         that._budgetservice.getEnvelope({ "flag": "autocoa", "search": me.coaname }).subscribe(data => {

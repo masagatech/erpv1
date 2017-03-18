@@ -48,6 +48,10 @@ export class BudgetService {
 
     // Start Forecasting
     
+    getMonthDetails(req: any) {
+        return this._dataserver.post("getMonthDetails", req)
+    }
+
     viewStartForeCasting(req: any) {
         return this._dataserver.post("viewStartForeCasting", req)
     }

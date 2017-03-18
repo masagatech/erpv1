@@ -1,0 +1,118 @@
+<form id="frmcashflow">
+	<div class="middlepan">
+		<div class="panel panel-theme">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label class="control-label">Doc Date</label>
+							<calendar #docdate [name]="'docdate'" [islabel]="isdetails" [tabindex]="1"></calendar>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Heading</label>
+							<input name="cftitle" validate="" type="text" [(ngModel)]="cftitle" class="form-control" tabindex="2">
+						</div>
+					</div>
+					<div class="col-md-9">
+						<div class="form-group">
+							<label class="control-label">Narration</label>
+							<textarea name="narration" validate="" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5" tabindex="3"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<p-dataTable #dt [value]="cfRowData | filterBy : {isactive: true}" [editable]="!isdetails" [lazy]="true">
+							<p-column header="#" [style]="{'width':'40px','text-align':'left'}">
+								<template let-i="rowIndex" pTemplate="editor">
+									{{i + 1}}
+								</template>
+							</p-column>
+							<p-column header="Chart Of Accounts" [style]="{'width':'500px','text-align':'left'}">
+								<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+									{{row.coanm}}
+								</template>
+								<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+									<input type="text" name="coanm{{i+1}}" [(ngModel)]="row.coanm" class="coanm form-control inlinetextbox" (keyup)="getAutoCOA(row, 1)"
+									/>
+								</template>
+							</p-column>
+							<p-column header="Display Name" [style]="{'width':'300px','text-align':'left'}">
+								<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+									{{row.dispnm}}
+								</template>
+								<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+									<input type="text" name="dispnm{{i+1}}" [(ngModel)]="row.dispnm" class="dispnm form-control inlinetextbox" />
+								</template>
+							</p-column>
+							<p-column [style]="{'text-align':'center'}" *ngIf="!isdetails">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<button class="btn btn-danger btn-sm" (click)="deleteCashFlow(row)"><i class="fa fa-trash"></i></button>
+								</template>
+							</p-column>
+							<footer *ngIf="!isdetails">
+								<table class="table table-striped table-bordered">
+									<tbody>
+										<tr>
+											<td width="40px">
+											</td>
+											<td width="500px">
+												<input type="text" name="newcoanm" [(ngModel)]="newcoanm" tabindex="4" class="coanm form-control" (keyup)="getAutoCOA(this, 0)"
+												/>
+											</td>
+											<td width="300px">
+												<input type="text" name="newdispnm" [(ngModel)]="newdispnm" tabindex="5" class="dispnm form-control" />
+											</td>
+											<td>
+												<button type="button" name="btnadd" class="btn btn-theme btn-sm" (click)="addCashFlow()"><i class="fa fa-plus"></i></button>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</footer>
+						</p-dataTable>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="sidepan">
+		<!--widgit-->
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="Personal" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
+
+		<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+			(onComplete)="onUploadComplete($event)"></fileupload>
+
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="Personal" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="Personal" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
+	</div>
+</form>

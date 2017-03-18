@@ -26,7 +26,7 @@ export class AddPDC implements OnInit, OnDestroy {
     pdcid: number = 0;
     acid: number = 0;
     acname: string = "";
-    bankname: string = "";
+    bankid: string = "";
     chequeno: string = "";
     amount: any = "";
     pdctype: string = "";
@@ -37,7 +37,8 @@ export class AddPDC implements OnInit, OnDestroy {
     suppdoc: any = [];
     uploadedFiles: any = [];
 
-    pdctypedt: any = [];
+    pdctypeDT: any = [];
+    bankDT: any = [];
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -49,12 +50,12 @@ export class AddPDC implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _userService: UserService, private _pdcservice: PDCService, private _msg: MessageService,
+        private _commonservice: CommonService, private _userservice: UserService, private _pdcservice: PDCService, private _msg: MessageService,
         private _alsservice: ALSService) {
-        this.loginUser = this._userService.getUser();
+        this.loginUser = this._userservice.getUser();
 
         this.module = "PDC";
-        this.getPDCType();
+        this.fillDropDownList();
     }
 
     setAuditDate() {
@@ -74,10 +75,17 @@ export class AddPDC implements OnInit, OnDestroy {
         })
     }
 
+    setMinMaxDate() {
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        this.chequedate.setMinMaxDate(today, null);
+    }
+
     ngOnInit() {
         this.chequedate.initialize(this.loginUser);
-        this.chequedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.setAuditDate();
+        //this.chequedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        //this.setAuditDate();
+        this.setMinMaxDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
@@ -138,13 +146,18 @@ export class AddPDC implements OnInit, OnDestroy {
         }
     }
 
-    getPDCType() {
-        this._commonservice.getMOM({ "group": "pdctype" }).subscribe(data => {
-            this.pdctypedt = data.data;
+    fillDropDownList() {
+        var that = this;
+
+        that._pdcservice.getPDCDetails({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            
+            this.pdctypeDT = d.filter(a => a.group === "pdctype");
+            this.bankDT = d.filter(a => a.group === "bank");
         }, err => {
             console.log("Error");
         }, () => {
-            console.log("Complete");
+            // console.log("Complete");
         })
     }
 
@@ -233,7 +246,7 @@ export class AddPDC implements OnInit, OnDestroy {
             "fy": that.loginUser.fy,
             "acid": that.acid,
             "amount": that.amount,
-            "bankname": that.bankname,
+            "bankid": that.bankid,
             "chequeno": that.chequeno,
             "chequedate": that.chequedate.getDate(),
             "pdctype": that.pdctype,
@@ -280,7 +293,7 @@ export class AddPDC implements OnInit, OnDestroy {
             that.chequedate.setDate(date);
 
             that.amount = _pdcdata[0].amount;
-            that.bankname = _pdcdata[0].bankname;
+            that.bankid = _pdcdata[0].bankid;
             that.chequeno = _pdcdata[0].chequeno;
             that.narration = _pdcdata[0].narration;
             that.isactive = _pdcdata[0].isactive;

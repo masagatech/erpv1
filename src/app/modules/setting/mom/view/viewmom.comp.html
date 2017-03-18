@@ -7,33 +7,31 @@
                 </header>
                 <template let-row>
                     <div style="padding: 10px;">
-                        <a role="button" (click)="loadMOMGrid(row);">{{row.val}}</a>
+                        <a role="button" (click)="BindMOMGrid(row);">{{row.val}}</a>
                     </div>
                 </template>
             </p-dataList>
         </div>
         <div class="col-md-10">
             <div class="row">
-                <p-dataTable #dt [value]="mom" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadMOMGrid($event)"
-                    [(selection)]="selectedMOM1" expandableRows="true">
-                    <header>List of Master of Master</header>
-                    <p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-                    <p-column field="group" header="Group"></p-column>
-                    <template let-rows>
-                        <p-dataTable #dt [value]="rows.details" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" [(selection)]="selectedMOM1"
-                            expandableRows="true">
+                <div class="panel panel-theme">
+                    <div class="panel-heading" *ngIf="momDT.length">
+                        {{headertitle}}
+                    </div>
+                    <div class="panel-body">
+                        <p-dataTable #dt [value]="momDT" [lazy]="true" [rows]="100" [paginator]="true" [totalRecords]="totalRecords">
                             <p-column field="key" header="Key" [style]="{'width':'150px','text-align':'left'}"></p-column>
                             <p-column field="val" header="Value" [style]="{'text-align':'left'}"></p-column>
                             <p-column styleClass="col-button" [style]="{'width':'100px','text-align':'left'}">
                                 <template let-row="rowData" pTemplate type="body">
-                                    <button type="button" (click)="openMOMDetails(row)" class="btn btn-theme btn-sm">
-                                <i class="fa fa-edit"></i>
-                            </button>
+                                    <button type="button" (click)="openMOMDetails(row)" class="btn btn-theme btn-sm btn-grid">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
                                 </template>
                             </p-column>
                         </p-dataTable>
-                    </template>
-                </p-dataTable>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

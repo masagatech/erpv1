@@ -8,7 +8,7 @@
                             <div class="form-group" align="center">
                                 <select validate="0" [(ngModel)]="pdctype" name="pdctype" id="pdctype" class="form-control pdctype" tabindex="1">
                                     <option [value]="">Select PDC Type</option>
-                                    <option *ngFor="let row of pdctypedt" [value]="row.key">
+                                    <option *ngFor="let row of pdctypeDT" [value]="row.key">
                                         {{row.val}}
                                     </option>
                                 </select>
@@ -43,7 +43,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Bank Name</label>
-                                <input validate="" type="text" [(ngModel)]="bankname" name="bankname" class="form-control" tabindex="5" />
+                                <select validate="" name="bankid" class="form-control" [(ngModel)]="bankid" tabindex="5">
+                                    <option [value]="">Select Bank</option>
+                                    <option *ngFor="let items of bankDT" [value]="items.key">
+                                        {{items.val}}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">

@@ -1,0 +1,80 @@
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-5">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>From No</label>
+						<numtext name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>To No</label>
+						<numtext name="tono" [(ngModel)]="tono" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Status</label>
+				<select class="form-control" [(ngModel)]="status">
+					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class="form-group setfltrbtn">
+				<label>&nbsp;</label>
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchECMDetails(dt)">
+					<i class="fa fa-arrow-right"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="viewECMDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
+			(onLazyLoad)="loadECMGrid($event)" expandableRows="true">
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+			<p-column field="expname" header="Expense Head" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column header="Is Company Level" [style]="{'width':'150px','text-align':'right'}">
+				<template let-row="rowData" pTemplate type="body">
+					<p-checkbox [(ngModel)]="row.iscmplevel" binary="true"></p-checkbox>
+				</template>
+			</p-column>
+			<p-column header="Is Employee Level" [style]="{'width':'150px','text-align':'right'}">
+				<template let-row="rowData" pTemplate type="body">
+					<p-checkbox [(ngModel)]="row.isemplevel" binary="true"></p-checkbox>
+				</template>
+			</p-column>
+			<p-column [style]="{'width':'45px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					<button type="button" (click)="openECMDetails(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
+					</button>
+				</template>
+			</p-column>
+			<template let-row>
+				<span *ngIf="!row.loading">Loading....</span>
+				<p-dataTable [value]="row.details" [lazy]="true" expandableRows="true">
+					<p-column field="ccname" header="Control Center" [style]="{'width':'690px','text-align':'left'}"></p-column>
+					<p-column header="Is Profit Center" [style]="{'width':'150px','text-align':'right'}">
+						<template let-drow="rowData" pTemplate type="body">
+							<p-checkbox [(ngModel)]="drow.ispc" binary="true"></p-checkbox>
+						</template>
+					</p-column>
+					<p-column header="Is Cost Center" [style]="{'text-align':'right'}">
+						<template let-drow="rowData" pTemplate type="body">
+							<p-checkbox [(ngModel)]="drow.iscc" binary="true"></p-checkbox>
+						</template>
+					</p-column>
+				</p-dataTable>
+			</template>
+		</p-dataTable>
+	</div>
+</div>

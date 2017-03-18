@@ -10,7 +10,7 @@ import { NumTextModule } from '../../usercontrol/numtext';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FileUploadModule } from 'primeng/primeng';
+import { DataTableModule, CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -45,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        FileUploadModule, CalendarModule, NumTextModule],
+         DataTableModule, CheckboxModule, CalendarModule, NumTextModule],
     declarations: [
         AddExpenseComp,
         ViewExpenseComp,

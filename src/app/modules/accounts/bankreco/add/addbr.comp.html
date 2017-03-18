@@ -1,0 +1,31 @@
+<div class="col-md-12">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="bankrecoDT" [lazy]="true" (onLazyLoad)="loadBankRecoGrid($event)">
+            <p-column field="docdate" header="Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column field="custname" header="Cutomer Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column field="banktype" header="Type" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column field="cheqno" header="Cheque No" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column header="Debit Amt." [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.dramt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Credit Amt." [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.cramt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column field="recodate" header="Reconcill Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
+            <p-column header="Is Reco" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="editor">
+                    <p-checkbox name="chkIsReco" [(ngModel)]="isreco" binary="true"></p-checkbox>
+                </template>
+            </p-column>
+            <p-column header="Date" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="editor">
+                    <input type="text" [(ngModel)]="row.enterdate" class="form-control" />
+                </template>
+            </p-column>
+        </p-dataTable>
+    </div>
+</div>

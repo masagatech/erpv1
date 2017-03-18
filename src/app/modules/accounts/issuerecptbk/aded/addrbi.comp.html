@@ -28,7 +28,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">From No</label>
-                                <numtext validate="" name="fromno" [(ngModel)]="fromno" (keyup)="getToNoOnKey()" (keyup.enter)="getToNoOnTab()" tabindex="4"></numtext>
+                                <numtext validate="" name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [decimals]="0" (keyup.enter)="getToNoOnTab()" tabindex="4"></numtext>
                             </div>
                         </div>
                         <div class="col-md-4">

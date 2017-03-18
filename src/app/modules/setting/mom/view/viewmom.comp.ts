@@ -3,6 +3,7 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service' /* add reference for MOM */
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router } from '@angular/router';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
@@ -17,9 +18,9 @@ export class ViewMOM implements OnInit, OnDestroy {
 
     monGroupDT: any = [];
     momDT: any = [];
-    totalRecords: number = 0;
+    headertitle: string = "";
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _commonservice: CommonService) {
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _commonservice: CommonService, private _msg: MessageService) {
         this.fillMOMGroup();
     }
 
@@ -29,22 +30,18 @@ export class ViewMOM implements OnInit, OnDestroy {
         that._commonservice.getMOM({ "flag": "group" }).subscribe(data => {
             that.monGroupDT = data.data;
         }, err => {
-            console.log(err);
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
     }
 
-    BindMOMGrid(row, from: number, to: number) {
+    BindMOMGrid(row) {
         var that = this;
-        that._commonservice.getMOMGrid({ "flag": "grid", "group": row.group, "from": from, "to": to }).subscribe(data => {
-            that.totalRecords = data.data[1].recordstotal;
-            that.momDT = data.data[0];
+        that._commonservice.getMOM({ "flag": "grid", "group": row.key, "from": 0, "to": 100 }).subscribe(data => {
+            that.headertitle = row.val;
+            that.momDT = data.data;
         });
-    }
-
-    loadMOMGrid(event: LazyLoadEvent) {
-        this.BindMOMGrid(event, event.first, (event.first + event.rows));
     }
 
     openMOMDetails(row) {

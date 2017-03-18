@@ -58,12 +58,12 @@ const routerConfig = [
             }),
           },
           {
-            path: 'purchase', loadChildren: () => System.import('./purchase').then((comp: any) => {
+            path: 'cashflow', loadChildren: () => System.import('./cashflow').then((comp: any) => {
               return comp.default;
             }),
           },
-           {
-            path: 'purchaseinv', loadChildren: () => System.import('./purchaseinv').then((comp: any) => {
+          {
+            path: 'bankreco', loadChildren: () => System.import('./bankreco').then((comp: any) => {
               return comp.default;
             }),
           },

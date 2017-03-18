@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ActionBtnProp } from '../../../../app/_model/action_buttons'
+import { ActionBtnProp,Evt } from '../../../_model/action_buttons'
 import { SharedVariableService } from "../../../_service/sharedvariable-service";
+
 
 import { Subscription } from 'rxjs/Subscription';
 @Component({
@@ -24,8 +25,10 @@ export class DocBarComponent implements OnInit, OnDestroy {
     ngOnInit() {
 
     }
-    callnotify(id) {
+    callnotify(id, $evt) {
         this._sharedVariable.callActionButtonsEvent(id);
+        this._sharedVariable.callActionButtonsEvent_extra(id, $evt);
+        
     }
     ngOnDestroy() {
         if (this.subscription) {

@@ -29,10 +29,10 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     @ViewChild("depdate")
     depdate: CalendarComp;
 
-    typ: number = 0;
+    typ: string = "";
     acid: number = 0;
     acname: string = "";
-    cheqno: string = "";
+    chequeno: string = "";
     amount: any = "";
     refno: string = "";
     narration: string = "";
@@ -47,6 +47,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     isadd: boolean = false;
     isedit: boolean = false;
     isdetails: boolean = false;
+    ispdc: boolean = false;
 
     private subscribeParameters: any;
 
@@ -61,19 +62,22 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
         this.isdetails = _router.url.indexOf("details") > -1;
+        this.ispdc = _router.url.indexOf("pdc") > -1;
 
         this.fillDropDownList();
     }
+
+    // Reset Fields
 
     resetBankReceipt() {
         this.autoid = 0;
         this.bankid = 0;
         var date = new Date();
         this.depdate.setDate(date);
-        this.typ = 0;
+        this.typ = "";
         this.acid = 0;
         this.acname = "";
-        this.cheqno = "";
+        this.chequeno = "";
         this.amount = "";
         this.refno = "";
         this.narration = "";
@@ -97,9 +101,11 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         })
     }
 
-    //Document Ready
+    // Document Ready
 
     ngOnInit() {
+        $(".custcode").focus();
+
         this.depdate.initialize(this.loginUser);
         this.depdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -120,7 +126,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".custcode").focus();
 
                 this.autoid = 0;
                 this.resetBankReceipt();
@@ -136,7 +141,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".custcode").focus();
 
                 this.autoid = params['id'];
                 this.GetBankReceipt(this.autoid);
@@ -145,7 +149,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "edit").hide = true;
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
-            else {
+            else if (this.isdetails) {
                 this.setActionButtons.setTitle("Bank Receipt > Details");
 
                 $('button').prop('disabled', true);
@@ -159,6 +163,22 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
                 this.actionButton.find(a => a.id === "delete").hide = false;
+            }
+            else if (this.ispdc) {
+                this.setActionButtons.setTitle("Bank Receipt > Add");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('.chequeno').prop('disabled', true);
+
+                this.autoid = params['pdcid'];
+                this.GetBankReceiptByPDC(this.autoid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
             }
         });
     }
@@ -184,7 +204,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     fillDropDownList() {
         this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
             var d = data.data;
-            
+
             this.bankDT = d.filter(a => a.group === "bank");
             this.banktypeDT = d.filter(a => a.group === "banktype");
         });
@@ -199,12 +219,13 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             var _suppdoc = data.data[0]._suppdoc;
 
             this.bankid = _bankreceipt[0].bankid;
-            this.depdate = _bankreceipt[0].depdate;
+            var chequedate = new Date(_bankreceipt[0].chequedate);
+            this.depdate.setDate(chequedate);
             this.acname = _bankreceipt[0].partyname;
             this.acid = _bankreceipt[0].acid;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
-            this.cheqno = _bankreceipt[0].cheqno;
+            this.chequeno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
 
@@ -217,17 +238,25 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         });
     }
 
-    //Clear All Controll After Saving
+    GetBankReceiptByPDC(pautoid) {
+        this._brService.getBankReceipt({ "flag": "pdc", "autoid": pautoid }).subscribe(data => {
+            var _bankreceipt = data.data;
 
-    ClearControll() {
-        this.bankid = 0;
-        this.depdate.setDate("");
-        this.acname = "";
-        this.refno = "";
-        this.typ = 0;
-        this.cheqno = "";
-        this.amount = "";
-        this.narration = "";
+            this.bankid = _bankreceipt[0].bankid;
+            var chequedate = new Date(_bankreceipt[0].chequedate);
+            this.depdate.setDate(chequedate);
+            this.acname = _bankreceipt[0].partyname;
+            this.acid = _bankreceipt[0].acid;
+            this.refno = "";
+            this.typ = _bankreceipt[0].typ;
+            this.chequeno = _bankreceipt[0].chequeno;
+            this.amount = _bankreceipt[0].amount;
+            this.narration = "";
+        }, err => {
+            console.log('Error');
+        }, () => {
+            //Done Process
+        });
     }
 
     //Send Paramter In Save Method
@@ -264,6 +293,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         }
 
         var ParamName = {
+            "autoid": this.autoid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "depdate": this.depdate.getDate(),
@@ -271,7 +301,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             "bankid": this.bankid,
             "typ": this.typ,
             "acid": this.acid,
-            "cheqno": this.cheqno,
+            "cheqno": this.chequeno,
             "amount": this.amount,
             "narration": this.narration,
             "uidcode": this.loginUser.login,
@@ -315,7 +345,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.acid = ui.item.value;
                     me.acname = ui.item.label;
                 }
