@@ -106,6 +106,7 @@ export class ViewBankReco implements OnInit, OnDestroy {
             if (bankreco.data.length > 0) {
                 that.bankwiseDT = bankreco.data;
                 that.TotalAmountBankWise();
+                that.monthwiseDT = [];
             }
             else {
                 //that._msg.Show(messageType.info, "Info", "No records found");

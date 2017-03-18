@@ -4,7 +4,6 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { APARReports } from './apar.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
-import { _currencyPipe } from '../../../_pipe/currency.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -46,8 +45,7 @@ const routerConfig = [
         ScheduleModule, DataTableModule, CheckboxModule, ListboxModule, NumTextModule],
     declarations: [
         APARReports,
-        APARComp,
-        _currencyPipe
+        APARComp
     ],
     providers: [AuthGuard]
 })

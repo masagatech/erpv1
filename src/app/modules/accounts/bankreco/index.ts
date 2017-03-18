@@ -5,7 +5,6 @@ import { AddBankReco } from './add/addbr.comp';
 import { ViewBankReco } from './view/viewbr.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
-import { _currencyPipe } from '../../../_pipe/currency.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -47,8 +46,7 @@ const routerConfig = [
     declarations: [
         AddBankReco,
         ViewBankReco,
-        BankRecoComp,
-        _currencyPipe
+        BankRecoComp
     ],
     providers: [AuthGuard]
 })
