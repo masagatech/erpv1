@@ -303,7 +303,7 @@ declare var commonfun: any;
                     this.Paramter()
                 ).subscribe(result => {
                     if (result.data[0].funsave_wareopeningstock.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", result.data[0].funsave_wareopeningstock.msg);
+                        this._msg.Show(messageType.success, "success", result.data[0].funsave_wareopeningstock.msg + ':' +result.data[0].funsave_wareopeningstock.maxid);
                         this.ClearControll();
                     }
                     else {

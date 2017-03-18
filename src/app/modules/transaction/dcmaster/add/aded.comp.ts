@@ -128,7 +128,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             var lockdate = dataResult[0].lockdate;
             if (lockdate != "")
                 that.docdatecal.setMinMaxDate(new Date(lockdate), null);
-            that.deldatecal.setMinMaxDate(new Date(lockdate), null);
+                that.deldatecal.setMinMaxDate(new Date(lockdate), null);
         }, err => {
             console.log("Error");
         }, () => {

@@ -33,7 +33,6 @@ declare var commonfun: any;
     ctrlname: any = "";
     ctrlid: number = 0
     isactive: boolean = false;
-    editmode: boolean = false;
 
     //New Auto Completed
     AcledgerAutodata: any = [];
@@ -54,6 +53,7 @@ declare var commonfun: any;
     //Account info
     counter: number = 0;
     acinfoKey: any = "";
+    acinfoKeyid: number = 0;
     acvalue: any = "";
 
 
@@ -117,6 +117,7 @@ declare var commonfun: any;
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
+                $(".accode").attr('disabled', 'disabled');
 
             }
             else {
@@ -124,8 +125,29 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-
         this.attribute.attrparam = ["custinfo_attr"];
+
+        if (this.acledid == 0) {
+            this.getaccountinfo();
+        }
+
+    }
+
+    getaccountinfo() {
+        try {
+            this.acledgerServies.getAccountLedgeracinfo({
+                "cmpid": this.loginUser.cmpid
+            }).subscribe(result => {
+                debugger;
+                this.keyvallist = result.data[0].acinfo;
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //Account Code lose focus 
@@ -135,18 +157,61 @@ declare var commonfun: any;
         this.adrbookid = [];
     }
 
+    //Autocompleted Control Center
+    getAutoCompletekey(me: any) {
+        try {
+            var that = this;
+            this._autoservice.getAutoData({
+                "type": "attribute",
+                "search": that.acinfoKey,
+                "cmpid": this.loginUser.cmpid,
+                "FY": this.loginUser.fy,
+                "filter": "acinfo_attr",
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                $(".key").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.acinfoKeyid = ui.item.value;
+                        me.acinfoKey = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
+    }
+
     //AutoCompletd Parent Group
     AcledgerAuto(event) {
-        let query = event.query;
-        this._autoservice.getAutoDataGET({
-            "type": "nature",
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "search": query
-        }).then(data => {
-            this.AcledgerAutodata = data;
-        });
+        try {
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
+                "type": "nature",
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.AcledgerAutodata = data;
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Selected Parent Group
@@ -157,16 +222,21 @@ declare var commonfun: any;
 
     //Auto Complete Control Center
     CtrlAuto(event) {
-        let query = event.query;
-        this._autoservice.getAutoDataGET({
-            "type": "ccauto",
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "search": query
-        }).then(data => {
-            this.CtrlAutodata = data;
-        });
+        try {
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
+                "type": "ccauto",
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.CtrlAutodata = data;
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Selected Complete Control Center
@@ -212,63 +282,90 @@ declare var commonfun: any;
         }, 0);
     }
 
-    //Delete Control
+    //Delete Control Center 
     DeleteCtrl(row) {
-
+        var index = -1;
+        for (var i = 0; i < this.Ctrllist.length; i++) {
+            if (this.Ctrllist[i].id === row.id) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.Ctrllist.splice(index, 1);
+        $("#ctrlname").focus();
     }
 
+    //Delete Account Info
     DeleteRow(row) {
-
+        var index = -1;
+        for (var i = 0; i < this.keyvallist.length; i++) {
+            if (this.keyvallist[i].keyid === row.keyid) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            console.log("Wrong Delete Entry");
+        }
+        this.keyvallist.splice(index, 1);
+        $("#ctrlname").focus();
     }
 
     //Add New Controll Center
     AddNewCtrl() {
-        this.acledgerServies.getctrldetail({
-            "id": this.ctrlid,
-            "cmpid": this.loginUser.cmpid
-        }).subscribe(result => {
-            if (result.data.length > 0) {
-                this.Duplicateflag = true;
-                for (var i = 0; i < this.Ctrllist.length; i++) {
-                    if (this.Ctrllist[i].ctrlname == this.ctrlname) {
-                        this.Duplicateflag = false;
-                        break;
+        try {
+            this.acledgerServies.getctrldetail({
+                "id": this.ctrlid,
+                "cmpid": this.loginUser.cmpid
+            }).subscribe(result => {
+                if (result.data.length > 0) {
+                    this.Duplicateflag = true;
+                    for (var i = 0; i < this.Ctrllist.length; i++) {
+                        if (this.Ctrllist[i].ctrlname == this.ctrlname) {
+                            this.Duplicateflag = false;
+                            break;
+                        }
+                    }
+                    if (this.Duplicateflag == true) {
+                        this.Ctrllist.push({
+                            "ctrlname": result.data[0].ctrlname,
+                            "proftcode": result.data[0].proftcode,
+                            "costcode": result.data[0].costcode,
+                            "profflag": this.profflag,
+                            "constflag": this.constflag,
+                            "id": result.data[0].autoid
+                        });
+                        //this.ctrlhide = false;
+                        this.ctrlid = 0;
+                        this.ctrlname = "";
+                        $("#ctrlname input").focus();
+
+                    }
+                    else {
+                        this._msg.Show(messageType.error, "error", "Duplicate control center");
+                        this.ctrlname = "";
+                        $("#ctrlname input").focus();
+                        return;
                     }
                 }
-                if (this.Duplicateflag == true) {
-                    this.Ctrllist.push({
-                        "ctrlname": result.data[0].ctrlname,
-                        "proftcode": result.data[0].proftcode,
-                        "costcode": result.data[0].costcode,
-                        "profflag": this.profflag,
-                        "constflag": this.constflag,
-                        "id": result.data[0].autoid
-                    });
-                    //this.ctrlhide = false;
-                    this.ctrlid = 0;
-                    this.ctrlname = "";
-                    $("#ctrlname input").focus();
-
-                }
                 else {
-                    this._msg.Show(messageType.error, "error", "Duplicate control center");
+                    this._msg.Show(messageType.error, "error", "Control name Not found");
                     this.ctrlname = "";
                     $("#ctrlname input").focus();
                     return;
                 }
-            }
-            else {
-                this._msg.Show(messageType.error, "error", "Control name Not found");
-                this.ctrlname = "";
-                $("#ctrlname input").focus();
-                return;
-            }
 
-        }, err => {
-            console.log("Error")
-        }, () => {
-            //console.log("completed")
-        })
+            }, err => {
+                console.log("Error")
+            }, () => {
+                //console.log("completed")
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     AddNewKyeval() {
@@ -287,7 +384,7 @@ declare var commonfun: any;
             that.Duplicateflag = true;
             if (that.keyvallist.length > 0) {
                 for (var i = 0; i < that.keyvallist.length; i++) {
-                    if (that.keyvallist[i].key == that.acinfoKey && that.keyvallist[i].value == that.acvalue) {
+                    if (that.keyvallist[i].acinfoKeyid == that.acinfoKeyid && that.keyvallist[i].value == that.acvalue) {
                         that.Duplicateflag = false;
                         break;
                     }
@@ -296,6 +393,7 @@ declare var commonfun: any;
             if (that.Duplicateflag == true) {
                 that.keyvallist.push({
                     'key': that.acinfoKey,
+                    'keyid': that.acinfoKeyid,
                     'value': that.acvalue,
                     'counter': that.counter
                 });
@@ -317,53 +415,58 @@ declare var commonfun: any;
 
     //Edit Account Group
     EditAcledgr(acid) {
-        var that = this;
-        this.acledgerServies.getaccountledger({
-            "flag": "edit",
-            "acid": acid,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": that.loginUser.login
-        }).subscribe(data => {
-            that.editmode = true;
-            var dataset = data.data;
-            debugger;
-            that.acledcode = dataset[0][0].accode;
-            that.acledName = dataset[0][0].acname;
-            that.parentid = dataset[0][0].parentid;
-            that.parentname = dataset[0][0].groupname;
-            that.remark = dataset[0][0].remark;
-            that.isactive = dataset[0][0].isactive;
-            that.attribute.attrlist = dataset[0][0]._attributejson === null ? [] : dataset[0][0]._attributejson;
-            var address = dataset[0][0].adrid === null ? [] : dataset[0][0].adrid;
-            if (address.length > 0) {
-                that.adrcsvid = "";
-                for (let items of address) {
-                    that.adrcsvid += items.adrid + ',';
+        try {
+            var that = this;
+            this.acledgerServies.getaccountledger({
+                "flag": "edit",
+                "acid": acid,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": that.loginUser.login
+            }).subscribe(data => {
+                var dataset = data.data;
+                that.acledcode = dataset[0][0].accode;
+                that.acledName = dataset[0][0].acname;
+                that.parentid = dataset[0][0].parentid;
+                that.parentname = dataset[0][0].groupname;
+                that.remark = dataset[0][0].remark;
+                that.isactive = dataset[0][0].isactive;
+                that.attribute.attrlist = dataset[0][0]._attributejson === null ? [] : dataset[0][0]._attributejson;
+                that.keyvallist = dataset[0][0]._keyvalue === null ? [] : dataset[0][0]._keyvalue;
+                that.Ctrllist = dataset[0][0]._ctrlcenter === null ? [] : dataset[0][0]._ctrlcenter;
+                var address = dataset[0][0].adrid === null ? [] : dataset[0][0].adrid;
+                if (address.length > 0) {
+                    that.adrcsvid = "";
+                    for (let items of address) {
+                        that.adrcsvid += items.adrid + ',';
+                    }
+                    that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
                 }
-                that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
-            }
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Clear All Control
-    // ClearControll() {
-    //     this.groupcode = "";
-    //     this.groupName = "";
-    //     this.neturname = "";
-    //     this.neturid = 0;
-    //     this.remark = "";
-    //     this.appfrom = "";
-    //     this.chkall = false;
-    //     this.editmode = false;
-    //     $(".groupcode").removeAttr('disabled', 'disabled');
-    //     $(".groupcode").focus();
-    // }
-
+    ClearControll() {
+        this.acledcode = "";
+        this.acledName = "";
+        this.parentname = "";
+        this.parentid = 0;
+        this.remark = "";
+        this.attribute.attrlist = [];
+        this.Ctrllist = [];
+        this.keyvallist = [];
+        this.addressBook.ClearArray();
+        $(".accode").removeAttr('disabled', 'disabled');
+        $(".accode").focus();
+    }
 
     createjsonattr() {
         var attrid = [];
@@ -381,7 +484,7 @@ declare var commonfun: any;
             for (let items of this.keyvallist) {
                 if (items.value != "") {
                     keydata.push({
-                        "id": items.key,
+                        "id": items.keyid,
                         "val": items.value
                     });
                 }
@@ -413,7 +516,7 @@ declare var commonfun: any;
             "fy": this.loginUser.fy,
             "adr": this.adrbookid,
             "attr": this.createjsonattr(),
-            "ctrl": this.createjsonctrl,
+            "ctrl": this.createjsonctrl(),
             "acinfo": this.createjsonacinfo(),
             "doc": this.suppdoc,
             "createdby": this.loginUser.login,
@@ -429,7 +532,7 @@ declare var commonfun: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "clear") {
-            // this.ClearControll();
+            this.ClearControll();
         }
         if (evt === "back") {
             this._router.navigate(['master/acledger']);
@@ -439,6 +542,18 @@ declare var commonfun: any;
             if (!validateme.status) {
                 this._msg.Show(messageType.error, "error", validateme.msglist);
                 validateme.data[0].input.focus();
+                return;
+            }
+            if (this.adrbookid.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please enter contact address");
+                return;
+            }
+            if (this.attribute.attrlist.length === 0) {
+                this._msg.Show(messageType.error, "error", "Please enter attribute");
+                return;
+            }
+            if (this.Ctrllist.length === 0) {
+                this._msg.Show(messageType.error, "error", "Please enter control center");
                 return;
             }
             this.actionButton.find(a => a.id === "save").enabled = false;
@@ -454,13 +569,13 @@ declare var commonfun: any;
                     }
                     if (dataset[0].funsave_accountledger.maxid > 0) {
                         this._msg.Show(messageType.success, "success", dataset[0].funsave_accountledger.msg);
-                        $(".accode").removeAttr('disabled', 'disabled');
+                        this.ClearControll();
                         if (this.acledid > 0) {
                             this._router.navigate(['master/acledger']);
                         }
                     }
                     else {
-                        console.log("Saving Error");
+                        this._msg.Show(messageType.error, "error", "Service Error");
                     }
                 } catch (e) {
                     this._msg.Show(messageType.error, "error", e.message);
@@ -477,7 +592,7 @@ declare var commonfun: any;
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
-            $(".groupcode").attr('disabled', 'disabled');
+            $(".accode").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".acName").focus();

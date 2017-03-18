@@ -5,14 +5,14 @@
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Account Code</label>
-					<input type="text" validate="" class="form-control accode" maxlength="10" tabindex="1" name="accode" [(ngModel)]="acledcode"
+					<input type="text" validate="" placeholder="Account code" class="form-control accode" maxlength="10" tabindex="1" name="accode" [(ngModel)]="acledcode"
 						(blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-4">
 				<div class='form-group'>
 					<label>Account Name</label>
-					<input type="text" validate="" class="form-control acName" tabindex="2" name="acName" [(ngModel)]="acledName">
+					<input type="text" validate="" placeholder="Account name" class="form-control acName" tabindex="2" name="acName" [(ngModel)]="acledName">
 				</div>
 			</div>
 		</div>
@@ -31,7 +31,7 @@
 				<div class='form-group'>
 					<label>Remark</label>
 					<div class="input-group">
-						<textarea [(ngModel)]="remark" tabindex="4" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
+						<textarea [(ngModel)]="remark" placeholder="Remark" tabindex="4" class="form-control medium-text-box" name="remark" cols="75" autocomplete='off'
 							rows="2"></textarea>
 					</div>
 				</div>
@@ -98,7 +98,7 @@
 									</p-column>
 									<p-column header="Action" [style]="{'width':'80px','text-align':'left'}">
 										<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-											<button class="btn btn-theme btn-sm" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button>
+											<button class="btn btn-danger btn-sm" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button>
 										</template>
 									</p-column>
 								</p-dataTable>
@@ -112,18 +112,19 @@
 					<div class="col-md-12">
 						<div class="panel panel-theme">
 							<div class="panel-body">
-								<div class="col-md-4">
+								<div class="col-md-8">
 									<div class="col-md-4">
 										<div class='form-group'>
 											<label>Key</label>
-											<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfoKey" />
+											<!--<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfoKey" />-->
+											<input type="text" class="form-control key" placeholder="Any key" tabindex="20" value="" [(ngModel)]="acinfoKey" (keyup)="getAutoCompletekey(this)"/>
 
 										</div>
 									</div>
 									<div class="col-md-5">
 										<div class='form-group'>
 											<label>Value</label>
-											<input type="text" class="form-control val" (keyup.enter)="AddNewKyeval()" tabindex="21" [(ngModel)]="acvalue">
+											<input type="text" class="form-control val" placeholder="Any Value" (keyup.enter)="AddNewKyeval()" tabindex="21" [(ngModel)]="acvalue">
 										</div>
 									</div>
 									<div class="col-md-1">
@@ -153,7 +154,7 @@
 										</p-column>
 										<p-column header="Action" [style]="{'width':'80px','text-align':'left'}">
 											<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-												<button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+												<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
 											</template>
 										</p-column>
 									</p-dataTable>
@@ -161,7 +162,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-6">
+				</div>
+				<!--<div class="col-md-6">
 						<div class="panel panel-theme">
 							<div class="panel-body">
 								<div class="col-md-4 hide">
@@ -175,7 +177,7 @@
 									</select>
 									</div>
 								</div>
-								<div class="col-md-4 hide">
+								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Credit</label>
 										<select [(ngModel)]="credit" class="form-control" tabindex="24">
@@ -193,9 +195,7 @@
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-				</div>
+						</div>-->
 			</div>
 			<div class="tab-pane" id="docup">
 				<div class="row">
