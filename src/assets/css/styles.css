@@ -1422,6 +1422,7 @@ table.tableNoborder td {
 }
 
 .setfltrbtn {
+
     padding-top: 28px;
 }
 
@@ -1474,4 +1475,5 @@ table.tableNoborder td {
 	.navbar-nav .dropdown-menu.dropdown-lr label {
 		color: #eee;
 	}
+
 }
