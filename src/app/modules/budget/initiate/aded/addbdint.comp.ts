@@ -282,7 +282,6 @@ export class AddInitiateComp implements OnInit, OnDestroy {
         // Add New Row
         if (that.duplicatemilestone === false) {
             that.milestoneDT.push({
-                'counter': that.counter,
                 'msname': that.newmsname,
                 'msdate': that.newmsdate
             });

@@ -37,6 +37,63 @@ export class AddMOM implements OnInit, OnDestroy {
         this.getMOMGroup();
     }
 
+    ngOnInit() {
+        this.setActionButtons.setTitle("Master of Master");
+
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+
+        this.setActionButtons.setActionButtons(this.actionButton);
+        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (params['id'] !== undefined) {
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+
+                this.momid = params['id'];
+                this.getMOMByID(this.momid);
+
+                $('#Group').prop('disabled', true);
+                $('#Key').prop('disabled', true);
+                $('#Val').prop('disabled', true);
+            }
+            else {
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+
+                setTimeout(function () {
+                    $("#Group").focus();
+                }, 0);
+
+                $('#Group').prop('disabled', false);
+                $('#Key').prop('disabled', false);
+                $('#Val').prop('disabled', false);
+            }
+        });
+    }
+
+    actionBarEvt(evt) {
+        if (evt === "save") {
+            this.saveMOMDetails();
+        } else if (evt === "edit") {
+            $('#Group').attr('disabled', 'disabled');
+            $('#Key').attr('disabled', 'disabled');
+            $('#Val').removeAttr('disabled');
+
+            setTimeout(function () {
+                $("#Val").focus();
+            }, 0);
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        }
+    }
+
     getMOMGroup() {
         var that = this;
 
@@ -102,65 +159,6 @@ export class AddMOM implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "save") {
-            this._message.confirm('Are you sure that you want to save?', () => {
-                this.saveMOMDetails()
-            });
-        } else if (evt === "edit") {
-            $('#Group').attr('disabled', 'disabled');
-            $('#Key').attr('disabled', 'disabled');
-            $('#Val').removeAttr('disabled');
-
-            setTimeout(function () {
-                $("#Val").focus();
-            }, 0);
-
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
-            alert("delete called");
-        }
-    }
-
-    ngOnInit() {
-        this.setActionButtons.setTitle("Master of Master");
-
-        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
-        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-
-                this.momid = params['id'];
-                this.getMOMByID(this.momid);
-
-                $('#Group').prop('disabled', true);
-                $('#Key').prop('disabled', true);
-                $('#Val').prop('disabled', true);
-            }
-            else {
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-
-                setTimeout(function () {
-                    $("#Group").focus();
-                }, 0);
-
-                $('#Group').prop('disabled', false);
-                $('#Key').prop('disabled', false);
-                $('#Val').prop('disabled', false);
-            }
-        });
     }
 
     ngOnDestroy() {

@@ -188,7 +188,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         for (var i = 0; i < jvRowDr.length; i++) {
             var items = jvRowDr[i];
-            DebitAmtTotal += parseInt(items.dramt);
+            DebitAmtTotal += parseFloat(items.dramt);
         }
 
         return DebitAmtTotal;
@@ -200,7 +200,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         for (var i = 0; i < jvRowCr.length; i++) {
             var items = jvRowCr[i];
-            CreditAmtTotal += parseInt(items.cramt);
+            CreditAmtTotal += parseFloat(items.cramt);
         }
 
         return CreditAmtTotal;
@@ -208,7 +208,7 @@ export class AddJV implements OnInit, OnDestroy {
 
     private addJVRow() {
         var that = this;
-        
+
         // Validation
 
         if (that.newacname == "") {
@@ -265,7 +265,7 @@ export class AddJV implements OnInit, OnDestroy {
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     if (arg === 1) {
                         me.acname = ui.item.label;
                         me.acid = ui.item.value;
@@ -276,7 +276,7 @@ export class AddJV implements OnInit, OnDestroy {
                 }
             });
         }, err => {
-            console.log("Error");
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -318,22 +318,27 @@ export class AddJV implements OnInit, OnDestroy {
         var that = this;
 
         that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "jvmid": pjvmid }).subscribe(data => {
-            var _jvdata = data.data[0]._jvdata;
-            var _jvdetails = data.data[0]._jvdetails;
-            var _uploadedfile = data.data[0]._uploadedfile;
-            var _suppdoc = data.data[0]._suppdoc;
+            try {
+                var _jvdata = data.data[0]._jvdata;
+                var _jvdetails = data.data[0]._jvdetails;
+                var _uploadedfile = data.data[0]._uploadedfile;
+                var _suppdoc = data.data[0]._suppdoc;
 
-            that.jvmid = _jvdata[0].jvmid;
+                that.jvmid = _jvdata[0].jvmid;
 
-            var date = new Date(_jvdata[0].docdate);
-            that.jvdate.setDate(date);
-            that.narration = _jvdata[0].narration;
-            that.isactive = _jvdata[0].isactive;
+                var date = new Date(_jvdata[0].docdate);
+                that.jvdate.setDate(date);
+                that.narration = _jvdata[0].narration;
+                that.isactive = _jvdata[0].isactive;
 
-            that.jvRowData = _jvdetails;
+                that.jvRowData = _jvdetails;
 
-            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            }
+            catch (e) {
+                that._msg.Show(messageType.error, "Error", e);
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -413,14 +418,19 @@ export class AddJV implements OnInit, OnDestroy {
 
         if (that.duplicateaccount == false) {
             that._jvservice.saveJVDetails(saveJV).subscribe(data => {
-                var dataResult = data.data;
+                try {
+                    var dataResult = data.data;
 
-                if (dataResult[0].funsave_jv.msgid != "-1") {
-                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
-                    that._router.navigate(['/accounts/jv']);
+                    if (dataResult[0].funsave_jv.msgid != "-1") {
+                        that._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
+                        that._router.navigate(['/accounts/jv']);
+                    }
+                    else {
+                        that._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
+                    }
                 }
-                else {
-                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
+                catch (e) {
+                    that._msg.Show(messageType.error, "Error", e);
                 }
             }, err => {
                 that._msg.Show(messageType.error, "Error", err);

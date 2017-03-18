@@ -85,66 +85,6 @@
 						</p-dataTable>
 					</div>
 				</div>
-				<!--<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th></th>
-							<th>Account</th>
-							<th>Debit</th>
-							<th>Credit</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let row of jvRowData | filterBy: {isactive: true}; let i=index;">
-							<td class="textalign">
-								{{i+1}}
-							</td>
-							<td>
-
-							</td>
-							<td class="textalign">
-
-							</td>
-							<td class="textalign">
-								<numtext id="{{'cramt' + i + 1}}" name="cramt{{i+1}}" [(ngModel)]="row.cramt" (keyup)="setDrAmt(row, 1)" css="inlinetextbox"></numtext>
-							</td>
-							<td>
-								<button type="button" name="btnremove{{i+1}}" class="btn btn-theme btn-sm fa fa-trash" (click)="deleteJVRow(row)"></button>
-							</td>
-						</tr>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td>#</td>
-							<td>
-
-							</td>
-							<td>
-
-							</td>
-							<td>
-
-							</td>
-							<td>
-								<button type="button" name="btnadd" class="btn btn-theme btn-sm fa fa-plus" (click)="addJVRow()"></button>
-							</td>
-						</tr>
-						<tr *ngIf="jvRowData.length">
-							<td>#</td>
-							<td class="text-right">
-								<b>Total :</b>
-							</td>
-							<td class="text-right">
-								<b>{{TotalDebitAmt() | currency:loginUser._globsettings.currency:true}}</b>
-							</td>
-							<td class="text-right">
-								<b>{{TotalCreditAmt() | currency:loginUser._globsettings.currency:true}}</b>
-							</td>
-							<td></td>
-						</tr>
-					</tfoot>
-				</table>-->
 			</div>
 		</div>
 	</div>

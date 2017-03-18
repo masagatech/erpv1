@@ -10,7 +10,8 @@
         <p-column field="tono" header="To No" [style]="{'width':'100px','text-align':'right'}"></p-column>
         <p-column styleClass="col-button" [style]="{'width':'100px','text-align':'left'}">
             <template let-row="rowData" pTemplate type="body">
-                <button type="button" (click)="openRBIDetails(row)" class="btn btn-theme btn-sm"><i class="fa fa-edit"></i></button>
+                <button type="button" (click)="openRBIDetails(row)" class="btn btn-theme btn-sm btn-grid">
+                    <i class="fa fa-edit"></i></button>
             </template>
         </p-column>
     </p-dataTable>

@@ -50,6 +50,7 @@ export class AddFY implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        var that = this;
         //this.fromdate.initialize(this.loginUser);
         //this.todate.initialize(this.loginUser);
         //this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
@@ -64,17 +65,20 @@ export class AddFY implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                this.setActionButtons.setTitle("Financial Year > Add");
+                this.setActionButtons.setTitle("Add Financial Year");
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.fyid = params['id'];
-                this.getFYDetailsById(this.fyid);
+                setTimeout(function () {
+                    that.fyid = params['id'];
+                    that.getFYDetailsById(that.fyid);
+                }, 0);
 
                 $('select').attr('disabled', 'disabled');
             }
             else {
-                this.setActionButtons.setTitle("Financial Year > Edit");
+                this.setActionButtons.setTitle("Edit Financial Year");
+
                 setTimeout(function () {
                     $("#FromDate").focus();
                 }, 0);
@@ -215,17 +219,19 @@ export class AddFY implements OnInit, OnDestroy {
 
         if (this.validSuccess) {
             this._fyservice.savefy(saveFY).subscribe(data => {
-                var dataResult = data.data;
+                try {
+                    var dataResult = data.data;
 
-                if (dataResult[0].funsave_fy.msgid == "1") {
-                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_fy.msg);
-                    this._router.navigate(['/setting/fy']);
+                    if (dataResult[0].funsave_fy.msgid == "1") {
+                        this._msg.Show(messageType.success, "Success", dataResult[0].funsave_fy.msg);
+                        this._router.navigate(['/setting/fy']);
+                    }
+                    else {
+                        this._msg.Show(messageType.error, "Error", dataResult[0].funsave_fy.msg);
+                    }
                 }
-                else if (dataResult[0].funsave_fy.msgid == "-1") {
-                    this._msg.Show(messageType.warn, "Warning", dataResult[0].funsave_fy.msg);
-                }
-                else {
-                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_fy.msg);
+                catch (e) {
+                    this._msg.Show(messageType.error, "Error", e);
                 }
             }, err => {
                 this._msg.Show(messageType.success, "Success", err);

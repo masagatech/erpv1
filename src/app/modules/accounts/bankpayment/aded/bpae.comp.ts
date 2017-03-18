@@ -36,6 +36,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     narration: string = "";
     refno: string = "";
     typ: number = 0;
+    ischeqbounce: boolean = false;
 
     bankDT: any = [];
     banktypeDT: any = [];
@@ -211,6 +212,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             this.cheqno = _bankpayment[0].cheqno;
             this.amount = _bankpayment[0].amount;
             this.narration = _bankpayment[0].narration;
+            this.ischeqbounce = _bankpayment[0].ischeqbounce;
 
             this.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
             this.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
@@ -267,7 +269,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         //     return false;
         // }
         if (this.issuedate.setDate("")) {
-            this._msg.Show(messageType.info, "Info", "Please Enter Issues Date");
+            this._msg.Show(messageType.info, "Info", "Please Enter Issue Date");
             return false;
         }
         if (this.custname == undefined || this.custname == null) {
@@ -290,7 +292,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             "amount": this.amount,
             "cheqno": this.cheqno,
             "narration": this.narration,
-            "isactive": isactive
+            "isactive": isactive,
+            "ischeqbounce": this.ischeqbounce
         }
 
         this._bpservice.saveBankPayment(Param).subscribe(result => {
