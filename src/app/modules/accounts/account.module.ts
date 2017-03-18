@@ -62,6 +62,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'bankreco', loadChildren: () => System.import('./bankreco').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]

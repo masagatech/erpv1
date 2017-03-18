@@ -1,0 +1,143 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Bank</label>
+                <select class="form-control" [(ngModel)]="bankid">
+					<option [value]="0">Select Bank</option>
+					<option *ngFor="let items of bankDT" tabindex="1" [value]="items.key">
+						{{items.val}}
+					</option>
+				</select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>FY</label>
+                <select class="form-control" [(ngModel)]="fy">
+					<option *ngFor="let items of fyDT" [value]="items.fyid">{{items.fyname}}</option>
+				</select>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group setfltrbtn">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-theme btn-sm" (click)="GetBankWiseGrid(dt)">
+					<i class="fa fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12" *ngIf="monthwiseDT.length === 0">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="bankwiseDT" [lazy]="true">
+            <p-column field="monthname" header="Month" [style]="{'text-align':'left'}"></p-column>
+            <p-column header="Debit Amt." [style]="{'width':'200px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.dramt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Credit Amt." [style]="{'width':'200px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.cramt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Closing Balance" [style]="{'width':'200px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.closingbal | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Reco" [style]="{'width':'80px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    <a role="button" (click)="GetMonthWiseGrid(row, 'monthwisereco')">{{row.countreco}}</a>
+                </template>
+            </p-column>
+            <p-column header="Not Reco" [style]="{'width':'80px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    <a role="button" (click)="GetMonthWiseGrid(row, 'monthwisenotreco')">{{row.countnotreco}}</a>
+                </template>
+            </p-column>
+            <footer>
+                <table class="table table-striped table-bordered">
+                    <tbody>
+                        <tr>
+                            <td align="left">
+                                <b>Total Amount</b>
+                            </td>
+                            <td width="200px" align="right">
+                                {{gridTotal.BankDebitAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="200px" align="right">
+                                {{gridTotal.BankCreditAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="200px" align="right">
+                                {{gridTotal.ClosingBalTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="80px" align="right">
+                                {{gridTotal.countreco}}
+                            </td>
+                            <td width="80px" align="right">
+                                {{gridTotal.notcountreco}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>
+
+<div class="col-md-12" *ngIf="monthwiseDT.length">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="monthwiseDT" [lazy]="true">
+            <p-column field="docdate" header="Date" [style]="{'width':'100px','text-align':'center'}"></p-column>
+            <p-column field="custname" header="Cutomer Name" [style]="{'text-align':'left'}"></p-column>
+            <p-column field="banktype" header="Type" [style]="{'width':'100px','text-align':'left'}"></p-column>
+            <p-column field="cheqno" header="Cheque No" [style]="{'width':'100px','text-align':'left'}"></p-column>
+            <p-column header="Debit Amt." [style]="{'width':'130px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.dramt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Credit Amt." [style]="{'width':'130px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.cramt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column field="recodate" header="Reco Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
+            <!--<p-column header="Is Reco" [style]="{'width':'70px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="editor">
+                    <p-checkbox [(ngModel)]="row.isreco" binary="true"></p-checkbox>
+                </template>
+            </p-column>-->
+            <p-column field="enterdate" header="Date" [style]="{'width':'150px','text-align':'right'}">
+                <template let-col let-row="rowData" let-i="rowIndex" pTemplate type="editor">
+                    <input type="date" [(ngModel)]="row.enterdate" min="{{fromdt}}" max="{{todt}}" class="form-control" (keyup)="row.isreco=true"
+                    />
+                </template>
+            </p-column>
+            <footer>
+                <table class="table table-striped table-bordered">
+                    <tbody>
+                        <tr>
+                            <td align="left" colSpan="4">
+                                <b>Total Amount</b>
+                            </td>
+                            <td width="130px" align="right">
+                                {{gridTotal.MonthDebitAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="130px" align="right">
+                                {{gridTotal.MonthCreditAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="100px" align="right">
+                            </td>
+                            <td width="150px" align="right">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>
