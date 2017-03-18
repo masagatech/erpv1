@@ -67,25 +67,25 @@
 			<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
 				expandableRows="true" [responsive]="true">
 				<p-column header="#" [style]="{'width':'30px'}">
-					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						{{rowIndex+1}}
+					<template let-col let-row="rowData" let-i="rowIndex" pTemplate="editor">
+						{{i+1}}
 					</template>
 				</p-column>
 				<p-column header="Item" [style]="{'text-align':'left'}">
 					<template let-col let-row="rowData" pTemplate="editor">
-						<input type="text" class="form-control ProdName inlinetextbox"  [(ngModel)]="row.ItemsName" (keyup)="getAutoCompleteProd(row,1)"
+						<input type="text" class="form-control inlinetextbox ProdName" [tabindex]="20+i" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
 							autocomplete='off' value="" />
 					</template>
 				</p-column>
 				<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
-					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="false" [decimals]="2" id="{{'nmtxt_' + rowIndex + '1'}}" [css]="inlinetextbox" [(ngModel)]="row.qty"
-							(keyup)="ConfirmQtyEdit(row.counter,row.qty)"></numtext>
+					<template let-col let-row="rowData" let-i="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [decimals]="2" [tabindex]="21+i" id="{{'nmtxt_' + i + '1'}}" [css]="inlinetextbox" [(ngModel)]="row.qty"
+							(keyup)="CalculationQty(row.qty,row.rateslist,row.dis,row,1)"></numtext>
 					</template>
 				</p-column>
 				<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
-					<template let-col let-row="rowData" pTemplate="editor">
-						<select [(ngModel)]="row.id" class="form-control inlinetextbox">
+					<template let-col let-row="rowData" let-i="rowIndex" pTemplate="editor">
+						<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="{{22+i}}" (ngModelChange)="CalculationQty(row.qty,row.rateslist,row.dis,row,1)">
 						<option *ngFor="let row of row.rateslist" [value]="row.id">
 							{{row.val}}
 					    </option>
@@ -93,13 +93,14 @@
 					</template>
 				</p-column>
 				<p-column header="Dis %" [style]="{'width':'120px','text-align':'left'}">
-					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="false" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '2'}}" [(ngModel)]="row.dis"></numtext>
+					<template let-col let-row="rowData" let-i="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="23+i" id="{{'nmtxt_' + i + '2'}}" [(ngModel)]="row.dis"
+							(keyup)="CalculationQty(row.qty,row.rateslist,row.dis,row,1)"></numtext>
 					</template>
 				</p-column>
 				<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
-					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-						<numtext [iscurrency]="true" [islabel]="true" id="{{'nmtxt_' + rowIndex + '3'}}" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+					<template let-col let-row="rowData" let-i="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="true" [islabel]="true" id="{{'nmtxt_' + i + '3'}}" [tabindex]="24+i" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
 					</template>
 				</p-column>
 				<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
@@ -117,22 +118,23 @@
 								<td style="vertical-align: top;"><input type="text" tabindex="8" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
 										autocomplete='off' value="" /></td>
 								<td style="width:120px;vertical-align: top;">
-									<numtext [iscurrency]="false" css="inlinetextbox"  [id]="'txtqty'"  [tabindex]="9" (keyup.enter)="NewRowAdd()"
-										[(ngModel)]="qty" (keyup)="CalculationQty(qty,newrate,dis,this,0)"></numtext>
+									<numtext [iscurrency]="false" css="inlinetextbox" [id]="'txtqty'" [tabindex]="9" (keyup.enter)="NewRowAdd()" [(ngModel)]="qty"
+										(keyup)="CalculationQty(qty,newrate,dis,this,0)"></numtext>
 								</td>
 								<td style="width:120px;vertical-align: top;">
-									<select [(ngModel)]="newrate" class="form-control" tabindex="10" (keyup.enter)="NewRowAdd()" (ngModelChange)="CalculationQty(qty,newrate,dis,this,0)" class="form-control">
-												<option *ngFor="let row of rateslist" [value]="row.id">
-														{{row.val}}
-					    						</option>
+									<select [(ngModel)]="newrate" class="form-control" tabindex="10" (keyup.enter)="NewRowAdd()" (ngModelChange)="CalculationQty(qty,newrate,dis,this,0)"
+										class="form-control">
+											<option *ngFor="let row of rateslist" [value]="row.id">
+													{{row.val}}
+											</option>
 									</select>
 								</td>
 								<td style="width:120px;vertical-align: top;">
-									<numtext [iscurrency]="false" css="inlinetextbox" [id]="'txtdis'" [tabindex]="11" (keyup.enter)="NewRowAdd()"
-										[(ngModel)]="dis" (keyup)="CalculationQty(qty,newrate,dis,this,0)"></numtext>
+									<numtext [iscurrency]="false" css="inlinetextbox" [id]="'txtdis'" [tabindex]="11" (keyup.enter)="NewRowAdd()" [(ngModel)]="dis"
+										(keyup)="CalculationQty(qty,newrate,dis,this,0)"></numtext>
 								</td>
 								<td style="width:120px;vertical-align: top;">
-								
+
 									<numtext [iscurrency]="true" css="inlinetextbox" [id]="'txtamt'" [islabel]="true" [(ngModel)]="amount"></numtext>
 								</td>
 								<td style="width:80px;vertical-align: top;"><button type="button" tabindex="12" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>

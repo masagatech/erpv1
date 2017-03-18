@@ -20,14 +20,14 @@ declare var $: any;
 }) export class purchaseadd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
-    PurOrId: any = 0;
+    docno: any = 0;
     InvNostr: any = '';
     OtherRef: any = '';
     Adr: any = '';
     Remark: any = '';
     CustNam: any = '';
-    ItemsName: any = '';
-    Itemsid: any = 0;
+    itemsname: any = '';
+    itemsid: any = 0;
     NewItemsName: any = '';
     NewItemsid: any = 0;
     AccountID: any = 0;
@@ -47,7 +47,7 @@ declare var $: any;
     totalAmt: any = 0;
     SupplierTitle: any;
     Duplicateflag: boolean = true;
-    Directinvoice: any = 0;
+    Directinvoice: any = "";
     rateslist: any = [];
     newrate: number = 0;
     private subscribeParameters: any;
@@ -64,7 +64,7 @@ declare var $: any;
     loginUserName: string;
 
     //, private _autoservice:AutoService
-    constructor(private _router: Router,private setActionButtons: SharedVariableService, private PurchaseServies: PurchaseaddService,
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private PurchaseServies: PurchaseaddService,
         private _autoservice: CommonService, private _routeParams: ActivatedRoute,
         private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
@@ -88,7 +88,6 @@ declare var $: any;
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
-
     }
 
     //Add Save Edit Delete Button
@@ -114,8 +113,8 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
-                this.PurOrId = params['id'];
-                this.EditPO(this.PurOrId);
+                this.docno = params['id'];
+                this.EditPO(this.docno);
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -129,40 +128,62 @@ declare var $: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+
+        this.SettingStatus();
     }
+
+    //Check Ledger Table 
+    SettingStatus() {
+        try {
+            var that = this;
+            that._autoservice.getisproceed({
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "keyname": "is_purchase_inv",
+                "flag1": "negative",
+                "createdby": that.loginUser.login
+            }).subscribe(isproc => {
+                var returnval = isproc.data;
+                that.Directinvoice = returnval[0].val;
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //console.log("Done");
+            });
+        } catch (e) {
+            that._msg.Show(messageType.error, "error", e.message);
+        }
+    }
+
     //Edit Param
-    EditParamJson(PurOrid) {
+    EditParamJson(docno) {
         var Param = {
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
-            "PurOrId": PurOrid,
+            "docno": docno,
             "createdby": this.loginUser.login,
-            "SupplierId": 0,
-            "FilterType": "Edit",
-            "flag": "",
-            "flag1": ""
+            "flag": "edit"
         }
         return Param;
     }
 
     //Edit PO
-    EditPO(PurOrid) {
+    EditPO(docno) {
         var that = this;
         this.PurchaseServies.EditPO(
-            this.EditParamJson(PurOrid)
+            this.EditParamJson(docno)
         ).subscribe(result => {
-            var returndata = JSON.parse(result.data);
-            this.docdatecal = returndata.Table[0].DocDate;
-            this.InvNostr = returndata.Table[0].InvNo;
-            this.OtherRef = returndata.Table[0].OtherRef;
-            this.SupplierName = returndata.Table[0].SupplierName;
-            this.SupplierID = returndata.Table[0].Supplierid;
-            this.AccountName = returndata.Table[0].AccountName;
-            this.AccountID = returndata.Table[0].Account;
-            this.Adr = returndata.Table[0].Addresss;
-            this.Remark = returndata.Table[0].Remark;
-            this.newAddRow = returndata.Table1;
-            that.SupplierTitle = "(" + returndata.Table[0].SupplierName + ")";
+            var returndata = result.data;
+            that.docdatecal.setDate(new Date(returndata[0][0].purdate));
+            that.InvNostr = returndata[0][0].invno;
+            that.OtherRef = returndata[0][0].refno;
+            that.SupplierName = returndata[0][0].vname;
+            that.SupplierID = returndata[0][0].vendid;
+            that.AccountName = returndata[0][0].custname;
+            that.AccountID = returndata[0][0].custid;
+            that.Adr = returndata[0][0].adr;
+            that.Remark = returndata[0][0].remark;
+            that.newAddRow = returndata[1];
         }, err => {
             console.log(err);
         }, () => {
@@ -183,6 +204,17 @@ declare var $: any;
         this.newAddRow = [];
     }
 
+    //Total Amount 
+    TotalAmount() {
+        var totalamt = 0;
+        if (this.newAddRow.length > 0) {
+            for (var i = 0; i < this.newAddRow.length; i++) {
+                totalamt += parseFloat(this.newAddRow[i].amount);
+            }
+        }
+        return totalamt;
+    }
+
     //Return To xml
     Paramdetail() {
         var param = [];
@@ -190,13 +222,13 @@ declare var $: any;
             var rate = item.rateslist.filter(rat => rat.id = item.id);
             param.push({
                 "autoid": item.autoid,
-                "itemid": item.Itemsid,
+                "itemid": item.itemsid,
                 "qty": item.qty,
                 "rate": rate[0].val,
                 "rateid": item.id,
                 "dis": item.dis,
                 "amt": item.amount,
-                "totalamt": 0,
+                "totalamt": this.TotalAmount(),
                 "remark": "",
                 "remark1": "",
                 "remark2": "",
@@ -208,7 +240,7 @@ declare var $: any;
     //Return To Json
     ParamJson() {
         var Param = {
-            "purorid": this.PurOrId,
+            "docno": this.docno,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "invno": this.InvNostr,
@@ -217,6 +249,7 @@ declare var $: any;
             "suppid": this.SupplierID,
             "acid": this.AccountID,
             "Directinvoice": this.Directinvoice,
+            "confirm": this.Directinvoice === "true" ? "auto" : "manual",
             "adr": this.Adr,
             "remark": this.Remark,
             "purchasedetails": this.Paramdetail(),
@@ -231,7 +264,6 @@ declare var $: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-        this.Directinvoice = 1;
         if (evt === "back") {
             this._router.navigate(['/accounts/purchase']);
         }
@@ -282,12 +314,12 @@ declare var $: any;
     }
 
     private NewRowAdd() {
-        if (this.ItemsName == '' || this.ItemsName == undefined) {
-            alert('Please Enter items Name');
+        if (this.NewItemsName == '' || this.NewItemsName == undefined) {
+            alert('Please enter items name');
             return;
         }
         if (this.qty == '' || this.qty == undefined) {
-            alert('Please Enter Quntity');
+            alert('Please enter quntity');
             return;
         }
         if (this.dis > 100) {
@@ -296,15 +328,15 @@ declare var $: any;
         }
         this.Duplicateflag = true;
         for (var i = 0; i < this.newAddRow.length; i++) {
-            if (this.newAddRow[i].ItemsName == this.ItemsName) {
+            if (this.newAddRow[i].NewItemsName == this.NewItemsName) {
                 this.Duplicateflag = false;
             }
         }
         if (this.Duplicateflag == true) {
             this.newAddRow.push({
                 "autoid": 0,
-                'ItemsName': this.ItemsName,
-                'Itemsid': this.Itemsid,
+                'itemsname': this.NewItemsName,
+                'itemsid': this.NewItemsid,
                 'qty': this.qty,
                 'rateslist': this.rateslist,
                 'id': this.newrate,
@@ -313,7 +345,7 @@ declare var $: any;
                 'counter': this.counter
             });
             this.counter++;
-            this.ItemsName = "";
+            this.itemsname = "";
             this.NewItemsName = "";
             this.qty = "";
             this.newrate = 0;
@@ -356,7 +388,6 @@ declare var $: any;
     //Calculation Qty,Rate and dis  Change Event
     CalculationQty(qty: any, newrate: any = [], dis: any, row: any = [], agr: number) {
         try {
-            debugger;
             var amt = 0;
             var disTotal = 0;
             if (agr == 0) {
@@ -372,7 +403,7 @@ declare var $: any;
                     disTotal = 0;
                     amt = 0;
                     for (let item of this.newAddRow) {
-                        if (item.counter == row.counter) {
+                        if (item.autoid == row.autoid) {
                             var rate = item.rateslist.filter(itemval => itemval.id == row.id);
                             amt = +item.qty * +rate[0].val;
                             disTotal = amt * item.dis / 100;
@@ -430,7 +461,7 @@ declare var $: any;
     }
 
 
-    ItemsSelected(Itemsid) {
+    ItemsSelected(Itemsid, counter) {
         this.PurchaseServies.getitemsDetails({
             "itemsid": Itemsid,
             "cmpid": this.loginUser.cmpid,
@@ -439,8 +470,22 @@ declare var $: any;
             "createdby": this.loginUser.login
         }).subscribe(result => {
             var returndata = result.data;
-            this.Itemsid = Itemsid;
-            this.rateslist = returndata[0].rates;
+            if (counter == 0) {
+                this.itemsid = Itemsid;
+                this.rateslist = returndata[0].rates;
+            }
+            else {
+                for (let item of this.newAddRow) {
+                    if (item.autoid === counter) {
+                        item.rateslist = [];
+                        item.qty = 0;
+                        item.amount = 0;
+                        item.dis = 0;
+                        item.rateslist = returndata[0].rates;
+                        break;
+                    }
+                }
+            }
         }, err => {
             console.log(err);
         }, () => {
@@ -453,7 +498,7 @@ declare var $: any;
         var that = this;
         this._autoservice.getAutoData({
             "type": "product",
-            "search": arg == 0 ? me.NewItemsName : me.ItemsName,
+            "search": arg == 0 ? _me.NewItemsName : _me.itemsname,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
@@ -469,15 +514,15 @@ declare var $: any;
                 scroll: true,
                 highlight: false,
                 select: function (event, ui) {
-                    me.ItemsName = ui.item.label;
+                    _me.ItemsName = ui.item.label;
                     if (arg === 1) {
-                        me.ItemsName = ui.item.label;
-                        me.Itemsid = ui.item.value;
-                        that.ItemsSelected(me.Itemsid);
+                        _me.itemsname = ui.item.label;
+                        _me.itemsid = ui.item.value;
+                        that.ItemsSelected(_me.itemsid, _me.autoid);
                     } else {
-                        me.NewItemsName = ui.item.label;
-                        me.NewItemsid = ui.item.value;
-                        that.ItemsSelected(me.NewItemsid);
+                        _me.NewItemsName = ui.item.label;
+                        _me.NewItemsid = ui.item.value;
+                        that.ItemsSelected(_me.NewItemsid, 0);
                     }
                 }
             });
@@ -503,17 +548,6 @@ declare var $: any;
             }
         }
         return total;
-    }
-
-    //Total Amount 
-    private TotalAmount() {
-        var totalamt = 0;
-        if (this.newAddRow.length > 0) {
-            for (var i = 0; i < this.newAddRow.length; i++) {
-                totalamt += parseInt(this.newAddRow[i].Amount);
-            }
-        }
-        return totalamt;
     }
 
     //Delete 

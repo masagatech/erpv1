@@ -12,7 +12,7 @@ export class PurchaseaddService  {
     }
     EditPO(req:any)
     {
-        return this._dataserver.post("SupplierDetails",req);
+        return this._dataserver.post("getpurchaseview",req);
     }
     getitemsDetails(req:any)
     {

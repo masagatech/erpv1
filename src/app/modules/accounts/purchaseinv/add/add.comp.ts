@@ -1,30 +1,30 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { SharedVariableService } from "../../../_service/sharedvariable-service";
-import { ActionBtnProp } from '../../../../app/_model/action_buttons'
+import { SharedVariableService } from "../../../../_service/sharedvariable-service";
+import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
-import { CommonService } from '../../../_service/common/common-service' /* add reference for view employee */
-import { generateinvService } from "../../../_service/generateinvoice/generate-service";  //Service Add Refrence dcmaster-service.ts
-import { UserService } from '../../../_service/user/user-service';
-import { LoginUserModel } from '../../../_model/user_model';
+import { CommonService } from '../../../../_service/common/common-service'
+import { PurchaseService } from "../../../../_service/purchaseinv/purchase-service";
+import { UserService } from '../../../../_service/user/user-service';
+import { LoginUserModel } from '../../../../_model/user_model';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
-import { CalendarComp } from '../../usercontrol/calendar';
-import { ALSService } from '../../../_service/auditlock/als-service';
-import { MessageService, messageType } from '../../../_service/messages/message-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
+import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 @Component({
-    templateUrl: 'generateinv.comp.html',
-    providers: [generateinvService, CommonService, ALSService]                         //Provides Add Service dcmaster-service.ts
+    templateUrl: 'add.comp.html',
+    providers: [PurchaseService, CommonService, ALSService]
     //,AutoService
 })
-export class generateInv implements OnInit, OnDestroy {
+export class purchaseInvadd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     //Veriable declare
-    tableDetails: any;
-    CustName: any;
-    CustID: any = "";
+    suppname: any;
+    suppid: any = "";
     doclist: any[];
     invoiceModel: any = { "header": {}, "details": [] }
     invoices: any = [];
@@ -44,6 +44,8 @@ export class generateInv implements OnInit, OnDestroy {
     taxlist: any = [];
     buttonitems: any = [];
 
+    SupplierAutodata: any = [];
+
     //Calendor
     @ViewChild("fromdatecal")
     fromdatecal: CalendarComp;
@@ -51,13 +53,14 @@ export class generateInv implements OnInit, OnDestroy {
     @ViewChild("todatecal")
     todatecal: CalendarComp;
 
-    CustomerAutodata: any[];
+    purchase_ledger: any = "";
+    purchase_stock: any = "";
     salesregister: any = "";
 
 
 
     //, private _autoservice:AutoService
-    constructor(private setActionButtons: SharedVariableService, private InvServies: generateinvService,
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private InvServies: PurchaseService,
         private _autoservice: CommonService, private _userService: UserService,
         private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
@@ -88,6 +91,7 @@ export class generateInv implements OnInit, OnDestroy {
         this.todatecal.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
 
+        this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
@@ -95,34 +99,71 @@ export class generateInv implements OnInit, OnDestroy {
         this.actionButton.push(new ActionBtnProp("generate", "Generate", "save", true, true));
         this.actionButton.push(new ActionBtnProp("print", "Generate & Print", "print", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
-        this.setActionButtons.setTitle("Generate Invoice");
+        this.setActionButtons.setTitle("Purchase Invoice");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        setTimeout(function () {
-            $(".Custcode input").focus();
-        }, 0);
+        // this.tableDetails = true;
+
         var date = new Date();
         this.fromdatecal.setDate(date);
         this.todatecal.setDate(date);
         this.SettingStatus();
     }
 
-    loadRBIGrid(event: LazyLoadEvent) {
-
+    //Supplier Selected
+    SupplierSelect(event) {
+        try {
+            this.suppid = event.value;
+            this.suppname = event.label;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
-    //Check Ledger Table 
+    //Supplier Auto Extender 
+    SupplierAuto(event) {
+        try {
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
+                "type": "supplier",
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.SupplierAutodata = data;
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
+
+    loadRBIGrid(event: LazyLoadEvent) {
+    }
+
+    ClearControl() {
+        this.doclist = [];
+        this.invoices = [];
+    }
+
+
+
+    // //Check Ledger Table 
     SettingStatus() {
         try {
             var that = this;
             that._autoservice.getisproceed({
                 "cmpid": that.loginUser.cmpid,
                 "fy": that.loginUser.fy,
-                "keyname": "sales_register",
+                "keyname": "is_purchase_ledger",
+                "negative": "is_purchase_stock",
+                "salesord": "sales_register",
                 "flag1": "negative",
                 "createdby": that.loginUser.login
             }).subscribe(isproc => {
                 var returnval = isproc.data;
-                that.salesregister = returnval[0].val;
+                that.purchase_ledger = returnval[0].val;
+                that.purchase_stock = returnval[0].navigat;
+                that.salesregister = returnval[0].salesord;
             }, err => {
                 console.log("Error");
             }, () => {
@@ -139,8 +180,10 @@ export class generateInv implements OnInit, OnDestroy {
         if (evt === "clear") {
             this.ClearControl();
         }
-        if (evt === "save") {
-
+        else if (evt === "back") {
+            this._router.navigate(['/accounts/purchaseinv']);
+        }
+        else if (evt === "save") {
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             // alert("edit called");
@@ -150,56 +193,31 @@ export class generateInv implements OnInit, OnDestroy {
         }
     }
 
-    ClearControl() {
-        this.doclist = [];
-        this.invoices = [];
-    }
-
-    CustomerAuto(event) {
-        try {
-            let query = event.query;
-            this._autoservice.getAutoDataGET({
-                "type": "customer",
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login,
-                "search": query
-            }).then(data => {
-                this.CustomerAutodata = data;
-            });
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
-    }
-
-    //Selected Customer Id And Name
-    CustomerSelect(event) {
-        this.CustID = event.value;
-        this.CustName = event.label;
-    }
-
     //Get Invoice No
-    getdocumentNo() {
+    getdocumentNo(msgflag) {
         try {
-            this.InvServies.getInvdocumentNo({
+            this.InvServies.getdocumentno({
                 "cmpid": this.loginUser.cmpid,
-                "acid": this.CustID == "" ? 0 : this.CustID,
+                "sup": this.suppid == "" ? 0 : this.suppid,
                 "fy": this.loginUser.fy,
                 "fromdate": this.fromdatecal.getDate(),
                 "todate": this.todatecal.getDate(),
                 "createdby": this.loginUser.login,
-                "flag": 'docno',
-                "typ": "order"
+                "flag": "docno"
             }).subscribe(documentno => {
+                debugger;
                 var dataset = documentno.data;
                 if (dataset[0].length > 0) {
                     this.doclist = dataset[0];
                 }
                 else {
-                    this._msg.Show(messageType.error, "error", "Record Not Found");
+                    if (msgflag == undefined) {
+                        this._msg.Show(messageType.error, "error", "Record Not Found");
+                        this.doclist = [];
+                        $(".SupplierName input").focus();
+                    }
                     this.doclist = [];
-                    $(".Custcode").focus();
+                    $(".SupplierName input").focus();
                 }
             }, err => {
                 console.log('Error');
@@ -229,12 +247,10 @@ export class generateInv implements OnInit, OnDestroy {
         ];
 
         try {
-            this.InvServies.getInvdocumentNo({
+            this.InvServies.getdocumentno({
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
-                "docno": items.docno,
-                "flag": '',
-                "typ": "order"
+                "docno": items.docno
             }).subscribe(details => {
                 var dataset = details.data;
                 if (dataset.length > 0) {
@@ -242,8 +258,8 @@ export class generateInv implements OnInit, OnDestroy {
                     this.invoices = [];
                     for (var i = 0; i < InvoicelocalNo.length; i++) {
                         var invoiceModel = { "header": {}, "details": [] };
-                        invoiceModel.header = dataset[1].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
-                        invoiceModel.details = dataset[2].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
+                        invoiceModel.header = dataset[1].filter(a => a.subdoc === InvoicelocalNo[i].subdoc);
+                        invoiceModel.details = dataset[2].filter(a => a.subdoc === InvoicelocalNo[i].subdoc);
                         this.taxlist = invoiceModel.header[0]._tax == null ? [] : invoiceModel.header[0]._tax;
                         if (this.taxlist.length == 0) {
                             this.taxlist.push({
@@ -253,6 +269,10 @@ export class generateInv implements OnInit, OnDestroy {
                         }
                         this.invoices.push(invoiceModel);
                     }
+                }
+                else {
+                    this._msg.Show(messageType.error, "error", "Record not found");
+                    return;
                 }
             }, err => {
                 console.log('Error');
@@ -365,7 +385,6 @@ export class generateInv implements OnInit, OnDestroy {
 
     }
 
-
     //Create Paramter Invoice Table
     paramjson(tabledetails: any = [], CustomerDetails: any = []) {
         try {
@@ -379,19 +398,19 @@ export class generateInv implements OnInit, OnDestroy {
                     "itemid": item.itemid,
                     "itemcode": item.itemcode,
                     "itemname": item.itemname,
-                    "qty": item.docqty,
-                    "typ": "order",
+                    "qty": item.qty,
                     "rate": item.rate,
                     "dis": item.dis,
                     "tax": 10,
                     "amt": item.amount,
                     "status": "manual",
                     "createdby": this.loginUser.login,
-                    "deldate": CustomerDetails[0].deldate,
-                    "docdate": CustomerDetails[0].docdate,
-                    "subdocid": CustomerDetails[0].subconfid,
+                    "docdate": CustomerDetails[0].purdate,
+                    "subdocid": CustomerDetails[0].subdoc,
                     "acid": CustomerDetails[0].acid,
-                    "accode": CustomerDetails[0].custname.split(':')[0]
+                    "accode": CustomerDetails[0].custname.split(':')[0],
+                    "suppid": CustomerDetails[0].vid,
+                    "supcode": CustomerDetails[0].suppname.split(':')[0]
                 })
             }
             return param;
@@ -410,7 +429,7 @@ export class generateInv implements OnInit, OnDestroy {
                 "cmpid": that.loginUser.cmpid,
                 "acid": CustomerDetails[0].acid,
                 "fy": that.loginUser.fy,
-                "typ": "invoice",
+                "typ": "pur",
                 "dramt": that.GrandTotal(tabledetails, taxlist),
                 "cramt": 0,
                 "nar": CustomerDetails[0].remark,
@@ -446,15 +465,15 @@ export class generateInv implements OnInit, OnDestroy {
                     "itemid": item.itemid,
                     "rateid": item.rate,
                     "rate": item.rate,
-                    "inword": 0,
-                    "outward": item.docqty,
-                    "typ": "inv",
+                    "inword": item.qty,
+                    "outward": 0,
+                    "typ": "pur",
                     "fy": this.loginUser.fy,
                     "cmpid": this.loginUser.cmpid,
                     "createdby": this.loginUser.login,
                     "amt": item.amount,
                     "rem": item.remark,
-                    "whid": CustomerDetails[0].whid,
+                    "whid": 0,
                     "opedate": CustomerDetails[0].docdate,
                     "remark": CustomerDetails[0].remark
                 })
@@ -467,24 +486,25 @@ export class generateInv implements OnInit, OnDestroy {
 
     private GenerateInvoice(tabledetails, CustomerDetails, taxlist) {
         try {
-            this.InvServies.GenerateInvoice({
-                "generatedetails": this.paramjson(tabledetails, CustomerDetails),
+            var that = this;
+            this.InvServies.savePurchaseInv({
+                "purchasedetails": that.paramjson(tabledetails, CustomerDetails),
                 "docno": CustomerDetails[0].docno,
-                "ledgerparam": this.paramledger(tabledetails, CustomerDetails, taxlist),
-                "openstockdetails": this.stockledger(tabledetails, CustomerDetails),
-                "totaltax": this.SubtotalTotalTax(tabledetails, taxlist),
-                "netamt": this.GrandTotal(tabledetails, taxlist),
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "ledgerflag": 'true',
-                "stockflag": 'true'
+                "ledgerparam": that.paramledger(tabledetails, CustomerDetails, taxlist),
+                "openstockdetails": that.stockledger(tabledetails, CustomerDetails),
+                "totaltax": that.SubtotalTotalTax(tabledetails, taxlist),
+                "netamt": that.GrandTotal(tabledetails, taxlist),
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "ledgerflag": that.purchase_ledger,
+                "stockflag": that.purchase_stock
             }).subscribe(details => {
                 var dataset = details.data;
-                if (dataset[0].funsave_generateinvoice.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", dataset[0].funsave_generateinvoice.msg + ' : ' + dataset[0].funsave_generateinvoice.maxid)
+                if (dataset[0].funsave_purchaseinvoice.maxid > 0) {
+                    that._msg.Show(messageType.success, "success", dataset[0].funsave_purchaseinvoice.msg + ' : ' + dataset[0].funsave_purchaseinvoice.maxid)
                     var InvoicelocalNo = dataset.Table;
-                    this.invoices = [];
-                    this.getdocumentNo();
+                    that.invoices = [];
+                    that.getdocumentNo(1);
                 }
                 else {
                     console.log(dataset);
@@ -494,7 +514,7 @@ export class generateInv implements OnInit, OnDestroy {
             }, () => {
                 //Done Process
             });
-            // console.log(xmldata);
+
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }

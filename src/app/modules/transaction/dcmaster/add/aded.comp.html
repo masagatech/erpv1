@@ -96,7 +96,7 @@
 										<td style="vertical-align: top;"><input type="text" tabindex="10" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
 												autocomplete='off' value="" /></td>
 										<td style="width:120px;vertical-align: top;">
-											<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="11" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis,this,0)"
+											<numtext [iscurrency]="false" css="inlinetextbox" [id]='"qty"' [tabindex]="11" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis,this,0)"
 												[(ngModel)]="qty"></numtext>
 										</td>
 										<td style="width:120px;vertical-align: top;">
@@ -108,11 +108,11 @@
 											</select>
 										</td>
 										<td style="width:120px;vertical-align: top;">
-											<numtext [iscurrency]="false" css="inlinetextbox"  [tabindex]="13" (keyup)="ratechange(qty,newrate,dis,this,0)" (keyup.enter)="NewRowAdd()"
+											<numtext [iscurrency]="false" css="inlinetextbox" [id]='"dis"' [tabindex]="13" (keyup)="ratechange(qty,newrate,dis,this,0)" (keyup.enter)="NewRowAdd()"
 												[(ngModel)]="dis"></numtext>
 										</td>
 										<td style="width:120px;vertical-align: top;">
-											<numtext [iscurrency]="true" css="inlinetextbox"  [islabel]="true" [(ngModel)]="amount"></numtext>
+											<numtext [iscurrency]="true" css="inlinetextbox" [id]='"amount"'  [islabel]="true" [(ngModel)]="amount"></numtext>
 										</td>
 										<td style="width:80px;vertical-align: top;"><button type="button" tabindex="14" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
 									</tr>

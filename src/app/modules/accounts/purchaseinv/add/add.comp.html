@@ -2,10 +2,9 @@
 	<div class="panel-body">
 		<div class="col-md-4">
 			<div class='form-group'>
-				<label>Customer</label>
-				<!--<input type="text=" class="form-control Custcode" [(ngModel)]="CustName" tabindex="1" value="" (keyup)="getAutoComplete(this)"-->
-				<p-autoComplete [(ngModel)]="CustName" tabindex="1" class="form-controlAutoComplete Custcode" (onSelect)="CustomerSelect($event)"
-					[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" [minLength]="1"></p-autoComplete>
+				<label>Supplier</label>
+				<p-autoComplete [(ngModel)]="SupplierName" class="form-controlAutoComplete SupplierName" (onSelect)="SupplierSelect($event)" [suggestions]="SupplierAutodata"
+					(completeMethod)="SupplierAuto($event)" [tabindex]="4" field="label" [size]="30" placeholder="Supplier" [minLength]="1"></p-autoComplete>
 			</div>
 		</div>
 		<div class="col-md-2">
@@ -39,13 +38,13 @@
 							<div class="col-xs-2">
 								<div class='form-group'>
 									<label>Document No</label>
-									<input type="text=" class="form-control" readonly="true" [(ngModel)]="Headeritem.subconfid" tabindex="1" value="" />
+									<input type="text=" class="form-control" readonly="true" [(ngModel)]="Headeritem.subdoc" tabindex="1" value="" />
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class='form-group'>
-									<label>Salesman</label>
-									<input type="text" class="form-control" readonly="true" [(ngModel)]="Headeritem.sales">
+									<label>Supplier</label>
+									<input type="text" class="form-control" readonly="true" [(ngModel)]="Headeritem.suppname">
 								</div>
 							</div>
 							<div class="col-md-4">
@@ -57,7 +56,7 @@
 							<div class="col-xs-3">
 								<label>Document Date</label>
 								<div class="input-group date" data-provide="datepicker">
-									<input type="text=" class="form-control" [(ngModel)]="Headeritem.docdate" readonly="true" tabindex="2" value="" />
+									<input type="text=" class="form-control" [(ngModel)]="Headeritem.purdate" readonly="true" tabindex="2" value="" />
 									<div class="input-group-addon">
 										<span class="glyphicon glyphicon-th"></span>
 									</div>
@@ -90,7 +89,7 @@
 							<p-column field="itemname" header="Item name" [style]="{'width':'130px','text-align':'left'}"></p-column>
 							<p-column header="Qty." [style]="{'width':'50px','text-align':'right'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.qty"></numtext>
 								</template>
 							</p-column>
 							<p-column header="Rate" [style]="{'width':'50px','text-align':'right'}">

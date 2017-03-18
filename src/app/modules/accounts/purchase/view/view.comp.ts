@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -6,13 +6,17 @@ import { PurchaseviewService } from "../../../../_service/suppurchase/view/purch
 import { CommonService } from '../../../../_service/common/common-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { ALSService } from '../../../../_service/auditlock/als-service';
+import { CalendarComp } from '../../../usercontrol/calendar';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
+import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
 
 import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
     templateUrl: 'view.comp.html',
-    providers: [PurchaseviewService, CommonService]
+    providers: [PurchaseviewService, CommonService, ALSService]
 })
 
 export class purchaseview implements OnInit, OnDestroy {
@@ -21,24 +25,55 @@ export class purchaseview implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
 
     //Veriable Declare 
-    FromDate: any = "";
-    ToDate: any = "";
-    FromDoc: any = "";
-    ToDoc: any = "";
     PODetails: any = [];
     SupplierName: any = "";
-    SupplierID: any = "";
+    SupplierID: number = 0;
     TableHide: any;
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    //Auto Completed 
+    SupplierAutodata: any = [];
+
+    //Calendor
+    @ViewChild("fromdatecal")
+    fromdatecal: CalendarComp;
+
+    @ViewChild("todatecal")
+    todatecal: CalendarComp;
+
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private _autoservice: CommonService, private PurchaseServies: PurchaseviewService,
-        private _userService: UserService) {
+        private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
+
+    setAuditDate() {
+        var that = this;
+        that._alsservice.getAuditLockSetting({
+            "flag": "modulewise", "dispnm": "pur", "fy": that.loginUser.fy
+        }).subscribe(data => {
+            var dataResult = data.data;
+            var lockdate = dataResult[0].lockdate;
+            if (lockdate != "")
+                that.fromdatecal.setMinMaxDate(new Date(lockdate), null);
+            that.todatecal.setMinMaxDate(new Date(lockdate), null);
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
     ngOnInit() {
+        this.fromdatecal.initialize(this.loginUser);
+        this.fromdatecal.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todatecal.initialize(this.loginUser);
+        this.todatecal.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.setAuditDate();
+
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
@@ -47,33 +82,19 @@ export class purchaseview implements OnInit, OnDestroy {
         this.setActionButtons.setTitle("Purchase Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         //Get All Record
-        $(".SupplierName").focus();
-        this.TableHide = true;
         setTimeout(function () {
-            var date = new Date();
-            var Fromtoday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            var Totoday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-            //From Date 
-            $("#FromDate").datepicker({
-                dateFormat: "dd/mm/yy",
-                //startDate: new Date(),        //Disable Past Date
-                autoclose: true,
-                setDate: new Date()
-            });
-            $("#FromDate").datepicker('setDate', Fromtoday);
-
-            //To Date
-            $("#ToDate").datepicker({
-                dateFormat: 'dd/mm/yy',
-                minDate: 0,
-                setDate: new Date(),
-                autoclose: true
-            });
-            $("#ToDate").datepicker('setDate', Totoday);
-        }, 0);
+            $(".SupplierName input").focus();
+        }, 0)
+        var date = new Date();
+        this.fromdatecal.setDate(date);
+        this.todatecal.setDate(date);
 
     }
+
+    loadRBIGrid(event: LazyLoadEvent) {
+        // this.GetSupplierDetails(event.first, (event.first + event.rows));
+    }
+
     actionBarEvt(evt) {
         if (evt === "add") {
             this._router.navigate(['/accounts/purchase/add']);
@@ -88,64 +109,55 @@ export class purchaseview implements OnInit, OnDestroy {
         }
     }
 
-    //Supplier Change Event Bind Supplier
-    getAutoCompleteSupplier(me: any) {
-        this._autoservice.getAutoData({
-            "type": "supplier", "key": this.SupplierName
-        }).subscribe(data => {
-            $(".SupplierName").autocomplete({
-                source: JSON.parse(data.data),
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.SupplierID = ui.item.value;
-                    me.SupplierName = ui.item.label;
-                }
+    //Supplier Selected
+    SupplierSelect(event) {
+        try {
+            this.SupplierID = event.value;
+            this.SupplierName = event.label;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+    }
+
+    //Supplier Auto Extender 
+    SupplierAuto(event) {
+        try {
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
+                "type": "supplier",
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.SupplierAutodata = data;
             });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //More Button Click Event
     GetSupplierDetails() {
-        if ($(".SupplierName").val() == "") {
-            this.SupplierID = 0;
-        }
-        this.FromDate = $("#FromDate").val();
-        this.ToDate = $("#ToDate").val();
-        this.PurchaseServies.getSupplierDetails({
-            "CmpCode": "MTech",
-            "FY": 5,
-            "FilterType": "",
-            "PurOrId": 0,
-            "CreatedBy": "",
-            "FromDate": this.FromDate,
-            "ToDate": this.ToDate,
-            "SupplierId": this.SupplierID == "" ? 0 : this.SupplierID,
-            "flag": "",
-            "flag1": ""
+        this.PurchaseServies.getpurchaseview({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "fromdate": this.fromdatecal.getDate(),
+            "todate": this.todatecal.getDate(),
+            // "from": from,
+            // "to": to,
+            "suppId": this.SupplierID
         }).subscribe(details => {
-            var dataset = JSON.parse(details.data);
-            if (dataset.Table.length > 0) {
-                this.PODetails = dataset.Table;
-                this.TableHide = false;
+            var dataset = details.data;
+            if (dataset[0].length > 0) {
+                this.PODetails = dataset[0];
             }
             else {
                 this.PODetails = [];
-                this.TableHide = true;
-                alert("Record not found");
-                $(".SupplierName").focus();
+                this._msg.Show(messageType.error, "error", "Record not found")
+                $(".SupplierName input").focus();
             }
-
         }, err => {
             console.log('Error');
         }, () => {
@@ -154,33 +166,49 @@ export class purchaseview implements OnInit, OnDestroy {
     }
 
     //Edit Row
-    EditPO(row) {
-        if (!row.IsLocked) {
-            this._router.navigate(['/supplier/purchaseedit', row.PoId]);
+    EditPO(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['/accounts/purchase/edit', data.purordid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
     //More Button Click
-    expandDetails(row) {
-        if (row.IsCollapse == 0) {
-            row.IsCollapse = 1;
-            if (row.Details.length === 0) {
-                this.PurchaseServies.getSupplierDetails({
-                    "FilterType": "Details",
-                    "PurOrId": row.PoId,
-                    "CmpCode": "Mtech",
-                    "FY": 5
-                }).subscribe(data => {
-                    var dataset = JSON.parse(data.data);
-                    row.Details = dataset.Table;
-                }, err => {
-                    console.log("Error");
-                }, () => {
-                    // console.log("Complete");
-                })
-            }
-        } else {
-            row.IsCollapse = 0;
+    expandDetails(event) {
+        try {
+            if (event.details && event.details.length > 0) { return; }
+            var that = this;
+            var row = event;
+            row.loading = false;
+            this.PurchaseServies.getpurchaseview({
+                "flag": "details",
+                "docno": row.purordid,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+            }).subscribe(data => {
+                var dataset = data.data;
+                if (dataset.length > 0) {
+                    row.loading = true;
+                    row.details = dataset[0];
+                }
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
     }
 
