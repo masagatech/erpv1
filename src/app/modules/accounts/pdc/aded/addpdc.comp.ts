@@ -24,8 +24,8 @@ export class AddPDC implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     pdcid: number = 0;
-    acid: number = 0;
-    acname: string = "";
+    custid: number = 0;
+    custname: string = "";
     bankid: string = "";
     chequeno: string = "";
     amount: any = "";
@@ -37,6 +37,7 @@ export class AddPDC implements OnInit, OnDestroy {
     suppdoc: any = [];
     uploadedFiles: any = [];
 
+    accountsDT: any = [];
     pdctypeDT: any = [];
     bankDT: any = [];
 
@@ -50,7 +51,7 @@ export class AddPDC implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _userservice: UserService, private _pdcservice: PDCService, private _msg: MessageService,
+        private _autoservice: CommonService, private _userservice: UserService, private _pdcservice: PDCService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userservice.getUser();
 
@@ -146,6 +147,26 @@ export class AddPDC implements OnInit, OnDestroy {
         }
     }
 
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Customer
+    
+    selectAutoAccounts(event) {
+        this.custid = event.value;
+        this.custname = event.label;
+    }
+
     fillDropDownList() {
         var that = this;
 
@@ -164,39 +185,13 @@ export class AddPDC implements OnInit, OnDestroy {
     existCustAuto() {
         var that = this;
 
-        that._commonservice.getAutoData({
-            "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.acname
+        that._autoservice.getAutoData({
+            "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.custname
         }).subscribe(data => {
             if (data.data.length === 0) {
                 that._msg.Show(messageType.info, "info", "This party not exists !!!");
-                that.acname = "";
+                that.custname = "";
             }
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    getCustAuto(me: any) {
-        var that = this;
-
-        that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.acname }).subscribe(data => {
-            $(".acname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.acid = ui.item.value;
-                    me.acname = ui.item.label;
-                }
-            });
         }, err => {
             console.log("Error");
         }, () => {
@@ -244,7 +239,7 @@ export class AddPDC implements OnInit, OnDestroy {
             "pdcid": that.pdcid,
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
-            "acid": that.acid,
+            "acid": that.custid,
             "amount": that.amount,
             "bankid": that.bankid,
             "chequeno": that.chequeno,
@@ -286,8 +281,8 @@ export class AddPDC implements OnInit, OnDestroy {
 
             that.pdcid = _pdcdata[0].pdcid;
             that.pdctype = _pdcdata[0].pdctype;
-            that.acid = _pdcdata[0].acid;
-            that.acname = _pdcdata[0].acname;
+            that.custid = _pdcdata[0].acid;
+            that.custname = _pdcdata[0].acname;
 
             var date = new Date(_pdcdata[0].chequedate);
             that.chequedate.setDate(date);

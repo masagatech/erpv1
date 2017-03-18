@@ -20,8 +20,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label">Party Name</label>
-                        <input validate="" type="text" [(ngModel)]="acname" name="acname" class="acname form-control" (keyup)="getCustAuto(this)" (keydown.tab)="existCustAuto()"
-                            tabindex="2" />
+                        <p-autoComplete id="custname" name="custname" [(ngModel)]="custname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event)"
+                            [suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1"
+                            [size]="30" class="form-controlAutoComplete"></p-autoComplete>
                     </div>
 
                     <div class="row">

@@ -30,13 +30,14 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     depdate: CalendarComp;
 
     typ: string = "";
-    acid: number = 0;
-    acname: string = "";
+    custid: number = 0;
+    custname: string = "";
     chequeno: string = "";
     amount: any = "";
     refno: string = "";
     narration: string = "";
 
+    accountsDT: any = [];
     bankDT: any = [];
     banktypeDT: any = [];
 
@@ -75,8 +76,8 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         var date = new Date();
         this.depdate.setDate(date);
         this.typ = "";
-        this.acid = 0;
-        this.acname = "";
+        this.custid = 0;
+        this.custname = "";
         this.chequeno = "";
         this.amount = "";
         this.refno = "";
@@ -199,6 +200,26 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         }
     }
 
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Customer
+    
+    selectAutoAccounts(event) {
+        this.custid = event.value;
+        this.custname = event.label;
+    }
+
     // DropDown
 
     fillDropDownList() {
@@ -221,8 +242,8 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.bankid = _bankreceipt[0].bankid;
             var chequedate = new Date(_bankreceipt[0].chequedate);
             this.depdate.setDate(chequedate);
-            this.acname = _bankreceipt[0].partyname;
-            this.acid = _bankreceipt[0].acid;
+            this.custid = _bankreceipt[0].acid;
+            this.custname = _bankreceipt[0].partyname;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
             this.chequeno = _bankreceipt[0].cheqno;
@@ -245,8 +266,8 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.bankid = _bankreceipt[0].bankid;
             var chequedate = new Date(_bankreceipt[0].chequedate);
             this.depdate.setDate(chequedate);
-            this.acname = _bankreceipt[0].partyname;
-            this.acid = _bankreceipt[0].acid;
+            this.custid = _bankreceipt[0].acid;
+            this.custname = _bankreceipt[0].partyname;
             this.refno = "";
             this.typ = _bankreceipt[0].typ;
             this.chequeno = _bankreceipt[0].chequeno;
@@ -286,7 +307,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             $(".depdate").focus();
             return false;
         }
-        if (this.acname == "") {
+        if (this.custname == "") {
             that._msg.Show(messageType.success, "Success", "Please Select Account Code");
             $(".custcode").focus();
             return false;
@@ -300,7 +321,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             "refno": this.refno,
             "bankid": this.bankid,
             "typ": this.typ,
-            "acid": this.acid,
+            "acid": this.custid,
             "cheqno": this.chequeno,
             "amount": this.amount,
             "narration": this.narration,
@@ -327,34 +348,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         }, () => {
             //Done Process
         });
-    }
-
-    //Auto Completed Customer Name
-
-    getAutoComplete(me: any) {
-        var _me = this;
-        var that = this;
-        this._autoservice.getAutoData({ "type": "customer", "cmpid": this.loginUser.cmpid, "search": that.acname }).subscribe(data => {
-            $(".custcode").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.acid = ui.item.value;
-                    me.acname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 
     ngOnDestroy() {

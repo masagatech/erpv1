@@ -38,6 +38,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     typ: number = 0;
     ischeqbounce: boolean = false;
 
+    accountsDT: any = [];
     bankDT: any = [];
     banktypeDT: any = [];
 
@@ -169,6 +170,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     }
 
     // Clear All Fields
+    
     ClearFields() {
         this.autoid = 0;
         this.bankid = 0;
@@ -179,6 +181,37 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.amount = 0;
         this.cheqno = "";
         this.narration = "";
+    }
+
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Customer
+    
+    selectAutoAccounts(event) {
+        this.custid = event.value;
+        this.custname = event.label;
+    }
+
+    // Get Bank Master And Type
+
+    fillDropDownList() {
+        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+
+            this.bankDT = d.filter(a => a.group === "bank");
+            this.banktypeDT = d.filter(a => a.group === "banktype");
+        });
     }
 
     onUploadStart(e) {
@@ -220,44 +253,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             console.log('Error');
         }, () => {
             //Done Process
-        });
-    }
-
-    //Auto Completed Customer Name
-
-    getAutoComplete(me: any) {
-        var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "cmpid": this.loginUser.cmpid, "search": this.custname }).subscribe(data => {
-            $(".custcode").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.custid = ui.item.value;
-                    me.custname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    // Get Bank Master And Type
-
-    fillDropDownList() {
-        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
-            var d = data.data;
-
-            this.bankDT = d.filter(a => a.group === "bank");
-            this.banktypeDT = d.filter(a => a.group === "banktype");
         });
     }
 

@@ -25,8 +25,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     dnid: number = 0;
     docno: number = 0;
-    dnacid: number = 0;
-    dnacname: string = "";
+    dncustid: number = 0;
+    dncustname: string = "";
     narration: string = "";
     isactive: boolean = false;
     dramt: any = "";
@@ -34,12 +34,15 @@ export class AddDebitNote implements OnInit, OnDestroy {
     uploadedFiles: any = [];
     suppdoc: any = [];
 
+    accountsDT: any = [];
     dnRowData: any = [];
     viewDNData: any = [];
 
+    acid: number = 0;
+    acname: string = "";
     newdnid: any = 0;
-    newacid: any = 0;
-    newacname: string = "";
+    newcustid: any = 0;
+    newcustname: string = "";
     newcramt: any = "";
 
     counter: any = 0;
@@ -61,7 +64,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     //Page Load
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _dnservice: DNService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
+        private _dnservice: DNService, private _userService: UserService, private _autoservice: CommonService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
@@ -72,7 +75,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     }
 
     resetDebitNote() {
-        this.dnacid = 0;
+        this.dncustid = 0;
         var date = new Date();
         this.dndate.setDate(date);
         this.dramt = "";
@@ -179,13 +182,42 @@ export class AddDebitNote implements OnInit, OnDestroy {
         }
     }
 
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Inline Item Selected
+
+    selectAutoAccounts(event, arg) {
+        var that = this;
+        if (arg === 1) {
+            that.dncustid = event.value;
+            that.dncustname = event.label;
+        } else if (arg === 2) {
+            that.acid = event.value;
+            that.acname = event.label;
+        } else {
+            that.newcustid = event.value;
+            that.newcustname = event.label;
+        }
+    }
+
     isDuplicateAccount() {
         var that = this;
 
-        if (that.dnacid == that.newacid) {
+        if (that.dncustid == that.newcustid) {
             that._msg.Show(messageType.info, "Info", "Debit Account and Credit Account Not Same");
-            that.newacid = "";
-            that.newacname = "";
+            that.newcustid = "";
+            that.newcustname = "";
             that.newcramt = "";
             return true;
         }
@@ -193,10 +225,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
         for (var i = 0; i < that.dnRowData.length; i++) {
             var field = that.dnRowData[i];
 
-            if (field.acid == that.newacid) {
+            if (field.acid == that.newcustid) {
                 that._msg.Show(messageType.info, "Info", "Duplicate Account not Allowed");
-                that.newacid = "";
-                that.newacname = "";
+                that.newcustid = "";
+                that.newcustname = "";
                 return true;
             }
         }
@@ -210,7 +242,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
         for (var i = 0; i < dnRow.length; i++) {
             var items = dnRow[i];
-            CreditAmtTotal += parseInt(items.cramt);
+            CreditAmtTotal += parseFloat(items.cramt);
         }
 
         return CreditAmtTotal;
@@ -221,7 +253,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
         // Validation
 
-        if (that.newacname == "") {
+        if (that.newcustname == "") {
             that._msg.Show(messageType.info, "Info", "Please Enter Account Name");
             return;
         }
@@ -239,8 +271,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
             that.dnRowData.push({
                 'counter': that.counter,
                 "dnid": 0,
-                'acid': that.newacid,
-                'acname': that.newacname,
+                'acid': that.newcustid,
+                'acname': that.newcustname,
                 'cramt': that.newcramt,
                 "cmpid": that.loginUser.cmpid,
                 "fy": that.loginUser.fy,
@@ -249,8 +281,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
             });
 
             that.counter++;
-            that.newacid = "";
-            that.newacname = "";
+            that.newcustid = "";
+            that.newcustname = "";
             that.newcramt = "";
 
             $(".accname").focus();
@@ -259,43 +291,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     DeleteRow(row) {
         row.isactive = false;
-    }
-
-    getAutoComplete(me: any, arg: number) {
-        var that = this;
-
-        this._commonservice.getAutoData({
-            "type": "customer", "cmpid": this.loginUser.cmpid,
-            "search": arg == 1 ? me.acname : arg == 2 ? me.dnacname : me.newacname
-        }).subscribe(data => {
-            $(arg == 1 ? ".accname" : arg == 2 ? ".dnaccname" : ".accname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    if (arg === 1) {
-                        me.acname = ui.item.label;
-                        me.acid = ui.item.value;
-                    } else if (arg === 2) {
-                        me.dnacname = ui.item.label;
-                        me.dnacid = ui.item.value;
-                    } else {
-                        me.newacname = ui.item.label;
-                        me.newacid = ui.item.value;
-                    }
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 
     getDNDataByID(pdocno: number) {
@@ -308,8 +303,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
             var _suppdoc = data.data[0]._suppdoc;
 
             that.dnid = _dndata[0].dnid;
-            that.dnacid = _dndata[0].acid;
-            that.dnacname = _dndata[0].acname;
+            that.dncustid = _dndata[0].acid;
+            that.dncustname = _dndata[0].acname;
 
             var date = new Date(_dndata[0].docdate);
             that.dndate.setDate(date);
@@ -348,7 +343,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
     saveDNData(isactive: boolean) {
         var that = this;
 
-        var debitamt = parseInt(that.dramt);
+        var debitamt = parseFloat(that.dramt);
         var creditamt = that.TotalCreditAmt();
 
         if (debitamt !== creditamt) {
@@ -361,7 +356,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
             "docdate": that.dndate.getDate(),
-            "acid": that.dnacid,
+            "acid": that.dncustid,
             "dramt": that.dramt,
             "uidcode": that.loginUser.login,
             "narration": that.narration,

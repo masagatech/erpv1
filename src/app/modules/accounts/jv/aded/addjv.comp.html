@@ -22,7 +22,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<div class="table-responsive">
+					<div>
 						<p-dataTable #dt [value]="jvRowData | filterBy : {isactive: true}" [editable]="!isdetails" [lazy]="true">
 							<p-column header="#" [style]="{'width':'40px','text-align':'left'}">
 								<template let-i="rowIndex" pTemplate="editor">
@@ -34,8 +34,9 @@
 									{{row.acname}}
 								</template>
 								<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
-									<input type="text" name="acname{{i+1}}" [(ngModel)]="row.acname" class="accname form-control inlinetextbox" (keyup)="getAutoComplete(row, 1)"
-									/>
+									<p-autoComplete id="acname{{i+1}}" name="acname{{i+1}}" [(ngModel)]="row.acname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 1)"
+										[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30"
+										class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
 								</template>
 							</p-column>
 							<p-column header="Debit" [style]="{'width':'200px','text-align':'left'}">
@@ -66,8 +67,9 @@
 											<td width="40px">
 											</td>
 											<td width="400px">
-												<input type="text" name="newacname" [(ngModel)]="newacname" tabindex="1" class="accname form-control" (keyup)="getAutoComplete(this, 0)"
-												/>
+												<p-autoComplete id="newcustname" name="newcustname" [(ngModel)]="newcustname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 0)"
+													[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30"
+													class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
 											</td>
 											<td width="200px">
 												<numtext name="newdramt" [(ngModel)]="newdramt" tabindex="2" (keyup)="setCrAmt(this, 0)"></numtext>

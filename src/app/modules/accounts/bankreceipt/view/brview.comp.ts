@@ -134,7 +134,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         var params = {
             "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
             // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
-            "isactive": that.status, "from": 0, "to": 10
+            "isactive": that.status, "from": from, "to": to
         }
 
         that._brService.getBankReceipt(params).subscribe(bankreceipt => {

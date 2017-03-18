@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule, AutoCompleteModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -46,7 +46,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule, DataListModule, CheckboxModule, CalendarModule, NumTextModule],
+        DataTableModule, DataListModule, AutoCompleteModule, CheckboxModule, CalendarModule, NumTextModule],
     declarations: [
         AddDebitNote,
         ViewDebitNote,

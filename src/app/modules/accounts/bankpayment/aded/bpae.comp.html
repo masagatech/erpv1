@@ -5,7 +5,9 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Account Code</label>
-						<input type="text" class="form-control custcode" tabindex="1" [(ngModel)]="custname" (keyup)="getAutoComplete(this)" />
+						<p-autoComplete id="custname" name="custname" [(ngModel)]="custname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event)"
+							[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
+						<!--<input type="text" class="form-control custcode" tabindex="1" [(ngModel)]="custname" (keyup)="getAutoComplete(this)" />-->
 					</div>
 					<div class="form-group">
 						<label>Issue Date</label>
@@ -15,7 +17,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label>Type</label>
-								<select class="form-control" [(ngModel)]="typ" tabindex="5" (ngModelChange)="">
+								<select class="form-control" [(ngModel)]="typ" tabindex="5">
 									<option [value]="0">Select Type</option>
 									<option *ngFor="let items of banktypeDT" [value]="items.key">
 										{{items.val}}
