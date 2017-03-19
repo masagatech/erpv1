@@ -20,8 +20,9 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Parent Code</label>
-					<input type="text" class="form-control parentcode" placeholder="Parent code" maxlength="10" [(ngModel)]="parentcodename"
-						(keyup)="getAutoCompleteParentCode(this)">
+					<p-autoComplete [(ngModel)]="parentcodename" class="form-controlAutoComplete parentcode" (onSelect)="ParentcodeSelect($event)"
+						[suggestions]="ParentcodeAutodata" (completeMethod)="ParentcodeAuto($event)" [tabindex]="3" field="label" [size]="30"
+						placeholder="Parent Code" [minLength]="1"></p-autoComplete>
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -165,7 +166,7 @@
 											<td><span>{{i+1}}</span></td>
 											<td>{{row.item}}</td>
 											<td>{{row.cust}}</td>
-											<td><button class="btn btn-theme btn-sm" (click)="itemsRemove(row)"><i class="fa fa-trash"></i></button></td>
+											<td><button class="btn btn-theme btn-sm btn-grid" (click)="itemsRemove(row)"><i class="fa fa-trash"></i></button></td>
 										</tr>
 									</tbody>
 								</table>
@@ -294,11 +295,9 @@
 						<div class="col-md-5">
 							<div class='form-group'>
 								<label>Salesman</label>
-								<!--<input type="text=" class="form-control sales" placeholder="Salesman" tabindex="16" value="" [(ngModel)]="salename" (keyup.enter)="SalemanAdd()"
-								(keyup)="getAutoCompleteSales(this)" />-->
-								<p-autoComplete [(ngModel)]="salename" class="form-controlAutoComplete sales" (onSelect)="SalesmanSelect($event)"
-									[suggestions]="SalesmanAutodata" (keyup.enter)="SalemanAdd()" (completeMethod)="SalesmanAuto($event)" [tabindex]="3"
-									field="label" [size]="30" placeholder="Salesman" [minLength]="1"></p-autoComplete>
+								<p-autoComplete [(ngModel)]="salename" class="form-controlAutoComplete sales" (onSelect)="SalesmanSelect($event)" [suggestions]="SalesmanAutodata"
+									(keyup.enter)="SalemanAdd()" (completeMethod)="SalesmanAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Salesman"
+									[minLength]="1"></p-autoComplete>
 							</div>
 						</div>
 						<div class="col-md-1">
@@ -341,13 +340,11 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-10">
-						<div class="col-md-6" *ngFor="let row of translist">
-							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.transname}} 
+					<div class="col-md-12">
+						<div class="col-md-12 bootstrap-tagsinput">
+							<span *ngFor="let row of translist" class="tag label label-info" style="font-size: 10px;">{{row.transname}} 
 							<span data-role="remove" (click)="RemoveTranspoter(row)"></span>
-								</span>
-							</div>
+							</span>
 						</div>
 					</div>
 				</div>
@@ -369,12 +366,13 @@
 			</div>
 			<div class="tab-pane" id="control">
 				<div class="row">
-					<div class="col-md-6">
-						<div class="col-md-6">
+					<div class="col-md-10">
+						<div class="col-md-5">
 							<div class='form-group'>
 								<label>Control Name</label>
-								<input type="text=" class="form-control ctrl" placeholder="Control center" tabindex="18" value="" [(ngModel)]="ctrlname"
-									(keyup.enter)="AddNewCtrl()" (keyup)="getAutoCompleteCtrl(this)" />
+								<p-autoComplete [(ngModel)]="ctrlname" class="form-controlAutoComplete ctrl" (onSelect)="ControlCentSelect($event)" [suggestions]="ControlCentAutodata"
+									(keyup.enter)="AddNewCtrl()" (completeMethod)="ControlCentAuto($event)" [tabindex]="3" field="label" [size]="30"
+									placeholder="Control Center" [minLength]="1"></p-autoComplete>
 							</div>
 						</div>
 						<div class="col-md-1">
@@ -392,7 +390,7 @@
 									<th class="col-sm-3">Ctrl Name</th>
 									<th class="col-sm-2">Profit</th>
 									<th class="col-sm-2">Cost</th>
-									<th></th>
+									<th class="col-sm-2">>Action</th>
 								</tr>
 							</thead>
 							<tbody *ngFor="let row of Ctrllist let i=index">
@@ -401,7 +399,7 @@
 									<td>{{row.ctrlname}}</td>
 									<td><input type="checkbox" [(ngModel)]="row.profflag" />{{row.proftcode}}</td>
 									<td><input type="checkbox" [(ngModel)]="row.constflag" />{{row.costcode}}</td>
-									<td><button class="btn btn-theme btn-sm" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button></td>
+									<td><button class="btn btn-danger btn-sm btn-grid" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button></td>
 								</tr>
 							</tbody>
 						</table>
@@ -416,8 +414,9 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Key</label>
-										<input type="text" class="form-control key" placeholder="Any key" tabindex="20" value="" [(ngModel)]="acinfival" (keyup)="getAutoCompletekey(this)"
-										/>
+										<p-autoComplete [(ngModel)]="acinfival" class="form-controlAutoComplete key" (onSelect)="acinfivalSelect($event)" [suggestions]="acinfivalAutodata"
+											(keyup.enter)="AddNewKyeval()" (completeMethod)="acinfivalAuto($event)" [tabindex]="3" field="label" [size]="30"
+											placeholder="Any key" [minLength]="1"></p-autoComplete>
 									</div>
 								</div>
 								<div class="col-md-5">
@@ -449,9 +448,9 @@
 											<input type="text" class="form-control" [(ngModel)]="row.value" />
 										</template>
 									</p-column>
-									<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
+									<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
 										<template let-row pTemplate="rowexpansion">
-											<button class="btn btn-danger btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+											<button class="btn btn-danger btn-sm btn-grid" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
 										</template>
 									</p-column>
 								</p-dataTable>
@@ -499,14 +498,15 @@
 					<div class="col-md-3">
 						<div class='form-group'>
 							<label>Invoice type</label>
-							<input type="text=" class="form-control invtype" placeholder="Invoice type" tabindex="16" value="" [(ngModel)]="invtypname"
-								(keyup.enter)="SelectedTax()" (keyup)="getAutoCompleteTax(this)" />
+							<p-autoComplete [(ngModel)]="invtypname" class="form-controlAutoComplete invtype" (onSelect)="TaxSelect($event)" [suggestions]="TaxAutodata"
+								(keyup.enter)="SelectedTax()" (completeMethod)="TaxAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Invoice type"
+								[minLength]="1"></p-autoComplete>
 						</div>
 					</div>
 					<div class='col-md-2'>
 						<div class='form-group'>
 							<div class="setfltrbtn">
-								<button class="btn btn-theme btn-sm get" tabindex="3"><i class="fa fa-arrow-right"></i></button>
+								<button class="btn btn-theme btn-sm get" (click)="SelectedTax()" tabindex="3"><i class="fa fa-arrow-right"></i></button>
 							</div>
 						</div>
 					</div>
@@ -521,12 +521,12 @@
 								</template>
 							</p-column>
 							<p-column field="taxname" header="Tax Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
-							<p-column field="taxval" header="%" [style]="{'width':'30px','text-align':'left'}"></p-column>
+							<p-column field="taxval" header="%" [style]="{'width':'30px','text-align':'right'}"></p-column>
 							<p-column field="label" header="On" [style]="{'width':'120px','text-align':'left'}"></p-column>
 							<p-column field="seq" header="Seq" [style]="{'width':'30px','text-align':'left'}"></p-column>
-							<p-column header="Action" [style]="{'width':'30px','text-align':'left'}">
+							<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<button class="btn btn-danger btn-sm" (click)="TaxDeleteRow(row)"><i class="fa fa-trash"></i></button>
+									<button class="btn btn-danger btn-sm btn-grid" (click)="TaxDeleteRow(row)"><i class="fa fa-trash"></i></button>
 								</template>
 							</p-column>
 						</p-dataTable>

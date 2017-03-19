@@ -97,7 +97,12 @@ declare var commonfun: any;
 
     //Autoextender
     TranspoterAutodata: any = [];
-    SalesmanAutodata:any=[];
+    SalesmanAutodata: any = [];
+    ControlCentAutodata: any = [];
+    ParentcodeAutodata: any = [];
+    acinfivalAutodata: any = [];
+    TaxAutodata: any = [];
+
 
     // tab panel
     @ViewChild('tabpanel')
@@ -142,7 +147,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Customer Master");
@@ -169,7 +174,7 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
         }, 0);
 
@@ -194,7 +199,7 @@ declare var commonfun: any;
         this.fromval = "";
         this.toval = "";
         this.dis = "";
-        setTimeout(function () {
+        setTimeout(function() {
             $(".disattr").focus();
         }, 100);
 
@@ -222,7 +227,7 @@ declare var commonfun: any;
                     cacheLength: 1,
                     scroll: true,
                     highlight: false,
-                    select: function (event, ui) {
+                    select: function(event, ui) {
                         me.disattrid = ui.item.value;
                         me.disattrname = ui.item.label;
                     }
@@ -236,6 +241,27 @@ declare var commonfun: any;
             this._msg.Show(messageType.error, "error", e.message);
         }
 
+    }
+
+    //Account Info Autoextender
+    acinfivalAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "attribute",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "filter": "acinfo_attr",
+            "search": query
+        }).then(data => {
+            this.acinfivalAutodata = data;
+        });
+    }
+
+    //Account Info Selected
+    acinfivalSelect(event) {
+        this.acinfiid = event.value;
+        this.acinfival = event.label;
     }
 
     //Transpoter Autoextender
@@ -258,7 +284,28 @@ declare var commonfun: any;
         this.transname = event.label;
     }
 
-     //Transpoter Autoextender
+    //Parent Code Autoextender
+    ParentcodeAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "custcode",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.ParentcodeAutodata = data;
+        });
+    }
+
+    //Parent Code Selected
+    ParentcodeSelect(event) {
+        this.parentid = event.value;
+        this.parentcodename = event.label;
+        this.getparentname(this.parentid);
+    }
+
+    //Salesman Autoextender
     SalesmanAuto(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
@@ -271,12 +318,11 @@ declare var commonfun: any;
             this.SalesmanAutodata = data;
         });
     }
-    
-    //Transpoter Selected
+
+    //Salesman Selected
     SalesmanSelect(event) {
         this.salesid = event.value;
         this.salename = event.label;
-        //this.SalemanAdd(this.salesid);
     }
 
     getparentname(pid: number) {
@@ -319,7 +365,7 @@ declare var commonfun: any;
                     cacheLength: 1,
                     scroll: true,
                     highlight: false,
-                    select: function (event, ui) {
+                    select: function(event, ui) {
                         me.itemsid = ui.item.value;
                         me.itemsname = ui.item.label;
                     }
@@ -337,6 +383,7 @@ declare var commonfun: any;
     //attribute list Add Div
     TranspoterAdd() {
         try {
+            debugger;
             if (this.transid > 0) {
                 this.Duplicateflag = true;
                 if (this.translist.length > 0) {
@@ -353,11 +400,13 @@ declare var commonfun: any;
                         'value': this.transid
                     });
                     this.transname = "";
+                    this.transid = 0;
                     $(".transname input").focus();
                 }
                 else {
                     this._msg.Show(messageType.error, "error", "Duplicate transpoter");
                     $(".transname input").focus();
+                    this.transid = 0;
                     return;
                 }
 
@@ -373,9 +422,10 @@ declare var commonfun: any;
     }
 
     transtab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.transid = 0;
             this.transname = "";
+            $(".transname input").val("");
             $(".transname input").focus();
         }, 0);
 
@@ -443,43 +493,8 @@ declare var commonfun: any;
 
     }
 
-    // getAutoCompleteSales(me: any) {
-    //     try {
-    //         var that = this;
-    //         this._autoservice.getAutoData({
-    //             "type": "salesman",
-    //             "search": that.salename,
-    //             "cmpid": this.loginUser.cmpid,
-    //             "fy": this.loginUser.fy,
-    //             "createdby": this.loginUser.login
-    //         }).subscribe(data => {
-    //             $(".sales").autocomplete({
-    //                 source: data.data,
-    //                 width: 300,
-    //                 max: 20,
-    //                 delay: 100,
-    //                 minLength: 0,
-    //                 autoFocus: true,
-    //                 cacheLength: 1,
-    //                 scroll: true,
-    //                 highlight: false,
-    //                 select: function (event, ui) {
-    //                     me.saleid = ui.item.value;
-    //                     me.salename = ui.item.label;
-    //                     me.SalemanAdd(me.saleid);
-    //                 }
-    //             });
-    //         }, err => {
-    //             console.log("Error");
-    //         }, () => {
-    //         })
-    //     } catch (e) {
-    //         this._msg.Show(messageType.error, "error", e.message);
-    //     }
-    // }
-
     saletab() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.salename = "";
             $(".sales input").focus();
         }, 0);
@@ -515,7 +530,7 @@ declare var commonfun: any;
 
             }
             else {
-                this._msg.Show(messageType.error, "error", "Please enter valied attribute name");
+                this._msg.Show(messageType.error, "error", "Please enter valied salesman name");
                 $(".sales input").focus();
                 return;
             }
@@ -540,7 +555,7 @@ declare var commonfun: any;
     }
 
     itemdis() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.itemsname = "";
             this.itemsdis = "";
             this.itemsid = 0;
@@ -561,43 +576,6 @@ declare var commonfun: any;
         }
         this.itemslist.splice(index, 1);
         $(".itemsname").focus();
-    }
-
-    //Parent Code Auto Extender
-    getAutoCompleteParentCode(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "custcode",
-                "search": that.parentcodename,
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".parentcode").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.parentid = ui.item.value;
-                        me.parentcodename = ui.item.label;
-                        me.getparentname(me.parentid);
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                this.attrid = 0;
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
     }
 
     //Add Attribute Items
@@ -740,7 +718,7 @@ declare var commonfun: any;
             var that = this;
             if (that.acinfiid == 0) {
                 that._msg.Show(messageType.error, "error", "Please enter key");
-                $(".key").focus()
+                $(".key input").focus()
                 return;
             }
             if (that.value == "") {
@@ -751,7 +729,7 @@ declare var commonfun: any;
             that.Duplicateflag = true;
             if (that.keyvallist.length > 0) {
                 for (var i = 0; i < that.keyvallist.length; i++) {
-                    if (that.keyvallist[i].key == that.key && that.keyvallist[i].value == that.value) {
+                    if (that.keyvallist[i].keyid === that.acinfiid && that.keyvallist[i].value === that.acinfival) {
                         that.Duplicateflag = false;
                         break;
                     }
@@ -763,17 +741,16 @@ declare var commonfun: any;
                     'keyid': that.acinfiid,
                     'value': that.value
                 });
-                debugger;
                 that.acinfival = "";
                 that.value = "";
                 that.acinfiid = 0;
                 that.attrtable = false;
-                $(".key").focus();
+                $(".key input").focus();
 
             }
             else {
                 that._msg.Show(messageType.error, "error", "Duplicate key and value");
-                $(".key").focus();
+                $(".key input").focus();
                 return;
             }
         } catch (e) {
@@ -1017,7 +994,7 @@ declare var commonfun: any;
                     cacheLength: 1,
                     scroll: true,
                     highlight: false,
-                    select: function (event, ui) {
+                    select: function(event, ui) {
                         me.attrid = ui.item.value;
                         me.attrname = ui.item.label;
                     }
@@ -1033,135 +1010,76 @@ declare var commonfun: any;
 
     }
 
-    //Autocompleted Control Center
-    getAutoCompleteCtrl(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "ccauto",
-                "search": that.ctrlname,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".ctrl").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.ctrlid = ui.item.value;
-                        me.ctrlname = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
+    //Control Center Autoextender
+    ControlCentAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "ccauto",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.ControlCentAutodata = data;
+        });
     }
 
-    //Autocompleted Control Center
-    getAutoCompletekey(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "attribute",
-                "search": that.acinfival,
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.fy,
-                "filter": "acinfo_attr",
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".key").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.acinfiid = ui.item.value;
-                        me.acinfival = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
+    //Control Center Selected
+    ControlCentSelect(event) {
+        this.ctrlid = event.value;
+        this.ctrlname = event.label;
     }
 
-    //Autocompleted Attribute Name
-    getAutoCompleteTax(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "invoicetype",
-                "search": that.invtypname,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".invtype").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.invtypid = ui.item.value;
-                        me.invtypname = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //Complete
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
+    //Tax Autoextender
+    TaxAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "invoicetype",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.TaxAutodata = data;
+        });
+    }
 
+    //Tax Selected
+    TaxSelect(event) {
+        this.invtypid = event.value;
+        this.invtypname = event.label;
     }
 
     //Selected Tax Bind
     SelectedTax() {
         try {
-            var that = this;
-            this.CustAddServies.getTaxMaster({
-                "flag": "custtax",
-                "invtyp": this.invtypid,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                this.taxlist = data.data[0];
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //Complete
-            })
+            if ($(".invtype input").val() == "") {
+                this._msg.Show(messageType.error, "error", "Please enter tax");
+                $(".invtype input").focus();
+                return;
+            }
+            if (this.invtypid > 0) {
+                var that = this;
+                this.CustAddServies.getTaxMaster({
+                    "flag": "custtax",
+                    "invtyp": this.invtypid,
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
+                    "createdby": this.loginUser.login
+                }).subscribe(data => {
+                    this.taxlist = data.data[0];
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //Complete
+                })
+            }
+            else {
+                this._msg.Show(messageType.error, "error", "Please enter valid tax");
+                $(".invtype input").val();
+                $(".invtype input").focus();
+                return;
+            }
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
@@ -1184,9 +1102,9 @@ declare var commonfun: any;
     }
 
     Ctrl() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".ctrl").val("");
-            $(".ctrl").focus();
+            $(".ctrl input").focus();
         }, 0)
     }
 
@@ -1202,52 +1120,60 @@ declare var commonfun: any;
 
     //Add New Controll Center
     AddNewCtrl() {
-        this.CustAddServies.getctrldetail({
-            "id": this.ctrlid,
-            "cmpid": this.loginUser.cmpid
-        }).subscribe(result => {
-            if (result.data.length > 0) {
-                this.Duplicateflag = true;
-                for (var i = 0; i < this.Ctrllist.length; i++) {
-                    if (this.Ctrllist[i].ctrlname == this.ctrlname) {
-                        this.Duplicateflag = false;
-                        break;
+        if (this.ctrlid > 0) {
+            this.CustAddServies.getctrldetail({
+                "id": this.ctrlid,
+                "cmpid": this.loginUser.cmpid
+            }).subscribe(result => {
+                if (result.data.length > 0) {
+                    this.Duplicateflag = true;
+                    for (var i = 0; i < this.Ctrllist.length; i++) {
+                        if (this.Ctrllist[i].ctrlname == this.ctrlname) {
+                            this.Duplicateflag = false;
+                            break;
+                        }
+                    }
+                    if (this.Duplicateflag == true) {
+                        this.Ctrllist.push({
+                            "ctrlname": result.data[0].ctrlname,
+                            "proftcode": result.data[0].proftcode,
+                            "costcode": result.data[0].costcode,
+                            "profflag": this.profflag,
+                            "constflag": this.constflag,
+                            "id": result.data[0].autoid
+                        });
+                        this.ctrlhide = false;
+                        this.ctrlid = 0;
+                        this.ctrlname = "";
+                        $(".ctrl input").focus();
+
+                    }
+                    else {
+                        this._msg.Show(messageType.error, "error", "Duplicate control center");
+                        this.ctrlname = "";
+                        $(".ctrl input").focus();
+                        return;
                     }
                 }
-                if (this.Duplicateflag == true) {
-                    this.Ctrllist.push({
-                        "ctrlname": result.data[0].ctrlname,
-                        "proftcode": result.data[0].proftcode,
-                        "costcode": result.data[0].costcode,
-                        "profflag": this.profflag,
-                        "constflag": this.constflag,
-                        "id": result.data[0].autoid
-                    });
-                    this.ctrlhide = false;
-                    this.ctrlid = 0;
-                    this.ctrlname = "";
-                    $(".ctrl").focus();
-
-                }
                 else {
-                    this._msg.Show(messageType.error, "error", "Duplicate control center");
+                    this._msg.Show(messageType.error, "error", "Control name Not found");
                     this.ctrlname = "";
-                    $(".ctrl").focus();
+                    $(".ctrl input").focus();
                     return;
                 }
-            }
-            else {
-                this._msg.Show(messageType.error, "error", "Control name Not found");
-                this.ctrlname = "";
-                $(".ctrl").focus();
-                return;
-            }
-
-        }, err => {
-            console.log("Error")
-        }, () => {
-            //console.log("completed")
-        })
+            }, err => {
+                console.log("Error")
+            }, () => {
+                //console.log("completed")
+            })
+        }
+        else {
+            this._msg.Show(messageType.error, "error", "Please enter valid controll center");
+            this.ctrlname = "";
+            this.ctrlid = 0;
+            $(".ctrl input").focus();
+            return;
+        }
     }
 
     //Delete Control Center Row
@@ -1343,6 +1269,11 @@ declare var commonfun: any;
                 this._msg.Show(messageType.error, "error", "Please enter contact address");
                 return;
             }
+            if (this.salesmanlist.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please enter saleman");
+                $(".sales input").focus();
+                return;
+            }
             if (this.warehouselist.length > 0) {
                 var checkware = false;
                 for (let wareid of this.warehouselist) {
@@ -1409,22 +1340,22 @@ declare var commonfun: any;
 
     //Attribute Tab Click Event
     Attr() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".attr").val("");
             $(".attr").focus();
         }, 0);
     }
 
     taxtab() {
-        setTimeout(function () {
-            $(".invtype").val("");
-            $(".invtype").focus();
+        setTimeout(function() {
+            $(".invtype input").val("");
+            $(".invtype input").focus();
         }, 0);
     }
 
     //Account Info Tab Click Event
     Acinfo() {
-        setTimeout(function () {
+        setTimeout(function() {
             $(".key").val("");
             $(".val").val("");
             $(".key").focus();

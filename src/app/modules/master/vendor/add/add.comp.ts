@@ -23,6 +23,7 @@ declare var commonfun: any;
     subscr_actionbarevt: Subscription;
 
     //Add Local Veriable
+    ledid: number = 0;
     venid: any = 0;
     code: any = "";
     vendor: any = "";
@@ -63,6 +64,10 @@ declare var commonfun: any;
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    //Auto Extender
+    acinfivalAutodata: any = [];
+    ParentcodeAutodata: any = [];
+
     allload: any = {
         "wearhouse": false,
         "otherdropdwn": false
@@ -89,7 +94,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Vendor Master");
@@ -174,7 +179,7 @@ declare var commonfun: any;
         try {
             if (this.key == "") {
                 this._msg.Show(messageType.error, "error", "Please enter key");
-                $(".key").focus()
+                $(".key input").focus()
                 return;
             }
             if (this.value == "") {
@@ -202,12 +207,13 @@ declare var commonfun: any;
                 this.value = "";
                 this.keyid = 0;
                 this.attrtable = false;
-                $(".key").focus();
+                $(".key input").focus();
 
             }
             else {
                 this._msg.Show(messageType.error, "error", "Duplicate key and value");
-                $(".key").focus();
+                this.keyid = 0;
+                $(".key input").focus();
                 return;
             }
         } catch (e) {
@@ -290,16 +296,16 @@ declare var commonfun: any;
                     that.parentcode = _parentname[0].pcode;
                     that.parentname = _parentname[0].pname;
                 }
-
+                that.ledid = _venddata[0].ledid == null ? 0 : _venddata[0].ledid;
                 that.venid = _venddata[0].autoid;
                 that.code = _venddata[0].code;
                 that.vendor = _venddata[0].vendor;
 
                 that.keyvallist = _keyval === null ? [] : _keyval;
                 that.attribute.attrlist = _attr === null ? [] : _attr;
-                that.debit = _venddata[0].debit;
-                that.credit = _venddata[0].credit;
-                that.ope = _venddata[0].op;
+                // that.debit = _venddata[0].debit;
+                // that.credit = _venddata[0].credit;
+                that.ope = _venddata[0].ope == null ? 0 : _venddata[0].ope;
                 that.days = _venddata[0].days;
                 that.remark = _venddata[0].remark;
                 that.isactive = _venddata[0].isactive;
@@ -363,43 +369,46 @@ declare var commonfun: any;
 
     }
 
-    //Autocompleted Control Center
-    getAutoCompletekey(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "attribute",
-                "search": that.key,
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.fy,
-                "filter": "acinfo_attr",
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".key").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.keyid = ui.item.value;
-                        me.key = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
+    //Account Info Autoextender
+    acinfivalAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "attribute",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "filter": "acinfo_attr",
+            "search": query
+        }).then(data => {
+            this.acinfivalAutodata = data;
+        });
+    }
 
+    //Account Info Selected
+    acinfivalSelect(event) {
+        this.keyid = event.value;
+        this.key = event.label;
+    }
 
+    //Parent Code Autoextender
+    ParentcodeAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "vendorcode",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.ParentcodeAutodata = data;
+        });
+    }
+
+    //Parent Code Selected
+    ParentcodeSelect(event) {
+        this.parentid = event.value;
+        this.parentcode = event.label;
+        this.getparentname(this.parentid);
     }
 
     createattrjson() {
@@ -442,53 +451,17 @@ declare var commonfun: any;
 
     }
 
-    //Parent Code Auto Extender
-    getAutoCompleteParentCode(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "vendorcode",
-                "search": that.parentcode,
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".parentcode").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.parentid = ui.item.value;
-                        me.parentcode = ui.item.label;
-                        me.getparentname(me.parentid);
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                this.attrid = 0;
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-    }
-
     ledgerparam() {
         try {
             var ledgerlist = [];
             ledgerlist.push({
-                "autoid": 0,
+                "autoid": this.ledid,
                 "cmpid": this.loginUser.cmpid,
-                "acid": 0,
+                "acid": this.code,
                 "fy": this.loginUser.fy,
-                "typ": "vendor",
+                "typ": "vend",
                 "dramt": this.ope == "" ? 0 : this.ope,
+                "cramt": 0,
                 "nar": this.remark,
                 "createdby": this.loginUser.login
             })
@@ -607,7 +580,7 @@ declare var commonfun: any;
         setTimeout(function () {
             $(".key").val("");
             $(".val").val("");
-            $(".key").focus();
+            $(".key input").focus();
         }, 100);
     }
 

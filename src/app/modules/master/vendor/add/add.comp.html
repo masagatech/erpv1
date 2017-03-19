@@ -4,7 +4,8 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" placeholder="Code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" (blur)="Getcode()">
+					<input type="text" class="form-control code" placeholder="Code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code"
+						(blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -18,7 +19,9 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Parent Code</label>
-					<input type="text" class="form-control parentcode" placeholder="Parent code" maxlength="10" tabindex="3" [(ngModel)]="parentcode" (keyup)="getAutoCompleteParentCode(this)">
+					<p-autoComplete [(ngModel)]="parentcodename" class="form-controlAutoComplete parentcode" (onSelect)="ParentcodeSelect($event)"
+						[suggestions]="ParentcodeAutodata" (completeMethod)="ParentcodeAuto($event)" [tabindex]="3" field="label" [size]="30"
+						placeholder="Parent Code" [minLength]="1"></p-autoComplete>
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -79,7 +82,9 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Key</label>
-										<input type="text" class="form-control key" placeholder="Any key" tabindex="5" [(ngModel)]="key" (keyup)="getAutoCompletekey(this)">
+										<p-autoComplete [(ngModel)]="acinfival" class="form-controlAutoComplete key" (onSelect)="acinfivalSelect($event)" [suggestions]="acinfivalAutodata"
+											(keyup.enter)="AddNewKyeval()" (completeMethod)="acinfivalAuto($event)" [tabindex]="3" field="label" [size]="30"
+											placeholder="Any key" [minLength]="1"></p-autoComplete>
 									</div>
 								</div>
 								<div class="col-md-5">
@@ -90,9 +95,10 @@
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<label></label>
-										<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="7" (click)="AddNewKyeval()" title="Add">
-										<i ng-reflect-class-name="fa fa-plus" class="fa fa-plus"></i></button>
+										<div class="setfltrbtn">
+											<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="7" (click)="AddNewKyeval()" title="Add">
+											 <i class="fa fa-plus" class="fa fa-plus"></i></button>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -109,7 +115,7 @@
 										<td><span>{{i+1}}</span></td>
 										<td>{{row.key}}</td>
 										<td><input type="text" class="form-control" [(ngModel)]="row.value" /></td>
-										<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
+										<td><button class="btn btn-danger btn-sm btn-grid" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
 									</tr>
 								</tbody>
 							</table>
@@ -143,7 +149,9 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Opening Balance</label>
-										<input type="text" class="form-control text-right" tabindex="10" [(ngModel)]="ope">
+										<!--<input type="text" class="form-control text-right" tabindex="10" [(ngModel)]="ope">-->
+										<numtext [iscurrency]="true" [tabindex]="10" [(ngModel)]="ope"></numtext>
+												
 									</div>
 								</div>
 							</div>
