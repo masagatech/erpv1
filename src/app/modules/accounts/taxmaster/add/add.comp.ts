@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy,ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -8,6 +8,7 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -44,9 +45,16 @@ declare var commonfun: any;
     chargcounter: number = 0;
     private subscribeParameters: any;
 
+    //New Module
+    COAAutodata: any = [];
+    coaid: number = 0;
+    coanam: any = "";
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+
+    @ViewChild('attribute')
+    attribute: AttributeComp;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private taxMasterServies: taxMasterService,
@@ -59,7 +67,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Tax Master");
@@ -88,8 +96,10 @@ declare var commonfun: any;
             }
         });
 
-        $(".invtype").focus();
+        $(".taxname").focus();
         this.InvoiceType();
+        this.attribute.labelname="Customer Attribute";
+         this.attribute.attrparam = ["custinfo_attr"];
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -104,13 +114,33 @@ declare var commonfun: any;
             "cmpid": this.loginUser.cmpid
         }).subscribe(data => {
             this.invoicetypelist = data.data.filter(item => item.group === 'taxmaster');
-            this.Onlist = data.data.filter(item => item.group === 'taxpos');
-            this.Oncharelist = data.data.filter(item => item.group === 'taxpos');
+            // this.Onlist = data.data.filter(item => item.group === 'taxpos');
+            // this.Oncharelist = data.data.filter(item => item.group === 'taxpos');
         }, err => {
             console.log("Error");
         }, () => {
             console.log("Complete");
         })
+    }
+
+    COAAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "customer",
+            "typ":"ac",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.COAAutodata = data;
+        });
+    }
+
+    //Parent Code Selected
+    COASelect(event) {
+        this.coaid = event.value;
+        this.coanam = event.label;
     }
 
     //Autocompleted Chart of ac

@@ -142,12 +142,18 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.setAuditDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        var ddlSaveBtns = [];
+        ddlSaveBtns.push(new ActionBtnProp("save", "Save", "save", true, false));
+        ddlSaveBtns.push(new ActionBtnProp("saveasdrft", "Save as Draft", "save", true, false));
+
+
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false, ddlSaveBtns));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Sales Order");
+         this.setActionButtons.hideSideMenu();
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.footer = true;
@@ -360,7 +366,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
             $('textarea').removeAttr('disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-        } else if (evt === "delete") {
+        } else if (evt === "saveasdrft") {
+            alert("save as draft");
             // this.SalesOrderServies.deleteDcMaster({
             //     "DCNo": this.DocNo,
             //     "DCDetelId": 0,

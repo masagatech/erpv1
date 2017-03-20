@@ -20,10 +20,14 @@ declare var $: any;
     subscr_actionbarevt: Subscription;
     customerlist: any = [];
     totalRecords: number = 0;
+    CustID: number = 0;
+    CustName: any = "";
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+
+    CustomerAutodata: any[];
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private CustViewServies: CustomerViewService, private _autoservice: CommonService,
@@ -35,10 +39,44 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Customer Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
+        setTimeout(function () {
+            $("#CustName input").focus();
+        }, 0)
+    }
+
+    //AutoCompletd Customer
+    CustomerAuto(event) {
+        try {
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
+                "type": "customer",
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.CustomerAutodata = data;
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
+    }
+
+    //Selected Customer
+    CustomerSelect(event) {
+        try {
+            this.CustID = event.value;
+            this.CustName = event.label;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Get Customer Details
@@ -49,8 +87,10 @@ declare var $: any;
                 "cmpid": that.loginUser.cmpid,
                 "from": from,
                 "to": to,
+                "custid": that.CustID,
                 "createdby": that.loginUser.login
             }).subscribe(result => {
+                debugger;
                 that.totalRecords = result.data[1][0].recordstotal;
                 that.customerlist = result.data[0];
             }, err => {
@@ -90,7 +130,14 @@ declare var $: any;
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
-        if (evt === "add") {
+        if (evt === "clear") {
+            $("#CustName input").val("");
+            this.customerlist = [];
+            this.CustID = 0;
+            this.getcustomer(0, 10);
+            $("#CustName input").focus();
+        }
+        else if (evt === "add") {
             this._router.navigate(['/master/customer/add']);
         }
         if (evt === "save") {
