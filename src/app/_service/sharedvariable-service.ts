@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-import { ActionBtnProp, Details,Evt } from '../../app/_model/action_buttons'
+import { ActionBtnProp, Details, Evt } from '../../app/_model/action_buttons'
 import { LoginUser } from '../../app/_model/user_model'
 
 declare var browserConf: any;
+declare var $: any;
+
 
 @Injectable()
 export class SharedVariableService {
@@ -48,15 +50,26 @@ export class SharedVariableService {
         }
     }
 
+    showSideMenu() {
+        $('#sidebar').show();
+        $('.container').removeClass('closeopenpan');
+    }
+
+    hideSideMenu() {
+        $('#sidebar').hide();
+        $('.container').addClass('closeopenpan');
+    }
+
+
     callActionButtonsEvent(evt: string) {
         this.actionButtonEventSource.next(evt);
     }
 
-    callActionButtonsEvent_extra(evt: string, $event ?:any) {
+    callActionButtonsEvent_extra(evt: string, $event?: any) {
         this.actionButtonEventSource_extra.next(new Evt(evt, $event));
     }
 
-    
+
 
 
 }

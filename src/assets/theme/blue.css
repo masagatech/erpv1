@@ -124,3 +124,7 @@ a.active {
     background-color: #2d373c!important;
     ;
 }
+
+ul.dropdown-menu {
+    background-color: #2196f3!important;
+}

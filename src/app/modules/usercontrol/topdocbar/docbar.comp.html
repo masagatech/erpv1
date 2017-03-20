@@ -7,12 +7,24 @@
         <div class="col-md-3 col-sm-8 col-xs-6" style="height:100%">
             <div class="actionbar">
                 <div *ngFor="let item of Input_Actionbuttons" style="display:inline;">
-                    <button [disabled]="!item.enabled" *ngIf="!item.hide" class="btn btn-theme btn-sm" title="{{item.text}}" (click)="callnotify(item.id, $event)" type="button"><i class="fa fa-{{item.icon}}"></i></button>
+                    <button [disabled]="!item.enabled" *ngIf="!item.hide && !item.ddloptions" class="btn btn-theme btn-sm" title="{{item.text}}" (click)="callnotify(item.id, $event)" type="button"><i class="fa fa-{{item.icon}}"></i></button>
+                    <button type="button" *ngIf="!item.hide && item.ddloptions" title="{{item.text}}" class="btn btn-theme btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-{{item.icon}}"></i>
+                     <span class="caret"></span></button>
+                    <ul class="dropdown-menu" *ngIf="!item.hide && item.ddloptions">
+                        <li *ngFor="let item1 of item.ddloptions">
+                            <a href="javascritp:void(0);" title="{{item1.text}}" role="button" (click)="callnotify(item1.id)">{{ item1.text }}
+                        </a>
+                        </li>
+                    </ul>
+
                 </div>
                 <!--<div class="btn-group" role="group">
 					<button type="button" class="btn btn-theme btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i><span class="caret"></span></button>
 					<ul class="dropdown-menu">
-						<li **ngFor="let item of actionbuttonsmore"><a href="#" (click)="callnotify(item.id)">{{ item.text }}</a></li>
+						<li **ngFor="let item of actionbuttonsmore">
+                            <a href="#" (click)="callnotify(item.id)">{{ item.text }}
+                        </a>
+                        </li>
 					</ul>
 				</div>-->
             </div>

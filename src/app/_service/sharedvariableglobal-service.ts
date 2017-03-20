@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
+declare var $: any;
+
 @Injectable()
 export class GlobalSharedVariableService {
     constructor() {
@@ -19,5 +21,9 @@ export class GlobalSharedVariableService {
     // callBreadCrumbChangeEvent(evt: string) {
     //     this.breadCrumbEventSource.next(evt);
     // }
+    setTheme(theme: string) {
+        $("#theme").attr("href", "/assets/theme/" + theme + ".css");
+
+    }
 
 }
