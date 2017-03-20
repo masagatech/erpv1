@@ -4,13 +4,13 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label class="control-label">Date</label>
-                    <calendar #docdate [name]="'docdate'"></calendar>
+                    <calendar #docdate [name]="'docdate'" tabindex="1"></calendar>
                 </div>
             </div>
             <div class="col-md-9">
                 <div class="form-group">
                     <label class="control-label">Narration</label>
-                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+                    <textarea [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5" tabindex="2"></textarea>
                 </div>
             </div>
             <div class="col-md-6">
@@ -18,20 +18,20 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Series No</label>
-                            <numtext name="newdramt" [(ngModel)]="newseriesno" [iscurrency]="false" [min]="0" [decimals]="5" [grpseperator]="','"></numtext>
+                            <numtext name="newseriesno" [(ngModel)]="newseriesno" [iscurrency]="false" [min]="0" [decimals]="5" [grpseperator]="','" tabindex="3"></numtext>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Quantity</label>
-                            <numtext name="newqty" [(ngModel)]="newqty" [iscurrency]="false" [min]="0" [grpseperator]=""></numtext>
+                            <numtext name="newqty" [(ngModel)]="newqty" [iscurrency]="false" [min]="0" [grpseperator]="" tabindex="4"></numtext>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">No of Page</label>
-                            <numtext name="newnoofpage" [(ngModel)]="newnoofpage" [iscurrency]="false" [min]="0" [grpseperator]="" (keyup.enter)="addRBRow()"
-                                (keydown.tab)="addRBRow()"></numtext>
+                            <numtext name="newnoofpage" [(ngModel)]="newnoofpage" [iscurrency]="false" [decimals]="0" [min]="0" [grpseperator]="" (keyup.enter)="addRBRow()"
+                                (keydown.tab)="addRBRow()" tabindex="5"></numtext>
                         </div>
                     </div>
                 </div>

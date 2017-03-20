@@ -17,22 +17,24 @@ declare var $: any;
     providers: [BankReceiptService] //Provides Add Service dcmaster-service.ts, AutoService
 })
 
-export class bankreceiptview implements OnInit, OnDestroy {
-    //Button
-
+export class ViewBankReceipt implements OnInit, OnDestroy {
+    // Button
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    //Veriable Local declare
-
-    bnakreid: number = 0;
+    // Veriable Declare
+    bankreid: number = 0;
     bankid: number = 0;
-    status: string = "";
+    status: boolean = false;
 
+    bankDT: any = [];
+    bankreceiptDT: any = [];
     statusDT: any = [];
-    bnaknamelistDT: any = [];
-    bnakreceiptDT: any = [];
+
+    tableLength: any;
+    totalRecords: number = 0;
+    totalDetailsRecords: number = 0;
 
     @ViewChild("fromdate")
     fromdate: CalendarComp;
@@ -40,26 +42,27 @@ export class bankreceiptview implements OnInit, OnDestroy {
     @ViewChild("todate")
     todate: CalendarComp;
 
-    tableLength: any;
-
     //constructor
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _brService: BankReceiptService,
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
-        this.getBankMasterDrop();
+        this.fillDropDownList();
+        this.fillStatusDropDown();
+        this.resetBPFields();
     }
 
     // Document Ready
 
     ngOnInit() {
-        this.fromdate.initialize(this.loginUser);
-        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.fromdate.setDate(new Date(this.loginUser.fyfrom));
+        this.setActionButtons.setTitle("Bank Receipt");
+        // this.fromdate.initialize(this.loginUser);
+        // this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        // this.fromdate.setDate(new Date(this.loginUser.fyfrom));
 
-        this.todate.initialize(this.loginUser);
-        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.todate.setDate(new Date(this.loginUser.fyto));
+        // this.todate.initialize(this.loginUser);
+        // this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        // this.todate.setDate(new Date(this.loginUser.fyto));
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
@@ -77,6 +80,26 @@ export class bankreceiptview implements OnInit, OnDestroy {
         }
     }
 
+    fillStatusDropDown() {
+        var that = this;
+
+        that._userService.getMenuDetails({
+            "flag": "trashrights", "ptype": "accs", "mtype": "ar",
+            "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
+        }).subscribe(data => {
+            that.statusDT = data.data;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        });
+    }
+
+    resetBPFields() {
+        this.bankid = 0;
+        this.status = true;
+    }
+
     //Open Edit Mode
 
     OpenBankReceipt(row) {
@@ -87,21 +110,16 @@ export class bankreceiptview implements OnInit, OnDestroy {
             this._msg.Show(messageType.info, "Info", "This Bank Receipt is Deleted");
         }
         else {
-            this._router.navigate(['/accounts/bankreceipt/edit', row.id]);
+            this._router.navigate(['/accounts/bankreceipt/details', row.docno]);
         }
     }
 
-    //Bank Dropdown Bind
+    // DropDown
 
-    getBankMasterDrop() {
-        this._brService.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            this.bnaknamelistDT = BankName.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
+    fillDropDownList() {
+        this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            this.bankDT = d.filter(a => a.group === "bank");
         });
     }
 
@@ -110,27 +128,30 @@ export class bankreceiptview implements OnInit, OnDestroy {
     GetBankReceipt(from: number, to: number) {
         var that = this;
 
-        this.tableLength = true;
-        this.bnakreceiptDT = [];
+        that.tableLength = true;
+        that.bankreceiptDT = [];
 
-        this._brService.getBankReceipt({
-            "flag": "", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy,
-            "bankid": this.bankid, "fromdate": this.fromdate.getDate(), "todate": this.todate.getDate(),
-            "from": from, "to": to, "isactive": this.status
-        }).subscribe(RecepitDetails => {
-            var dataset = RecepitDetails.data;
-            if (dataset.length > 0) {
-                this.tableLength = false;
-                this.bnakreceiptDT = dataset;
+        var params = {
+            "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
+            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
+            "isactive": that.status, "from": from, "to": to
+        }
+
+        that._brService.getBankReceipt(params).subscribe(bankreceipt => {
+            that.totalRecords = bankreceipt.data[1].recordstotal;
+            
+            if (bankreceipt.data.length !== 0) {
+                that.tableLength = false;
+                that.bankreceiptDT = bankreceipt.data[0];
             }
             else {
-                this._msg.Show(messageType.info, "Info", "No records found");
-                this.bnakreceiptDT = [];
-                this.tableLength = true;
+                that._msg.Show(messageType.info, "Info", "No records found");
+                that.bankreceiptDT = [];
+                that.tableLength = true;
                 return false;
             }
         }, err => {
-            console.log('Error');
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             //Done Process
         });
@@ -140,7 +161,42 @@ export class bankreceiptview implements OnInit, OnDestroy {
         this.GetBankReceipt(event.first, (event.first + event.rows));
     }
 
-    //Button Click
+    // Expand Grid Button Click
+
+    expandDetails(event) {
+        var that = this;
+        if (event.details && event.details.length > 0) { return; }
+
+        try {
+            event.loading = false;
+
+            this._brService.getBankReceipt({
+                "flag": "details", "bankreid": event.docno,
+                "from": event.first, "to": (event.first + event.rows)
+            }).subscribe(details => {
+                var dataset = details.data;
+                event.totalDetailsRecords = dataset[1][0].recordstotal;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
+        }
+    }
+
+    // Search Button Click
 
     searchBankRecepit(dt: DataTable) {
         // if (this.rangewise == "docrange") {
@@ -169,35 +225,13 @@ export class bankreceiptview implements OnInit, OnDestroy {
         dt.reset();
     }
 
-    expandDetails(dt, event) {
-        var that = this;
-        var row = event.data;
-
-        if (row.Details.length === 0) {
-            this._brService.getBankReceipt({
-                "flag": "details",
-                "bnakreid": row.id,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy
-            }).subscribe(data => {
-                row.Details = data.data;
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } else {
-            dt.toggleRow(event.data);
-        }
-    }
-
-    //Total Sum in Bank Payment Amount
+    //Total Sum in Bank Receipt Amount
 
     TotalAmount() {
-        if (this.bnakreceiptDT != undefined) {
+        if (this.bankreceiptDT != undefined) {
             var total = 0;
-            for (var i = 0; i < this.bnakreceiptDT.length; i++) {
-                var items = this.bnakreceiptDT[i];
+            for (var i = 0; i < this.bankreceiptDT.length; i++) {
+                var items = this.bankreceiptDT[i];
                 total += parseInt(items.amount);
             }
 
@@ -208,5 +242,6 @@ export class bankreceiptview implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

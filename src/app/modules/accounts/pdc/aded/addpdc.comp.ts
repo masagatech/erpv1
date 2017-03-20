@@ -12,6 +12,7 @@ import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'addpdc.comp.html',
@@ -23,9 +24,9 @@ export class AddPDC implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     pdcid: number = 0;
-    acid: number = 0;
-    acname: string = "";
-    bankname: string = "";
+    custid: number = 0;
+    custname: string = "";
+    bankid: string = "";
     chequeno: string = "";
     amount: any = "";
     pdctype: string = "";
@@ -36,10 +37,13 @@ export class AddPDC implements OnInit, OnDestroy {
     suppdoc: any = [];
     uploadedFiles: any = [];
 
-    pdctypedt: any = [];
+    accountsDT: any = [];
+    pdctypeDT: any = [];
+    bankDT: any = [];
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    formvals: string = "";
 
     @ViewChild("chequedate")
     chequedate: CalendarComp;
@@ -47,12 +51,12 @@ export class AddPDC implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _commonservice: CommonService, private _userService: UserService, private _pdcservice: PDCService, private _msg: MessageService,
+        private _autoservice: CommonService, private _userservice: UserService, private _pdcservice: PDCService, private _msg: MessageService,
         private _alsservice: ALSService) {
-        this.loginUser = this._userService.getUser();
+        this.loginUser = this._userservice.getUser();
 
         this.module = "PDC";
-        this.getPDCType();
+        this.fillDropDownList();
     }
 
     setAuditDate() {
@@ -72,10 +76,17 @@ export class AddPDC implements OnInit, OnDestroy {
         })
     }
 
+    setMinMaxDate() {
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        this.chequedate.setMinMaxDate(today, null);
+    }
+
     ngOnInit() {
         this.chequedate.initialize(this.loginUser);
-        this.chequedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.setAuditDate();
+        //this.chequedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        //this.setAuditDate();
+        this.setMinMaxDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
@@ -87,11 +98,12 @@ export class AddPDC implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                this.title = "Edit Post Dated Cheque";
+                this.setActionButtons.setTitle("Edit Post Dated Cheque");
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
                 this.actionButton.find(a => a.id === "delete").hide = true;
+                $(".pdctype").focus();
 
                 this.pdcid = params['id'];
                 this.getPDCById(this.pdcid);
@@ -101,7 +113,7 @@ export class AddPDC implements OnInit, OnDestroy {
                 $('textarea').attr('disabled', 'disabled');
             }
             else {
-                this.title = "Add Post Dated Cheque";
+                this.setActionButtons.setTitle("Add Post Dated Cheque");
 
                 var date = new Date();
                 this.chequedate.setDate(date);
@@ -109,6 +121,7 @@ export class AddPDC implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
                 this.actionButton.find(a => a.id === "delete").hide = true;
+                $(".pdctype").focus();
 
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');
@@ -130,30 +143,38 @@ export class AddPDC implements OnInit, OnDestroy {
         } else if (evt === "delete") {
             alert("delete called");
         } else if (evt === "back") {
-            this._router.navigate(['/accounts/jv']);
+            this._router.navigate(['/accounts/pdc']);
         }
     }
 
-    getPDCType() {
-        this._commonservice.getMOM({ "group": "pdctype" }).subscribe(data => {
-            this.pdctypedt = data.data;
-        }, err => {
-            console.log("Error");
-        }, () => {
-            console.log("Complete");
-        })
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
     }
 
-    existCustAuto() {
+    //Selected Customer
+    
+    selectAutoAccounts(event) {
+        this.custid = event.value;
+        this.custname = event.label;
+    }
+
+    fillDropDownList() {
         var that = this;
 
-        that._commonservice.getAutoData({
-            "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.acname
-        }).subscribe(data => {
-            if (data.data.length === 0) {
-                that._msg.Show(messageType.info, "info", "This party not exists !!!");
-                that.acname = "";
-            }
+        that._pdcservice.getPDCDetails({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            
+            this.pdctypeDT = d.filter(a => a.group === "pdctype");
+            this.bankDT = d.filter(a => a.group === "bank");
         }, err => {
             console.log("Error");
         }, () => {
@@ -161,25 +182,16 @@ export class AddPDC implements OnInit, OnDestroy {
         })
     }
 
-    getCustAuto(me: any) {
+    existCustAuto() {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.acname }).subscribe(data => {
-            $(".acname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.acid = ui.item.value;
-                    me.acname = ui.item.label;
-                }
-            });
+        that._autoservice.getAutoData({
+            "type": "customer", "cmpid": that.loginUser.cmpid, "search": that.custname
+        }).subscribe(data => {
+            if (data.data.length === 0) {
+                that._msg.Show(messageType.info, "info", "This party not exists !!!");
+                that.custname = "";
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -203,16 +215,33 @@ export class AddPDC implements OnInit, OnDestroy {
         that.actionButton.find(a => a.id === "save").enabled = true;
     }
 
+    private isFormChange() {
+        return (this.formvals == $("#frmpdc").serialize());
+    }
+
     savePDCData() {
         var that = this;
+
+        if (that.isFormChange()) {
+            that._msg.Show(messageType.info, "info", "No save! There is no change!");
+            return;
+        };
+
+        var validateme = commonfun.validate();
+
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
 
         var savepdc = {
             "pdcid": that.pdcid,
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
-            "acid": that.acid,
+            "acid": that.custid,
             "amount": that.amount,
-            "bankname": that.bankname,
+            "bankid": that.bankid,
             "chequeno": that.chequeno,
             "chequedate": that.chequedate.getDate(),
             "pdctype": that.pdctype,
@@ -252,14 +281,14 @@ export class AddPDC implements OnInit, OnDestroy {
 
             that.pdcid = _pdcdata[0].pdcid;
             that.pdctype = _pdcdata[0].pdctype;
-            that.acid = _pdcdata[0].acid;
-            that.acname = _pdcdata[0].acname;
+            that.custid = _pdcdata[0].acid;
+            that.custname = _pdcdata[0].acname;
 
             var date = new Date(_pdcdata[0].chequedate);
             that.chequedate.setDate(date);
 
             that.amount = _pdcdata[0].amount;
-            that.bankname = _pdcdata[0].bankname;
+            that.bankid = _pdcdata[0].bankid;
             that.chequeno = _pdcdata[0].chequeno;
             that.narration = _pdcdata[0].narration;
             that.isactive = _pdcdata[0].isactive;
@@ -276,5 +305,6 @@ export class AddPDC implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
         this.subscribeParameters.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

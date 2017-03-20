@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-import { ActionBtnProp, Details } from '../../app/_model/action_buttons'
+import { ActionBtnProp, Details,Evt } from '../../app/_model/action_buttons'
 import { LoginUser } from '../../app/_model/user_model'
 
 declare var browserConf: any;
@@ -20,12 +20,14 @@ export class SharedVariableService {
     private actionButtonSource = new Subject<ActionBtnProp[]>();
     private topBarEventSource = new Subject<Details>();
 
-    private actionButtonEventSource = new Subject<string>();
+    private actionButtonEventSource = new Subject<String>();
+    private actionButtonEventSource_extra = new Subject<Evt>();
 
     // Observable string streams
     public setActionButtons$ = this.actionButtonSource.asObservable();
     public topBarSettingsEvent$ = this.topBarEventSource.asObservable();
     public setActionButtonsEvent$ = this.actionButtonEventSource.asObservable();
+    public setActionButtonsEvent_Extra$ = this.actionButtonEventSource_extra.asObservable();
     // public setBreadCrumbEvent$ = this.breadCrumbEventSource.asObservable();
 
     //action buttons
@@ -49,6 +51,12 @@ export class SharedVariableService {
     callActionButtonsEvent(evt: string) {
         this.actionButtonEventSource.next(evt);
     }
+
+    callActionButtonsEvent_extra(evt: string, $event ?:any) {
+        this.actionButtonEventSource_extra.next(new Evt(evt, $event));
+    }
+
+    
 
 
 }

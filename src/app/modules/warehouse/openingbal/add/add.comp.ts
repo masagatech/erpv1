@@ -45,7 +45,7 @@ declare var commonfun: any;
         , private _userService: UserService, private _alsservice: ALSService) { //Inherit Service
         this.loginUser = this._userService.getUser();
     }
-    
+
     setAuditDate() {
         var that = this;
         that._alsservice.getAuditLockSetting({
@@ -123,7 +123,6 @@ declare var commonfun: any;
                     "createdby": this.loginUser.login
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;
-                    console.log(ItemsResult);
                     if (ItemsResult[0].length > 0) {
                         this.Openinglist = ItemsResult[0];
                     }
@@ -185,11 +184,11 @@ declare var commonfun: any;
         }).subscribe(itemsdata => {
             var ItemsResult = itemsdata.data;
             if (ItemsResult.length > 0) {
-                this.warehouseid = ItemsResult[0][0].whid;
-                this.warehousename = ItemsResult[0][0].whname;
-                this.remark = ItemsResult[0][0].remark;
-                this.openstock.setDate(new Date(ItemsResult[0][0].opendate));
-                this.Openinglist = ItemsResult[1];
+                this.warehouseid = ItemsResult[1][0].whid;
+                this.warehousename = ItemsResult[1][0].whname;
+                this.remark = ItemsResult[1][0].remark;
+                this.openstock.setDate(new Date(ItemsResult[1][0].opendate));
+                this.Openinglist = ItemsResult[0];
             }
         }, err => {
             console.log("Error");
@@ -218,7 +217,7 @@ declare var commonfun: any;
             var opestock = [];
             for (let item of that.Openinglist) {
                 if (item.qty != "") {
-                     var rate = item.rate.filter(itemval => itemval.id == item.id);
+                    var rate = item.rate.filter(itemval => itemval.id == item.id);
                     opestock.push({
                         "autoid": item.autoid === null ? 0 : item.autoid,
                         "ledger": item.ledger === null ? 0 : item.ledger,
@@ -304,7 +303,7 @@ declare var commonfun: any;
                     this.Paramter()
                 ).subscribe(result => {
                     if (result.data[0].funsave_wareopeningstock.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", result.data[0].funsave_wareopeningstock.msg);
+                        this._msg.Show(messageType.success, "success", result.data[0].funsave_wareopeningstock.msg + ':' +result.data[0].funsave_wareopeningstock.maxid);
                         this.ClearControll();
                     }
                     else {
@@ -320,7 +319,13 @@ declare var commonfun: any;
             }
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+            $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+            $(".ware").focus();
         } else if (evt === "delete") {
             alert("delete called");
         }

@@ -15,7 +15,7 @@ export class AuthenticationService {
 
   logout(callback?: any, error?: any) {
     var usr: LoginUserModel = this._userService.getUser();
-    debugger
+    
     this._dataserver.post("getLogout", { "sessionid": usr._sessiondetails.sessionid }).subscribe(r => {
       Cookie.delete('_session_');
       this._userService.setUsers(null);

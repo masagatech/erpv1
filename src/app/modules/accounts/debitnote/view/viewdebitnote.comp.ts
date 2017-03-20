@@ -133,27 +133,36 @@ export class ViewDebitNote implements OnInit, OnDestroy {
         dt.reset();
     }
 
-    expandDetails(dt, event) {
+    expandDetails(event) {
         var that = this;
-        var row = event.data;
+        if (event.details && event.details.length > 0) { return; }
 
-        if (row.details.length === 0) {
+        try {
+            event.loading = false;
+
             this._dnservice.getDebitNote({
-                "flag": "details", "docno": row.docno,
+                "flag": "details", "docno": event.docno,
                 "from": event.first, "to": (event.first + event.rows)
             }).subscribe(details => {
-                that.totalDetailsRecords = details.data[1][0].recordstotal;
-                row.details = details.data[0];
+                var dataset = details.data;
+                that.totalDetailsRecords = dataset[1][0].recordstotal;
 
-                dt.toggleRow(event.data);
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
             }, err => {
                 this._msg.Show(messageType.error, "Error", err);
                 console.log(err);
             }, () => {
                 // console.log("Complete");
             })
-        } else {
-            dt.toggleRow(event.data);
+        } catch (error) {
+
         }
     }
 
@@ -199,6 +208,6 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }

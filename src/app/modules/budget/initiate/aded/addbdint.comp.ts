@@ -41,7 +41,7 @@ declare var commonfun: any;
     providers: [BudgetService, CommonService, FYService, ALSService]
 })
 
-export class AddInitiateComp implements OnInit {
+export class AddInitiateComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     bid: number = 0;
@@ -159,6 +159,7 @@ export class AddInitiateComp implements OnInit {
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
                 this.setActionButtons.setTitle("Budget Initiate > Add");
+                $(".btitle").focus();
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -174,6 +175,7 @@ export class AddInitiateComp implements OnInit {
             }
             else if (this.isedit) {
                 this.setActionButtons.setTitle("Budget Initiate > Edit");
+                $(".btitle").focus();
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -204,7 +206,7 @@ export class AddInitiateComp implements OnInit {
             }
         });
 
-        this.attr.attrparam = ["compinfo_attr"];
+        this.attr.attrparam = ["bdattrinfo"];
     }
 
     //Attribute Tab Click Event
@@ -280,7 +282,6 @@ export class AddInitiateComp implements OnInit {
         // Add New Row
         if (that.duplicatemilestone === false) {
             that.milestoneDT.push({
-                'counter': that.counter,
                 'msname': that.newmsname,
                 'msdate': that.newmsdate
             });
@@ -378,10 +379,16 @@ export class AddInitiateComp implements OnInit {
             return;
         }
 
+        if (this.attr.attrlist.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Fill atleast 1 Fill Attribute");
+            return;
+        }
+
         var saveinitiate = {
             "bid": that.bid,
             "btitle": that.btitle,
             "bobj": that.bobj,
+            "cmpid": that.loginUser.cmpid,
             "fy": that.fy,
             "frmdt": that.frmdt.getDate(),
             "todt": that.todt.getDate(),
@@ -430,7 +437,8 @@ export class AddInitiateComp implements OnInit {
     }
 
     ngOnDestroy() {
+        this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }

@@ -4,18 +4,12 @@
 		</div>
 		<div class="col-md-5">
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-4">
 			<div class="form-group">
 				<label>Status</label>
-				<select class="form-control" [(ngModel)]="status">
+				<select class="form-control" [(ngModel)]="status" (ngModelChange)="searchUserData(dt)">
 					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
 				</select>
-			</div>
-		</div>
-		<div class="col-md-1">
-			<div class="form-group">
-				<label>&nbsp;</label>
-				<button type="button" class="btn btn-thme btn-sm" (click)="searchUserData(dt)">Get</button>
 			</div>
 		</div>
 	</div>
@@ -27,10 +21,10 @@
 			<p-column field="ucode" header="User Code" [style]="{'text-align':'left'}"></p-column>
 			<p-column field="fullname" header="User Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
 			<p-column field="emailid" header="Email ID" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column [style]="{'width':'45px','text-align':'left'}">
+			<p-column [style]="{'width':'50px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="openUserDetails(row)" class="btn btn-theme btn-sm">
-						<i class="fa fa-arrow-right"></i>
+					<button type="button" (click)="openUserDetails(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
 					</button>
 				</template>
 			</p-column>

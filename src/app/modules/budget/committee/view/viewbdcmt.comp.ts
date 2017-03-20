@@ -13,22 +13,26 @@ import { LazyLoadEvent, DataTable } from 'primeng/primeng';
     providers: [BudgetService]
 })
 
-export class ViewCommitteeComp implements OnInit {
+export class ViewCommitteeComp implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    viewCommitteeDT: any[];
+    viewCommitteeDT: any = [];
     totalRecords: number = 0;
     status: string = "";
 
+    search: string = "";
     statusDT: any = [];
+    budgetDT: any = [];
+
+    selectedbid: number = 0;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _budgetservice: BudgetService,
         private _userService: UserService) {
         this.loginUser = this._userService.getUser();
         this.fillStatusDropDown();
-        this.getCommitteeMaster();
+        this.fillBudgetDropDown();
         this.resetCommitteeFields();
     }
 
@@ -48,25 +52,38 @@ export class ViewCommitteeComp implements OnInit {
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         });
+    }
+
+    fillBudgetDropDown() {
+        var that = this;
+
+        that._budgetservice.getCommittee({ "flag": "dropdown", "search": that.search }).subscribe(data => {
+            that.budgetDT = data.data;
+        }, err => {
+            console.log(err);
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     resetCommitteeFields() {
         this.status = "true";
     }
 
-    getCommitteeMaster() {
+    getCommitteeMaster(row) {
         var that = this;
 
         that._budgetservice.getCommittee({
-            "flag": "all", "from": 0, "to": 10, "isactive": true
+            "flag": "all", "bid": row.bid, "from": 0, "to": 10, "isactive": true
         }).subscribe(committee => {
             that.viewCommitteeDT = committee.data[0];
+            that.selectedbid = row.bid;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -81,7 +98,7 @@ export class ViewCommitteeComp implements OnInit {
             that.totalRecords = committee.data[1][0].recordstotal;
             that.viewCommitteeDT = committee.data[0];
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -95,13 +112,18 @@ export class ViewCommitteeComp implements OnInit {
         dt.reset();
     }
 
-    openCommittee(row) {
-        this._router.navigate(['/budget/committee/details', row.bid]);
+    openCommittee() {
+        this._router.navigate(['/budget/committee/details', this.selectedbid]);
     }
 
     actionBarEvt(evt) {
         if (evt === "add") {
             this._router.navigate(['/budget/committee/add']);
         }
+    }
+
+    ngOnDestroy() {
+        this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

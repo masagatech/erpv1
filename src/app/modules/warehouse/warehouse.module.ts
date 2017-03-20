@@ -60,6 +60,16 @@ const routerConfig =
                                 return comp.default;
                             }),
                         },
+                        {
+                            path:'grnoutword', loadChildren: () => System.import('./grnoutword').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
+                        {
+                            path:'grninword', loadChildren: () => System.import('./grninword').then((comp: any) => {
+                                return comp.default;
+                            }),
+                        },
                         { path: '', component: WarehouseDashboardComp, canActivateChid: [AuthGuard], },
                     ]
                 }

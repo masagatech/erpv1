@@ -12,6 +12,7 @@ import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: "addrbi.comp.html",
@@ -21,6 +22,7 @@ declare var $: any;
 export class AddRBI implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+    formvals: string = "";
     loginUser: LoginUserModel;
 
     private subscribeParameters: any;
@@ -80,28 +82,62 @@ export class AddRBI implements OnInit, OnDestroy {
         this.docdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
 
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params["irbid"] !== undefined) {
-                this.title = "Issued Receipt Book : Edit";
+                this.setActionButtons.setTitle("Edit Receipt Book Issued");
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+
                 this.irbid = params["irbid"];
                 this.getRBIDetailsByID(this.irbid);
+
+                $('input').attr('disabled', 'disabled');
+                $('select').attr('disabled', 'disabled');
+                $('textarea').attr('disabled', 'disabled');
+                $(".empname").focus();
             }
             else {
-                this.title = "Issued Receipt Book : Add";
+                this.setActionButtons.setTitle("Add Receipt Book Issued");
+
+                var date = new Date();
+                this.docdate.setDate(date);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
+
+                $('input').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('textarea').removeAttr('disabled');
+                $(".empname").focus();
             }
         });
     }
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._msg.confirm('Are you sure that you want to save?', () => {
-                this.saveRBIDetails();
-            });
+            this.saveRBIDetails();
+        } else if (evt === "edit") {
+            $('input').removeAttr('disabled');
+            $('select').removeAttr('disabled');
+            $('textarea').removeAttr('disabled');
+
+            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "edit").hide = true;
+        } else if (evt === "delete") {
+            alert("delete called");
+        } else if (evt === "back") {
+            this._router.navigate(['/accounts/receiptbookissued']);
         }
     }
 
@@ -110,7 +146,12 @@ export class AddRBI implements OnInit, OnDestroy {
     getEmpAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.empname }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "userwithcode",
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "search": that.empname
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -228,7 +269,7 @@ export class AddRBI implements OnInit, OnDestroy {
         var noptno = 0;
 
         that._rbservice.getRBDetails({
-            "flag": "id", "rbid": this.rbid
+            "flag": "id", "docno": this.rbid
         }).subscribe(seriesno => {
             nopfno = seriesno.data[0].noofpage;
             noptno = that.fromno + nopfno;
@@ -243,7 +284,7 @@ export class AddRBI implements OnInit, OnDestroy {
         var that = this;
 
         that._commonservice.checkValidate({
-            "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": "2", "fy": "7"
+            "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             var dataResult = data.data;
 
@@ -269,8 +310,20 @@ export class AddRBI implements OnInit, OnDestroy {
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
+    private isFormChange() {
+        return (this.formvals == $("#frmpdc").serialize());
+    }
+
     saveRBIDetails() {
         var that = this;
+
+        var validateme = commonfun.validate();
+
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
 
         var saveRBI = {
             "irbid": this.irbid,

@@ -4,13 +4,14 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Code</label>
-					<input type="text" class="form-control code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code" ng-trim="false" (blur)="Getcode()">
+					<input type="text" class="form-control code" placeholder="Code" validate="" maxlength="10" tabindex="1" [(ngModel)]="code"
+						ng-trim="false" (blur)="Getcode()">
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Customer Name</label>
-					<input type="text" class="form-control fname" validate="" tabindex="2" [(ngModel)]="Custname">
+					<input type="text" class="form-control fname" placeholder="Customer name" validate="" tabindex="2" [(ngModel)]="Custname">
 				</div>
 			</div>
 
@@ -19,13 +20,15 @@
 			<div class="col-md-2">
 				<div class='form-group'>
 					<label>Parent Code</label>
-					<input type="text" class="form-control parentcode" maxlength="10" tabindex="3" [(ngModel)]="parentcodename" (keyup)="getAutoCompleteParentCode(this)">
+					<p-autoComplete [(ngModel)]="parentcodename" class="form-controlAutoComplete parentcode" (onSelect)="ParentcodeSelect($event)"
+						[suggestions]="ParentcodeAutodata" (completeMethod)="ParentcodeAuto($event)" [tabindex]="3" field="label" [size]="30"
+						placeholder="Parent Code" [minLength]="1"></p-autoComplete>
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Parent Name</label>
-					<input type="text" class="form-control parentname" tabindex="400" readonly="true" [(ngModel)]="parentname">
+					<input type="text" class="form-control parentname" placeholder="Parent name" tabindex="400" readonly="true" [(ngModel)]="parentname">
 				</div>
 			</div>
 		</div>
@@ -44,7 +47,7 @@
 			<div class="col-md-6">
 				<div class='form-group'>
 					<label>Remark</label>
-					<input type="text" class="form-control" tabindex="6" [(ngModel)]="remark">
+					<input type="text" class="form-control" placeholder="Remark" tabindex="6" [(ngModel)]="remark">
 				</div>
 			</div>
 		</div>
@@ -66,6 +69,7 @@
 			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
 			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab"><i class="fa fa-cc" aria-hidden="true"></i> Control Center</a></li>
 			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
+			<li><a data-target="#tax" role="button" (click)="taxtab()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Tax</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
 		</ul>
 		<div class="tab-content">
@@ -96,13 +100,13 @@
 								<div class="col-md-1">
 									<div class='form-group'>
 										<label>From</label>
-										<input type="text" class="form-control fromval text-right" tabindex="12" [(ngModel)]="fromval">
+										<input type="text" placeholder="From" class="form-control fromval text-right" tabindex="12" [(ngModel)]="fromval">
 									</div>
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
 										<label>To</label>
-										<input type="text" class="form-control toval text-right" tabindex="13" [(ngModel)]="toval">
+										<input type="text" placeholder="To" class="form-control toval text-right" tabindex="13" [(ngModel)]="toval">
 									</div>
 								</div>
 								<div class="col-md-2">
@@ -123,7 +127,7 @@
 									</div>
 								</div>
 								<div class="col-md-3">
-									<div style="padding-top:28px;">
+									<div class="setfltrbtn">
 										<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>Applicable on sales invoice</label>
 									</div>
 								</div>
@@ -142,7 +146,7 @@
 									</div>
 								</div>
 								<div class="col-md-2">
-									<div style="padding-top:28px;">
+									<div class="setfltrbtn">
 										<button class="btn btn-theme btn-sm"><i class="fa fa-plus"></i></button>
 									</div>
 								</div>
@@ -162,7 +166,7 @@
 											<td><span>{{i+1}}</span></td>
 											<td>{{row.item}}</td>
 											<td>{{row.cust}}</td>
-											<td><button class="btn btn-theme btn-sm" (click)="itemsRemove(row)"><i class="fa fa-trash"></i></button></td>
+											<td><button class="btn btn-theme btn-sm btn-grid" (click)="itemsRemove(row)"><i class="fa fa-trash"></i></button></td>
 										</tr>
 									</tbody>
 								</table>
@@ -191,7 +195,7 @@
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<div style="padding-top: 28px;">
+										<div class="setfltrbtn">
 											<button class="btn btn-theme btn-sm" type="button" tabindex="10" (click)="Additems()" title="Add">
 												<i class="fa fa-plus"></i>
 											</button>
@@ -252,7 +256,7 @@
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<div style="padding-top: 28px;">
+										<div class="setfltrbtn">
 											<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="15" (click)="AddNewdisattr()" title="Add">
 										<i class="fa fa-plus"></i></button>
 										</div>
@@ -287,11 +291,22 @@
 			</div>
 			<div class="tab-pane" id="sales">
 				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Salesman</label>
-							<input type="text=" class="form-control sales" tabindex="16" value="" [(ngModel)]="salename" (keyup.enter)="SalemanAdd()"
-								(keyup)="getAutoCompleteSales(this)" />
+					<div class="col-md-10">
+						<div class="col-md-5">
+							<div class='form-group'>
+								<label>Salesman</label>
+								<p-autoComplete [(ngModel)]="salename" class="form-controlAutoComplete sales" (onSelect)="SalesmanSelect($event)" [suggestions]="SalesmanAutodata"
+									(keyup.enter)="SalemanAdd()" (completeMethod)="SalesmanAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Salesman"
+									[minLength]="1"></p-autoComplete>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class='form-group'>
+								<div class="setfltrbtn">
+									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="SalemanAdd()" title="Add">
+										<i class="fa fa-plus"></i></button>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="col-md-10">
@@ -307,20 +322,29 @@
 			</div>
 			<div class="tab-pane" id="trans">
 				<div class="row">
-					<div class="col-md-3">
-						<div class='form-group'>
-							<label>Transpoter</label>
-							<input type="text=" class="form-control transname" tabindex="17" value="" [(ngModel)]="transname" (keyup.enter)="TranspoterAdd()"
-								(keyup)="getAutoCompletetrans(this)" />
+					<div class="col-md-10">
+						<div class="col-md-5">
+							<div class='form-group'>
+								<label>Transpoter</label>
+								<p-autoComplete [(ngModel)]="transname" class="form-controlAutoComplete transname" (onSelect)="TranspoterSelect($event)"
+									[suggestions]="TranspoterAutodata" (keyup.enter)="TranspoterAdd()" (completeMethod)="TranspoterAuto($event)" [tabindex]="3"
+									field="label" [size]="30" placeholder="Transpoter" [minLength]="1"></p-autoComplete>
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class='form-group'>
+								<div class="setfltrbtn">
+									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="TranspoterAdd()" title="Add">
+										<i class="fa fa-plus"></i></button>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-10">
-						<div class="col-md-6" *ngFor="let row of translist">
-							<div class="bootstrap-tagsinput" style="margin-top: 10px;">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.transname}} 
+					<div class="col-md-12">
+						<div class="col-md-12 bootstrap-tagsinput">
+							<span *ngFor="let row of translist" class="tag label label-info" style="font-size: 10px;">{{row.transname}} 
 							<span data-role="remove" (click)="RemoveTranspoter(row)"></span>
-								</span>
-							</div>
+							</span>
 						</div>
 					</div>
 				</div>
@@ -331,7 +355,6 @@
 						<div class="panel panel-theme">
 							<div class="panel-body">
 								<div class="col-md-3" *ngFor="let row of warehouselist">
-									<!--<label class="checkbox-inline"><input type="checkbox" [(ngModel)]="row.Warechk" id="M{{row.value}}" value="row.value"/>-->
 									<label><p-checkbox [(ngModel)]="row.Warechk" binary="true"></p-checkbox>
 										{{row.label}} 
 									</label>
@@ -343,17 +366,18 @@
 			</div>
 			<div class="tab-pane" id="control">
 				<div class="row">
-					<div class="col-md-6">
-						<div class="col-md-6">
+					<div class="col-md-10">
+						<div class="col-md-5">
 							<div class='form-group'>
 								<label>Control Name</label>
-								<input type="text=" class="form-control ctrl" tabindex="18" value="" [(ngModel)]="ctrlname" (keyup.enter)="AddNewCtrl()"
-									(keyup)="getAutoCompleteCtrl(this)" />
+								<p-autoComplete [(ngModel)]="ctrlname" class="form-controlAutoComplete ctrl" (onSelect)="ControlCentSelect($event)" [suggestions]="ControlCentAutodata"
+									(keyup.enter)="AddNewCtrl()" (completeMethod)="ControlCentAuto($event)" [tabindex]="3" field="label" [size]="30"
+									placeholder="Control Center" [minLength]="1"></p-autoComplete>
 							</div>
 						</div>
 						<div class="col-md-1">
 							<div class='form-group'>
-								<div style="padding-top: 28px;">
+								<div class="setfltrbtn">
 									<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="19" (click)="AddNewCtrl()" title="Add">
 							<i class="fa fa-plus"></i></button>
 								</div>
@@ -366,7 +390,7 @@
 									<th class="col-sm-3">Ctrl Name</th>
 									<th class="col-sm-2">Profit</th>
 									<th class="col-sm-2">Cost</th>
-									<th></th>
+									<th class="col-sm-2">>Action</th>
 								</tr>
 							</thead>
 							<tbody *ngFor="let row of Ctrllist let i=index">
@@ -375,7 +399,7 @@
 									<td>{{row.ctrlname}}</td>
 									<td><input type="checkbox" [(ngModel)]="row.profflag" />{{row.proftcode}}</td>
 									<td><input type="checkbox" [(ngModel)]="row.constflag" />{{row.costcode}}</td>
-									<td><button class="btn btn-theme btn-sm" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button></td>
+									<td><button class="btn btn-danger btn-sm btn-grid" (click)="DeleteCtrl(row)"><i class="fa fa-trash"></i></button></td>
 								</tr>
 							</tbody>
 						</table>
@@ -390,43 +414,47 @@
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Key</label>
-										<input type="text" class="form-control key" tabindex="20" value="" [(ngModel)]="acinfival" (keyup)="getAutoCompletekey(this)"
-										/>
+										<p-autoComplete [(ngModel)]="acinfival" class="form-controlAutoComplete key" (onSelect)="acinfivalSelect($event)" [suggestions]="acinfivalAutodata"
+											(keyup.enter)="AddNewKyeval()" (completeMethod)="acinfivalAuto($event)" [tabindex]="3" field="label" [size]="30"
+											placeholder="Any key" [minLength]="1"></p-autoComplete>
 									</div>
 								</div>
 								<div class="col-md-5">
 									<div class='form-group'>
 										<label>Value</label>
-										<input type="text" class="form-control val" (keyup.enter)="AddNewKyeval()" tabindex="21" [(ngModel)]="value">
+										<input type="text" class="form-control val" placeholder="Value" (keyup.enter)="AddNewKyeval()" tabindex="21" [(ngModel)]="value">
 									</div>
 								</div>
 								<div class="col-md-1">
 									<div class='form-group'>
-										<div style="padding-top: 28px;">
+										<div class="setfltrbtn">
 											<button class="btn btn-theme btn-sm" type="button" ng-reflect-title="Add" tabindex="22" (click)="AddNewKyeval()" title="Add">
 										<i class="fa fa-plus"></i></button>
 										</div>
 									</div>
 								</div>
 							</div>
-							<table class="table table-striped table-bordered" *ngIf="keyvallist.length">
-								<thead>
-									<tr>
-										<th class="col-sm-1">#</th>
-										<th class="col-sm-5">Key</th>
-										<th class="col-sm-5">Value</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody *ngFor="let row of keyvallist let i=index">
-									<tr>
-										<td><span>{{i+1}}</span></td>
-										<td>{{row.key}}</td>
-										<td><input type="text" class="form-control" [(ngModel)]="row.value" /></td>
-										<td><button class="btn btn-theme btn-sm" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button></td>
-									</tr>
-								</tbody>
-							</table>
+							<div class="table-responsive" *ngIf="keyvallist.length">
+								<p-dataTable #dt [value]="keyvallist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+									expandableRows="true">
+									<p-column header="#" [style]="{'width':'10px','text-align':'left'}">
+										<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+											{{rowIndex+1}}
+										</template>
+									</p-column>
+									<p-column field="key" header="Key" [style]="{'width':'120px','text-align':'left'}"></p-column>
+									<p-column header="Value" [style]="{'width':'120px','text-align':'left'}">
+										<template let-col let-row="rowData" pTemplate="editor">
+											<input type="text" class="form-control" [(ngModel)]="row.value" />
+										</template>
+									</p-column>
+									<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
+										<template let-row pTemplate="rowexpansion">
+											<button class="btn btn-danger btn-sm btn-grid" (click)="DeleteRow(row)"><i class="fa fa-trash"></i></button>
+										</template>
+									</p-column>
+								</p-dataTable>
+							</div>
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -462,6 +490,46 @@
 								</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="tax">
+				<div class="col-md-12">
+					<div class="col-md-3">
+						<div class='form-group'>
+							<label>Invoice type</label>
+							<p-autoComplete [(ngModel)]="invtypname" class="form-controlAutoComplete invtype" (onSelect)="TaxSelect($event)" [suggestions]="TaxAutodata"
+								(keyup.enter)="SelectedTax()" (completeMethod)="TaxAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Invoice type"
+								[minLength]="1"></p-autoComplete>
+						</div>
+					</div>
+					<div class='col-md-2'>
+						<div class='form-group'>
+							<div class="setfltrbtn">
+								<button class="btn btn-theme btn-sm get" (click)="SelectedTax()" tabindex="3"><i class="fa fa-arrow-right"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="table-responsive" *ngIf="taxlist.length>0">
+						<p-dataTable #dt [value]="taxlist" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" [(selection)]="selectedRB1"
+							expandableRows="true">
+							<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
+								<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+									{{rowIndex+1}}
+								</template>
+							</p-column>
+							<p-column field="taxname" header="Tax Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+							<p-column field="taxval" header="%" [style]="{'width':'30px','text-align':'right'}"></p-column>
+							<p-column field="label" header="On" [style]="{'width':'120px','text-align':'left'}"></p-column>
+							<p-column field="seq" header="Seq" [style]="{'width':'30px','text-align':'left'}"></p-column>
+							<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<button class="btn btn-danger btn-sm btn-grid" (click)="TaxDeleteRow(row)"><i class="fa fa-trash"></i></button>
+								</template>
+							</p-column>
+						</p-dataTable>
 					</div>
 				</div>
 			</div>

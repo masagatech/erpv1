@@ -36,6 +36,7 @@ declare var commonfun: any;
     editmode: boolean = false;
 
     private subscribeParameters: any;
+    AcGroupAutodata: any[];
 
     //user details
     loginUser: LoginUserModel;
@@ -101,37 +102,24 @@ declare var commonfun: any;
         })
     }
 
-    //Auto Completed Nature
-    getAutoCompleteNature(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
+    //AutoCompletd Parent Group
+    AcGroupAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
             "type": "nature",
-            "search": that.neturname,
             "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".neturofgr").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.neturid = ui.item.value;
-                    me.neturname = ui.item.label;
-                    me.category = ui.item.category;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.AcGroupAutodata = data;
+        });
+    }
+
+    //Selected Parent Group
+    AcGroupSelect(event) {
+        this.neturid = event.value;
+        this.neturname = event.label;
     }
 
     //Edit Account Group
@@ -139,18 +127,18 @@ declare var commonfun: any;
         this.acgroupServies.acGroupView({
             "flag": "",
             "groupid": groupid,
-            "neturid": this.neturid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login
         }).subscribe(data => {
             this.editmode = true;
-            var dataset = data.data;
+            debugger;
+            var dataset = data.data[0];
             this.groupcode = dataset[0].groupcode;
             this.groupName = dataset[0].groupname;
-            this.neturname = dataset[0].val;
-            this.neturid = dataset[0].grnature;
-            this.appfrom = dataset[0].appfromedit;
+            this.neturname = dataset[0].parentname;
+            this.neturid = dataset[0].parentid;
+            this.appfrom = dataset[0].applyfrom;
             this.isactive = dataset[0].isactive;
             if (this.appfrom == 0) {
                 this.chkall = true;
@@ -237,8 +225,8 @@ declare var commonfun: any;
             ).subscribe(result => {
                 try {
                     var dataset = result.data;
-                    if (dataset[0].funsave_acgroup.maxid === "exists") {
-                        this._msg.Show(messageType.info, "info", dataset[0].funsave_acgroup.msg);
+                    if (dataset[0].funsave_acgroup.maxid === "-1") {
+                        this._msg.Show(messageType.error, "error", dataset[0].funsave_acgroup.msg);
                         return;
                     }
                     if (dataset[0].funsave_acgroup.maxid > 0) {
@@ -249,8 +237,6 @@ declare var commonfun: any;
                         if (this.groupid > 0) {
                             this._router.navigate(['master/acgroup']);
                         }
-                        this.actionButton.find(a => a.id === "save").enabled = true;
-                        return;
                     }
                 } catch (e) {
                     this._msg.Show(messageType.error, "error", e.message);
@@ -261,8 +247,7 @@ declare var commonfun: any;
             }, () => {
                 'Final'
             });
-
-            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").enabled = true;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');

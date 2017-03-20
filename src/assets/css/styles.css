@@ -777,6 +777,7 @@ body {
     background-repeat: repeat-x;
 }
 
+
 .btn-theme {
     background-image: -webkit-linear-gradient(top, #fff 0%, #ded6ce 100%);
     background-image: -o-linear-gradient(top, #fff 0%, #ded6ce 100%);
@@ -800,6 +801,11 @@ body {
 .btn-theme.active {
     background-color: #e89d7e;
     border-color: #b7b7b7;
+}
+
+.btn-grid{
+    padding: 0px 7px 0px 7px!important;
+    font-size: 12px!important;
 }
 
 submenu nav a {
@@ -1091,7 +1097,7 @@ html select[disabled] {
 }
 
 .middlepan {
-    width: calc(100% - 193px)!important;
+    width: calc(100% - 202px)!important;
     float: left;
 }
 
@@ -1383,4 +1389,91 @@ table.tableNoborder td {
     -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     height: 30px !important;
+}
+
+.form-control.inp-small {
+    padding: 1px;
+    margin: 0!important;
+    height: 21px!important;
+    border-radius: 0;
+    border: 1px solid #A59D9D;
+    font-size: 12px;
+}
+
+.tblexcel>thead>tr>th, .tblexcel>tbody>tr>th, .tblexcel>tfoot>tr>th, .tblexcel>thead>tr>td, .tblexcel>tbody>tr>td, .tblexcel>tfoot>tr>td {
+    padding: 4px!important;
+}
+
+.tblexcel-grid>thead>tr>th, .tblexcel-grid>tbody>tr>th, .tblexcel-grid>tfoot>tr>td {
+    padding: 4px!important;
+    background: #ebedf0;
+    border-color: #d9d9d9;
+}
+
+.tblexcel-grid>tbody>tr>td {
+    padding: 4px!important;
+    border: 1px solid #D5D5D5;
+    background: #ffffff;
+    color: #222222;
+}
+
+.tblexcel-grid>tbody>tr>td a {
+    color: #000000 !important;
+}
+
+.setfltrbtn {
+
+    padding-top: 28px;
+}
+
+.tblcalendar>tbody>tr.received {
+    background-color: #B2FFA4;
+    color: #FFFFFF;
+}
+
+.tblcalendar>tbody>tr.issued {
+    background-color: #FFC6A4;
+    color: #FFFFFF;
+}
+
+.tblcalendar>tbody>tr.ap {
+    background-color: #FFC6A4;
+    color: #000000;
+}
+
+.tblcalendar>tbody>tr.ar {
+    background-color: #B2FFA4;
+    color: #000000;
+}
+
+.fc-event,.fc-event:hover,.ui-widget .fc-event{
+    color:#000000!important;
+}
+
+.navbar-nav .dropdown-menu.dropdown-lr {
+    width: 325px;
+    background-color: #FFFFFF !important;
+    height: 500px;
+    overflow: auto;
+}
+
+    .navbar-nav .dropdown-menu.dropdown-lr h3 {
+        font-size: 13px;
+        font-weight: bold;
+        border-bottom: solid 1px #8D99A6;
+    }
+
+.panel-div{
+    padding: 5px;
+}
+
+/* mobile fix */
+@media (max-width: 768px) {
+	.navbar-nav .dropdown-menu.dropdown-lr h6 {
+		color: #eee;
+	}
+	.navbar-nav .dropdown-menu.dropdown-lr label {
+		color: #eee;
+	}
+
 }

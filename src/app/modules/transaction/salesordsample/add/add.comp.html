@@ -1,0 +1,308 @@
+<div class="middlepan">
+	<div class="panel panel-theme">
+		<div class="panel-body">
+			<div class='col-md-12'>
+				<div class="col-md-6">
+					<div class='form-group' id="customerAuto">
+						<label>Customer</label>
+						<p-autoComplete [(ngModel)]="CustName" id="CustName"  class="form-controlAutoComplete" (onSelect)="CustomerSelect($event)" [suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Customer" [minLength]="1"></p-autoComplete>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class='form-group'>
+						<label class="control-label">Document Date</label>
+						<calendar #docdatecal [tabindex]="2" [name]="'docdate'"></calendar>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class='form-group'>
+						<label class="control-label">Delivery Date</label>
+						<calendar #deldatecal [tabindex]="3" [name]="'deldate'"></calendar>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class='form-group'>
+						<label>Salesman</label>
+						<select class="form-control" [(ngModel)]="salesid" tabindex="4">
+								<option *ngFor="let items of Salesmanlist" [value]="items.val">
+									{{items.label}}
+								</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class='form-group'>
+						<label>Warehouse</label>
+						<select class="form-control" [(ngModel)]="wareid" tabindex="5">
+								<option *ngFor="let items of warehouselist" [value]="items.val">
+									{{items.label}}
+								</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<p-dataTable #dt [value]="newAddRow" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+						expandableRows="true" [responsive]="true">
+						<p-column header="#" [style]="{'width':'30px'}">
+							<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+								{{rowIndex+1}}
+							</template>
+						</p-column>
+						<p-column header="Item" [style]="{'text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<input type="text" class="form-control ProdName inlinetextbox" tabindex="6" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
+									autocomplete='off' value="" />
+							</template>
+						</p-column>
+						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="false" [decimals]="2" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.qty" (keyup)="ratechange(qty,newrate,dis,row,1)"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="8" (ngModelChange)="ratechange(qty,newrate,dis,row,1)">
+						<option *ngFor="let row of row.rateslist" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
+							</template>
+						</p-column>
+						<p-column header="Dis %" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="9" (keyup)="ratechange(qty,newrate,dis,row,1)" [(ngModel)]="row.dis"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+							</template>
+						</p-column>
+						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-danger btn-sm" (click)="DeleteRow(row.counter)"><i class="fa fa-trash"></i></button>
+							</template>
+						</p-column>
+						<footer>
+							<table class="tableNoborder" style="height: 60px;">
+								<tbody>
+									<tr>
+										<td style="width:30px;vertical-align: top;">
+											<label>#</label>
+										</td>
+										<td style="vertical-align: top;"><input type="text" tabindex="10" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
+												autocomplete='off' value="" /></td>
+										<td style="width:120px;vertical-align: top;">
+											<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="11" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis,this,0)"
+												[(ngModel)]="qty"></numtext>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<select [(ngModel)]="newrate" class="form-control" tabindex="12" (keyup.enter)="NewRowAdd()" (ngModelChange)="ratechange(qty,newrate,dis,this,0)"
+												class="form-control">
+												<option *ngFor="let row of rateslist" [value]="row.id">
+														{{row.val}}
+					    						</option>
+											</select>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="13" (keyup)="ratechange(qty,newrate,dis,this,0)" (keyup.enter)="NewRowAdd()"
+												[(ngModel)]="dis"></numtext>
+										</td>
+										<td style="width:120px;vertical-align: top;">
+											<numtext [iscurrency]="true" css="inlinetextbox" [islabel]="true" [(ngModel)]="amount"></numtext>
+										</td>
+										<td style="width:80px;vertical-align: top;"><button type="button" tabindex="14" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td></td>
+										<td *ngIf="totalqty.length > 0">{{totalqty}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</footer>
+					</p-dataTable>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-body">
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-target="#itemdis" role="button" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Discount</a></li>
+				<li><a data-target="#trans" role="button" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transportation</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane" id="itemdis">
+					<div class="row">
+						<div class="col-md-5">
+							<div class="panel panel-theme">
+								<div class="panel-heading">
+									<h3 class="panel-title">Items Discount</h3>
+								</div>
+								<div class="panel-body">
+									<table class="table table-striped table-bordered" *ngIf="itemslist.length">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th class="col-sm-5">Items Name</th>
+												<th class="col-sm-3">Dis (%)</th>
+												<th class="col-sm-1"></th>
+											</tr>
+										</thead>
+										<tbody *ngFor="let row of itemslist let i=index">
+											<tr>
+												<td><span>{{i+1}}</span></td>
+												<td>{{row.itemsname}}</td>
+												<td>{{row.itemsdis}}</td>
+												<td><button class="btn btn-theme btn-sm" (click)="itemsRemove(row)"><i class="fa fa-trash"></i></button></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div class="panel panel-theme">
+								<div class="panel-heading">
+									<h3 class="panel-title">Discount</h3>
+								</div>
+								<div class="panel-body">
+									<table class="table table-striped table-bordered" *ngIf="disattrlist.length">
+										<thead>
+											<tr>
+												<th class="col-sm-1">#</th>
+												<th class="col-sm-5">Attribute</th>
+												<th class="col-sm-2">From</th>
+												<th class="col-sm-2">To</th>
+												<th class="col-sm-2">Dis %</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody *ngFor="let row of disattrlist let i=index">
+											<tr>
+												<td><span>{{i+1}}</span></td>
+												<td>{{row.disattrname}}</td>
+												<td>{{row.fromval}}</td>
+												<td>{{row.toval}}</td>
+												<td>{{row.discou}}</td>
+												<td><button class="btn btn-theme btn-sm" (click)="disRemoveattr(row)"><i class="fa fa-trash"></i></button></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane" id="trans">
+					<div *ngIf="isinvoice">
+						<div class="col-md-12">
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>LR No</label>
+									<input type="text" class="form-control" name="txtlr" value="" />
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class='form-group'>
+									<label>LR Date</label>
+									<div class="controls">
+										<div class="input-group">
+											<input type="text" name="date" id="lrDate" class="date-picker form-control" [(ngModel)]="lrDate" />
+											<label for="date" class="input-group-addon btn">
+												<span class="glyphicon glyphicon-calendar"></span>
+										</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class='form-group'>
+									<label>Transpoter</label>
+									<select class="form-control" [(ngModel)]="Traspoter">
+								<option *ngFor="let items of Transpoterlist" [value]="items.val">
+									{{items.label}}
+								</option>
+								</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Ref No</label>
+									<input type="text" class="form-control" name="txtrefno" value="" />
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group">
+									<label>Remark</label>
+									<textarea type="text" class="form-control" name="txtremark" value=""></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="sidepan">
+	<!--widgit-->
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Customer Address</h3>
+			</a>
+		</div>
+		<span *ngIf="!addresslist.length">No customer selected</span>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<div *ngFor="let items of addresslist">
+					<span>{{items.address}}</span>
+					<span>{{items.email}}</span>
+					<span>{{items.mob}}</span>
+				</div>
+				<a role="button" class="pull-right" *ngIf="addresslist.length">Change Address</a>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
+		</div>
+		<div id="Personal" class="panel-collapse collapse in">
+			<div class="panel-body">
+			</div>
+		</div>
+	</div>
+	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+		(onComplete)="onUploadComplete($event)"></fileupload>
+</div>

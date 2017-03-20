@@ -7,6 +7,7 @@ import { VendorviewService } from "../../../../_service/vendor/view/view-service
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { MessageService, messageType } from '../../../../_service/messages/message-service';
 
 import { Router } from '@angular/router';
 declare var $: any;
@@ -26,7 +27,7 @@ declare var $: any;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private venViewServies: VendorviewService, private _autoservice: CommonService,
-        private _userService: UserService) {
+        private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -41,31 +42,48 @@ declare var $: any;
     }
 
     getVendor(from: number, to: number) {
-        var that = this;
-        that.venViewServies.getvendor({
-            "cmpid": this.loginUser.cmpid,
-            "from": from,
-            "to": to,
-            "createdby": this.loginUser.login
-        }).subscribe(result => {
-            that.totalRecords = result.data[1][0].recordstotal;
-            that.vendorlist = result.data[0];
+        try {
+            var that = this;
+            that.venViewServies.getvendor({
+                "cmpid": this.loginUser.cmpid,
+                "from": from,
+                "to": to,
+                "createdby": this.loginUser.login
+            }).subscribe(result => {
+                that.totalRecords = result.data[1][0].recordstotal;
+                that.vendorlist = result.data[0];
 
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
         this.getVendor(event.first, (event.first + event.rows));
     }
 
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['master/vendor/edit', row.autoid]);
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['master/vendor/edit', data.autoid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
     }
 
     //Add Top Buttons Add Edit And Save

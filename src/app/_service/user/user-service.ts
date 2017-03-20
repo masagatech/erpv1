@@ -47,12 +47,16 @@ export class UserService {
         return this.loginUser;
     }
 
-    getUsers(req: any) {
-        return this._dataserver.post("getUsers", req)
+    getUserDetails(req: any) {
+        return this._dataserver.post("getUserDetails", req)
     }
 
-    saveUsers(req: any) {
-        return this._dataserver.post("saveUsers", req)
+    getUserGrid(req: any) {
+        return this._dataserver.post("getUserGrid", req)
+    }
+
+    saveUser(req: any) {
+        return this._dataserver.post("saveUser", req)
     }
 
     getUserRights(req: any) {

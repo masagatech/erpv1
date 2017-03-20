@@ -13,7 +13,7 @@ import { LazyLoadEvent, DataTable } from 'primeng/primeng';
     providers: [BudgetService]
 })
 
-export class ViewInitiateComp implements OnInit {
+export class ViewInitiateComp implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
@@ -61,7 +61,7 @@ export class ViewInitiateComp implements OnInit {
         var that = this;
 
         that._budgetservice.getInitiate({
-            "flag": "all", "from": from, "to": to, "isactive": that.status
+            "flag": "all", "cmpid": that.loginUser.cmpid, "from": from, "to": to, "isactive": that.status
         }).subscribe(initiate => {
             that.totalRecords = initiate.data[1][0].recordstotal;
             that.viewInitiateDT = initiate.data[0];
@@ -88,5 +88,10 @@ export class ViewInitiateComp implements OnInit {
         if (evt === "add") {
             this._router.navigate(['/budget/initiate/add']);
         }
+    }
+
+    ngOnDestroy() {
+        this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

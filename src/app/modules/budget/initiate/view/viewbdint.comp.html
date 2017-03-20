@@ -4,18 +4,12 @@
 		</div>
 		<div class="col-md-5">
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-4">
 			<div class="form-group">
 				<label>Status</label>
-				<select class="form-control" [(ngModel)]="status">
+				<select class="form-control" [(ngModel)]="status" (ngModelChange)="searchInitiateDetails(dt)">
 					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
 				</select>
-			</div>
-		</div>
-		<div class="col-md-1">
-			<div class="form-group">
-				<label>&nbsp;</label>
-				<button type="button" class="btn btn-thme btn-sm" (click)="searchInitiateDetails(dt)">Get</button>
 			</div>
 		</div>
 	</div>
@@ -31,8 +25,8 @@
 			<p-column field="fyname" header="FY" [style]="{'width':'150px','text-align':'left'}"></p-column>
 			<p-column [style]="{'width':'60px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="openInitiate(row)" class="btn btn-theme btn-sm">
-						<i class="fa fa-arrow-right"></i>
+					<button type="button" (click)="openInitiate(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
 					</button>
 				</template>
 			</p-column>

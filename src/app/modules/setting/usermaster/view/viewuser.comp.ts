@@ -65,8 +65,8 @@ export class ViewUser implements OnInit, OnDestroy {
         this.status = "true";
     }
 
-    getUserData(from: number, to: number) {
-        this._userservice.getUsers({ "flag": "all", "from": from, "to": to, "isactive": this.status }).subscribe(users => {
+    getUserGrid(from: number, to: number) {
+        this._userservice.getUserGrid({ "flag": "all", "isactive": this.status, "from": from, "to": to }).subscribe(users => {
             this.totalRecords = users.data[1][0].recordstotal;
             this.viewUserDT = users.data[0];
         }, err => {
@@ -77,7 +77,7 @@ export class ViewUser implements OnInit, OnDestroy {
     }
 
     loadUserGrid(event: LazyLoadEvent) {
-        this.getUserData(event.first, (event.first + event.rows));
+        this.getUserGrid(event.first, (event.first + event.rows));
     }
 
     searchUserData(dt: DataTable) {

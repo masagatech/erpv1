@@ -8,7 +8,7 @@ import { ActionBarModule } from '../../../_shared/shared.module'
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataListModule, CheckboxModule } from 'primeng/primeng';
+import { DataListModule, AutoCompleteModule, CheckboxModule, ScheduleModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -35,6 +35,7 @@ const routerConfig = [
                 path: '',
                 children: [
                     { path: 'add', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "add", "urlname": "/add" } },
+                    { path: 'details/:id', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "edit", "urlname": "/edit" } },
                     { path: 'edit/:id', component: AddPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: ViewPDC, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "pdc", "rights": "view", "urlname": "/pdc" } },
                 ]
@@ -45,7 +46,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataListModule, CheckboxModule, CalendarModule, NumTextModule],
+        DataListModule, AutoCompleteModule, CheckboxModule, ScheduleModule, CalendarModule, NumTextModule],
     declarations: [
         AddPDC,
         ViewPDC,

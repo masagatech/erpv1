@@ -1,13 +1,14 @@
 <div class="table-responsive">
 	<p-dataTable #dt [value]="invlocationlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-		[(selection)]="selectedRB1" expandableRows="true">
-		<p-column field="code" header="Code" [style]="{'width':'80px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				<a role="button" (click)="EditItem(row)">{{row.code}}</a>
+		(onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
+		<p-column field="code" header="Code" [style]="{'width':'80px','text-align':'left'}"></p-column>
+		<p-column field="warename" header="Warehouse Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="totalitems" header="Total Qty" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column field="remark" header="Remark" [style]="{'width':'150px','text-align':'left'}"></p-column>
+		<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
+			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+				<button type="button" (click)="EditItem(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
 			</template>
 		</p-column>
-		<p-column field="warename" header="Warehouse Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-        <p-column field="totalitems" header="Total Qty" [style]="{'width':'150px','text-align':'left'}"></p-column>
-		<p-column field="remark" header="Remark" [style]="{'width':'150px','text-align':'left'}"></p-column>
 	</p-dataTable>
 </div>

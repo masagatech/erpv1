@@ -57,6 +57,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Material Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         $(".code").prop('disabled', false);
         $(".code").focus();
@@ -83,25 +84,29 @@ declare var commonfun: any;
             }
         });
         this.getuom();
-        this.attribute.attrparam = ["item_attr"];
+        this.attribute.attrparam = ["material_master"];
     }
 
     //Get Uom Dropdown 
     getuom() {
-        var that = this;
-        this._autoservice.getMOM({
-            "group": 'uom',
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            this.uomlist = data.data;
-            console.log(data.data);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            //Done
-        })
+        try {
+            var that = this;
+            this._autoservice.getMOM({
+                "group": 'uom',
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login
+            }).subscribe(data => {
+                this.uomlist = data.data;
+                console.log(data.data);
+            }, err => {
+                console.log("Error");
+            }, () => {
+                //Done
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     //Clear Control
@@ -111,34 +116,37 @@ declare var commonfun: any;
         this.name = "";
         this.uom = 0;
         this.description = "";
-        this.attribute.attrlist;
+        this.attribute.attrlist = [];
         $(".code").focus();
     }
 
     Editrow(mid: number) {
-        var that = this;
-        that.materialAddServies.getMaterialMaster({
-            "cmpid": that.loginUser.cmpid,
-            "flag": "Edit",
-            "mid": that.mid,
-            "fy": that.loginUser.fy,
-            "createdby": that.loginUser.login
-        }).subscribe(result => {
-            var dataset = result.data[0];
-            debugger;
-            that.editmode = true;
-            that.isactive = dataset[0].isactive;
-            that.code = dataset[0].mcode;
-            that.name = dataset[0].mname;
-            that.uom = dataset[0].uom;
-            that.attribute.attrlist = dataset[0]._attr === null ? [] : dataset[0]._attr;
-            that.description = dataset[0].descrip;
+        try {
+            var that = this;
+            that.materialAddServies.getMaterialMaster({
+                "cmpid": that.loginUser.cmpid,
+                "flag": "Edit",
+                "mid": that.mid,
+                "fy": that.loginUser.fy,
+                "createdby": that.loginUser.login
+            }).subscribe(result => {
+                var dataset = result.data[0];
+                that.editmode = true;
+                that.isactive = dataset[0].isactive;
+                that.code = dataset[0].mcode;
+                that.name = dataset[0].mname;
+                that.uom = dataset[0].uom;
+                that.attribute.attrlist = dataset[0]._attr === null ? [] : dataset[0]._attr;
+                that.description = dataset[0].descrip;
 
-        }, err => {
-            console.log("Error");
-        }, () => {
-            'Final'
-        });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                'Final'
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
     }
 
     private CreatejsonAttribute() {
@@ -149,6 +157,30 @@ declare var commonfun: any;
             }
             return attrlist;
         }
+    }
+
+    paramjson() {
+        try {
+            var param = {
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "mid": this.mid,
+                "mcode": this.code,
+                "mname": this.name,
+                "uom": this.uom,
+                "isactive": this.isactive,
+                "attr": this.CreatejsonAttribute(),
+                "desc": this.description,
+                "remark1": "",
+                "remark2": "",
+                "remark3": []
+            }
+            return param;
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Add Top Buttons Add Edit And Save
@@ -163,53 +195,47 @@ declare var commonfun: any;
                 validateme.data[0].input.focus();
                 return;
             }
-            this.materialAddServies.saveMaterialmaster({
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login,
-                "mid": this.mid,
-                "mcode": this.code,
-                "mname": this.name,
-                "uom": this.uom,
-                "isactive": this.isactive,
-                "attr": this.CreatejsonAttribute(),
-                "desc": this.description,
-                "remark1": "",
-                "remark2": "",
-                "remark3": []
-            }).subscribe(data => {
-                console.log(data.data);
-                var dataset = data.data;
-                if (dataset[0].funsave_materialmaster.maxid == -1) {
-                    this._msg.Show(messageType.error, "error", dataset[0].funsave_materialmaster.msg);
-                    $(".code").focus();
-                }
-                if (dataset[0].funsave_materialmaster.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", dataset[0].funsave_materialmaster.msg);
-                    this.ClearControl();
-                }
-                if (this.editmode == true) {
-                    this._router.navigate(['supplier/material']);
-                }
-                this.editmode = false;
+            if (this.attribute.attrlist.length == 0) {
+                this._msg.Show(messageType.error, "error", "Please Enter Attribute");
+                return;
+            }
+            try {
+                this.actionButton.find(a => a.id === "save").enabled = false;
+                this.materialAddServies.saveMaterialmaster(
+                    this.paramjson()
+                ).subscribe(data => {
+                    console.log(data.data);
+                    var dataset = data.data;
+                    if (dataset[0].funsave_materialmaster.maxid == -1) {
+                        this._msg.Show(messageType.error, "error", dataset[0].funsave_materialmaster.msg);
+                        $(".code").focus();
+                    }
+                    if (dataset[0].funsave_materialmaster.maxid > 0) {
+                        this._msg.Show(messageType.success, "success", dataset[0].funsave_materialmaster.msg);
+                        this.ClearControl();
+                    }
+                    if (this.editmode == true) {
+                        this._router.navigate(['supplier/material']);
+                    }
+                    this.editmode = false;
+                }, err => {
+                    console.log("Error");
+                }, () => {
+                    //Done
+                })
+            } catch (e) {
+                this._msg.Show(messageType.error, "error", e.message);
+            }
+            this.actionButton.find(a => a.id === "save").enabled = true;
 
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //Done
-            })
-            this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
             $(".code").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
-            this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
             $(".name").focus();
-            this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");
         }
@@ -218,5 +244,6 @@ declare var commonfun: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

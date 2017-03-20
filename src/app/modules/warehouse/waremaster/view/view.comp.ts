@@ -75,10 +75,22 @@ declare var $: any;
         this.getWarehouse(event.first, (event.first + event.rows));
     }
 
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['/warehouse/warehouse/edit', row.id]);
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['/warehouse/warehouse/edit', data.id]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
+
     }
 
     //Add Top Buttons Add Edit And Save

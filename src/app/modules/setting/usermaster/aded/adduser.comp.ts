@@ -49,37 +49,38 @@ export class AddUser implements OnInit, OnDestroy {
     ngOnInit() {
         var that = this;
 
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         that.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         that.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         that.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
 
         that.setActionButtons.setActionButtons(that.actionButton);
         that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
 
         that.subscribeParameters = that._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
-                that.setActionButtons.setTitle("User Master > Edit");
+                that.setActionButtons.setTitle("Edit User Master");
                 that.actionButton.find(a => a.id === "save").hide = true;
                 that.actionButton.find(a => a.id === "edit").hide = false;
 
-                that.uid = params['id'];
-
-                that.getUserDataById(that.uid);
+                setTimeout(function () {
+                    that.uid = params['id'];
+                    that.getUserDataById(that.uid);
+                }, 0);
 
                 $('input').attr('disabled', 'disabled');
+                $(".ucode").focus();
                 that.iscpwd = 'N';
                 that.isviscpwd = 'N';
             }
             else {
-                that.setActionButtons.setTitle("User Master > Add");
+                that.setActionButtons.setTitle("Add User Master");
                 that.actionButton.find(a => a.id === "save").hide = false;
                 that.actionButton.find(a => a.id === "edit").hide = true;
 
-                setTimeout(function () {
-                    $("#ucode").focus();
-                }, 0);
-
                 $('input').removeAttr('disabled');
+                $(".ucode").focus();
                 that.iscpwd = 'Y';
                 that.isviscpwd = 'N';
             }
@@ -105,7 +106,21 @@ export class AddUser implements OnInit, OnDestroy {
             that.iscpwd = 'N';
         } else if (evt === "delete") {
             alert("delete called");
+        } else if (evt === "back") {
+            this._router.navigate(['/setting/usermaster']);
+        } else if (evt === "clear") {
+            this.resetUserFields();
         }
+    }
+
+    resetUserFields() {
+        $(".ucode").focus();
+        this.ucode = "";
+        this.fname = "";
+        this.lname = "";
+        this.emailid = "";
+        this.pwd = "";
+        this.confpwd = "";
     }
 
     getCompanyDetails() {
@@ -150,39 +165,6 @@ export class AddUser implements OnInit, OnDestroy {
         }
     }
 
-    isValidSuccess() {
-        var that = this;
-
-        if (that.ucode === "") {
-            this._msg.Show(messageType.warn, "Warning", "Enter User Code");
-            return false;
-        }
-
-        if (that.emailid === "") {
-            this._msg.Show(messageType.warn, "Warning", "Enter Email Address");
-            return false;
-        }
-
-        if (that.iscpwd === 'Y') {
-            if (that.pwd === "") {
-                this._msg.Show(messageType.warn, "Warning", "Enter Password");
-                return false;
-            }
-
-            if (that.confpwd === "") {
-                this._msg.Show(messageType.warn, "Warning", "Enter Confirm Password");
-                return false;
-            }
-
-            if (that.pwd !== that.confpwd) {
-                this._msg.Show(messageType.warn, "Warning", "Password and Confirm Password not match");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     private clearcheckboxes(): void {
         $(".allcheckboxes input[type=checkbox]").prop('checked', false);
     }
@@ -190,7 +172,7 @@ export class AddUser implements OnInit, OnDestroy {
     getUserDataById(puid: number) {
         var that = this;
 
-        that._userservice.getUsers({ "flag": "id", "uid": puid }).subscribe(data => {
+        that._userservice.getUserDetails({ "flag": "id", "uid": puid }).subscribe(data => {
             var UserDT = data.data;
 
             that.uid = UserDT[0].uid;
@@ -220,6 +202,12 @@ export class AddUser implements OnInit, OnDestroy {
                                 for (var j = 0; j <= fyrights.length - 1; j++) {
                                     $("#C" + cmpitem.cmpid).find("#" + cmpitem.cmpid + fyrights[j]).prop('checked', true);
                                 }
+                                $(".allcheckboxes").find("#" + cmpitem.cmpid).prop('checked', true);
+                                $("#selectall").prop('checked', true);
+                            }
+                            else {
+                                $(".allcheckboxes").find("#" + cmpitem.cmpid).prop('checked', true);
+                                $("#selectall").prop('checked', false);
                             }
                         }
                     }
@@ -261,7 +249,50 @@ export class AddUser implements OnInit, OnDestroy {
     saveUserMaster() {
         var that = this;
 
-        that.validSuccess = that.isValidSuccess();
+        if (that.ucode === "") {
+            this._msg.Show(messageType.error, "Error", "Enter User Code");
+            $(".ucode").focus();
+            return;
+        }
+
+        if (that.fname === "") {
+            this._msg.Show(messageType.error, "Error", "Enter First Name");
+            $(".fname").focus();
+            return;
+        }
+
+        if (that.lname === "") {
+            this._msg.Show(messageType.error, "Error", "Enter Last Name");
+            $(".lname").focus();
+            return;
+        }
+
+        if (that.emailid === "") {
+            this._msg.Show(messageType.error, "Error", "Enter Email Address");
+            $(".emailid").focus();
+            return;
+        }
+
+        if (that.iscpwd === 'Y') {
+            if (that.pwd === "") {
+                this._msg.Show(messageType.error, "Error", "Enter Password");
+                $(".pwd").focus();
+                return;
+            }
+
+            if (that.confpwd === "") {
+                this._msg.Show(messageType.error, "Error", "Enter Confirm Password");
+                $(".cpwd").focus();
+                return;
+            }
+
+            if (that.pwd !== that.confpwd) {
+                this._msg.Show(messageType.error, "Error", "Password and Confirm Password not match");
+                $(".cpwd").focus();
+                return;
+            }
+        }
+
         var cmprights = that.getCompanyRights();
 
         var saveUser = {
@@ -275,34 +306,32 @@ export class AddUser implements OnInit, OnDestroy {
             "cmprights": cmprights
         }
 
-        if (that.validSuccess) {
-            that._userservice.saveUsers(saveUser).subscribe(data => {
-                var dataResult = data.data;
-                console.log(dataResult);
+        that._userservice.saveUser(saveUser).subscribe(data => {
+            var dataResult = data.data;
+            console.log(dataResult);
 
-                if (dataResult[0].funsave_user.msgid == "1") {
-                    this._msg.Show(messageType.success, "Success", dataResult[0].funsave_user.msg);
-                    that._router.navigate(['/setting/usermaster']);
-                }
-                else if (dataResult[0].funsave_user.msgid == "-1") {
-                    this._msg.Show(messageType.warn, "Warning", dataResult[0].funsave_user.msg);
-                    that.emailid = "";
-                }
-                else {
-                    this._msg.Show(messageType.error, "Error", dataResult[0].funsave_user.msg);
-                }
-            }, err => {
-                this._msg.Show(messageType.error, "Error", err);
-            }, () => {
-                // console.log("Complete");
-            });
-        }
+            if (dataResult[0].funsave_user.msgid == "1") {
+                this._msg.Show(messageType.success, "Success", dataResult[0].funsave_user.msg);
+                that._router.navigate(['/setting/usermaster']);
+            }
+            else if (dataResult[0].funsave_user.msgid == "-1") {
+                this._msg.Show(messageType.error, "Error", dataResult[0].funsave_user.msg);
+                that.emailid = "";
+            }
+            else {
+                this._msg.Show(messageType.error, "Error", dataResult[0].funsave_user.msg);
+            }
+        }, err => {
+            this._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        });
     }
 
     ngOnDestroy() {
         var that = this;
 
-        console.log('ngOnDestroy');
+        that.setActionButtons.setTitle("");
         that.actionButton = [];
         that.subscr_actionbarevt.unsubscribe();
         that.subscribeParameters.unsubscribe();

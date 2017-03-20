@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 
 import { NumTextModule } from '../../usercontrol/numtext';
 
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -42,7 +42,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
-        CommonModule, DataTableModule, NumTextModule],
+        CommonModule, DataTableModule, NumTextModule, AutoCompleteModule],
     declarations: [
         WarehouseAdd,
         WarehouseView,

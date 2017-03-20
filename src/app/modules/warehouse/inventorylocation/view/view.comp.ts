@@ -54,9 +54,9 @@ declare var $: any;
         }).subscribe(result => {
             console.log(result.data);
             var dataset = result.data;
-                this.totalRecords = dataset[1][0].recordstotal;
-                //total row
-                this.invlocationlist = dataset[0];
+            this.totalRecords = dataset[1][0].recordstotal;
+            //total row
+            this.invlocationlist = dataset[0];
         }, err => {
             console.log('Error');
         }, () => {
@@ -80,6 +80,24 @@ declare var $: any;
         } else if (evt === "delete") {
             alert("delete called");
         }
+    }
+
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['/warehouse/invlocation/edit', data.id]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     ngOnDestroy() {

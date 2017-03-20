@@ -4,11 +4,13 @@ import { AuthGuard } from '../../../_service/authguard-service';
 import { AddExpenseComp } from './aded/addexpctrlmap.comp';
 import { ViewExpenseComp } from './view/viewexpctrlmap.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
-import { ActionBarModule } from '../../../_shared/shared.module'
+import { ActionBarModule } from '../../../_shared/shared.module';
+import { CalendarModule } from '../../usercontrol/calendar';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FileUploadModule } from 'primeng/primeng';
+import { DataTableModule, CheckboxModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        FileUploadModule],
+         DataTableModule, CheckboxModule, CalendarModule, NumTextModule],
     declarations: [
         AddExpenseComp,
         ViewExpenseComp,

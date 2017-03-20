@@ -5,13 +5,13 @@
 				<div class="col-md-2">
 					<div class='form-group'>
 						<label>Code</label>
-						<input type="text" validate="" class="form-control code" maxlength="10" name="code" tabindex="1" [(ngModel)]="code">
+						<input type="text" validate="" class="form-control code" placeholder="Code" (blur)="Getcode()" maxlength="10" name="code" tabindex="1" [(ngModel)]="code">
 					</div>
 				</div>
 				<div class="col-md-8">
 					<div class='form-group'>
 						<label>Transpoter Name</label>
-						<input type="text" validate="" class="form-control tranname" name="tranname" tabindex="2" [(ngModel)]="transname">
+						<input type="text" validate="" class="form-control tranname" placeholder="Transpoter name" name="tranname" tabindex="2" [(ngModel)]="transname">
 					</div>
 				</div>
 			</div>
@@ -21,13 +21,13 @@
 				<div class="col-md-5">
 					<div class='form-group'>
 						<label>Description</label>
-						<textarea class="form-control medium-text-box desc" name="desc" tabindex="3" [(ngModel)]="desc"></textarea>
+						<textarea class="form-control medium-text-box desc" name="desc" placeholder="Description" tabindex="3" [(ngModel)]="desc"></textarea>
 					</div>
 				</div>
 				<div class="col-md-5">
 					<div class='form-group'>
 						<label>Remark</label>
-						<textarea class="form-control medium-text-box remark" name="remark" tabindex="4" [(ngModel)]="remark"></textarea>
+						<textarea class="form-control medium-text-box remark"  placeholder="Remark" name="remark" tabindex="4" [(ngModel)]="remark"></textarea>
 					</div>
 				</div>
 			</div>

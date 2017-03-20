@@ -25,12 +25,12 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     // Veriable Declare
-    BankPayId: any = 0;
-    banknameListDT: any = [];
-    bankpaymentDT: any = [];
-
+    bankpayid: any = 0;
     bankid: any = 0;
     status: string = "";
+    
+    bankDT: any = [];
+    bankpaymentDT: any = [];
     statusDT: any = [];
 
     tableLength: any;
@@ -48,7 +48,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     constructor(private _router: Router, private setActionButtons: SharedVariableService, private _bpservice: BankPaymentService,
         private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
-        this.getBankMasterDrop();
+        this.fillDropDownList();
         this.fillStatusDropDown();
         this.resetBPFields();
     }
@@ -71,6 +71,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         this.tableLength = true;
     }
 
+    //Any Button Click Event
+
     actionBarEvt(evt) {
         if (evt === "add") {
             this._router.navigate(['/accounts/bankpayment/add']);
@@ -80,9 +82,9 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     fillStatusDropDown() {
         var that = this;
 
-        this._userService.getMenuDetails({
-            "flag": "trashrights", "ptype": "accs", "mtype": "jv",
-            "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+        that._userService.getMenuDetails({
+            "flag": "trashrights", "ptype": "accs", "mtype": "ap",
+            "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
@@ -98,7 +100,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     }
 
     // Open Edit Mode
-    OpenBPDetails(row) {
+
+    OpenBankPayment(row) {
         if (row.islocked) {
             this._msg.Show(messageType.info, "Info", "This Bank Payment is Locked");
         }
@@ -110,7 +113,17 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         }
     }
 
+    // DropDown
+
+    fillDropDownList() {
+        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+            this.bankDT = d.filter(a => a.group === "bank");
+        });
+    }
+
     // Get Button Click Event
+
     GetBankPayment(from: number, to: number) {
         var that = this;
 
@@ -143,23 +156,46 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         });
     }
 
-    loadBPGrid(event: LazyLoadEvent) {
+    loadBankPaymentGrid(event: LazyLoadEvent) {
         this.GetBankPayment(event.first, (event.first + event.rows));
     }
 
-    getBankMasterDrop() {
-        this._bpservice.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            var dataset = BankName.data;
-            this.banknameListDT = BankName.data;
-            //this.Typelist = dataset.Table1;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            // Done Process
-        });
+    // Expand Grid Button Click
+
+    expandDetails(event) {
+        var that = this;
+        if (event.details && event.details.length > 0) { return; }
+
+        try {
+            event.loading = false;
+
+            this._bpservice.getBankPayment({
+                "flag": "details", "autoid": event.autoid,
+                "from": event.first, "to": (event.first + event.rows)
+            }).subscribe(details => {
+                var dataset = details.data;
+                event.totalDetailsRecords = dataset[1][0].recordstotal;
+
+                if (dataset[0].length > 0) {
+                    event.loading = true;
+                    event.details = dataset[0];
+                }
+                else {
+                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    return;
+                }
+            }, err => {
+                this._msg.Show(messageType.error, "Error", err);
+                console.log(err);
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (error) {
+
+        }
     }
+
+    // Search Button Click
 
     searchBankPayment(dt: DataTable) {
         // if (this.rangewise == "docrange") {
@@ -188,31 +224,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         dt.reset();
     }
 
-    // Button Click
-    expandDetails(dt, event) {
-        var that = this;
-        var row = event.data;
-
-        if (row.details.length === 0) {
-            that._bpservice.getBankPayment({
-                "flag": "details", "autoid": row.autoid,
-                "from": event.first, "to": (event.first + event.rows)
-            }).subscribe(details => {
-                that.totalDetailsRecords = details.data[1][0].recordstotal;
-                row.details = details.data[0];
-                
-                dt.toggleRow(event.data);
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
-        } else {
-            dt.toggleRow(event.data);
-        }
-    }
-
     // Total Sum in Bank Payment Amount
+    
     TotalAmount() {
         if (this.bankpaymentDT != undefined) {
             var total = 0;
@@ -226,5 +239,6 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

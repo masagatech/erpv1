@@ -29,7 +29,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
 
     expvid: number = 0;
     docno: number = 0;
-    ctrlcenterid: number = 0;
+    ccid: number = 0;
     empid: number = 0;
     expheadid: number = 0;
 
@@ -70,12 +70,14 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params["id"] !== undefined) {
-                this.title = "Expesne Voucher : Edit";
+                $(".period").focus();
+                this.setActionButtons.setTitle("Edit Expesne Voucher");
                 this.docno = params["id"];
                 this.getExpenseVoucher(this.docno);
             }
             else {
-                this.title = "Expesne Voucher : Add";
+                $(".period").focus();
+                this.setActionButtons.setTitle("Add Expesne Voucher");
             }
         });
     }
@@ -88,7 +90,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
             var ishide = that.ctrlcenterDT[0].ishide;
 
             if (ishide === 1) {
-                that.ctrlcenterid = this.ctrlcenterDT[0].ctrlcenterid;
+                that.ccid = this.ctrlcenterDT[0].ccid;
                 that.fillEmployeeDDL();
                 that.fillExpenseHeadDDL();
                 $('#ccid').attr('disabled', 'disabled');
@@ -104,7 +106,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
     }
 
     fillEmployeeDDL() {
-        this._expvoucherservice.getAllExpenseVoucher({ "flag": "empwisecc", "uid": this.loginUser.uid, "ccid": this.ctrlcenterid }).subscribe(data => {
+        this._expvoucherservice.getAllExpenseVoucher({ "flag": "empwisecc", "uid": this.loginUser.uid, "ccid": this.ccid }).subscribe(data => {
             this.employeeDT = data.data[1];
             var ishide = this.employeeDT[0].ishide;
 
@@ -123,7 +125,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
     }
 
     fillExpenseHeadDDL() {
-        this._expvoucherservice.getExpenseVoucherDetails({ "flag": "expheadddl", "uid": this.loginUser.uid, "ccid": this.ctrlcenterid, "expfor": this.empid }).subscribe(data => {
+        this._expvoucherservice.getExpenseVoucherDetails({ "flag": "expheadddl", "uid": this.loginUser.uid, "ccid": this.ccid, "expfor": this.empid }).subscribe(data => {
             this.expheadDT = data.data;
         }, err => {
             console.log("Error");
@@ -144,6 +146,11 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         else {
             that.expenseheadDT.push({
                 "expvid": 0,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
+                "ccid": that.ccid,
+                "empid": that.empid,
+                "noofdocs": that.noofdocs,
                 "expheadid": that.expheadid,
                 "amount": that.amount
             });
@@ -162,7 +169,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         this.expvid = 0;
         this.period = "";
         this.noofdocs = 0;
-        this.ctrlcenterid = 0;
+        this.ccid = 0;
         this.empid = 0;
         this.expheadid = 0;
         this.amount = 0;
@@ -194,7 +201,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
         else if (that.noofdocs === 0) {
             that._message.Show(messageType.warn, "Warning", "Please Enter No of Docs");
         }
-        else if (that.ctrlcenterid === 0) {
+        else if (that.ccid === 0) {
             that._message.Show(messageType.warn, "Warning", "Please Select Control Center");
         }
         else if (that.empid === 0) {
@@ -212,7 +219,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
                 "fy": that.loginUser.fy,
                 "period": that.period,
                 "noofdocs": that.noofdocs,
-                "ctrlcenterid": that.ctrlcenterid,
+                "ccid": that.ccid,
                 "empid": that.empid,
                 "narration": that.narration,
                 "uidcode": that.loginUser.login,
@@ -251,7 +258,7 @@ export class AddExpenseVocuherComp implements OnInit, OnDestroy {
             that.docno = _expvdata[0].docno;
             that.period = _expvdata[0].period;
             that.noofdocs = _expvdata[0].noofdocs;
-            that.ctrlcenterid = _expvdata[0].ctrlcenterid;
+            that.ccid = _expvdata[0].ctrlcenterid;
 
             that.fillEmployeeDDL();
             that.empid = _expvdata[0].empid;

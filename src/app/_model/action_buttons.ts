@@ -29,3 +29,12 @@ export class Details {
     details: any
 }
 
+export class Evt {
+    constructor(_evt: string,
+        _$event: any) {
+        this.evt = _evt;
+        this.$event = _$event;
+    }
+    evt: string
+    $event: any
+}

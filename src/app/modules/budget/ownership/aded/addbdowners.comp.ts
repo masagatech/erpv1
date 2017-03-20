@@ -18,10 +18,8 @@ declare var commonfun: any;
     providers: [BudgetService]
 })
 
-export class AddOwnershipComp implements OnInit {
+export class AddOwnershipComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
-
-    OwnershipDT: any = [];
 
     BudgetDT: any = [];
     EnvelopeDT: any = [];
@@ -36,7 +34,6 @@ export class AddOwnershipComp implements OnInit {
     newempid: number = 0;
     newempname: string = "";
     newccid: number = 0;
-    newenvtitle: string = "";
 
     counter: any;
 
@@ -44,17 +41,29 @@ export class AddOwnershipComp implements OnInit {
     subscr_actionbarevt: Subscription;
     formvals: string = "";
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _budgetservice: BudgetService, private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillDropDownList();
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
 
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.setActionButtons.setTitle("Ownership");
+
+        this.setBudgetOwnership();
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -70,19 +79,79 @@ export class AddOwnershipComp implements OnInit {
         if (evt === "save") {
             this.saveOwnershipData();
         } else if (evt === "edit") {
-            this._router.navigate(['/budget/Ownership/edit', this.bid]);
+            this._router.navigate(['/budget/ownership/edit', this.bid]);
         } else if (evt === "back") {
-            this._router.navigate(['/budget/Ownership']);
+            this._router.navigate(['/budget/ownership']);
         }
+    }
+
+    setBudgetOwnership() {
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (this.isadd) {
+                this.setActionButtons.setTitle("Add Budget Ownership");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('#bid').prop('disabled', false);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+            else if (this.isedit) {
+                this.setActionButtons.setTitle("Edit Budget Ownership");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('#bid').prop('disabled', true);
+
+                this.bid = params['id'];
+                this.fillEnvelopeDDL();
+                this.getOwnershipData(this.bid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+            else {
+                this.setActionButtons.setTitle("Details Of Budget Ownership");
+
+                $('button').prop('disabled', true);
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
+                $('#bid').prop('disabled', true);
+
+                this.bid = params['id'];
+                this.fillEnvelopeDDL();
+                this.getOwnershipData(this.bid);
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+            }
+        });
     }
 
     fillDropDownList() {
         var that = this;
 
-        that._budgetservice.getOwnership({ "flag": "dropdown" }).subscribe(data => {
+        that._budgetservice.getOwnership({ "flag": "dropdown", "search": "" }).subscribe(data => {
             that.BudgetDT = data.data[0]._bdgddl;
-            that.EnvelopeDT = data.data[0]._envddl;
             that.CtrlCenterDT = data.data[0]._ccddl;
+        }, err => {
+            this._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    fillEnvelopeDDL() {
+        var that = this;
+
+        that._budgetservice.getOwnership({ "flag": "dropdown", "bid": that.bid, "search": "" }).subscribe(data => {
+            that.EnvelopeDT = data.data[0]._envddl;
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
         }, () => {
@@ -94,12 +163,13 @@ export class AddOwnershipComp implements OnInit {
         for (var i = 0; i < this.ownersRowData.length; i++) {
             var field = this.ownersRowData[i];
 
-            if (field.empid == this.newempid) {
-                this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
+            if ((field.envid == this.newenvid) && (field.empid == this.newempid) && (field.ccid == this.newccid)) {
+                this._msg.Show(messageType.error, "Error", "Duplicate Ownership not Allowed");
 
+                this.newenvid = 0;
                 this.newempid = 0;
                 this.newempname = "";
-                this.newenvtitle = "";
+                this.newccid = 0;
                 return true;
             }
         }
@@ -110,7 +180,10 @@ export class AddOwnershipComp implements OnInit {
     getAutoEmp(me: any, arg: number) {
         var that = this;
 
-        that._budgetservice.getOwnership({ "flag": "autoemp", "search": arg == 0 ? me.newempname : me.empname }).subscribe(data => {
+        that._budgetservice.getOwnership({
+            "flag": "autoemp", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
+            "search": arg == 0 ? me.newempname : me.empname
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -143,8 +216,18 @@ export class AddOwnershipComp implements OnInit {
 
         // Validation
 
+        if (that.newenvid == 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Envelope");
+            return;
+        }
+
         if (that.newempname == "") {
-            that._msg.Show(messageType.error, "Error", "Please Enter Chart of Accounts");
+            that._msg.Show(messageType.error, "Error", "Please Enter Employee");
+            return;
+        }
+
+        if (that.newccid == 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Control Center");
             return;
         }
 
@@ -180,10 +263,10 @@ export class AddOwnershipComp implements OnInit {
 
     // get Ownership by ID
 
-    getOwnershipData() {
+    getOwnershipData(pbid) {
         var that = this;
 
-        that._budgetservice.getOwnership({ "flag": "edit", "bid": that.bid }).subscribe(data => {
+        that._budgetservice.getOwnership({ "flag": "edit", "bid": pbid }).subscribe(data => {
             that.ownersRowData = data.data;
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
@@ -242,6 +325,8 @@ export class AddOwnershipComp implements OnInit {
     }
 
     ngOnDestroy() {
+        this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

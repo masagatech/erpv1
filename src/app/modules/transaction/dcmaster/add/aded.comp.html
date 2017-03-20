@@ -5,20 +5,22 @@
 				<div class="col-md-6">
 					<div class='form-group' id="customerAuto">
 						<label>Customer</label>
-						<p-autoComplete [(ngModel)]="CustName"  class="form-controlAutoComplete" (onSelect)="CustomerSelect($event)" [suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" placeholder="Customer" [minLength]="1"></p-autoComplete>
+						<p-autoComplete [(ngModel)]="CustName" id="CustName" class="form-controlAutoComplete" (onSelect)="CustomerSelect($event)"
+							[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Customer"
+							[minLength]="1"></p-autoComplete>
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class='form-group'>
 						<label class="control-label">Document Date</label>
-						<calendar #docdatecal [name]="'docdate'"></calendar>
+						<calendar #docdatecal [tabindex]="2" [name]="'docdate'"></calendar>
 					</div>
 				</div>
 
 				<div class="col-md-3">
 					<div class='form-group'>
 						<label class="control-label">Delivery Date</label>
-						<calendar #deldatecal [name]="'deldate'"></calendar>
+						<calendar #deldatecal [tabindex]="3" [name]="'deldate'"></calendar>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -51,19 +53,19 @@
 								{{rowIndex+1}}
 							</template>
 						</p-column>
-						<p-column header="Item" [style]="{'text-align':'left'}">
+						<p-column header="Item"  [style]="{'text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<input type="text" class="form-control ProdName inlinetextbox" tabindex="6" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
 									autocomplete='off' value="" />
 							</template>
 						</p-column>
-						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
-							<template let-col let-row="rowData" pTemplate="editor">
-								<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.qty" (keyup)="ratechange(qty,newrate,dis,row,1)"></numtext>
+						<p-column header="Qty"  [style]="{'width':'120px','text-align':'left'}">
+							<template let-col let-row="rowData"  let-rowIndex="rowIndex" pTemplate="editor">
+								<numtext [iscurrency]="false" [decimals]="2" id="{{'nmtxt_' + rowIndex + '1'}}" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.qty" (keyup)="ratechange(qty,newrate,dis,row,1)"></numtext>
 							</template>
 						</p-column>
 						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
-							<template let-col let-row="rowData" pTemplate="editor">
+							<template let-col let-row="rowData"  pTemplate="editor">
 								<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="8" (ngModelChange)="ratechange(qty,newrate,dis,row,1)">
 						<option *ngFor="let row of row.rateslist" [value]="row.id">
 							{{row.val}}
@@ -72,13 +74,13 @@
 							</template>
 						</p-column>
 						<p-column header="Dis %" [style]="{'width':'120px','text-align':'left'}">
-							<template let-col let-row="rowData" pTemplate="editor">
-								<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="9" (keyup)="ratechange(qty,newrate,dis,row,1)" [(ngModel)]="row.dis"></numtext>
+							<template let-col let-row="rowData"  let-rowIndex="rowIndex" pTemplate="editor">
+								<numtext [iscurrency]="false" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '2'}}" [tabindex]="9" (keyup)="ratechange(qty,newrate,dis,row,1)" [(ngModel)]="row.dis"></numtext>
 							</template>
 						</p-column>
 						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
-							<template let-col let-row="rowData" pTemplate="editor">
-								<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+							<template let-col let-row="rowData"  let-rowIndex="rowIndex" pTemplate="editor">
+								<numtext [iscurrency]="true" [islabel]="true" id="{{'nmtxt_' + rowIndex + '3'}}" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
 							</template>
 						</p-column>
 						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
@@ -96,7 +98,7 @@
 										<td style="vertical-align: top;"><input type="text" tabindex="10" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
 												autocomplete='off' value="" /></td>
 										<td style="width:120px;vertical-align: top;">
-											<numtext [iscurrency]="false" css="inlinetextbox" tabindex="11" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis,this,0)"
+											<numtext [iscurrency]="false" css="inlinetextbox" [id]='"qty"' [tabindex]="11" (keyup.enter)="NewRowAdd()" (keyup)="ratechange(qty,newrate,dis,this,0)"
 												[(ngModel)]="qty"></numtext>
 										</td>
 										<td style="width:120px;vertical-align: top;">
@@ -108,11 +110,11 @@
 											</select>
 										</td>
 										<td style="width:120px;vertical-align: top;">
-											<numtext [iscurrency]="false" css="inlinetextbox" tabindex="13" (keyup)="ratechange(qty,newrate,dis,this,0)" (keyup.enter)="NewRowAdd()"
+											<numtext [iscurrency]="false" css="inlinetextbox" [id]='"dis"' [tabindex]="13" (keyup)="ratechange(qty,newrate,dis,this,0)" (keyup.enter)="NewRowAdd()"
 												[(ngModel)]="dis"></numtext>
 										</td>
 										<td style="width:120px;vertical-align: top;">
-											<numtext [iscurrency]="true" css="inlinetextbox" [islabel]="true" [(ngModel)]="amount"></numtext>
+											<numtext [iscurrency]="true" css="inlinetextbox" [id]='"amount"'  [islabel]="true" [(ngModel)]="amount"></numtext>
 										</td>
 										<td style="width:80px;vertical-align: top;"><button type="button" tabindex="14" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="NewRowAdd()"><i class="fa fa-plus"></i></button></td>
 									</tr>
@@ -123,7 +125,6 @@
 									</tr>
 								</tbody>
 							</table>
-
 						</footer>
 					</p-dataTable>
 				</div>
@@ -214,7 +215,7 @@
 									<label>LR Date</label>
 									<div class="controls">
 										<div class="input-group">
-											<input type="text" name="date" id="lrDate" tabindex="3" class="date-picker form-control" [(ngModel)]="lrDate" />
+											<input type="text" name="date" id="lrDate" class="date-picker form-control" [(ngModel)]="lrDate" />
 											<label for="date" class="input-group-addon btn">
 												<span class="glyphicon glyphicon-calendar"></span>
 										</label>
@@ -225,7 +226,7 @@
 							<div class="col-md-3">
 								<div class='form-group'>
 									<label>Transpoter</label>
-									<select class="form-control" [(ngModel)]="Traspoter" tabindex="6">
+									<select class="form-control" [(ngModel)]="Traspoter">
 								<option *ngFor="let items of Transpoterlist" [value]="items.val">
 									{{items.label}}
 								</option>

@@ -30,7 +30,7 @@
                 </template>
             </p-column>
             <template let-rows>
-                <table class="table table-striped table-bordered table-hover" *ngFor="let row of rows.rbdetails | groupBy:'docno'">
+                <table class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>Doc No</th>
@@ -40,22 +40,22 @@
                             <th class="text-right">Quantity</th>
                         </tr>
                     </thead>
-                    <tbody *ngFor="let drow of row.value">
+                    <tbody *ngFor="let row of rows.rbdetails">
                         <tr>
                             <td align="right">
-                                {{drow.docno}}
+                                {{row.docno}}
                             </td>
                             <td width="400px">
-                                {{drow.rbtitle}}
+                                {{row.rbtitle}}
                             </td>
                             <td class="text-right">
-                                {{drow.seriesno}}
+                                {{row.seriesno}}
                             </td>
                             <td class="text-right">
-                                {{drow.noofpage}}
+                                {{row.noofpage}}
                             </td>
                             <td class="text-right">
-                                {{drow.qty}}
+                                {{row.qty}}
                             </td>
                         </tr>
                     </tbody>

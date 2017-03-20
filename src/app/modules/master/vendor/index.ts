@@ -8,7 +8,8 @@ import { VenView } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule,AutoCompleteModule } from 'primeng/primeng';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -38,7 +39,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, DataTableModule, CheckboxModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
+     CommonModule, DataTableModule, CheckboxModule,AutoCompleteModule,NumTextModule],
     declarations: [
         VenAdd,
         VenView,

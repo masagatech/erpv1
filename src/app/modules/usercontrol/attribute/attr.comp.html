@@ -3,13 +3,14 @@
 		<div class="col-md-5">
 			<div class='form-group'>
 				<label>{{labelname}}</label>
-				<input type="text=" class="form-control attr" tabindex="300" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
+				<input type="text=" class="form-control attr" placeholder="Attribute name" tabindex="300" value="" [(ngModel)]="attrname" (keyup.enter)="AttributeAdd()"
 					(keyup)="getAutoCompleteattr(this)" />
+			<!--<p-autoComplete [(ngModel)]="CustName"  class="form-controlAutoComplete" (onSelect)="AttributeSelect($event)" [suggestions]="AttributeAutodata" (completeMethod)="AttributeAuto($event)" field="label" [size]="30" placeholder="Attribute Name" [minLength]="1"></p-autoComplete>-->
 			</div>
 		</div>
 		<div class="col-md-1">
 			<div class='form-group'>
-				<div style="padding-top: 28px;">
+				<div class="setfltrbtn">
 					<button class="btn btn-theme btn-sm" type="button" tabindex="301" (click)="AttributeAdd()" title="Add"><i class="fa fa-plus"></i></button>
 				</div>
 			</div>

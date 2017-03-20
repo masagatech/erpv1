@@ -18,7 +18,7 @@ declare var $: any;
     providers: [BankReceiptService, CommonService, ALSService] //Provides Add Service dcmaster-service.ts, AutoService
 })
 
-export class bankreceiptaddedit implements OnInit, OnDestroy {
+export class AddEditBankReceipt implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
@@ -29,16 +29,17 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     @ViewChild("depdate")
     depdate: CalendarComp;
 
-    typ: number = 0;
-    acid: number = 0;
-    acname: string = "";
-    cheqno: string = "";
+    typ: string = "";
+    custid: number = 0;
+    custname: string = "";
+    chequeno: string = "";
     amount: any = "";
     refno: string = "";
     narration: string = "";
 
-    banknamelistDT: any = [];
-    typelistDT: any = [];
+    accountsDT: any = [];
+    bankDT: any = [];
+    banktypeDT: any = [];
 
     module: string = "";
     suppdoc: any = [];
@@ -47,12 +48,13 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
     isadd: boolean = false;
     isedit: boolean = false;
     isdetails: boolean = false;
+    ispdc: boolean = false;
 
     private subscribeParameters: any;
 
     //Page Load
 
-    constructor(private setActionButtons: SharedVariableService, private _nrService: BankReceiptService, private _autoservice: CommonService,
+    constructor(private setActionButtons: SharedVariableService, private _brService: BankReceiptService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _router: Router, private _userService: UserService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
@@ -61,20 +63,22 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
         this.isdetails = _router.url.indexOf("details") > -1;
+        this.ispdc = _router.url.indexOf("pdc") > -1;
 
-        this.getBankMasterDrop();
-        this.getTypDrop();
+        this.fillDropDownList();
     }
+
+    // Reset Fields
 
     resetBankReceipt() {
         this.autoid = 0;
         this.bankid = 0;
         var date = new Date();
         this.depdate.setDate(date);
-        this.typ = 0;
-        this.acid = 0;
-        this.acname = "";
-        this.cheqno = "";
+        this.typ = "";
+        this.custid = 0;
+        this.custname = "";
+        this.chequeno = "";
         this.amount = "";
         this.refno = "";
         this.narration = "";
@@ -98,9 +102,11 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
         })
     }
 
-    //Document Ready
+    // Document Ready
 
     ngOnInit() {
+        $(".custcode").focus();
+
         this.depdate.initialize(this.loginUser);
         this.depdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -112,8 +118,6 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
-        $(".bankid").focus();
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
@@ -146,7 +150,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "edit").hide = true;
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
-            else {
+            else if (this.isdetails) {
                 this.setActionButtons.setTitle("Bank Receipt > Details");
 
                 $('button').prop('disabled', true);
@@ -160,6 +164,22 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
                 this.actionButton.find(a => a.id === "delete").hide = false;
+            }
+            else if (this.ispdc) {
+                this.setActionButtons.setTitle("Bank Receipt > Add");
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('.chequeno').prop('disabled', true);
+
+                this.autoid = params['pdcid'];
+                this.GetBankReceiptByPDC(this.autoid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+                this.actionButton.find(a => a.id === "delete").hide = true;
             }
         });
     }
@@ -180,26 +200,58 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
         }
     }
 
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Customer
+    
+    selectAutoAccounts(event) {
+        this.custid = event.value;
+        this.custname = event.label;
+    }
+
+    // DropDown
+
+    fillDropDownList() {
+        this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+
+            this.bankDT = d.filter(a => a.group === "bank");
+            this.banktypeDT = d.filter(a => a.group === "banktype");
+        });
+    }
+
     // Get And Fill Edit Mode
 
     GetBankReceipt(pautoid) {
-        this._nrService.getBankReceipt({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
+        this._brService.getBankReceipt({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
 
             this.bankid = _bankreceipt[0].bankid;
-            this.depdate = _bankreceipt[0].depdate;
-            this.acname = _bankreceipt[0].partyname;
-            this.acid = _bankreceipt[0].acid;
+            var chequedate = new Date(_bankreceipt[0].chequedate);
+            this.depdate.setDate(chequedate);
+            this.custid = _bankreceipt[0].acid;
+            this.custname = _bankreceipt[0].partyname;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
-            this.cheqno = _bankreceipt[0].cheqno;
+            this.chequeno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
 
-            this.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-            this.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            this.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
+            this.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
         }, err => {
             console.log('Error');
         }, () => {
@@ -207,17 +259,25 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
         });
     }
 
-    //Clear All Controll After Saving
+    GetBankReceiptByPDC(pautoid) {
+        this._brService.getBankReceipt({ "flag": "pdc", "autoid": pautoid }).subscribe(data => {
+            var _bankreceipt = data.data;
 
-    ClearControll() {
-        this.bankid = 0;
-        this.depdate.setDate("");
-        this.acname = "";
-        this.refno = "";
-        this.typ = 0;
-        this.cheqno = "";
-        this.amount = "";
-        this.narration = "";
+            this.bankid = _bankreceipt[0].bankid;
+            var chequedate = new Date(_bankreceipt[0].chequedate);
+            this.depdate.setDate(chequedate);
+            this.custid = _bankreceipt[0].acid;
+            this.custname = _bankreceipt[0].partyname;
+            this.refno = "";
+            this.typ = _bankreceipt[0].typ;
+            this.chequeno = _bankreceipt[0].chequeno;
+            this.amount = _bankreceipt[0].amount;
+            this.narration = "";
+        }, err => {
+            console.log('Error');
+        }, () => {
+            //Done Process
+        });
     }
 
     //Send Paramter In Save Method
@@ -247,21 +307,22 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             $(".depdate").focus();
             return false;
         }
-        if (this.acname == "") {
+        if (this.custname == "") {
             that._msg.Show(messageType.success, "Success", "Please Select Account Code");
             $(".custcode").focus();
             return false;
         }
 
         var ParamName = {
+            "autoid": this.autoid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "depdate": this.depdate.getDate(),
             "refno": this.refno,
             "bankid": this.bankid,
             "typ": this.typ,
-            "acid": this.acid,
-            "cheqno": this.cheqno,
+            "acid": this.custid,
+            "cheqno": this.chequeno,
             "amount": this.amount,
             "narration": this.narration,
             "uidcode": this.loginUser.login,
@@ -269,7 +330,7 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
             "isactive": isactive
         }
 
-        this._nrService.saveBankReceipt(ParamName).subscribe(bank => {
+        this._brService.saveBankReceipt(ParamName).subscribe(bank => {
             var dataResult = bank.data;
 
             if (dataResult[0].funsave_bankreceipt.msgid == 1) {
@@ -284,60 +345,6 @@ export class bankreceiptaddedit implements OnInit, OnDestroy {
         }, err => {
             that._msg.Show(messageType.success, "Success", err);
             console.log(err);
-        }, () => {
-            //Done Process
-        });
-    }
-
-    //Auto Completed Customer Name
-
-    getAutoComplete(me: any) {
-        var _me = this;
-        var that = this;
-        this._autoservice.getAutoData({ "type": "customer", "cmpid": this.loginUser.cmpid, "search": that.acname }).subscribe(data => {
-            $(".custcode").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.acid = ui.item.value;
-                    me.acname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    // Get Bank Master And Type
-
-    getBankMasterDrop() {
-        this._nrService.getBankMaster({
-            "type": "bank"
-        }).subscribe(bank => {
-            this.banknamelistDT = bank.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-    }
-
-    getTypDrop() {
-        this._nrService.getBankMaster({
-            "type": "banktype"
-        }).subscribe(banktype => {
-            this.typelistDT = banktype.data;
-        }, err => {
-            console.log('Error');
         }, () => {
             //Done Process
         });

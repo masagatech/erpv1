@@ -45,4 +45,22 @@ export class BudgetService {
     saveOwnership(req: any) {
         return this._dataserver.post("saveOwnership", req)
     }
+
+    // Start Forecasting
+    
+    getMonthDetails(req: any) {
+        return this._dataserver.post("getMonthDetails", req)
+    }
+
+    viewStartForeCasting(req: any) {
+        return this._dataserver.post("viewStartForeCasting", req)
+    }
+
+    getExpenseBudget(req: any) {
+        return this._dataserver.post("getStartForeCasting", req)
+    }
+
+    saveExpenseBudget(req: any) {
+        return this._dataserver.post("saveStartForeCasting", req)
+    }
 }

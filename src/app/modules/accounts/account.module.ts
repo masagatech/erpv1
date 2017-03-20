@@ -52,6 +52,21 @@ const routerConfig = [
               return comp.default;
             }),
           },
+          {
+            path: 'taxmaster', loadChildren: () => System.import('./taxmaster').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          {
+            path: 'cashflow', loadChildren: () => System.import('./cashflow').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          {
+            path: 'bankreco', loadChildren: () => System.import('./bankreco').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: AccountDashboardComp, canActivateChid: [AuthGuard], },
         ]

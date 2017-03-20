@@ -50,9 +50,10 @@
 			</div>
 		</div>
 		<div class="col-md-1">
-			<div class="form-group">
+			<div class="form-group setfltrbtn">
 				<label>&nbsp;</label>
-				<button type="button" class="btn btn-thme btn-sm" (click)="searchDebitNote(dt)">Get</button>
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchDebitNote(dt)">
+					<i class="fa fa-arrow-right"></i></button>
 			</div>
 		</div>
 	</div>
@@ -60,44 +61,40 @@
 
 <div class="col-md-12">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="viewDebitNoteDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
+		<p-dataTable #dt [value]="viewDebitNoteDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
 			(onLazyLoad)="loadDebitNoteGrid($event)" expandableRows="true">
 			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
-			<p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
-			<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
+			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="acname" header="A/C Name" [style]="{'text-align':'left'}"></p-column>
+			<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
 					{{row.totdramt | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
+			<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
 					{{row.totcramt | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">
-				<template let-row="rowData" pTemplate type="body">
-					{{row.issh == 1 ? row.narration : row.smallnarr}}
-				</template>
-			</p-column>
-			<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm">
-					<i class="fa fa-arrow-right"></i>
-				</button>
+					<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
+					</button>
 				</template>
 			</p-column>
 			<template let-row>
-				<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
-					<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-					<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
+				<span *ngIf="!row.loading">Loading....</span>
+				<p-dataTable [value]="row.details" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
+					<p-column field="acname" header="A/C Name" [style]="{'width':'690px','text-align':'left'}"></p-column>
+					<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'right'}">
 						<template let-drow="rowData" pTemplate type="body">
 							{{drow.dramt | currency:loginUser._globsettings.currency:true}}
 						</template>
 					</p-column>
-					<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
+					<p-column header="Cr. Amt" [style]="{'text-align':'right'}">
 						<template let-drow="rowData" pTemplate type="body">
 							{{drow.cramt | currency:loginUser._globsettings.currency:true}}
 						</template>

@@ -59,15 +59,14 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['uid'] !== undefined) {
-                this.setActionButtons.setTitle("User Rights > Edit");
-
-                this.title = "Edit User Rights";
+                this.setActionButtons.setTitle("Edit User Rights");
 
                 this.uid = params['uid'];
                 console.log(params['uid']);
@@ -76,7 +75,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 //this.getUserRightsById(params['uid']);
             }
             else {
-                this.setActionButtons.setTitle("User Rights");
+                this.setActionButtons.setTitle("Add User Rights");
 
                 setTimeout(function () {
                     $("#uname").focus();
@@ -91,12 +90,31 @@ export class AddUserRights implements OnInit, OnDestroy {
         if (evt === "save") {
             this.saveUserRights();
         }
+        else if (evt === "clear") {
+            this.resetUserRights();
+        }
+    }
+
+    resetUserRights() {
+        $(".uname").focus();
+        this.uid = "";
+        this.uname = "";
+        this.refuid = "";
+        this.refuname = "";
+        this.CompanyDetails = [];
+        this.selectedCompany.menudetails = [];
+        this.fy = 0;
     }
 
     getUserAuto(me: any) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": that.uname }).subscribe(data => {
+        that._commonservice.getAutoData({
+            "type": "userwithcode",
+            "cmpid": 1,
+            "fy": 1,
+            "search": that.uname
+        }).subscribe(data => {
             $(".uname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -118,7 +136,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 }
             });
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -144,7 +162,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 }
             });
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -156,7 +174,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         that._compservice.getCompany({ "flag": "usrwise", "uid": puid }).subscribe(data => {
             that.CompanyDetails = data.data;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -172,7 +190,7 @@ export class AddUserRights implements OnInit, OnDestroy {
         that._fyservice.getfy({ "flag": "usrcmpwise", "uid": row.uid, "cmpid": row.cmpid }).subscribe(data => {
             that.FYDetails = data.data;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -187,7 +205,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
             that.getFYDetails(row);
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         });
@@ -230,10 +248,19 @@ export class AddUserRights implements OnInit, OnDestroy {
         }
 
         if (this.uid == "") {
-            that._msg.Show(messageType.info, "Info", "Please Enter User");
+            that._msg.Show(messageType.error, "Error", "Please Enter User");
+        }
+        else if (this.refuid == "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Reference User");
+        }
+        else if (this.selectedCompany.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Company");
+        }
+        else if (this.selectedCompany.menudetails.length === 0) {
+            that._msg.Show(messageType.error, "Error", "Please Select Company");
         }
         else if (this.fy == 0) {
-            that._msg.Show(messageType.info, "Info", "Please Select Financial Year");
+            that._msg.Show(messageType.error, "Error", "Please Select Financial Year");
         }
         else {
             this._userservice.saveUserRights(saveUR).subscribe(data => {
@@ -319,7 +346,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                 }
             }
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })

@@ -1,0 +1,103 @@
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-2" style="border-right: 3px #d1d8dd dashed;">
+			<div class="form-group">
+				<label>Search</label>
+				<input type="text" name="search" [(ngModel)]="search" class="form-control" (keyup)="fillBudgetDropDown()" />
+			</div>
+		</div>
+		<div class="col-md-10">
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="col-md-5">
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label>Status</label>
+						<select class="form-control" [(ngModel)]="status">
+							<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-1">
+					<div class="form-group">
+						<label>&nbsp;</label>
+						<button type="button" class="btn btn-theme btn-sm" (click)="searchEnvelope(dt)">Get</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-2" style="border-right: 3px #d1d8dd dashed;">
+			<p-dataList [value]="pendingbudgetDT" selectionMode="single">
+				<header>
+					Pending
+				</header>
+				<template let-row>
+					<div style="padding: 10px;">
+						{{row.btitle}}
+					</div>
+				</template>
+			</p-dataList>
+			<div *ngIf="allocatedbudgetDT.length" style="margin: 15px 0;">
+				<p-dataList [value]="allocatedbudgetDT" selectionMode="single">
+					<header>
+						Allocated
+					</header>
+					<template let-row>
+						<div style="padding: 10px;">
+							<a role="button" (click)="getEnvelopeMaster(row);">{{row.btitle}}</a>
+						</div>
+					</template>
+				</p-dataList>
+			</div>
+			<div *ngIf="!allocatedbudgetDT.length" style="margin: 15px 0; text-align: center;">
+				<h3>No Budget Allocated</h3>
+			</div>
+		</div>
+		<div class="col-md-10">
+			<div class="row" *ngIf="selectedbid === 0">
+				<div class="col-md-12">
+					<h3>Please select Budget Item</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-11">
+					<p-dataTable #dt [value]="viewEnvelopeDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadEnvelopeGrid($event)">
+						<p-column field="btitle" header="Title" [style]="{'width':'150px','text-align':'left'}"></p-column>
+						<p-column field="groupname" header="Group Name" [style]="{'text-align':'left'}"></p-column>
+						<p-column field="envtitle" header="Envelope" [style]="{'width':'150px','text-align':'left'}"></p-column>
+						<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+						<p-column [style]="{'width':'45px','text-align':'left'}">
+							<template let-row="rowData" pTemplate type="body">
+								<button type="button" (click)="openEnvelope(row)" class="btn btn-theme btn-sm btn-grid">
+									<i class="fa fa-edit"></i>
+								</button>
+							</template>
+						</p-column>
+						<template let-row>
+							<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalDetailsRecords" expandableRows="true">
+								<p-column field="acname" header="A/C Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+								<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'left'}">
+									<template let-drow="rowData" pTemplate type="body">
+										{{drow.dramt | currency:loginUser._globsettings.currency:true}}
+									</template>
+								</p-column>
+								<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'left'}">
+									<template let-drow="rowData" pTemplate type="body">
+										{{drow.cramt | currency:loginUser._globsettings.currency:true}}
+									</template>
+								</p-column>
+							</p-dataTable>
+						</template>
+					</p-dataTable>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

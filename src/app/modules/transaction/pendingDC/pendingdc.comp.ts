@@ -43,6 +43,8 @@ declare var $: any;
     CustomerDetails: any = [];
     dcdetails: any = [];
 
+    CustomerAutodata: any[];
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -96,7 +98,7 @@ declare var $: any;
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         setTimeout(function () {
-            $(".Custcode").focus();
+            $(".Custcode input").focus();
         }, 0);
 
         var date = new Date();
@@ -111,7 +113,7 @@ declare var $: any;
         this.doclist = [];
         this.CustomerDetails = [];
         this.DocDetailslist = [];
-        $(".Custcode").focus();
+        $(".Custcode input").focus();
     }
 
     //Create Paramter Json
@@ -125,9 +127,11 @@ declare var $: any;
                     "acid": this.acid,
                     "itemid": item.itemsid,
                     "ordqty": item.ordqty,
-                    "rate": item.dcrate,
+                    "rate": item.rate,
+                    "rateid": item.dcrate,
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
+                    "typ":"order",
                     "createdby": this.loginUser.login,
                     "confimstatus": 'Menual',
                     "autoconfirm": false
@@ -143,8 +147,6 @@ declare var $: any;
             this.ClearControl();
         }
         else if (evt === "save") {
-            debugger;
-            var DirectInvoice = 0;
             this.ConfirmServies.ConfirmDC({
                 "confirmdetails": this.paramjson(),
                 "docno": this.docno,
@@ -154,7 +156,7 @@ declare var $: any;
                     this._msg.Show(messageType.success, "success", dataset[0].funsave_salesorderconfirm.msg + ' ' + dataset[0].funsave_salesorderconfirm.maxid);
                     this.CustomerDetails = [];
                     this.DocDetailslist = [];
-                    //this.getPendingDocNo();
+                    this.getPendingDocNo();
                 }
             }, err => {
                 console.log('Error');
@@ -176,14 +178,17 @@ declare var $: any;
     //Get Pending DC Document no
     getPendingDocNo() {
         try {
+            this.CustomerDetails = [];
+            this.dcdetails = [];
+            this.DocDetailslist = [];
             this.ConfirmServies.getPendingOrdNo({
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "acid": this.custid,
-                "createdby": this.loginUser.login
-                // "fromdate": this.FromDate,
-                // "todate": this.ToDate,
-                // "flag": ""
+                "createdby": this.loginUser.login,
+                "from": this.fromcal.getDate(),
+                "to": this.tocal.getDate(),
+                "typ":"order"
             }).subscribe(ordno => {
                 var dataset = ordno.data === null ? [] : ordno.data;
                 if (dataset.length > 0) {
@@ -192,12 +197,11 @@ declare var $: any;
                 else {
                     this._msg.Show(messageType.info, "info", "Record Not Found");
                     this.doclist = [];
-                    $(".Custcode").focus();
+                    $(".Custcode input").focus();
                 }
             }, err => {
                 this._msg.Show(messageType.error, "error", "Service Error");
             }, () => {
-                this.custid = "";
             });
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
@@ -215,7 +219,8 @@ declare var $: any;
                 "cmpid": this.loginUser.cmpid,
                 "docno": items.docno,
                 "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
+                "createdby": this.loginUser.login,
+                "typ":"order"
             }).subscribe(documentno => {
                 this.CustomerDetails = documentno.data[0] === null ? [] : documentno.data[0];
                 this.dcdetails = documentno.data[1] === null ? [] : documentno.data[1];
@@ -247,41 +252,29 @@ declare var $: any;
 
     }
 
-    //Get Auto Completed Customer
-    getAutoComplete(me: any) {
-        var _me = this;
+    //Customer Autoextender
+    CustomerAuto(event) {
         try {
-            this._autoservice.getAutoData({
+            let query = event.query;
+            this._autoservice.getAutoDataGET({
                 "type": "customer",
-                "search": _me.custname,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".Custcode").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.custid = ui.item.value;
-                        me.custname = ui.item.label;
-                    }
-                });
-            }, err => {
-                this._msg.Show(messageType.error, "error", "Service Error");
-            }, () => {
-                // console.log("Complete");
-            })
+                "createdby": this.loginUser.login,
+                "search": query
+            }).then(data => {
+                this.CustomerAutodata = data;
+            });
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
 
+    }
+
+    //Selected Customer Id And Name
+    CustomerSelect(event) {
+        this.custid = event.value;
+        this.custname = event.label;
     }
 
     //Quntity Calculation
@@ -321,17 +314,6 @@ declare var $: any;
                 }
             }
         }
-    }
-
-    //Sub Total
-    private SubTotal() {
-        // if (this.DocDetailslist != undefined) {
-        //     var Subtotal = 0;
-        //     for (var i = 0; i < this.DocDetailslist.length; i++) {
-        //         Subtotal += parseInt(this.DocDetailslist[i].Amount);
-        //     };
-        //     return Subtotal;
-        // }
     }
 
     ngOnDestroy() {

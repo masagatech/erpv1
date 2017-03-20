@@ -22,7 +22,7 @@ declare var commonfun: any;
     subscr_actionbarevt: Subscription;
 
     // local veriable 
-    qty: number = 0;
+    qty: any = 0;
     docno: number = 0;
     NewItemsName: any = "";
     NewItemsid: any = 0;
@@ -56,6 +56,10 @@ declare var commonfun: any;
     asfora: any = 0;
     asforb: any = 0;
 
+    ItemAutodata: any = [];
+    FromWHAutodata: any = [];
+    ToAutodata: any = [];
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -76,7 +80,7 @@ declare var commonfun: any;
         this.setActionButtons.setTitle("Stock Transfer");
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        $(".from").focus();
+
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params['id'] !== undefined) {
                 this.actionButton.find(a => a.id === "save").hide = true;
@@ -95,12 +99,12 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-
         // Check this Ledger True And false
         this.checkLedger();
 
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
+            $(".fromware input").focus();
         }, 0);
     }
 
@@ -134,7 +138,82 @@ declare var commonfun: any;
 
     }
 
-    // //Selected Items
+    //Item AutoExtender
+    ItemAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "warehouseTrasnfer",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "warehouse": this.fromwareid,
+            "search": query
+        }).then(data => {
+            this.ItemAutodata = data;
+        });
+    }
+
+    //Selected Inline Item Selected
+    ItemSelect(event, arg) {
+        var that = this;
+        if (arg === 1) {
+            that.itemsname = event.label;
+            that.itemsid = event.value;
+            if (that.isproceed === 'true') {
+                that.ItemsSelected(that.itemsid, 1);
+            }
+            that.editadd = 1;
+        } else {
+            that.NewItemsid = event.value;
+            that.NewItemsName = event.label;
+            if (that.isproceed === 'true') {
+                that.ItemsSelected(that.NewItemsid, 0);
+            }
+            that.editadd = 0;
+        }
+    }
+
+    //From warehouse Autoextender
+    FromWHAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "warehouse",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.FromWHAutodata = data;
+        });
+    }
+
+    //From warehouse selected
+    FromWHSelect(event) {
+        this.fromwareid = event.value;
+        this.fromwarname = event.label;
+    }
+
+    //To warehouse Autoextender
+    ToAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "warehouse",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.ToAutodata = data;
+        });
+    }
+
+    //To warehouse selected
+    ToSelect(event) {
+        this.Towarid = event.value;
+        this.Towarname = event.label;
+    }
+
+    // //Inline Items Selected Event
     ItemsSelected(val, flag) {
         try {
             if (val != "") {
@@ -175,81 +254,81 @@ declare var commonfun: any;
     }
 
     //AutoCompletd Product Name
-    getAutoCompleteProd(me: any, arg: number) {
-        var _me = this;
-        this._autoservice.getAutoData({
-            "type": "warehouseTrasnfer",
-            "search": arg == 0 ? me.NewItemsName : me.itemsname,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "warehouse": this.fromwareid,
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".ProdName").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function(event, ui) {
-                    if (arg === 1) {
-                        me.itemsname = ui.item.label;
-                        me.itemsid = ui.item.value;
-                        if (_me.isproceed === 'true') {
-                            _me.ItemsSelected(me.Itemsid, 1);
-                        }
-                        me.editadd = 1;
-                    } else {
-                        me.NewItemsName = ui.item.label;
-                        me.NewItemsid = ui.item.value;
-                        if (_me.isproceed === 'true') {
-                            _me.ItemsSelected(me.NewItemsid, 0);
-                        }
-                        me.editadd = 0;
-                    }
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
+    // getAutoCompleteProd(me: any, arg: number) {
+    //     var _me = this;
+    //     this._autoservice.getAutoData({
+    //         "type": "warehouseTrasnfer",
+    //         "search": arg == 0 ? me.NewItemsName : me.itemsname,
+    //         "cmpid": this.loginUser.cmpid,
+    //         "fy": this.loginUser.fy,
+    //         "warehouse": this.fromwareid,
+    //         "createdby": this.loginUser.login
+    //     }).subscribe(data => {
+    //         $(".ProdName").autocomplete({
+    //             source: data.data,
+    //             width: 300,
+    //             max: 20,
+    //             delay: 100,
+    //             minLength: 0,
+    //             autoFocus: true,
+    //             cacheLength: 1,
+    //             scroll: true,
+    //             highlight: false,
+    //             select: function (event, ui) {
+    //                 if (arg === 1) {
+    //                     me.itemsname = ui.item.label;
+    //                     me.itemsid = ui.item.value;
+    //                     if (_me.isproceed === 'true') {
+    //                         _me.ItemsSelected(me.Itemsid, 1);
+    //                     }
+    //                     me.editadd = 1;
+    //                 } else {
+    //                     me.NewItemsName = ui.item.label;
+    //                     me.NewItemsid = ui.item.value;
+    //                     if (_me.isproceed === 'true') {
+    //                         _me.ItemsSelected(me.NewItemsid, 0);
+    //                     }
+    //                     me.editadd = 0;
+    //                 }
+    //             }
+    //         });
+    //     }, err => {
+    //         console.log("Error");
+    //     }, () => {
+    //         // console.log("Complete");
+    //     })
+    // }
 
     //From Warehouse
-    getAutoCompleteWareFrom(me: any) {
-        var _me = this;
-        this._autoservice.getAutoData({
-            "type": "warehouse",
-            "search": _me.fromwarname,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy
-        }).subscribe(data => {
-            $(".from").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function(event, ui) {
-                    me.fromwareid = ui.item.value;
-                    me.fromwarname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
+    // getAutoCompleteWareFrom(me: any) {
+    //     var _me = this;
+    //     this._autoservice.getAutoData({
+    //         "type": "warehouse",
+    //         "search": _me.fromwarname,
+    //         "cmpid": this.loginUser.cmpid,
+    //         "fy": this.loginUser.fy
+    //     }).subscribe(data => {
+    //         $(".from").autocomplete({
+    //             source: data.data,
+    //             width: 300,
+    //             max: 20,
+    //             delay: 100,
+    //             minLength: 0,
+    //             autoFocus: true,
+    //             cacheLength: 1,
+    //             scroll: true,
+    //             highlight: false,
+    //             select: function (event, ui) {
+    //                 me.fromwareid = ui.item.value;
+    //                 me.fromwarname = ui.item.label;
+    //             }
+    //         });
+    //     }, err => {
+    //         console.log("Error");
+    //     }, () => {
+    //         // console.log("Complete");
+    //     })
+    // }
 
     //To Warehouse
     getAutoCompleteWareTO(me: any) {
@@ -270,7 +349,7 @@ declare var commonfun: any;
                 cacheLength: 1,
                 scroll: true,
                 highlight: false,
-                select: function(event, ui) {
+                select: function (event, ui) {
                     me.Towarid = ui.item.value;
                     me.Towarname = ui.item.label;
                 }
@@ -284,7 +363,7 @@ declare var commonfun: any;
 
     //Add New Row
     private NewRowAdd() {
-      
+
         var that = this;
         var validateme = commonfun.validate();
         if (!validateme.status) {
@@ -322,7 +401,7 @@ declare var commonfun: any;
             }
             if (that.Duplicateflag == true) {
                 var flagqty = true;
-                if (that.qty > that.asfora) {
+                if (parseInt(that.qty) > parseInt(that.asfora)) {
                     flagqty = that.isnavigate;
                 }
                 if (flagqty == true) {
@@ -360,8 +439,8 @@ declare var commonfun: any;
                     that.NewItemsName = "";
                     that.qty = 0;
                     that.newrate = 0;
-                    that.asfora = "";
-                    that.asforb = "";
+                    that.asfora = 0;
+                    that.asforb = 0;
                     that.totalqty = 0;
                     that.amt = "";
                     that.remark = "";
@@ -410,6 +489,7 @@ declare var commonfun: any;
             "createdby": this.loginUser.login,
             "docno": docno
         }).subscribe(result => {
+            debugger;
             this.fromwarname = result.data[0].fromware;
             this.fromwareid = result.data[0].fromid;
             this.Towarname = result.data[0].toware;
@@ -520,12 +600,13 @@ declare var commonfun: any;
 
     calculationRow(row: any = []) {
         var culamt = 0;
+        var acrate = row.ratelist.filter(item => item.id = row.id);
         if (row.qty != "") {
-            culamt = +row.qty * +row.rate[0].val;
-            this.amt = culamt.toFixed(2);
+            culamt = +row.qty * +acrate[0].val;
+            row.amt = culamt.toFixed(2);
         }
         else {
-            this.amt = "";
+            row.amt = "";
         }
     }
 
@@ -561,7 +642,7 @@ declare var commonfun: any;
             ).subscribe(result => {
                 try {
                     if (result.data[0].funsave_warehousetransfer.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg);
+                        this._msg.Show(messageType.success, "success", result.data[0].funsave_warehousetransfer.msg + ' : ' + result.data[0].funsave_warehousetransfer.maxid);
                         $(".from").focus();
                         this.ClearControl();
                         return;

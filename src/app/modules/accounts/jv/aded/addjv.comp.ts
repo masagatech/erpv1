@@ -20,11 +20,9 @@ declare var commonfun: any;
 })
 
 export class AddJV implements OnInit, OnDestroy {
-    viewCustomerDT: any[];
     loginUser: LoginUserModel;
 
     jvmid: number = 0;
-    docdate: any = "";
     narration: string = "";
     isactive: boolean = false;
 
@@ -32,12 +30,15 @@ export class AddJV implements OnInit, OnDestroy {
     suppdoc: any = [];
     uploadedFiles: any = [];
 
+    acid: number = 0;
+    acname: string = "";
+    accountsDT: any = [];
     jvRowData: any = [];
     duplicateaccount: boolean = true;
 
     newjvdid: number = 0;
-    newacid: number = 0;
-    newacname: string = "";
+    newcustid: any = 0;
+    newcustname: string = "";
     newdramt: any = "";
     newcramt: any = "";
     counter: any;
@@ -57,7 +58,7 @@ export class AddJV implements OnInit, OnDestroy {
     private subscribeParameters: any;
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _jvservice: JVService, private _userService: UserService, private _commonservice: CommonService, private _msg: MessageService,
+        private _jvservice: JVService, private _userService: UserService, private _autoservice: CommonService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "JV";
@@ -99,7 +100,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Journal Voucher > Add");
+                this.setActionButtons.setTitle("Add Journal Voucher");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -114,7 +115,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Journal Voucher > Edit");
+                this.setActionButtons.setTitle("Edit Journal Voucher");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
@@ -129,7 +130,7 @@ export class AddJV implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("Journal Voucher > Details");
+                this.setActionButtons.setTitle("Details Of Journal Voucher");
 
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);
@@ -164,17 +165,43 @@ export class AddJV implements OnInit, OnDestroy {
         }
     }
 
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Inline Item Selected
+
+    selectAutoAccounts(event, arg) {
+        var that = this;
+        if (arg === 1) {
+            that.acid = event.value;
+            that.acname = event.label;
+        } else {
+            that.newcustid = event.value;
+            that.newcustname = event.label;
+        }
+    }
+
     // add jv details
 
     isDuplicateAccount() {
         for (var i = 0; i < this.jvRowData.length; i++) {
             var field = this.jvRowData[i];
 
-            if (field.acid == this.newacid) {
+            if (field.acid == this.newcustid) {
                 this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
 
-                this.newacid = 0;
-                this.newacname = "";
+                this.newcustid = 0;
+                this.newcustname = "";
                 this.newdramt = "";
                 this.newcramt = "";
                 return true;
@@ -190,7 +217,7 @@ export class AddJV implements OnInit, OnDestroy {
 
         for (var i = 0; i < jvRowDr.length; i++) {
             var items = jvRowDr[i];
-            DebitAmtTotal += parseInt(items.dramt);
+            DebitAmtTotal += parseFloat(items.dramt);
         }
 
         return DebitAmtTotal;
@@ -202,19 +229,24 @@ export class AddJV implements OnInit, OnDestroy {
 
         for (var i = 0; i < jvRowCr.length; i++) {
             var items = jvRowCr[i];
-            CreditAmtTotal += parseInt(items.cramt);
+            CreditAmtTotal += parseFloat(items.cramt);
         }
 
         return CreditAmtTotal;
     }
 
-    private NewRowAdd() {
+    private addJVRow() {
         var that = this;
 
         // Validation
 
-        if (that.newacname == "") {
+        if (that.newcustname == "") {
             that._msg.Show(messageType.error, "Error", "Please Enter Account Name");
+            return;
+        }
+
+        if ((that.newdramt == "") && (that.newcramt == "")) {
+            that._msg.Show(messageType.error, "Error", "Please Enter Debit Amount / Credit Amount");
             return;
         }
 
@@ -226,8 +258,8 @@ export class AddJV implements OnInit, OnDestroy {
             that.jvRowData.push({
                 'counter': that.counter,
                 'jvdid': that.newjvdid,
-                'acid': that.newacid,
-                'acname': that.newacname,
+                'acid': that.newcustid,
+                'acname': that.newcustname,
                 'dramt': that.newdramt,
                 'cramt': that.newcramt,
                 "isactive": true
@@ -235,8 +267,8 @@ export class AddJV implements OnInit, OnDestroy {
 
             that.counter++;
             that.newjvdid = 0;
-            that.newacid = 0;
-            that.newacname = "";
+            that.newcustid = 0;
+            that.newcustname = "";
             that.newdramt = "";
             that.newcramt = "";
 
@@ -246,37 +278,6 @@ export class AddJV implements OnInit, OnDestroy {
 
     deleteJVRow(row) {
         row.isactive = false;
-    }
-
-    getAutoComplete(me: any, arg: number) {
-        var that = this;
-
-        that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": arg == 0 ? me.newacname : me.acname }).subscribe(data => {
-            $(".accname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function(event, ui) {
-                    if (arg === 1) {
-                        me.acname = ui.item.label;
-                        me.acid = ui.item.value;
-                    } else {
-                        me.newacname = ui.item.label;
-                        me.newacid = ui.item.value;
-                    }
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 
     // set total debit amount
@@ -315,24 +316,29 @@ export class AddJV implements OnInit, OnDestroy {
         var that = this;
 
         that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "jvmid": pjvmid }).subscribe(data => {
-            var _jvdata = data.data[0]._jvdata;
-            var _jvdetails = data.data[0]._jvdetails;
-            var _uploadedfile = data.data[0]._uploadedfile;
-            var _suppdoc = data.data[0]._suppdoc;
+            try {
+                var _jvdata = data.data[0]._jvdata;
+                var _jvdetails = data.data[0]._jvdetails;
+                var _uploadedfile = data.data[0]._uploadedfile;
+                var _suppdoc = data.data[0]._suppdoc;
 
-            that.jvmid = _jvdata[0].jvmid;
+                that.jvmid = _jvdata[0].jvmid;
 
-            var date = new Date(_jvdata[0].docdate);
-            that.jvdate.setDate(date);
-            that.narration = _jvdata[0].narration;
-            that.isactive = _jvdata[0].isactive;
+                var date = new Date(_jvdata[0].docdate);
+                that.jvdate.setDate(date);
+                that.narration = _jvdata[0].narration;
+                that.isactive = _jvdata[0].isactive;
 
-            that.jvRowData = _jvdetails;
+                that.jvRowData = _jvdetails;
 
-            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+                that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
+                that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            }
+            catch (e) {
+                that._msg.Show(messageType.error, "Error", e);
+            }
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -343,9 +349,8 @@ export class AddJV implements OnInit, OnDestroy {
     getJVDetailsByJVID(pjvmid: number) {
         this._jvservice.getJVDetails({ "flag": "details", "jvmid": pjvmid }).subscribe(data => {
             this.jvRowData = data.data;
-            console.log(this.jvRowData);
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -410,14 +415,19 @@ export class AddJV implements OnInit, OnDestroy {
 
         if (that.duplicateaccount == false) {
             that._jvservice.saveJVDetails(saveJV).subscribe(data => {
-                var dataResult = data.data;
+                try {
+                    var dataResult = data.data;
 
-                if (dataResult[0].funsave_jv.msgid != "-1") {
-                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
-                    that._router.navigate(['/accounts/jv']);
+                    if (dataResult[0].funsave_jv.msgid != "-1") {
+                        that._msg.Show(messageType.success, "Success", dataResult[0].funsave_jv.msg);
+                        that._router.navigate(['/accounts/jv']);
+                    }
+                    else {
+                        that._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
+                    }
                 }
-                else {
-                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_jv.msg);
+                catch (e) {
+                    that._msg.Show(messageType.error, "Error", e);
                 }
             }, err => {
                 that._msg.Show(messageType.error, "Error", err);
@@ -434,7 +444,7 @@ export class AddJV implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }
 
@@ -452,7 +462,7 @@ export class AddJV implements OnInit, OnDestroy {
 //         $(this).attr("added", "1");
 //         $(this).autocomplete({
 //             source: function (request, response) {
-//                 that._commonservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": request.term }).subscribe(data => {
+//                 that._autoservice.getAutoData({ "type": "customer", "cmpid": that.loginUser.cmpid, "search": request.term }).subscribe(data => {
 //                     response($.map(data.data, function (item) {
 //                         return {
 //                             label: item.label,

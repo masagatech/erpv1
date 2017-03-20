@@ -67,7 +67,7 @@ declare var $: any;
         });
     }
 
-    EditItem(dt, event) {
+    EditItem(event) {
         var data = event.data;
         if (!data.islocked) {
             this._router.navigate(['warehouse/openingbal/edit', data.wareid]);

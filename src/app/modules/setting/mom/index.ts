@@ -5,12 +5,11 @@ import { AddMOM } from './aded/addmom.comp';
 import { ViewMOM } from './view/viewmom.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module'
-import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { LazyLoadEvent, DataTableModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -34,9 +33,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddMOM, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"mom", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: AddMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"mom", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: ViewMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"mom", "rights": "view", "urlname": "/masterofmaster" } },
+                    { path: 'add', component: AddMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "mom", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "mom", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: ViewMOM, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "mom", "rights": "view", "urlname": "/masterofmaster" } },
                 ]
             }
         ]
@@ -44,12 +43,12 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+        DataTableModule, DataListModule],
     declarations: [
         AddMOM,
         ViewMOM,
-        MOMComp,
-        GroupByPipe
+        MOMComp
     ],
     providers: [AuthGuard]
 })

@@ -28,7 +28,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
     title: string = "";
 
     rbid: number = 0;
-    
+
     @ViewChild("docdate")
     docdate: CalendarComp;
 
@@ -123,7 +123,10 @@ export class AddReceiptBook implements OnInit, OnDestroy {
 
         that.rbRowData = [];
 
-        that._commonservice.checkValidate({ "flag": "receiptbook", "frmno": that.newseriesno, "tono": that.newseriesno + that.newqty, "cmpid": "2", "fy": "7" }).subscribe(data => {
+        that._commonservice.checkValidate({
+            "flag": "receiptbook", "frmno": that.newseriesno, "tono": that.newseriesno + that.newqty,
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
+        }).subscribe(data => {
             var dataResult = data.data;
             var frmno = 0;
             frmno = that.newseriesno;
@@ -131,7 +134,6 @@ export class AddReceiptBook implements OnInit, OnDestroy {
             if (dataResult[0].statusid == "1") {
                 for (var i = 0; i < that.newqty; i++) {
                     that.rbRowData.push({
-                        "counter": i,
                         "rbid": that.rbid,
                         "cmpid": that.loginUser.cmpid,
                         "fy": that.loginUser.fy,
@@ -205,9 +207,7 @@ export class AddReceiptBook implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "save") {
-            this._msg.confirm('Are you sure that you want to save?', () => {
-                this.saveReceiptBook();
-            });
+            this.saveReceiptBook();
         }
     }
 

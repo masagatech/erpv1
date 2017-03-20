@@ -5,7 +5,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Budget</label>
-                        <select validate="0" name="bid" [(ngModel)]="bid" class="form-control" (ngModelChange)="getEnvelopeData()">
+                        <select id="bid" validate="0" name="bid" [(ngModel)]="bid" class="form-control">
                             <option value="0">-- Select Budget --</option>
                             <option *ngFor="let row of BudgetDT" [value]="row.bid">
                                 {{row.btitle}}
@@ -14,29 +14,44 @@
                     </div>
                 </div>
             </div>
-            <div class="row" *ngIf="bid !== 0">
-                <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Envelope Title</label>
+                        <input validate="" type="text" name="envtitle" [(ngModel)]="envtitle" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Chart Of Accounts</label>
+                        <!--<input validate="" type="text" name="coaname" [(ngModel)]="coaname" class="coaname form-control" (keyup)="getAutoCOA(this)"
+                        />-->
+                        <p-autoComplete id="coaname" name="coaname" [(ngModel)]="coaname" class="form-controlAutoComplete" (onSelect)="selectAutoCOA($event)"
+                            [suggestions]="autocoaDT" (completeMethod)="getAutoCOA($event)" [tabindex]="1" field="label" [size]="30"
+                            placeholder="Chart Of Accounts" [minLength]="1"></p-autoComplete>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
                     <div class="table-responsive">
-                        <p-dataTable #dt [value]="envRowData | filterBy: {isactive: true}" [lazy]="true">
-                            <p-column header="#" [style]="{'width':'40px','text-align':'left'}">
+                        <p-dataTable #dt [value]="subitems" [lazy]="true">
+                            <p-column header="#" [style]="{'width':'40px'}">
                                 <template let-i="rowIndex" pTemplate="editor">
                                     {{i + 1}}
                                 </template>
                             </p-column>
-                            <p-column header="Chart of Accounts" [style]="{'width':'360px','text-align':'left'}">
-                                <template let-row="rowData" let-i="rowIndex" pTemplate="body">
-                                    <input type="text" name="coaname{{i+1}}" [(ngModel)]="row.coaname" class="coaname form-control inlinetextbox" (keyup)="getAutoCOA(row, 1)"
-                                    />
+                            <p-column header="Sub Items" [style]="{'text-align':'left'}">
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+                                    {{row.subitem}}
+                                </template>
+                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+                                    <input type="text" name="subitem{{i+1}}" [(ngModel)]="row.subitem" class="form-control inlinetextbox" />
                                 </template>
                             </p-column>
-                            <p-column header="Envelope" [style]="{'width':'360px','text-align':'left'}">
-                                <template let-row="rowData" let-i="rowIndex" pTemplate="editor">
-                                    <input type="text" name="envtitle{{i+1}}" [(ngModel)]="row.envtitle" class="form-control inlinetextbox" />
-                                </template>
-                            </p-column>
-                            <p-column [style]="{'text-align':'center'}" *ngIf="!isdetails">
+                            <p-column [style]="{'width':'60px','text-align':'center'}" *ngIf="!isdetails">
                                 <template let-col let-row="rowData" pTemplate="editor">
-                                    <button class="btn btn-danger btn-sm" (click)="deleteBudgetEnvelope(row)" tabindex="-1"><i class="fa fa-trash"></i></button>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteSubItem(row)" tabindex="-1"><i class="fa fa-trash"></i></button>
                                 </template>
                             </p-column>
                             <footer *ngIf="!isdetails">
@@ -44,17 +59,13 @@
                                     <tbody>
                                         <tr>
                                             <td width="40px">#</td>
-                                            <td width="360px">
-                                                <input type="text" name="newcoaname" [(ngModel)]="newcoaname" (keyup)="getAutoCOA(this, 0)" (keyup.enter)="addBudgetEnvelope()"
-                                                    class="coaname form-control" />
-                                            </td>
-                                            <td width="360px">
-                                                <input type="text" name="newenvtitle" [(ngModel)]="newenvtitle" (keyup.enter)="addBudgetEnvelope()" (keydown.tab)="addBudgetEnvelope()"
-                                                    class="form-control" />
-                                            </td>
                                             <td>
-                                                <input type="submit" name="btnadd" class="btn btn-theme btn-sm fa fa-plus" (click)="addBudgetEnvelope()" />
-                                                    <!--<i class=""></i></button>-->
+                                                <input type="text" name="newsubitem" [(ngModel)]="newsubitem" (keydown.tab)="addSubItems()" class="form-control subitem"
+                                                />
+                                            </td>
+                                            <td width="60px">
+                                                <button type="button" name="btnadd" class="btn btn-theme btn-sm" (click)="addSubItems()">
+                                                    <i class="fa fa-plus"></i></button>
                                             </td>
                                         </tr>
                                     </tbody>

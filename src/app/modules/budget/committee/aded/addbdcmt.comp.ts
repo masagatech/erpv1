@@ -21,7 +21,7 @@ declare var commonfun: any;
     providers: [BudgetService, CommonService, FYService, ALSService]
 })
 
-export class AddCommitteeComp implements OnInit {
+export class AddCommitteeComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     committeeDT: any = [];
@@ -60,55 +60,15 @@ export class AddCommitteeComp implements OnInit {
     }
 
     ngOnInit() {
+        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.setActionButtons.setTitle("Committee");
+
+        this.setBudgetCommittee();
 
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-    }
-
-    setBudgetCommittee() {
-        this.subscribeParameters = this._routeParams.params.subscribe(params => {
-            if (this.isadd) {
-                this.setActionButtons.setTitle("Budget Committee > Add");
-
-                $('button').prop('disabled', false);
-                $('input').prop('disabled', false);
-                $('select').prop('disabled', false);
-                $('textarea').prop('disabled', false);
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-            }
-            else if (this.isedit) {
-                this.setActionButtons.setTitle("Budget Committee > Edit");
-
-                $('button').prop('disabled', false);
-                $('input').prop('disabled', false);
-                $('select').prop('disabled', false);
-                $('textarea').prop('disabled', false);
-
-                this.bid = params['id'];
-                //this.getCommitteeDataByBID(this.bid);
-
-                this.actionButton.find(a => a.id === "save").hide = false;
-                this.actionButton.find(a => a.id === "edit").hide = true;
-            }
-            else {
-                this.setActionButtons.setTitle("Budget Committee > Details");
-
-                $('button').prop('disabled', true);
-                $('input').prop('disabled', true);
-                $('select').prop('disabled', true);
-                $('textarea').prop('disabled', true);
-
-                this.bid = params['id'];
-                //this.getCommitteeDataByBID(this.bid);
-
-                this.actionButton.find(a => a.id === "save").hide = true;
-                this.actionButton.find(a => a.id === "edit").hide = false;
-            }
-        });
     }
 
     // add, edit, delete button
@@ -127,13 +87,62 @@ export class AddCommitteeComp implements OnInit {
         }
     }
 
+    setBudgetCommittee() {
+        this.subscribeParameters = this._routeParams.params.subscribe(params => {
+            if (this.isadd) {
+                this.setActionButtons.setTitle("Add Budget Committee");
+                $(".btitle").focus();
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('#bid').prop('disabled', false);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+            else if (this.isedit) {
+                this.setActionButtons.setTitle("Edit Budget Committee");
+                $(".btitle").focus();
+
+                $('button').prop('disabled', false);
+                $('input').prop('disabled', false);
+                $('select').prop('disabled', false);
+                $('textarea').prop('disabled', false);
+                $('#bid').prop('disabled', true);
+
+                this.bid = params['id'];
+                this.getCommitteeData(this.bid);
+
+                this.actionButton.find(a => a.id === "save").hide = false;
+                this.actionButton.find(a => a.id === "edit").hide = true;
+            }
+            else {
+                this.setActionButtons.setTitle("Details Of Budget Committee");
+
+                $('button').prop('disabled', true);
+                $('input').prop('disabled', true);
+                $('select').prop('disabled', true);
+                $('textarea').prop('disabled', true);
+                $('#bid').prop('disabled', true);
+
+                this.bid = params['id'];
+                this.getCommitteeData(this.bid);
+
+                this.actionButton.find(a => a.id === "save").hide = true;
+                this.actionButton.find(a => a.id === "edit").hide = false;
+            }
+        });
+    }
+
     fillBudgetDropDown() {
         var that = this;
 
         that._budgetservice.getCommittee({ "flag": "dropdown" }).subscribe(data => {
             that.BudgetDT = data.data;
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -165,6 +174,11 @@ export class AddCommitteeComp implements OnInit {
             that._msg.Show(messageType.error, "Error", "Please Enter Committee");
             return;
         }
+        
+        if (that.newrole == "") {
+            that._msg.Show(messageType.error, "Error", "Please Enter Role");
+            return;
+        }
 
         // Duplicate items Check
         that.duplicatecommittee = that.isDuplicateCommittee();
@@ -172,18 +186,16 @@ export class AddCommitteeComp implements OnInit {
         // Add New Row
         if (that.duplicatecommittee === false) {
             that.committeeDT.push({
-                'counter': that.counter,
-                'bcid': 0,
-                'bid': that.bid,
-                'empid': that.newempid,
-                'empname': that.newempname,
-                'role': that.newrole,
-                'resp': that.resp,
-                'uidcode': that.loginUser.login,
-                'isactive': true
+                "counter": that.counter,
+                "bcid": "0",
+                "empid": that.newempid,
+                "empname": that.newempname,
+                "role": that.newrole,
+                "isactive": true
             });
 
             that.counter++;
+            that.newempid = 0;
             that.newempname = "";
             that.newrole = "";
 
@@ -195,10 +207,13 @@ export class AddCommitteeComp implements OnInit {
         row.isactive = false;
     }
 
-    getEmpAuto(me: any, arg: number) {
+    getAutoEmp(me: any, arg: number) {
         var that = this;
 
-        that._commonservice.getAutoData({ "type": "userwithcode", "search": arg == 0 ? me.newempname : me.empname }).subscribe(data => {
+        that._budgetservice.getCommittee({
+            "flag": "autoemp", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
+            "search": arg == 0 ? me.newempname : me.empname
+        }).subscribe(data => {
             $(".empname").autocomplete({
                 source: data.data,
                 width: 300,
@@ -220,7 +235,7 @@ export class AddCommitteeComp implements OnInit {
                 }
             });
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -228,10 +243,10 @@ export class AddCommitteeComp implements OnInit {
 
     // get Committee by ID
 
-    getCommitteeData() {
+    getCommitteeData(pbid) {
         var that = this;
 
-        that._budgetservice.getCommittee({ "flag": "edit", "bid": that.bid }).subscribe(data => {
+        that._budgetservice.getCommittee({ "flag": "edit", "bid": pbid }).subscribe(data => {
             var _committeedata = data.data;
 
             if (_committeedata.length !== 0) {
@@ -243,7 +258,7 @@ export class AddCommitteeComp implements OnInit {
                 that.resp = "";
             }
         }, err => {
-            console.log("Error");
+            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -253,6 +268,7 @@ export class AddCommitteeComp implements OnInit {
 
     saveCommitteeData(flag, isactive) {
         var that = this;
+        var bdcmtDT: any = [];
 
         if (that.isFormChange()) {
             that._msg.Show(messageType.info, "info", "No save! There is no change!");
@@ -262,7 +278,7 @@ export class AddCommitteeComp implements OnInit {
         var validateme = commonfun.validate();
 
         if (!validateme.status) {
-            that._msg.Show(messageType.error, "error", validateme.msglist);
+            that._msg.Show(messageType.error, "Error", validateme.msglist);
             validateme.data[0].input.focus();
             return;
         }
@@ -274,8 +290,21 @@ export class AddCommitteeComp implements OnInit {
 
         that.duplicatecommittee = that.isDuplicateCommittee();
 
+        for (var i = 0; i < that.committeeDT.length; i++) {
+            bdcmtDT.push({
+                "bcid": that.committeeDT[i].bcid,
+                "bid": that.bid,
+                "empid": that.committeeDT[i].empid,
+                "empname": that.committeeDT[i].empname,
+                "role": that.committeeDT[i].role,
+                "resp": that.resp,
+                "uidcode": that.loginUser.login,
+                "isactive": that.committeeDT[i].isactive,
+            });
+        }
+
         if (that.duplicatecommittee == false) {
-            that._budgetservice.saveCommittee({ "committee": that.committeeDT }).subscribe(data => {
+            that._budgetservice.saveCommittee({ "committee": bdcmtDT }).subscribe(data => {
                 try {
                     var dataResult = data.data;
 
@@ -301,6 +330,6 @@ export class AddCommitteeComp implements OnInit {
 
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
-        console.log('ngOnDestroy');
+        this.setActionButtons.setTitle("");
     }
 }

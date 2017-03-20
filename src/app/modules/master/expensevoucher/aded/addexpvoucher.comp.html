@@ -1,15 +1,12 @@
 <div class="middlepan">
     <div class="panel panel-theme">
-        <div class="panel-heading">
-            <h3 class="panel-title">Expense Voucher</h3>
-        </div>
         <div class="panel-body">
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-xs-6 col-sm-8 col-md-8">
                         <div class="form-group">
                             <label class="control-label">Period</label>
-                            <select [(ngModel)]="period" class="form-control">
+                            <select [(ngModel)]="period" class="period form-control">
                                 <option [value]="''">Select Period</option>
                                 <option [value]="'02 Jan 2017 - 08 Jan 2017'">02 Jan 2017 - 08 Jan 2017</option>
                                 <option [value]="'09 Jan 2017 - 15 Jan 2017'">09 Jan 2017 - 15 Jan 2017</option>
@@ -27,10 +24,10 @@
                     <div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="form-group">
                             <label class="control-label">Control Center</label>
-                            <select id="ccid" name="ccid" [(ngModel)]="ctrlcenterid" class="form-control" (ngModelChange)="fillEmployeeDDL();">
+                            <select id="ccid" name="ccid" [(ngModel)]="ccid" class="form-control" (ngModelChange)="fillEmployeeDDL();">
                                 <option [value]="0">Select Control Center</option>
-                                <option *ngFor="let row of ctrlcenterDT" [value]="row.ctrlcenterid">
-                                    {{row.ctrlcentername}}
+                                <option *ngFor="let row of ctrlcenterDT" [value]="row.ccid">
+                                    {{row.ccname}}
                                 </option>
                             </select>
                         </div>

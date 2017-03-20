@@ -8,7 +8,8 @@ import { acview } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent,DataTableModule,CheckboxModule,
+AutoCompleteModule,TreeTableModule,TreeNode,SharedModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -38,7 +39,9 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule, CheckboxModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
+     FormsModule, CommonModule, CheckboxModule,DataTableModule,AutoCompleteModule,
+     TreeTableModule,SharedModule],
     declarations: [
         acadd,
         acview,

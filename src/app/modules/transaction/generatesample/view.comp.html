@@ -1,0 +1,158 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-4">
+			<div class='form-group'>
+				<label>Customer</label>
+				<!--<input type="text=" class="form-control Custcode" [(ngModel)]="CustName" tabindex="1" value="" (keyup)="getAutoComplete(this)"-->
+				<p-autoComplete [(ngModel)]="CustName" tabindex="1" class="form-controlAutoComplete Custcode" (onSelect)="CustomerSelect($event)"
+					[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" [minLength]="1"></p-autoComplete>
+			</div>
+		</div>
+		<div class="col-md-2">
+			<div class='form-group'>
+				<label>From Date</label>
+				<calendar #fromdatecal [name]="'fromdate'"></calendar>
+			</div>
+		</div>
+		<div class="col-md-2">
+			<div class='form-group'>
+				<label>To Date</label>
+				<calendar #todatecal [name]="'todate'"></calendar>
+			</div>
+		</div>
+		<div class="col-md-1">
+			<div class='form-group'>
+				<div style="padding-top:28px;">
+					<button type="button" class="btn btn-theme btn-sm" (click)="getdocumentNo()"><i class="fa fa-arrow-right"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-10">
+		<div [hidden]="tableDetails">
+			<div class="panel panel-theme">
+				<div class="panel-body">
+					<div *ngFor="let InvNoitem of invoices">
+						<div *ngFor="let Headeritem of InvNoitem.header">
+							<div class="col-xs-2">
+								<div class='form-group'>
+									<label>Document No</label>
+									<input type="text=" class="form-control" readonly="true" [(ngModel)]="Headeritem.subconfid" tabindex="1" value="" />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class='form-group'>
+									<label>Salesman</label>
+									<input type="text" class="form-control" readonly="true" [(ngModel)]="Headeritem.sales">
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class='form-group'>
+									<label>Customer</label>
+									<input type="text=" class="form-control" readonly="true" tabindex="1" value="" [(ngModel)]="Headeritem.custname" />
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<label>Document Date</label>
+								<div class="input-group date" data-provide="datepicker">
+									<input type="text=" class="form-control" [(ngModel)]="Headeritem.docdate" readonly="true" tabindex="2" value="" />
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<label>Delivery Date</label>
+								<div class="input-group date" data-provide="datepicker">
+									<input type="text=" class="form-control" [(ngModel)]="Headeritem.deldate" readonly="true" tabindex="2" value="" />
+									<div class="input-group-addon">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-8">
+								<div class='form-group'>
+									<label>Spe.Instruction</label>
+									<textarea [(ngModel)]="Headeritem.remark" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3"></textarea>
+								</div>
+							</div>
+						</div>
+						<p-dataTable #dt [value]="InvNoitem.details" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords"
+							(onLazyLoad)="loadRBIGrid($event)" expandableRows="true">
+							<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
+								<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+									{{rowIndex+1}}
+								</template>
+							</p-column>
+							<p-column field="itemcode" header="Item code" [style]="{'width':'50px','text-align':'left'}"></p-column>
+							<p-column field="itemname" header="Item name" [style]="{'width':'130px','text-align':'left'}"></p-column>
+							<p-column header="Qty." [style]="{'width':'50px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>
+								</template>
+							</p-column>
+							<p-column header="Rate" [style]="{'width':'50px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.rate"></numtext>
+								</template>
+							</p-column>
+							<p-column field="dis" header="Dis." [style]="{'width':'50px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [(ngModel)]="row.dis"></numtext>
+								</template>
+							</p-column>
+							<p-column header="Amount" [style]="{'width':'50px','text-align':'left'}">
+								<template let-col let-row="rowData" pTemplate="editor">
+									<numtext [iscurrency]="true" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.amount"></numtext>
+								</template>
+							</p-column>
+							<footer>
+								<table>
+									<tbody style="float: right;">
+										<tr class="bg-warning">
+											<td colspan="5"><b style="float:left;">Gross Total</b></td>
+											<td colspan="4" class="textalign"><b>{{Subtotal(InvNoitem.details) | _currency:loginUser._globsettings[0] }}</b></td>
+										</tr>
+										<tr class="bg-warning" *ngFor="let item of taxlist">
+											<td colspan="5"><b style="float:left;">{{item.taxname}}</b></td>
+											<td class="textalign">
+												<span>{{item.taxval}}</span>
+											</td>
+											<td class="textalign"><b style="float:right;">{{SubtotalTax(InvNoitem.details,item.taxval)| _currency:loginUser._globsettings[0] }}</b></td>
+										</tr>
+										<tr class="bg-warning">
+											<td colspan="5" class="textalign"><b style="float:left;">Grand Total</b></td>
+											<td></td>
+											<td class="textalign"><b style="float:right;">{{GrandTotal(InvNoitem.details,taxlist)| _currency:loginUser._globsettings[0] }}</b></td>
+										</tr>
+									</tbody>
+								</table>
+							</footer>
+						</p-dataTable>
+						<!--<button type="button" style="float:right" class="btn btn-theme btn-sm">Generate + Print</button>
+						<button type="button" style="float:right" class="btn btn-theme btn-sm" (click)="GenerateInvoice(InvNoitem.details,InvNoitem.header)">Generate Invoice</button>-->
+						<p-splitButton label="Generate" icon="fa-check" [style]="{'float':'right'}" (onClick)="GenerateInvoice(InvNoitem.details,InvNoitem.header,taxlist)"
+							[model]="buttonitems"></p-splitButton>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-2" [hidden]="DocTable">
+		<div style="height:60% !important;overflow-y: scroll;">
+			<table class='table table-bordered table-condensed table-striped table-hover'>
+				<tbody>
+					<tr>
+						<input type="text" [(ngModel)]="DcNo" class="form-control" placeholder="Search Doc No">
+					</tr>
+					<tr>
+						<th>Doc No</th>
+					</tr>
+				</tbody>
+			</table>
+			<a role="button" *ngFor="let item of doclist" class="btn btn-theme btn-grid" (click)="getInvDetails(item)">{{item.docno}}</a>
+		</div>
+	</div>
+</div>

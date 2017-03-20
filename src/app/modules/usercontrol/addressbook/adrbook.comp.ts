@@ -213,21 +213,21 @@ export class AddrbookComp implements OnInit, OnDestroy {
         var that = this;
         var Param = {
             "adrid": that.adrid,
-            "firstnam": that.firstnam,
-            "middlenam": that.middlenam,
-            "lastnam": that.lastnam,
-            "adr1": that.adr1,
-            "mob": that.mob == "" ? 0 : that.mob,
-            "pin": that.pin,
-            "altmob": that.altmob,
+            "firstnam": that.firstnam.trim(),
+            "middlenam": that.middlenam.trim(),
+            "lastnam": that.lastnam.trim(),
+            "adr1": that.adr1.trim(),
+            "mob": that.mob.trim() == "" ? 0 : that.mob.trim(),
+            "pin": that.pin.trim(),
+            "altmob": that.altmob.trim(),
             "cmpid": this.loginUser.cmpid,
-            "city": that.city,
-            "state": that.state,
-            "email": that.email,
-            "otheremail": that.otheremail,
+            "city": that.city.trim(),
+            "state": that.state.trim(),
+            "email": that.email.trim(),
+            "otheremail": that.otheremail.trim(),
             "country": that.country == "" ? 0 : that.country,
             "adrtype": that.adrtype == "" ? 0 : that.adrtype,
-            "landmrk": that.landmark,
+            "landmrk": that.landmark.trim(),
             "chkprimary": that.chkprimary,
             "module": that.module,
             "accode": that.accode,
@@ -238,25 +238,27 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
-        debugger;
-        console.log(Param);
+        
         return Param;
     }
 
     SaveAdr() {
         var that = this;
-        if ($(".firstnam").val() == "") {
+        if ($(".firstnam").val().trim() == "") {
             that._msg.Show(messageType.error, "error", "First *");
+            $(".firstnam").val("");
             $(".firstnam").focus();
             return;
         }
-        if ($(".addr1").val() == "") {
+        if ($(".addr1").val().trim() == "") {
             that._msg.Show(messageType.error, "error", "Address *");
+            $(".addr1").val("");
             $(".addr1").focus();
             return;
         }
-        if ($(".prymob").val() == "") {
+        if ($(".prymob").val().trim() == "") {
             that._msg.Show(messageType.error, "error", "Primary Mobile *");
+            $(".prymob").val("");
             $(".prymob").focus();
             return;
         }

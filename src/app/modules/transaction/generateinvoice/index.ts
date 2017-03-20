@@ -8,6 +8,10 @@ import { generateInv } from '../generateinvoice/generateinv.comp';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { CalendarModule } from '../../usercontrol/calendar';
+
+import { LazyLoadEvent, DataTableModule, AutoCompleteModule, SplitButtonModule } from 'primeng/primeng';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -22,12 +26,12 @@ const routerConfig = [
         path: '',
         component: generateInvComp,
         canActivate: [AuthGuard],
+        data: { "module": "dcm" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'generateinv', component: generateInv, canActivateChid: [AuthGuard], },
-                    { path: '', component: generateInv, canActivateChid: [AuthGuard], },
+                    { path: '', component: generateInv, canActivateChid: [AuthGuard], data: { "module": "dcm", "submodule": "ginv", "rights": "view", "urlname": "generateinv" } },
                 ]
             }
         ]
@@ -35,7 +39,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule],
+    imports: [RouterModule.forChild(routerConfig), SharedComponentModule,
+        FormsModule, CommonModule, CalendarModule, DataTableModule, AutoCompleteModule, NumTextModule, SplitButtonModule],
     declarations: [
         generateInv,
         generateInvComp

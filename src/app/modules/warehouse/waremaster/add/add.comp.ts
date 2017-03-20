@@ -8,6 +8,7 @@ import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -49,6 +50,9 @@ declare var commonfun: any;
     loginUser: LoginUserModel;
     loginUserName: string;
 
+    @ViewChild('attribute')
+    attribute: AttributeComp;
+
 
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
@@ -56,7 +60,7 @@ declare var commonfun: any;
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private wareServies: WarehouseAddService, private _autoservice: CommonService,
         private _routeParams: ActivatedRoute, private _msg: MessageService, private _userService: UserService) { //Inherit Service
-        this.module = "warehouse";
+        this.module = "wh";
         this.loginUser = this._userService.getUser();
     }
     //Add Save Edit Delete Button
@@ -68,9 +72,8 @@ declare var commonfun: any;
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Warehouse Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-        setTimeout(function () {
+        setTimeout(function() {
             commonfun.addrequire();
-
             $(".code").focus();
         }, 0);
 
@@ -84,118 +87,30 @@ declare var commonfun: any;
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
-
-
             }
             else {
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
+
+        this.attribute.attrparam = ["warehouse_attr"];
     }
 
-    //attribute list Add Div
-    AttributeAdd() {
-        try {
-            if (this.attrid > 0) {
-                this.Duplicateflag = true;
-                if (this.attrlist.length > 0) {
-                    for (var i = 0; i < this.attrlist.length; i++) {
-                        if (this.attrlist[i].attrname == this.attrname) {
-                            this.Duplicateflag = false;
-                            break;
-                        }
-                    }
-                }
-                if (this.Duplicateflag == true) {
-                    this.attrlist.push({
-                        'attrname': this.attrname,
-                        'value': this.attrid
-                    });
-                    this.attrname = "";
-                    $(".attr").focus();
-                }
-                else {
-                    this._msg.Show(messageType.info, "info", "Duplicate Attribute");
-                    $(".attr").focus();
-                    return;
-                }
-
-            }
-            else {
-                this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
-                $(".attr").focus();
-                return;
-            }
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
-
-    }
-
-    //Remove Attribute
-    Removeattr(row) {
-        try {
-            var index = -1;
-            for (var i = 0; i < this.attrlist.length; i++) {
-                if (this.attrlist[i].value === row.value) {
-                    index = i;
-                    break;
-                }
-            }
-            if (index === -1) {
-                console.log("Wrong Delete Entry");
-            }
-            this.attrlist.splice(index, 1);
-            $(".attr").focus();
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
-    }
-
+    //Create a Json Attribute
     createattrjson() {
-        var attrid = [];
-        if (this.attrlist.length > 0) {
-            for (let items of this.attrlist) {
-                attrid.push({ "id": items.value });
-            }
-            return attrid;
-        }
-    }
-
-    //Autocompleted Attribute Name
-    getAutoCompleteattr(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({
-            "type": "attribute",
-            "search": that.attrname,
-            "cmpid": this.loginUser.cmpid,
-            "FY": this.loginUser.fy,
-            "filter": "Warehouse Attribute",
-            "createdby": this.loginUser.login
-        }).subscribe(data => {
-            $(".attr").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.attrid = ui.item.value;
-                    me.attrname = ui.item.label;
+        try {
+            var attrid = [];
+            if (this.attribute.attrlist.length > 0) {
+                for (let items of this.attribute.attrlist) {
+                    attrid.push({ "id": items.value });
                 }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            this.attrid = 0;
-        })
+                return attrid;
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     EditItem(wareid) {
@@ -214,7 +129,7 @@ declare var commonfun: any;
                 that.code = dataset[0][0].code;
                 that.remark = dataset[0][0].remark;
                 that.isactive = dataset[0][0].isactive;
-                that.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
+                that.attribute.attrlist = dataset[0][0]._attr == null ? [] : dataset[0][0]._attr;
                 //that.adrbookid = dataset[0][0].adr;
                 if (_uploadedfile != null) {
                     that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
@@ -263,17 +178,16 @@ declare var commonfun: any;
         this.adrbookid = [];
         this.attrlist = [];
         this.editmode = false;
+        this.attribute.attrlist = [];
         this.addressBook.ClearArray();
         $(".code").focus();
     }
 
     Attr() {
-        setTimeout(function () {
+        setTimeout(function() {
             this.attrname = "";
             $(".attr").focus();
         }, 0);
-
-
     }
 
     paramterjson() {
@@ -310,6 +224,7 @@ declare var commonfun: any;
                 return;
             }
             try {
+                this.actionButton.find(a => a.id === "save").enabled = false;
                 if (this.adrbookid.length == 0) {
                     this._msg.Show(messageType.error, "error", "Please enter contact address");
                     return;
@@ -347,7 +262,7 @@ declare var commonfun: any;
             } catch (e) {
                 this._msg.Show(messageType.error, "error", e.message);
             }
-            this.actionButton.find(a => a.id === "save").hide = false;
+            this.actionButton.find(a => a.id === "save").enabled = true;
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');

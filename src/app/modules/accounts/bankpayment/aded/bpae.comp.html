@@ -2,64 +2,64 @@
 	<div class="panel panel-theme">
 		<div class="panel-body">
 			<div class="col-md-12">
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<label>Bank</label>
-							<select class="form-control bankpay" [(ngModel)]="bankid">
-								<option *ngFor="let items of banknameListDT" tabindex="1" [value]="items.value">
-									{{items.label}}
-								</option>
-							</select>
-						</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Account Code</label>
+						<p-autoComplete id="custname" name="custname" [(ngModel)]="custname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event)"
+							[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
+						<!--<input type="text" class="form-control custcode" tabindex="1" [(ngModel)]="custname" (keyup)="getAutoComplete(this)" />-->
 					</div>
-					<div class="col-xs-6">
+					<div class="form-group">
 						<label>Issue Date</label>
-						<calendar #issuedate [name]="'issuedate'" tabindex="2"></calendar>
+						<calendar #issuedate [name]="'issuedate'" [islabel]="isdetails" tabindex="3"></calendar>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Type</label>
+								<select class="form-control" [(ngModel)]="typ" tabindex="5">
+									<option [value]="0">Select Type</option>
+									<option *ngFor="let items of banktypeDT" [value]="items.key">
+										{{items.val}}
+									</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class='form-group card required'>
+								<label>Amount</label>
+								<numtext name="dramt" [(ngModel)]="amount" tabindex="6"></numtext>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Cheque No</label>
+								<input type="text" class="form-control" [disabled]="ChequeNo===true" tabindex="7" [(ngModel)]="cheqno" />
+							</div>
+						</div>
+					</div>
+					<div class="form-group" disabled="typ===Cheque">
+						<label>Is Cheque Bounce</label>
+						<p-checkbox [(ngModel)]="ischeqbounce" binary="true"></p-checkbox>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<label>Account Code</label>
-							<input type="text" class="form-control custcode" tabindex="3" [(ngModel)]="custname" (keyup)="getAutoComplete(this)" />
-						</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Bank</label>
+						<select class="form-control" [(ngModel)]="bankid" tabindex="2">
+							<option [value]="0">Select Bank</option>
+							<option *ngFor="let items of bankDT" [value]="items.key">
+								{{items.val}}
+							</option>
+						</select>
 					</div>
-					<div class="col-md-6">
-						<div class="form-group">
-							<label>Reference No</label>
-							<input type="text=" class="form-control" tabindex="4" [(ngModel)]="refno" />
-						</div>
+					<div class="form-group">
+						<label>Reference No</label>
+						<input type="text" class="form-control" tabindex="4" [(ngModel)]="refno" />
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2">
-						<div class="form-group">
-							<label>Type</label>
-							<select class="form-control" [(ngModel)]="typ" tabindex="5">
-								<option *ngFor="let items of typelistDT" [value]="items.value">
-									{{items.label}}
-								</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-md-2">
-						<div class='form-group card required'>
-							<label>Amount</label>
-							<numtext name="dramt" [(ngModel)]="amount"></numtext>
-						</div>
-					</div>
-					<div class="col-md-2">
-						<div class="form-group">
-							<label>Cheque No</label>
-							<input type="text" class="form-control" [disabled]="ChequeNo===true" tabindex="7" [(ngModel)]="cheqno" />
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group">
-							<label>Narration</label>
-							<textarea [(ngModel)]="narration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3" cols="75"></textarea>
-						</div>
+					<div class="form-group">
+						<label>Narration</label>
+						<textarea [(ngModel)]="narration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3" cols="75"></textarea>
 					</div>
 				</div>
 			</div>

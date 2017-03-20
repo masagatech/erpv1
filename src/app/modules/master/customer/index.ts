@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AddDynamicTabModule } from '../../usercontrol/adddynamictab';
 import { DynamicTabModule } from '../../usercontrol/dynamictab';
-import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule,AccordionModule,AutoCompleteModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -41,7 +41,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
-    CommonModule, DataTableModule, CheckboxModule,AddDynamicTabModule,DynamicTabModule],
+    CommonModule, DataTableModule, CheckboxModule,AddDynamicTabModule,DynamicTabModule,AccordionModule,AutoCompleteModule],
     declarations: [
         CustAdd,
         CustView,

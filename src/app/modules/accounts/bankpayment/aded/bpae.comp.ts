@@ -36,9 +36,11 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     narration: string = "";
     refno: string = "";
     typ: number = 0;
+    ischeqbounce: boolean = false;
 
-    banknameListDT: any = [];
-    typelistDT: any = [];
+    accountsDT: any = [];
+    bankDT: any = [];
+    banktypeDT: any = [];
 
     @ViewChild("issuedate")
     issuedate: CalendarComp;
@@ -60,8 +62,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         private _userService: UserService, private _msg: MessageService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Bank Payment";
-        this.getBankMasterDrop();
-        this.getTypDrop();
+        this.fillDropDownList();
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
@@ -100,18 +101,16 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        $(".bankpay").focus();
-
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("A/C Payble > Add");
+                this.setActionButtons.setTitle("Add A/C Payble");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".bankpay").focus();
+                $(".custcode").focus();
 
                 var date = new Date();
                 this.issuedate.setDate(date);
@@ -121,13 +120,13 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("A/C Payble > Edit");
+                this.setActionButtons.setTitle("Edit A/C Payble");
 
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".bankpay").focus();
+                $(".custcode").focus();
 
                 this.autoid = params['id'];
                 this.GetBankPayment(this.autoid);
@@ -171,6 +170,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     }
 
     // Clear All Fields
+    
     ClearFields() {
         this.autoid = 0;
         this.bankid = 0;
@@ -181,8 +181,37 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.amount = 0;
         this.cheqno = "";
         this.narration = "";
+    }
 
-        $(".bankpay").focus();
+    //AutoCompletd Customer
+
+    getAutoAccounts(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "acc_cust",
+            "cmpid": this.loginUser.cmpid,
+            "search": query
+        }).then(data => {
+            this.accountsDT = data;
+        });
+    }
+
+    //Selected Customer
+    
+    selectAutoAccounts(event) {
+        this.custid = event.value;
+        this.custname = event.label;
+    }
+
+    // Get Bank Master And Type
+
+    fillDropDownList() {
+        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
+            var d = data.data;
+
+            this.bankDT = d.filter(a => a.group === "bank");
+            this.banktypeDT = d.filter(a => a.group === "banktype");
+        });
     }
 
     onUploadStart(e) {
@@ -200,7 +229,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     //Get Data With Row
 
     GetBankPayment(pautoid) {
-        this._bpservice.getBankPayment({ "autoid": pautoid, "flag": "edit" }).subscribe(data => {
+        this._bpservice.getBankPayment({ "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
             var _bankpayment = data.data[0]._bankpayment;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
@@ -216,63 +245,10 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             this.cheqno = _bankpayment[0].cheqno;
             this.amount = _bankpayment[0].amount;
             this.narration = _bankpayment[0].narration;
+            this.ischeqbounce = _bankpayment[0].ischeqbounce;
 
             this.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
             this.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-    }
-
-    //Auto Completed Customer Name
-
-    getAutoComplete(me: any) {
-        var _me = this;
-        this._autoservice.getAutoData({ "type": "customer", "cmpid": this.loginUser.cmpid, "search": this.custname }).subscribe(data => {
-            $(".custcode").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.custid = ui.item.value;
-                    me.custname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    // Get Bank Master And Type
-
-    getBankMasterDrop() {
-        this._bpservice.getBankMaster({
-            "type": "bank"
-        }).subscribe(BankName => {
-            var dataset = BankName.data;
-            this.banknameListDT = BankName.data;
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
-    }
-
-    getTypDrop() {
-        this._bpservice.getBankMaster({
-            "type": "BankType"
-        }).subscribe(BankType => {
-            this.typelistDT = BankType.data;
         }, err => {
             console.log('Error');
         }, () => {
@@ -288,7 +264,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         //     return false;
         // }
         if (this.issuedate.setDate("")) {
-            this._msg.Show(messageType.info, "Info", "Please Enter Issues Date");
+            this._msg.Show(messageType.info, "Info", "Please Enter Issue Date");
             return false;
         }
         if (this.custname == undefined || this.custname == null) {
@@ -311,7 +287,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             "amount": this.amount,
             "cheqno": this.cheqno,
             "narration": this.narration,
-            "isactive": isactive
+            "isactive": isactive,
+            "ischeqbounce": this.ischeqbounce
         }
 
         this._bpservice.saveBankPayment(Param).subscribe(result => {

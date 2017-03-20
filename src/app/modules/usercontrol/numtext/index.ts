@@ -1,4 +1,4 @@
-import { NgModule, Component, forwardRef, OnInit, AfterViewInit, Input, OnChanges } from '@angular/core';
+import { NgModule, Component, forwardRef, OnInit, Output, EventEmitter, AfterViewInit, Input, OnChanges } from '@angular/core';
 // import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { UserService } from '../../../_service/user/user-service';
@@ -56,7 +56,9 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     @Input() grpseperator: string = ",";
     @Input() islabel: boolean = false;
     @Input() tabindex: number = 500;
+    @Input() isfocus: boolean = false;
 
+    @Output() blur = new EventEmitter<any>();
 
     decimalsArry: any = ["", ".9", ".99", ".999", ".9999", ".99999", ".999999", ".9999999"];
 
@@ -99,6 +101,7 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
     onBlur(e) {
         this.onTouchedCallback();
         this.updateModel();
+        this.blur.emit({ "value": this.innerValue });
     }
 
     //From ControlValueAccessor interface
@@ -145,6 +148,10 @@ export class NumTextComp implements OnInit, ControlValueAccessor {
             $("#" + that.id).autoNumeric('set', that.innerValue);
             that.isReady = true;
             that.updateModel();
+
+            if (that.isfocus) {
+                $("#" + that.id).focus();
+            }
         }, 100);
     }
 

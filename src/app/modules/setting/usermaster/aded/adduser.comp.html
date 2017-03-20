@@ -1,28 +1,25 @@
 <form id="frmUser">
 	<div class="col-md-12">
 		<div class="panel panel-theme">
-			<div class="panel-heading">
-				<h3 class="panel-title">Create User</h3>
-			</div>
 			<div class="panel-body">
 				<div class="col-md-6">
 					<div class="row">
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">User Code</label>
-								<input id="ucode" name="ucode" type="text" [(ngModel)]="ucode" class="form-control input-sm" size="20" required />
+								<input id="ucode" name="ucode" type="text" [(ngModel)]="ucode" class="form-control input-sm ucode" size="20" required />
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">First Name</label>
-								<input id="fname" name="fname" type="text" [(ngModel)]="fname" class="form-control input-sm" size="20">
+								<input id="fname" name="fname" type="text" [(ngModel)]="fname" class="form-control input-sm fname" size="20">
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Last Name</label>
-								<input id="lname" name="lname" type="text" [(ngModel)]="lname" class="form-control input-sm" size="20">
+								<input id="lname" name="lname" type="text" [(ngModel)]="lname" class="form-control input-sm lname" size="20">
 							</div>
 						</div>
 					</div>
@@ -30,7 +27,7 @@
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label">Email Address</label>
-								<input id="emailid" name="emailid" type="email" [(ngModel)]="emailid" class="form-control input-sm" size="20" required />
+								<input id="emailid" name="emailid" type="email" [(ngModel)]="emailid" class="form-control input-sm emailid" size="20" required />
 							</div>
 							<button id="btnChangePwd" name="btnChangePwd" (click)="isChangePwd()" [style.display]="isviscpwd == 'N'?'none':''" class="btn {{iscpwd == 'Y' ? 'btn-danger' : 'btn-primary'}}">
 								{{iscpwd == "Y" ? "- No Change" : "+ Change Password"}}
@@ -38,11 +35,11 @@
 							<div [style.display]="iscpwd == 'N'?'none':''">
 								<div class="form-group">
 									<label class="control-label">Password</label>
-									<input id="pwd" name="pwd" type="password" [(ngModel)]="pwd" class="form-control input-sm" size="20" required />
+									<input id="pwd" name="pwd" type="password" [(ngModel)]="pwd" class="form-control input-sm pwd" size="20" required />
 								</div>
 								<div class="form-group">
 									<label class="control-label">Confirm Password</label>
-									<input id="cpwd" name="cpwd" type="password" [(ngModel)]="confpwd" class="form-control input-sm" size="20" required />
+									<input id="cpwd" name="cpwd" type="password" [(ngModel)]="confpwd" class="form-control input-sm cpwd" size="20" required />
 								</div>
 							</div>
 						</div>
@@ -57,17 +54,17 @@
 							</div>
 							<div class="panel-body">
 								<div *ngFor="let row of CompanyDetails; let i = index;" class="allcheckboxes">
-									<div class="ui-grid-col-12">
-										<div class="ui-grid-row">
-											<div class="col-md-3">
-												<input id="{{row.cmpid}}" name="cmp{{i + 1}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" (change)="selectAndDeselectCompanyWiseCheckboxes(row)"
-												/>&nbsp;{{row.cmpname}}
-											</div>
+									<div class="col-md-12 allcheckboxes">
+										<div class="row">
 											<div class="col-md-1">
 												<img id="img{{row.cmpid}}" name="img{{i + 1}}" src="assets/img/logo/{{row.cmplogo}}" onerror="this.src='assets/img/logo/No_Images.gif';"
 													width="50" height="50" />
 											</div>
-											<div id="C{{row.cmpid}}" class="col-md-8">
+											<div class="col-md-6">
+												<input id="{{row.cmpid}}" name="cmp{{i + 1}}" type="checkbox" [(ngModel)]="row.iscmpcheck" value="{{row.cmpid}}" (change)="selectAndDeselectCompanyWiseCheckboxes(row)"
+												/>&nbsp;{{row.cmpname}}
+											</div>
+											<div id="C{{row.cmpid}}" class="col-md-5">
 												<label *ngFor="let fyrow of row.fyrights">
 													<input id="{{row.cmpid}}{{fyrow.fyid}}" name="fy{{i + 1}}" type="checkbox" value="{{fyrow.fyid}}">
 													{{fyrow.fyname}}

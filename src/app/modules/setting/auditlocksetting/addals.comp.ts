@@ -37,8 +37,7 @@ export class ALSAddEdit implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.title = "Add dn";
-        console.log('ngOnInit');
+        this.setActionButtons.setTitle("Audit Lock Setting");
 
         let today = new Date();
         let month = today.getMonth();
@@ -124,27 +123,30 @@ export class ALSAddEdit implements OnInit, OnDestroy {
             }
         }
 
-        console.log(JSON.stringify(auditlockdt));
-
-        var saveDR = {
-            "auditlockaction": auditlockdt
+        if (auditlockdt.length === 0) {
+            that._msg.Show(messageType.error, "Error", "atlest fill 1 row");
         }
-
-        that._alsservice.saveAuditLockAction(saveDR).subscribe(data => {
-            var dataResult = data.data;
-
-            if (dataResult[0].msgid != "-1") {
-                that._msg.Show(messageType.success, "Success", dataResult[0].msg);
-                that._router.navigate(['/setting']);
+        else {
+            var saveDR = {
+                "auditlockaction": auditlockdt
             }
-            else {
-                that._msg.Show(messageType.error, "Error", dataResult[0].msg);
-            }
-        }, err => {
-            that._msg.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        });
+
+            that._alsservice.saveAuditLockAction(saveDR).subscribe(data => {
+                var dataResult = data.data;
+
+                if (dataResult[0].msgid != "-1") {
+                    that._msg.Show(messageType.success, "Success", dataResult[0].msg);
+                    that._router.navigate(['/setting']);
+                }
+                else {
+                    that._msg.Show(messageType.error, "Error", dataResult[0].msg);
+                }
+            }, err => {
+                that._msg.Show(messageType.error, "Error", err);
+            }, () => {
+                // console.log("Complete");
+            });
+        }
     }
 
     ngOnDestroy() {

@@ -25,13 +25,28 @@ const routerConfig =
                 return comp.default;
               }),
             },
-             {
+            {
               path: 'generateinv', loadChildren: () => System.import('./generateinvoice').then((comp: any) => {
                 return comp.default;
               }),
             },
             {
               path: 'pendingdc', loadChildren: () => System.import('./pendingDC').then((comp: any) => {
+                return comp.default;
+              }),
+            },
+            {
+              path: 'salesordsample', loadChildren: () => System.import('./salesordsample').then((comp: any) => {
+                return comp.default;
+              }),
+            },
+            {
+              path: 'penordsample', loadChildren: () => System.import('./pendingsalessimple').then((comp: any) => {
+                return comp.default;
+              }),
+            },
+            {
+              path: 'invordsample', loadChildren: () => System.import('./generatesample').then((comp: any) => {
                 return comp.default;
               }),
             },

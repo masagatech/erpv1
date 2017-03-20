@@ -48,7 +48,6 @@ export class DRDashboardComp implements OnInit, OnDestroy {
 
         that._drservice.getEmpDocRepo({ "flag": "drwiseuser", "search": that.uname }).subscribe(data => {
             that.userDT = data.data;
-            debugger;
         }, err => {
             console.log("Error");
         }, () => {

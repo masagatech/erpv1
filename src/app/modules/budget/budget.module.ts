@@ -38,7 +38,7 @@ const routerConfig = [
             }),
           },
           {
-            path: 'startforecasting', loadChildren: () => System.import('./expensebudget').then((comp: any) => {
+            path: 'startforecasting', loadChildren: () => System.import('./startforecasting').then((comp: any) => {
               return comp.default;
             }),
           },

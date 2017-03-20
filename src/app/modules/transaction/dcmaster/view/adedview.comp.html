@@ -7,32 +7,21 @@
 					[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" field="label" [size]="30" [minLength]="1"></p-autoComplete>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class='form-group'>
 				<label>From Date</label>
-				<div class="controls">
-					<div class="input-group">
-						<input type="text" name="date-picker-3" id="FromDate" tabindex="2" class="date-picker form-control" [(ngModel)]="FromDate"
-						/>
-						<label for="date-picker-3" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-					</div>
-				</div>
+				<calendar #fromdatecal [name]="'fromdate'"></calendar>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class='form-group'>
 				<label>To Date</label>
-				<div class="controls">
-					<div class="input-group date">
-						<input type="text" name="date-picker-4" id="ToDate" tabindex="3" class="date-picker form-control" [(ngModel)]="ToDate" />
-						<label for="date-picker-4" class="input-group-addon btn"><span class="glyphicon glyphicon-calendar"></span></label>
-					</div>
-				</div>
+				<calendar #todatecal [name]="'todate'"></calendar>
 			</div>
 		</div>
 		<div class="col-md-1">
 			<div class='form-group'>
-				<div style="padding-top:28px;">
+				<div class="setfltrbtn">
 					<button type="button" class="btn btn-theme btn-sm get" tabindex="4" (click)="GetData()"><i class="fa fa-arrow-right"></i></button>
 				</div>
 			</div>
@@ -40,7 +29,7 @@
 	</div>
 	<div class="table-responsive" *ngIf="salesorderview">
 		<p-dataTable #dt [value]="salesorderview" [lazy]="true" [rows]="10" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-			(onRowExpand)="expandDetails($event)" expandableRows="true">
+			(onRowExpand)="expandDetails($event)" (onRowClick)="OpenEdit($event)" expandableRows="true">
 			<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
 				<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 					{{rowIndex+1}}
@@ -48,9 +37,9 @@
 			</p-column>
 			<p-column header="More" expander="true" [style]="{'width':'1px','text-align':'left'}">
 			</p-column>
-			<p-column field="docno" header="Doc No" [style]="{'width':'10px','text-align':'left'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'20px','text-align':'left'}"></p-column>
 			<p-column field="docdate" header="Doc Date" [style]="{'width':'50px','text-align':'left'}"></p-column>
-			<p-column field="cust" header="Customer" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="cust" header="Customer" [style]="{'width':'130px','text-align':'left'}"></p-column>
 			<p-column field="deldate" header="Del Date" [style]="{'width':'50px','text-align':'left'}"></p-column>
 			<p-column field="status" header="Status" [style]="{'width':'50px','text-align':'left'}"></p-column>
 			<p-column field="remark" header="Sp.Intraction" [style]="{'width':'50px','text-align':'left'}"></p-column>
@@ -63,18 +52,38 @@
 							{{rowIndex+1}}
 						</template>
 					</p-column>
-					<p-column field="item" header="Item" [style]="{'width':'10px','text-align':'left'}"></p-column>
-					<p-column field="ordqty" header="Qty" [style]="{'width':'30px','text-align':'left'}"></p-column>
-					<p-column field="amount" header="Amount" [style]="{'width':'30px','text-align':'left'}"></p-column>
+					<p-column field="item" header="Item" [style]="{'width':'100px','text-align':'left'}"></p-column>
+					<p-column field="ordqty" header="Qty." [style]="{'width':'20px','text-align':'right'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '1'}}" [(ngModel)]="row.ordqty"></numtext>
+						</template>
+					</p-column>
+					<p-column field="dis" header="Dis." [style]="{'width':'20px','text-align':'right'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '2'}}" [(ngModel)]="row.dis"></numtext>
+						</template>
+					</p-column>
+					<p-column field="confqty" header="Confirmqty" [style]="{'width':'20px','text-align':'right'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '3'}}" [(ngModel)]="row.confqty"></numtext>
+						</template>
+					</p-column>
+					<p-column field="amount" header="Amount" [style]="{'width':'30px','text-align':'right'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '4'}}" [(ngModel)]="row.amount"></numtext>
+						</template>
+					</p-column>
 				</p-dataTable>
 				<footer>
 					<table class="tableNoborder">
 						<tbody>
 							<tr>
-								<td></td>
-								<td></td>
-								<td><label style="'width':'30px','text-align':'left'"><b>{{row.subqty}}</b></label></td>
-								<td><label style="'width':'30px','text-align':'left'"><b>{{row.subtotal}}</b></label></td>
+								<td style="width:1px;text-align:left"></td>
+								<td style="width:100px;text-align:left"></td>
+								<td style="width:20px;text-align:right"><b>{{row.subqty}}</b></td>
+								<td style="width:20px;text-align:left"></td>
+								<td style="width:20px;text-align:right"><b>{{row.confirmqty}}</b></td>
+								<td style="width:30px;text-align:right"><b>{{row.subtotal}}</b></td>
 							</tr>
 						</tbody>
 					</table>
@@ -84,6 +93,9 @@
 				<table class="tableNoborder">
 					<tbody>
 						<tr>
+							<td style="width:40px;text-align:left"></td>
+							<td style="width:40px;text-align:left"></td>
+							<td style="width:40px;text-align:left"></td>
 							<td style="width:40px;text-align:left"></td>
 							<td style="width:30px;text-align:left"></td>
 							<td style="width:30px;text-align:right">Total</td>

@@ -7,22 +7,22 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Account Name</label>
-								<input type="text" name="dnacname" [(ngModel)]="dnacname" class="dnaccname form-control" (keyup)="getAutoComplete(this, 2)"
-								/>
+								<p-autoComplete id="dncustname" name="dncustname" [(ngModel)]="dncustname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event, 1)"
+									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Doc Date</label>
-								<calendar #dndate [name]="'dndate'"></calendar>
+								<calendar #dndate [name]="'dndate'" tabindex="2"></calendar>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Debit Amount</label>
-								<numtext name="dramt" [(ngModel)]="dramt"></numtext>
+								<numtext name="dramt" [(ngModel)]="dramt" tabindex="3"></numtext>
 							</div>
 						</div>
 						<div class="col-md-8">
 							<div class="form-group">
 								<label class="control-label">Narration</label>
-								<textarea name="narration" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5"></textarea>
+								<textarea name="narration" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5" tabindex="4"></textarea>
 							</div>
 							<div class="form-group" style="display:none;">
 								<p-checkbox [(ngModel)]="isactive" name="chkIsActive" value="Is Active" label="Is Active" binary="true"></p-checkbox>
@@ -48,8 +48,8 @@
 								{{ i + 1 }}
 							</td>
 							<td>
-								<input type="text" name="acname{{i+1}}" [(ngModel)]="row.acname" class="accname form-control" (keyup)="getAutoComplete(row, 1)"
-								/>
+								<p-autoComplete id="acname{{i+1}}" name="acname{{i+1}}" [(ngModel)]="row.acname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 2)"
+									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
 							</td>
 							<td class="textalign">
 								<numtext id="{{'cramt'+i+1}}" name="cramt{{i+1}}" [(ngModel)]="row.cramt"></numtext>
@@ -63,11 +63,11 @@
 						<tr>
 							<td>#</td>
 							<td>
-								<input type="text" name="newacname" [(ngModel)]="newacname" class="accname form-control" (keyup)="getAutoComplete(this, 0)"
-								/>
+								<p-autoComplete id="newcustname" name="newcustname" [(ngModel)]="newcustname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 0)"
+									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
 							</td>
 							<td>
-								<numtext name="newcramt" [(ngModel)]="newcramt" (keyup.enter)="NewRowAdd()" (keydown.tab)="NewRowAdd()"></numtext>
+								<numtext name="newcramt" [(ngModel)]="newcramt" tabindex="6"></numtext>
 							</td>
 							<td>
 								<button type="button" name="btnAdd" class="btn btn-theme fa fa-plus" (click)="NewRowAdd()"></button>

@@ -19,6 +19,7 @@
     <script src="/assets/js/autoNumeric.min.js"></script>
     <script src="/assets/js/submenu.js"></script>
     <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/fullcalendar.min.js"></script>
     <link rel="stylesheet" id="theme" href="/assets/theme/blue.css">
 
     <% if (webpackConfig.htmlElements.headTags) { %>
@@ -82,9 +83,9 @@
             loadjscssfile('/assets/css/styles.css', 'css', function() {
                 loadjscssfile('/assets/css/customstyle.css', 'css', function() {
                     loadjscssfile('/assets/css/primeng.min.css', 'css', function() {
-                        // loadjscssfile('/assets/css/jquery-ui.css', 'css', function() {});
+                        loadjscssfile('/assets/css/fullcalendar.min.css', 'css', function() {
 
-
+                        });
                     });
                 });
             });

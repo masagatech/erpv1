@@ -15,7 +15,7 @@
 		<div class="col-md-1">
 			<div class="form-group">
 				<label>&nbsp;</label>
-				<button type="button" class="btn btn-thme btn-sm" (click)="searchJV(dt)">Get</button>
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchJV(dt)">Get</button>
 			</div>
 		</div>
 	</div>
@@ -29,8 +29,8 @@
 			<p-column field="todt" header="To Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="openFYDetails(row)" class="btn btn-theme btn-sm">
-						<i class="fa fa-arrow-right"></i>
+					<button type="button" (click)="openFYDetails(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
 					</button>
 				</template>
 			</p-column>

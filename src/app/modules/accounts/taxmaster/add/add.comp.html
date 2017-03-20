@@ -1,0 +1,163 @@
+<!--<form id="formid">-->
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-3">
+				<div class='form-group'>
+					<label>Invoice Type</label>
+					<select class="form-control invtype" tabindex="1" name="invtype" [(ngModel)]="invtype">
+                    <option *ngFor="let item of invoicetypelist"  [value]="item.id">
+                    {{item.val}}
+                    </option>
+				</select>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="table-responsive">
+				<p-dataTable #dt [value]="taxmasterlist" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+					expandableRows="true" [responsive]="true">
+					<!--<p-column header="#" [style]="{'width':'30px;'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							{{rowIndex+1}}
+						</template>
+					</p-column>-->
+					<p-column header="Tax Name" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<input type="text" class="form-control taxname inlinetextbox" tabindex="100" [(ngModel)]="row.taxname" value="" />
+						</template>
+					</p-column>
+					<p-column header="Chart Of A/c" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<input type="text" class="form-control chartofac inlinetextbox" tabindex="101" [(ngModel)]="row.chartofac" (keyup)="CharOfAccount(row,1)"
+								autocomplete='off' value="" />
+						</template>
+					</p-column>
+					<p-column header="%" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="102" [(ngModel)]="row.taxval"></numtext>
+						</template>
+					</p-column>
+					<p-column header="On" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="103">
+						<option *ngFor="let row of row.onlist" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
+						</template>
+					</p-column>
+					<p-column header="seq" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="false" [islabel]="true" [tabindex]="104" css="inlinetextbox" [(ngModel)]="row.seq"></numtext>
+						</template>
+					</p-column>
+					<p-column header="Action" [style]="{'width':'80px;','text-align':'center'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<button class="btn btn-danger btn-sm" (click)="TaxDeleteRow(row.taxcounter)"><i class="fa fa-trash"></i></button>
+						</template>
+					</p-column>
+					<footer>
+						<table class="tableNoborder" style="height: 60px;">
+							<tbody>
+								<tr>
+									<!--<td style="width:30px;vertical-align: top;">
+										<label>#</label>
+									</td>-->
+									<td style="width:80px;vertical-align: top;">
+										<input type="text" class="form-control taxname" tabindex="2" [(ngModel)]="taxname" value="" />
+									</td>
+									<td style="width:80px;vertical-align: top;">
+										<input type="text" class="form-control chartofac" tabindex="3" [(ngModel)]="Newchartofac" (keyup)="CharOfAccount(this,1)"
+											autocomplete='off' value="" />
+									</td>
+									<td style="width:80px;vertical-align: top;">
+										<numtext [iscurrency]="false" [tabindex]="4" [(ngModel)]="taxval"></numtext>
+									</td>
+									<td style="width:80px;vertical-align: top;">
+										<select [(ngModel)]="onmodel" class="form-control" tabindex="5" class="form-control">
+                                            <option *ngFor="let row of Onlist" [value]="row.id">
+                                                    {{row.val}}
+                                            </option>
+                                    </select>
+									</td>
+									<td style="width:80px;vertical-align: top;">
+										<numtext [iscurrency]="true" [tabindex]="6" [islabel]="false" [(ngModel)]="seq"></numtext>
+									</td>
+									<td style="width:80px;vertical-align: top;"><button type="button" tabindex="7" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="AddNewTax()"><i class="fa fa-plus"></i></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</footer>
+				</p-dataTable>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div>
+				<span class="pull-left label label-warning">Fixed Charges</span>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="table-responsive">
+				<p-dataTable #dt [value]="fiexchageslist" [editable]="true" [lazy]="true" (onLazyLoad)="loadRBIGrid($event)" [(selection)]="selectedRB1"
+					expandableRows="true" [responsive]="true">
+					<!--<p-column header="#" [style]="{'width':'30px;'}">
+						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+							{{rowIndex+1}}
+						</template>
+					</p-column>-->
+					<p-column header="Charges" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<input type="text" class="form-control taxname inlinetextbox" tabindex="200" [(ngModel)]="row.chares" value="" />
+						</template>
+					</p-column>
+					<p-column header="Amount" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<numtext [iscurrency]="false" css="inlinetextbox" [tabindex]="201" [(ngModel)]="row.amount"></numtext>
+						</template>
+					</p-column>
+					<p-column header="On" [style]="{'width':'80px;','text-align':'left'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="202">
+						<option *ngFor="let row of row.Oncharelist" [value]="row.id">
+							{{row.val}}
+					    </option>
+							</select>
+						</template>
+					</p-column>
+					<p-column header="Action" [style]="{'width':'80px;','text-align':'center'}">
+						<template let-col let-row="rowData" pTemplate="editor">
+							<button class="btn btn-danger btn-sm" (click)="CharesDeleteRow(row.charcounter)"><i class="fa fa-trash"></i></button>
+						</template>
+					</p-column>
+					<footer>
+						<table class="tableNoborder" style="height: 60px;">
+							<tbody>
+								<tr>
+									<!--<td style="width:30px;vertical-align: top;">
+										<label>#</label>
+									</td>-->
+									<td style="width:80px;vertical-align: top;">
+										<input type="text" class="form-control charegname" tabindex="8" [(ngModel)]="charegname" value="" />
+									</td>
+									<td style="width:80px;vertical-align: top;">
+										<input type="text" class="form-control amount" tabindex="9" [(ngModel)]="amount" value="" />
+									</td>
+									<td style="width:80px;vertical-align: top;">
+										<select [(ngModel)]="oncharemodel" class="form-control" tabindex="10" (keyup.enter)="NewRowAdd()"
+											class="form-control">
+                                            <option *ngFor="let row of Oncharelist" [value]="row.id">
+                                                    {{row.val}}
+                                            </option>
+                                    </select>
+									</td>
+									<td style="width:80px;vertical-align: top;"><button type="button" tabindex="11" class="btn btn-theme btn-sm" ng-reflect-title="Add" title="Add" (click)="AddNewCharges()"><i class="fa fa-plus"></i></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</footer>
+				</p-dataTable>
+			</div>
+		</div>
+	</div>
+	<!--</form>-->

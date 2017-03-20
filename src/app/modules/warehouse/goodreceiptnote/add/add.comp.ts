@@ -7,6 +7,8 @@ import { goodAddService } from "../../../../_service/goodreceiptnote/add/add-ser
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
+import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
+
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -100,7 +102,7 @@ declare var $: any;
     }
 
     //Get type
-    gettypes() {
+    loadRBIGrid(event: LazyLoadEvent) {
 
     }
 
@@ -169,7 +171,7 @@ declare var $: any;
             "type": "Custtrans",
             "search": _me.tranname,
             "cmpid": _me.loginUser.cmpid,
-            "custid":_me.custid,
+            "custid": _me.custid,
             "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".trans").autocomplete({
@@ -194,13 +196,13 @@ declare var $: any;
         })
     }
 
-     getAutoCompleteSalesman(me: any) {
+    getAutoCompleteSalesman(me: any) {
         var _me = this;
         this._autoservice.getAutoData({
             "type": "salesmanwithcust",
             "search": _me.suppname,
             "cmpid": _me.loginUser.cmpid,
-            "custid":_me.custid,
+            "custid": _me.custid,
             "fy": this.loginUser.fy
         }).subscribe(data => {
             $(".salesman").autocomplete({

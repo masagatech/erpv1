@@ -34,9 +34,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: AddRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/add" }, },
-                    { path: 'edit/:irbid', component: AddRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/edit" }, },
-                    { path: '', component: ViewRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"ap", "rights": "add", "urlname": "/receiptbookissued" }, },
+                    { path: 'add', component: AddRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"rbi", "rights": "add", "urlname": "/add" }, },
+                    { path: 'edit/:irbid', component: AddRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"rbi", "rights": "add", "urlname": "/edit" }, },
+                    { path: '', component: ViewRBI, canActivateChid: [AuthGuard],  data: { "module": "accs", "submodule":"rbi", "rights": "add", "urlname": "/receiptbookissued" }, },
                 ]
             }
         ]

@@ -1,16 +1,17 @@
 <div class="col-md-12">
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-3">
 			<div class="form-group">
 				<label>Bank</label>
 				<select class="form-control" [(ngModel)]="bankid">
-					<option *ngFor="let items of bnaknamelistDTDT" tabindex="1" [value]="items.value">
-						{{items.label}}
+					<option [value]="0">Select Bank</option>
+					<option *ngFor="let items of bankDT" tabindex="1" [value]="items.key">
+						{{items.val}}
 					</option>
 				</select>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<!--<div class="col-md-3">
 			<div class="form-group">
 				<label>From Date</label>
 				<calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
@@ -21,11 +22,21 @@
 				<label>To Date</label>
 				<calendar #todate [name]="'todate'" tabindex="3"></calendar>
 			</div>
+		</div>-->
+		<div class="col-md-3">
+			<div class="form-group">
+				<label>Status</label>
+				<select class="form-control" [(ngModel)]="status" tabindex="4">
+					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
+				</select>
+			</div>
 		</div>
 		<div class="col-md-1">
-			<div class="form-group">
+			<div class="form-group setfltrbtn">
 				<label>&nbsp;</label>
-				<button type="button" tabindex="4" class="btn btn-theme btn-sm" (click)="searchBankRecepit(dt)">Get</button>
+				<button type="button" tabindex="5" class="btn btn-theme btn-sm" (click)="searchBankRecepit(dt)">
+					<i class="fa fa-arrow-right"></i>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -33,36 +44,32 @@
 
 <div class="col-md-12">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="bnakreceiptDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowClick)="expandDetails(dt, $event)"
+		<p-dataTable #dt [value]="bankreceiptDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
 			(onLazyLoad)="loadBankReceiptGrid($event)" expandableRows="true">
-			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
-			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'left'}"></p-column>
-			<p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
-			<p-column field="partyname" header="Party" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column field="typ" header="Type" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column field="cheqno" header="Cheque No" [style]="{'width':'150px','text-align':'left'}"></p-column>
-			<p-column header="Amount" [style]="{'width':'150px','text-align':'left'}">
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'30px'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'80px','text-align':'left'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="acname" header="A/C Name" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="bankname" header="Bank Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="banktype" header="Bank Type" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="cheqno" header="Cheque No" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column header="Amount" [style]="{'width':'100px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
 					{{row.amount | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<p-column header="Narration" [style]="{'width':'150px','text-align':'left'}">
-				<template let-row="rowData" pTemplate type="body">
-					{{row.issh == 1 ? row.narration : row.smallnarr}}
-				</template>
-			</p-column>
-			<p-column field="status" header="Status" [style]="{'width':'150px','text-align':'left'}"></p-column>
+			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
-					<button type="button" (click)="openDNDetails(row)" class="btn btn-theme btn-sm">
-					<i class="fa fa-arrow-right"></i>
-				</button>
+					<button type="button" (click)="OpenBankReceipt(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
+					</button>
 				</template>
 			</p-column>
 			<template let-row>
 				<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
 					<p-column field="refno" header="Reference No" [style]="{'width':'150px','text-align':'left'}"></p-column>
-					<p-column field="code" header="Code" [style]="{'width':'150px','text-align':'left'}"></p-column>
+					<p-column field="custname" header="Code" [style]="{'width':'150px','text-align':'left'}"></p-column>
 				</p-dataTable>
 			</template>
 		</p-dataTable>
@@ -88,7 +95,7 @@
 			<th class="col-xs-4">Narration</th>
 		</tr>
 	</thead>
-	<tbody *ngFor="let row of bnakreceiptDT">
+	<tbody *ngFor="let row of bankreceiptDT">
 		<tr>
 			<td>
 				<button (click)="expandDetails(row)">

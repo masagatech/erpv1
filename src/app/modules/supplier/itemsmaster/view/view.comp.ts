@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 
 declare var $: any;
 @Component({
-    templateUrl: 'itemview.comp.html',
+    templateUrl: 'view.comp.html',
     providers: [ItemViewService, CommonService]                         //Provides Add Service dcmaster-service.ts
     //,AutoService
 }) export class itemview implements OnInit, OnDestroy {
@@ -41,111 +41,112 @@ declare var $: any;
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
+        this.setActionButtons.setTitle("Item Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         $(".items").focus();
     }
 
     getAutoCompleteProductName(me: any) {
-        var that = this;
-        this._autoservice.getAutoData({ "type": "CatProdName", "search": that.itemsName, "cmpid": 1, "FY": 5 }).subscribe(data => {
-            $(".items").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.itemsid = ui.item.value;
-                    me.itemsName = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+        try {
+            var that = this;
+            this._autoservice.getAutoData({ "type": "CatProdName", "search": that.itemsName, "cmpid": 1, "FY": 5 }).subscribe(data => {
+                $(".items").autocomplete({
+                    source: data.data,
+                    width: 300,
+                    max: 20,
+                    delay: 100,
+                    minLength: 0,
+                    autoFocus: true,
+                    cacheLength: 1,
+                    scroll: true,
+                    highlight: false,
+                    select: function (event, ui) {
+                        me.itemsid = ui.item.value;
+                        me.itemsName = ui.item.label;
+                    }
+                });
+            }, err => {
+                console.log("Error");
+            }, () => {
+                // console.log("Complete");
+            })
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     getItemsMaster(from: number, to: number) {
-        if ($(".items").val() == "") {
-            this.itemsid = "";
-        }
-        this.itemViewServies.getItemsMaster({
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "createdby": this.loginUser.login,
-            "flag": "",
-            "from": from,
-            "to": to,
-            "itemsid": this.itemsid
-        }).subscribe(details => {
-            var dataset = details.data;
-            console.log(dataset);
-            if (dataset.length > 0) {
-                this.totalRecords = dataset[1][0].recordstotal;
-                this.ItemDetails = dataset[0];
+        try {
+            if ($(".items").val() == "") {
+                this.itemsid = "";
             }
-            else {
-                this.ItemDetails = [];
-                this._msg.Show(messageType.info, "info", "Record not found");
-                $(".Items").focus();
-            }
+            this.itemViewServies.getItemsMaster({
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "createdby": this.loginUser.login,
+                "flag": "",
+                "from": from,
+                "to": to,
+                "itemsid": this.itemsid
+            }).subscribe(details => {
+                var dataset = details.data;
+                console.log(dataset);
+                if (dataset.length > 0) {
+                    this.totalRecords = dataset[1][0].recordstotal;
+                    this.ItemDetails = dataset[0];
+                }
+                else {
+                    this.ItemDetails = [];
+                    this._msg.Show(messageType.info, "info", "Record not found");
+                    $(".Items").focus();
+                }
 
-        }, err => {
-            console.log('Error');
-        }, () => {
-            //Done Process
-        });
+            }, err => {
+                console.log('Error');
+            }, () => {
+                //Done Process
+            });
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Pagination Grid View 
     loadRBIGrid(event: LazyLoadEvent) {
-        this.getItemsMaster(event.first, (event.first + event.rows));
+        try {
+            this.getItemsMaster(event.first, (event.first + event.rows));
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
+        }
+
     }
 
     //Edit Row
-    EditItem(row) {
-        if (!row.islocked) {
-            this._router.navigate(['/supplier/itemsmaster/itemedit', row.itemsid]);
+    EditItem(event) {
+        try {
+            var data = event.data;
+            if (data != undefined) {
+                data = event.data;
+            }
+            else {
+                data = event;
+            }
+            if (!data.islocked) {
+                this._router.navigate(['/supplier/itemsmaster/edit', data.itemsid]);
+            }
+        } catch (e) {
+            this._msg.Show(messageType.error, "error", e.message);
         }
-    }
 
-    //More Button Click
-    // expandDetails(row) {
-    //     row.attribute = [];
-    //     row.saleprice = [];
-    //     if (row.issh == 0) {
-    //         row.issh = 1;
-    //         if (row.attribute.length === 0) {
-    //             this.itemViewServies.getItemsMaster({
-    //                 "flag": "Details",
-    //                 "itemsid": row.itemsid,
-    //                 "cmpid": this.loginUser.cmpid,
-    //                 "fy": this.loginUser.fy
-    //             }).subscribe(data => {
-    //                 var dataset = data.data;
-    //                 row.attribute = dataset[0]._attributejson;
-    //                 row.saleprice = dataset[0]._salesjson;
-    //             }, err => {
-    //                 console.log("Error");
-    //             }, () => {
-    //                 // console.log("Complete");
-    //             })
-    //         }
-    //     } else {
-    //         row.issh = 0;
-    //     }
-    // }
+    }
 
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "add") {
-            this._router.navigate(['/supplier/itemsmaster/itemadd']);
+            this._router.navigate(['/supplier/itemsmaster/add']);
         }
         else if (evt === "save") {
             //Save CLick Event
@@ -161,5 +162,6 @@ declare var $: any;
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
+        this.setActionButtons.setTitle("");
     }
 }

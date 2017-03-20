@@ -4,13 +4,16 @@ import { CommonService } from '../../../_service/common/common-service' /* add r
 import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
+import { AutoCompleteModule } from 'primeng/primeng';
+import { Subscription } from 'rxjs/Subscription';
+// import { SharedVariableService } from "../../../_service/sharedvariable-service";
 
 declare var $: any;
 
 @Component({
     selector: '<attribute></attribute>',
     templateUrl: 'attr.comp.html',
-    providers: [AttributeService]
+    providers: [AttributeService, CommonService]
 })
 
 export class AttributeComp implements OnInit, OnDestroy {
@@ -22,7 +25,8 @@ export class AttributeComp implements OnInit, OnDestroy {
     attrname: any = "";
     attrid: number = 0;
     Duplicateflag: boolean = false;
-    
+    AttributeAutodata: any = [];
+
     @Input() isdetails: boolean = false;
 
     //user details
@@ -34,7 +38,7 @@ export class AttributeComp implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
     }
 
-    //Autocompleted Attribute Name
+   // Autocompleted Attribute Name
     getAutoCompleteattr(me: any) {
         var that = this;
         this._commonservice.getAutoData({
@@ -66,6 +70,26 @@ export class AttributeComp implements OnInit, OnDestroy {
             this.attrid = 0;
         })
     }
+
+    // AttributeAuto(event) {
+    //     let query = event.query;
+    //     this._commonservice.getAutoDataGET({
+    //         "type": this.attrtype,
+    //         "search": query,
+    //         "cmpid": this.loginUser.cmpid,
+    //         "fy": this.loginUser.fy,
+    //         "filter": this.attrparam.join(),
+    //         "createdby": this.loginUser.login
+    //     }).then(data => {
+    //         this.AttributeAutodata = data;
+    //     });
+    // }
+
+    // //Selected Attribute
+    // AttributeSelect(event) {
+    //     this.attrid = event.value;
+    //     this.attrname = event.label;
+    // }
 
     //Add Attribute 
     AttributeAdd() {
