@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
     return Observable.create((observer: Subject<boolean>) => {
       //debugger;
       // $("#theme").attr('href', '/assets/theme/brown.css');
-      that.app.setTheme("brown");
+      that.app.setTheme("blue");
       if (checks.status) {
         //call here
 
