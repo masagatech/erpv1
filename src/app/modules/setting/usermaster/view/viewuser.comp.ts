@@ -85,7 +85,7 @@ export class ViewUser implements OnInit, OnDestroy {
     }
 
     openUserDetails(row) {
-        this._router.navigate(['/setting/usermaster/edit', row.uid]);
+        this._router.navigate(['/setting/usermaster/details', row.uid]);
     }
 
     actionBarEvt(evt) {

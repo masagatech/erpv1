@@ -33,6 +33,7 @@ const routerConfig = [
                 path: '',
                 children: [
                     { path: 'add', component: AddUser, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"um", "rights": "add", "urlname": "/add" }},
+                    { path: 'details/:id', component: AddUser, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"um", "rights": "edit", "urlname": "/edit" } },
                     { path: 'edit/:id', component: AddUser, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"um", "rights": "edit", "urlname": "/edit" } },
                     { path: '', component: ViewUser, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"um", "rights": "view", "urlname": "/usermaster" } },
                 ]

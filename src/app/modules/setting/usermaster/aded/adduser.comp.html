@@ -7,19 +7,22 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">User Code</label>
-								<input id="ucode" name="ucode" type="text" [(ngModel)]="ucode" class="form-control input-sm ucode" size="20" required />
+								<input id="ucode" name="ucode" type="text" placeholder="User Code" [(ngModel)]="ucode" class="form-control input-sm ucode"
+									maxlength="20" required />
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">First Name</label>
-								<input id="fname" name="fname" type="text" [(ngModel)]="fname" class="form-control input-sm fname" size="20">
+								<input id="fname" name="fname" type="text" placeholder="First Name" [(ngModel)]="fname" class="form-control input-sm fname"
+									size="20">
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Last Name</label>
-								<input id="lname" name="lname" type="text" [(ngModel)]="lname" class="form-control input-sm lname" size="20">
+								<input id="lname" name="lname" type="text" placeholder="Last Name" [(ngModel)]="lname" class="form-control input-sm lname"
+									size="20">
 							</div>
 						</div>
 					</div>
@@ -27,7 +30,8 @@
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="control-label">Email Address</label>
-								<input id="emailid" name="emailid" type="email" [(ngModel)]="emailid" class="form-control input-sm emailid" size="20" required />
+								<input id="emailid" name="emailid" type="email" placeholder="Email Address" [(ngModel)]="emailid" class="form-control input-sm emailid"
+									size="20" required />
 							</div>
 							<button id="btnChangePwd" name="btnChangePwd" (click)="isChangePwd()" [style.display]="isviscpwd == 'N'?'none':''" class="btn {{iscpwd == 'Y' ? 'btn-danger' : 'btn-primary'}}">
 								{{iscpwd == "Y" ? "- No Change" : "+ Change Password"}}
@@ -35,11 +39,13 @@
 							<div [style.display]="iscpwd == 'N'?'none':''">
 								<div class="form-group">
 									<label class="control-label">Password</label>
-									<input id="pwd" name="pwd" type="password" [(ngModel)]="pwd" class="form-control input-sm pwd" size="20" required />
+									<input id="pwd" name="pwd" type="password" placeholder="Password" [(ngModel)]="pwd" class="form-control input-sm pwd" size="20"
+										required />
 								</div>
 								<div class="form-group">
 									<label class="control-label">Confirm Password</label>
-									<input id="cpwd" name="cpwd" type="password" [(ngModel)]="confpwd" class="form-control input-sm cpwd" size="20" required />
+									<input id="cpwd" name="cpwd" type="password" placeholder="Confirm Password" [(ngModel)]="confpwd" class="form-control input-sm cpwd"
+										size="20" required />
 								</div>
 							</div>
 						</div>
@@ -48,7 +54,7 @@
 				<div class="col-md-12">
 					<div class="row">
 						<div class="panel panel-theme">
-							<div class="panel-heading">
+							<div class="panel-body">
 								<input id="selectall" name="selectall" type="checkbox" [(ngModel)]="allCheck" (change)="selectAndDeselectAllCheckboxes()"
 								/> Select All
 							</div>

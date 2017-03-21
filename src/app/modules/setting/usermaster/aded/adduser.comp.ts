@@ -35,6 +35,10 @@ export class AddUser implements OnInit, OnDestroy {
     iscpwd: string = "N";
     isviscpwd: string = 'N';
 
+    isadd: boolean = false;
+    isedit: boolean = false;
+    isdetails: boolean = false;
+
     private subscribeParameters: any;
 
     CompanyDetails: any = [];
@@ -44,44 +48,69 @@ export class AddUser implements OnInit, OnDestroy {
         var that = this;
 
         that.getCompanyDetails();
+
+        this.isadd = _router.url.indexOf("add") > -1;
+        this.isedit = _router.url.indexOf("edit") > -1;
+        this.isdetails = _router.url.indexOf("details") > -1;
     }
 
     ngOnInit() {
         var that = this;
+        that.setActionButtons.setTitle("User Master");
 
-        this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
+        that.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         that.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         that.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, false));
         that.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
-        this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
+        that.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
 
         that.setActionButtons.setActionButtons(that.actionButton);
         that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
 
         that.subscribeParameters = that._routeParams.params.subscribe(params => {
-            if (params['id'] !== undefined) {
-                that.setActionButtons.setTitle("Edit User Master");
-                that.actionButton.find(a => a.id === "save").hide = true;
-                that.actionButton.find(a => a.id === "edit").hide = false;
+            if (that.isadd) {
+                that.actionButton.find(a => a.id === "save").hide = false;
+                that.actionButton.find(a => a.id === "edit").hide = true;
+                that.actionButton.find(a => a.id === "delete").hide = true;
+                that.actionButton.find(a => a.id === "clear").hide = false;
+
+                $('input').prop('disabled', false);
+                $('.ucode').prop('disabled', false);
+                $(".ucode").focus();
+                that.iscpwd = 'Y';
+                that.isviscpwd = 'N';
+            }
+            else if (that.isedit) {
+                that.actionButton.find(a => a.id === "save").hide = false;
+                that.actionButton.find(a => a.id === "edit").hide = true;
+                that.actionButton.find(a => a.id === "delete").hide = false;
+                that.actionButton.find(a => a.id === "clear").hide = true;
 
                 setTimeout(function () {
                     that.uid = params['id'];
                     that.getUserDataById(that.uid);
                 }, 0);
 
-                $('input').attr('disabled', 'disabled');
-                $(".ucode").focus();
+                $('input').prop('disabled', false);
+                $('.ucode').prop('disabled', true);
+                $(".fname").focus();
                 that.iscpwd = 'N';
                 that.isviscpwd = 'N';
             }
             else {
-                that.setActionButtons.setTitle("Add User Master");
-                that.actionButton.find(a => a.id === "save").hide = false;
-                that.actionButton.find(a => a.id === "edit").hide = true;
+                that.actionButton.find(a => a.id === "save").hide = true;
+                that.actionButton.find(a => a.id === "edit").hide = false;
+                that.actionButton.find(a => a.id === "delete").hide = false;
+                that.actionButton.find(a => a.id === "clear").hide = true;
 
-                $('input').removeAttr('disabled');
-                $(".ucode").focus();
-                that.iscpwd = 'Y';
+                setTimeout(function () {
+                    that.uid = params['id'];
+                    that.getUserDataById(that.uid);
+                }, 0);
+
+                $('input').prop('disabled', true);
+                $('.ucode').prop('disabled', true);
+                that.iscpwd = 'N';
                 that.isviscpwd = 'N';
             }
         });
@@ -93,23 +122,13 @@ export class AddUser implements OnInit, OnDestroy {
         if (evt === "save") {
             that.saveUserMaster();
         } else if (evt === "edit") {
-            $('input').prop('disabled', false);
-
-            that.actionButton.find(a => a.id === "save").hide = false;
-            that.actionButton.find(a => a.id === "edit").hide = true;
-
-            setTimeout(function () {
-                $("#ucode").focus();
-            }, 0);
-
-            that.isviscpwd = 'Y';
-            that.iscpwd = 'N';
+            that._router.navigate(['/setting/usermaster/edit/', that.uid]);
         } else if (evt === "delete") {
             alert("delete called");
         } else if (evt === "back") {
-            this._router.navigate(['/setting/usermaster']);
+            that._router.navigate(['/setting/usermaster']);
         } else if (evt === "clear") {
-            this.resetUserFields();
+            that.resetUserFields();
         }
     }
 
@@ -129,7 +148,7 @@ export class AddUser implements OnInit, OnDestroy {
         that._compservice.getCompany({ "flag": "actwithfy" }).subscribe(data => {
             that.CompanyDetails = data.data;
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
@@ -214,7 +233,7 @@ export class AddUser implements OnInit, OnDestroy {
                 }
             }
         }, err => {
-            console.log("Error");
+            this._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         })
