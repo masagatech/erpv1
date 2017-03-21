@@ -344,6 +344,7 @@ export class AddCompany implements OnInit, OnDestroy {
 
         that._compservice.getCompany({ "flag": "id", "cmpid": pcmpid }).subscribe(data => {
             var company = data.data[0]._cmpdata;
+            //debugger;
 
             var dynFields = data.data[0]._dynfields === null ? [] : data.data[0]._dynfields;
             var attrfields = data.data[0]._attributejson === null ? [] : data.data[0]._attributejson;
