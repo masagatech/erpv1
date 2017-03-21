@@ -5,8 +5,8 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Account Code</label>
-						<p-autoComplete id="custname" name="custname" [(ngModel)]="custname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event)"
-							[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
+						<p-autoComplete validate="" id="custname" name="custname" [(ngModel)]="custname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event)"
+							[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete custname"></p-autoComplete>
 						<!--<input type="text" class="form-control custcode" tabindex="1" [(ngModel)]="custname" (keyup)="getAutoComplete(this)" />-->
 					</div>
 					<div class="form-group">
@@ -14,10 +14,10 @@
 						<calendar #issuedate [name]="'issuedate'" [islabel]="isdetails" tabindex="3"></calendar>
 					</div>
 					<div class="row">
-						<div class="col-md-4">
+						<div class="col-md-6">
 							<div class="form-group">
 								<label>Type</label>
-								<select class="form-control" [(ngModel)]="typ" tabindex="5">
+								<select validate="0" class="form-control" [(ngModel)]="typ" tabindex="5">
 									<option [value]="0">Select Type</option>
 									<option *ngFor="let items of banktypeDT" [value]="items.key">
 										{{items.val}}
@@ -25,28 +25,33 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-6">
 							<div class='form-group card required'>
 								<label>Amount</label>
-								<numtext name="dramt" [(ngModel)]="amount" tabindex="6"></numtext>
-							</div>
-						</div>
-						<div class="col-md-4">
-							<div class="form-group">
-								<label>Cheque No</label>
-								<input type="text" class="form-control" [disabled]="ChequeNo===true" tabindex="7" [(ngModel)]="cheqno" />
+								<numtext validate="" name="dramt" [(ngModel)]="amount" tabindex="6"></numtext>
 							</div>
 						</div>
 					</div>
-					<div class="form-group" disabled="typ===Cheque">
-						<label>Is Cheque Bounce</label>
-						<p-checkbox [(ngModel)]="ischeqbounce" binary="true"></p-checkbox>
+					<div class="row" *ngIf="typ==='Cheque'">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Cheque No</label>
+								<numtext validate="" name="chequeno" [(ngModel)]="chequeno" [islabel]="ischequelabel" [iscurrency]="false" [decimals]="0"
+									[grpseperator]="" css="chequeno" tabindex="7"></numtext>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group" disabled="typ===Cheque">
+								<label>Is Cheque Bounce</label>
+								<p-checkbox [(ngModel)]="ischeqbounce" binary="true"></p-checkbox>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>Bank</label>
-						<select class="form-control" [(ngModel)]="bankid" tabindex="2">
+						<select validate="0" class="form-control" [(ngModel)]="bankid" tabindex="2">
 							<option [value]="0">Select Bank</option>
 							<option *ngFor="let items of bankDT" [value]="items.key">
 								{{items.val}}
@@ -55,11 +60,12 @@
 					</div>
 					<div class="form-group">
 						<label>Reference No</label>
-						<input type="text" class="form-control" tabindex="4" [(ngModel)]="refno" />
+						<input validate="" type="text" class="form-control" tabindex="4" [(ngModel)]="refno" />
 					</div>
 					<div class="form-group">
 						<label>Narration</label>
-						<textarea [(ngModel)]="narration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3" cols="75"></textarea>
+						<textarea validate="" [(ngModel)]="narration" class="form-control medium-text-box" tabindex="8" autocomplete='off' rows="3"
+							cols="75"></textarea>
 					</div>
 				</div>
 			</div>

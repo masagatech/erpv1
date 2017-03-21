@@ -12,6 +12,7 @@ import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'braded.comp.html',
@@ -105,7 +106,11 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     // Document Ready
 
     ngOnInit() {
-        $(".custcode").focus();
+        this.setActionButtons.setTitle("A/C Receivable");
+
+        setTimeout(function () {
+            $(".custname input").focus();
+        }, 0);
 
         this.depdate.initialize(this.loginUser);
         this.depdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
@@ -121,8 +126,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Bank Receipt > Add");
-
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
@@ -136,8 +139,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Bank Receipt > Edit");
-
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
@@ -151,8 +152,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else if (this.isdetails) {
-                this.setActionButtons.setTitle("Bank Receipt > Details");
-
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);
                 $('select').prop('disabled', true);
@@ -166,8 +165,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else if (this.ispdc) {
-                this.setActionButtons.setTitle("Bank Receipt > Add");
-
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
@@ -205,8 +202,11 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     getAutoAccounts(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
-            "type": "acc_cust",
+            "type": "customer",
             "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "uid": this.loginUser.uid,
+            "typ": "",
             "search": query
         }).then(data => {
             this.accountsDT = data;
@@ -214,7 +214,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     }
 
     //Selected Customer
-    
+
     selectAutoAccounts(event) {
         this.custid = event.value;
         this.custname = event.label;
@@ -250,8 +250,8 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
 
-            this.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
-            this.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
+            this.uploadedFiles = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _uploadedfile;
+            this.suppdoc = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _suppdoc;
         }, err => {
             console.log('Error');
         }, () => {
@@ -297,20 +297,17 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     SaveBankReceipt(isactive: boolean) {
         var that = this;
 
-        // if (this.bankid == 0) {
-        //     that._msg.Show(messageType.success, "Success", "Please Select Bank");
-        //     $(".bankname").focus();
-        //     return false;
-        // }
-        if (this.depdate.setDate("")) {
-            that._msg.Show(messageType.success, "Success", "Please Enter Deposit Date");
-            $(".depdate").focus();
-            return false;
+        var validateme = commonfun.validate();
+
+        if (that.custname === "") {
+            that._msg.Show(messageType.error, "error", "Enter Account Code");
+            $(".custname input").focus();
+            return;
         }
-        if (this.custname == "") {
-            that._msg.Show(messageType.success, "Success", "Please Select Account Code");
-            $(".custcode").focus();
-            return false;
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
         }
 
         var ParamName = {
@@ -339,11 +336,11 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 return false;
             }
             else {
-                that._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankreceipt.msg);
+                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankreceipt.msg);
                 return false;
             }
         }, err => {
-            that._msg.Show(messageType.success, "Success", err);
+            that._msg.Show(messageType.error, "Error", err);
             console.log(err);
         }, () => {
             //Done Process

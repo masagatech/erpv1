@@ -69,6 +69,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.tableLength = true;
+
+        $(".bank").focus();
     }
 
     //Any Button Click Event
@@ -137,7 +139,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         }
 
         that._bpservice.getBankPayment(params).subscribe(bankpayment => {
-            that.totalRecords = bankpayment.data[1].recordstotal;
+            that.totalRecords = bankpayment.data[1][0].recordstotal;
 
             if (bankpayment.data[0].length > 0) {
                 that.tableLength = false;

@@ -12,6 +12,7 @@ import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 
 declare var $: any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'bpae.comp.html',
@@ -35,7 +36,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     cheqno: string = "";
     narration: string = "";
     refno: string = "";
-    typ: number = 0;
+    typ: string = "";
     ischeqbounce: boolean = false;
 
     accountsDT: any = [];
@@ -88,7 +89,15 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         })
     }
 
+    // Document Ready
+
     ngOnInit() {
+        this.setActionButtons.setTitle("A/C Payble");
+
+        setTimeout(function () {
+            $(".custname input").focus();
+        }, 0);
+
         this.issuedate.initialize(this.loginUser);
         this.issuedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -104,8 +113,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         //Edit Mode
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
-                this.setActionButtons.setTitle("Add A/C Payble");
-
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
@@ -120,8 +127,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = true;
             }
             else if (this.isedit) {
-                this.setActionButtons.setTitle("Edit A/C Payble");
-
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
@@ -136,8 +141,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "delete").hide = false;
             }
             else {
-                this.setActionButtons.setTitle("A/C Payble > Details");
-
                 $('button').prop('disabled', true);
                 $('input').prop('disabled', true);
                 $('select').prop('disabled', true);
@@ -170,14 +173,14 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     }
 
     // Clear All Fields
-    
+
     ClearFields() {
         this.autoid = 0;
         this.bankid = 0;
         this.issuedate.setDate("");
         this.custname = "";
         this.refno = "";
-        this.typ = 0;
+        this.typ = "";
         this.amount = 0;
         this.cheqno = "";
         this.narration = "";
@@ -197,7 +200,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     }
 
     //Selected Customer
-    
+
     selectAutoAccounts(event) {
         this.custid = event.value;
         this.custname = event.label;
@@ -247,8 +250,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             this.narration = _bankpayment[0].narration;
             this.ischeqbounce = _bankpayment[0].ischeqbounce;
 
-            this.uploadedFiles = _suppdoc.length === 0 ? [] : _uploadedfile;
-            this.suppdoc = _suppdoc.length === 0 ? [] : _suppdoc;
+            this.uploadedFiles = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _uploadedfile;
+            this.suppdoc = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _suppdoc;
         }, err => {
             console.log('Error');
         }, () => {
@@ -259,20 +262,22 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     //Send Paramter In Save Method
 
     saveBankPayment(isactive) {
-        // if (this.bankid == 0) {
-        //     this._msg.Show(messageType.info, "Info", "Please Select Bank");
-        //     return false;
-        // }
-        if (this.issuedate.setDate("")) {
-            this._msg.Show(messageType.info, "Info", "Please Enter Issue Date");
-            return false;
+        var that = this;
+
+        var validateme = commonfun.validate();
+
+        if (that.custname === "") {
+            that._msg.Show(messageType.error, "error", "Enter Account Code");
+            $(".custname input").focus();
+            return;
         }
-        if (this.custname == undefined || this.custname == null) {
-            this._msg.Show(messageType.info, "Info", "Please Enter Account");
-            return false;
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
         }
 
-        var Param = {
+        var ParamName = {
             "autoid": this.autoid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
@@ -287,11 +292,11 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             "amount": this.amount,
             "cheqno": this.cheqno,
             "narration": this.narration,
-            "isactive": isactive,
-            "ischeqbounce": this.ischeqbounce
+            "ischeqbounce": this.ischeqbounce,
+            "isactive": isactive
         }
 
-        this._bpservice.saveBankPayment(Param).subscribe(result => {
+        this._bpservice.saveBankPayment(ParamName).subscribe(result => {
             var dataResult = result.data;
 
             if (dataResult[0].funsave_bankpayment.msgid == "1") {

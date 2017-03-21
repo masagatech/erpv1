@@ -69,7 +69,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
         this.tableLength = true;
 
-        $(".bankname").focus();
+        $(".bank").focus();
     }
 
     //Any Button Click Event
@@ -132,14 +132,14 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         that.bankreceiptDT = [];
 
         var params = {
-            "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
-            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
-            "isactive": that.status, "from": from, "to": to
+            "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+            "bankid": that.bankid, "isactive": that.status, "from": from, "to": to
+            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate()
         }
 
         that._brService.getBankReceipt(params).subscribe(bankreceipt => {
-            that.totalRecords = bankreceipt.data[1].recordstotal;
-            
+            that.totalRecords = bankreceipt.data[1][0].recordstotal;
+
             if (bankreceipt.data.length !== 0) {
                 that.tableLength = false;
                 that.bankreceiptDT = bankreceipt.data[0];
