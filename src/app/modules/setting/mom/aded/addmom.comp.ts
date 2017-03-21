@@ -56,9 +56,9 @@ export class AddMOM implements OnInit, OnDestroy {
                 this.momid = params['id'];
                 this.getMOMByID(this.momid);
 
-                $('#Group').prop('disabled', true);
-                $('#Key').prop('disabled', true);
-                $('#Val').prop('disabled', true);
+                $('#group').prop('disabled', true);
+                $('#key').prop('disabled', true);
+                $('#val').prop('disabled', true);
             }
             else {
                 this.actionButton.find(a => a.id === "save").hide = false;
@@ -68,9 +68,9 @@ export class AddMOM implements OnInit, OnDestroy {
                     $("#Group").focus();
                 }, 0);
 
-                $('#Group').prop('disabled', false);
-                $('#Key').prop('disabled', false);
-                $('#Val').prop('disabled', false);
+                $('#group').prop('disabled', false);
+                $('#key').prop('disabled', false);
+                $('#val').prop('disabled', false);
             }
         });
     }
@@ -79,18 +79,20 @@ export class AddMOM implements OnInit, OnDestroy {
         if (evt === "save") {
             this.saveMOMDetails();
         } else if (evt === "edit") {
-            $('#Group').attr('disabled', 'disabled');
-            $('#Key').attr('disabled', 'disabled');
-            $('#Val').removeAttr('disabled');
+            $('#group').attr('disabled', 'disabled');
+            $('#key').attr('disabled', 'disabled');
+            $('#val').removeAttr('disabled');
 
             setTimeout(function () {
-                $("#Val").focus();
+                $("#val").focus();
             }, 0);
 
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "delete") {
             alert("delete called");
+        } else if (evt === "back") {
+            this._router.navigate(['/setting/masterofmaster']);
         }
     }
 
@@ -100,14 +102,35 @@ export class AddMOM implements OnInit, OnDestroy {
         that._commonservice.getMOM({ "flag": "group" }).subscribe(data => {
             that.groupdt = data.data;
         }, err => {
-            console.log("Error");
+            that._message.Show(messageType.error, 'Error', err);
         }, () => {
             // console.log("Complete");
         })
     }
 
+    isValidateFields() {
+        if (this.group === "") {
+            this._message.Show(messageType.error, 'Error', "Please Select Group");
+            $("#group").focus();
+            return false;
+        }
+        if (this.key === "") {
+            this._message.Show(messageType.error, 'Error', "Please Enter Key");
+            $("#key").focus();
+            return false;
+        }
+        if (this.val === "") {
+            this._message.Show(messageType.error, 'Error', "Please Enter Value");
+            $("#val").focus();
+            return false;
+        }
+
+        return true;
+    }
+
     saveMOMDetails() {
         var that = this;
+        that.validSuccess = that.isValidateFields()
 
         var saveMOM = {
             "id": that.momid,
@@ -127,7 +150,7 @@ export class AddMOM implements OnInit, OnDestroy {
                         that._router.navigate(['/setting/masterofmaster']);
                     }
                     else if (dataResult[0].funsave_mom.doc == "-1") {
-                        that._message.Show(messageType.info, 'Info', dataResult[0].funsave_mom.msg.toString());
+                        that._message.Show(messageType.error, 'Error', dataResult[0].funsave_mom.msg.toString());
                     }
                     else {
                         that._message.Show(messageType.error, 'Error', dataResult[0].funsave_mom.msg.toString());
@@ -155,14 +178,13 @@ export class AddMOM implements OnInit, OnDestroy {
             this.key = dataresult[0].key;
             this.val = dataresult[0].val;
         }, err => {
-            console.log("Error");
+            this._message.Show(messageType.error, 'Error', err);
         }, () => {
             // console.log("Complete");
         })
     }
 
     ngOnDestroy() {
-        console.log('ngOnDestroy');
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
         this.subscribeParameters.unsubscribe();
