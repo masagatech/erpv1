@@ -10,7 +10,7 @@ import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, PanelModule, AutoCompleteModule } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -34,9 +34,9 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: '', component: AddUserRights, canActivateChid: [AuthGuard],  data: { "module": "pset", "submodule":"ur", "rights": "add", "urlname": "/add" }},
-                    { path: 'edit/:id', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"ur", "rights": "edit", "urlname": "/edit" } },
-                    { path: 'view', component: ViewUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule":"ur", "rights": "view", "urlname": "/userrights" } },
+                    { path: '', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "edit", "urlname": "/edit" } },
+                    { path: 'view', component: ViewUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "view", "urlname": "/userrights" } },
                 ]
             }
         ]
@@ -44,7 +44,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DataTableModule, DataListModule, PanelModule],
+    imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
+        DataTableModule, DataListModule, PanelModule, AutoCompleteModule],
     declarations: [
         AddUserRights,
         ViewUserRights,

@@ -5,14 +5,16 @@
 				<div class="col-xs-12 col-md-6">
 					<div class="form-group">
 						<label class="control-label">User Name</label>
-						<input id="uname" name="uname" type="text" [(ngModel)]="uname" class="uname form-control" (keyup)="getUserAuto(this)" />
+						<!--<input id="uname" name="uname" type="text" [(ngModel)]="uname" class="uname form-control" (keyup)="getUserAuto(this)" />-->
+						<p-autoComplete id="uname" name="uname" [(ngModel)]="uname" placeholder="Employee" [tabindex]="1" (onSelect)="selectAutoUsers($event, 1)"
+							[suggestions]="usersDT" (completeMethod)="getAutoUsers($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
 					</div>
 				</div>
 				<div class="col-xs-12 col-md-6">
 					<div class="form-group">
 						<label class="control-label">Reference User Name</label>
-						<input id="refuname" name="refuname" type="text" [(ngModel)]="refuname" class="refuname form-control" (keyup)="getRefUserAuto(this)"
-						/>
+						<p-autoComplete id="refuname" name="refuname" [(ngModel)]="refuname" placeholder="Reference Employee" [tabindex]="1" (onSelect)="selectAutoRefUsers($event, 1)"
+							[suggestions]="usersDT" (completeMethod)="getAutoUsers($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
 					</div>
 				</div>
 			</div>
