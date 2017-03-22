@@ -181,8 +181,13 @@ export class APARReports implements OnInit, OnDestroy {
     getMonthWiseAPAR(row) {
         var that = this;
 
+        var _apartype: string = "";
         var _banktype: string = "";
         var _bankid: string = "";
+
+        for (let apar of that.selectedAPARType) {
+            _apartype += apar + ",";
+        }
 
         for (let bt of that.selectedBankType) {
             _banktype += bt + ",";
@@ -194,7 +199,7 @@ export class APARReports implements OnInit, OnDestroy {
 
         that._rptservice.getAPARReports({
             "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
-            "banktype": _banktype, "bankid": _bankid, "monthname": row.view.title
+            "apartype": _apartype, "banktype": _banktype, "bankid": _bankid, "monthname": row.view.title
         }).subscribe(data => {
             try {
                 console.log(row.view);
