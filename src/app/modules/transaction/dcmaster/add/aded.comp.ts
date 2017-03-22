@@ -91,8 +91,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
     isconfirm: boolean;
     isinvoice: boolean;
     issaleord: boolean;
+    typ: any = "";
 
     CustomerAutodata: any[];
+    ItemAutodata: any = [];
 
     //user details
     loginUser: LoginUserModel;
@@ -149,11 +151,11 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false, ddlSaveBtns));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Sales Order");
-         this.setActionButtons.hideSideMenu();
+        this.setActionButtons.hideSideMenu();
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.footer = true;
@@ -240,6 +242,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.addresslist = [];
         $('#CustName input').focus();
     }
+
+
 
     salesorderdetailsjson() {
         try {
@@ -433,7 +437,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     }
 
-    //AutoCompletd Customer
+    //AutoCompletd Customer  Nodes ### Item Group Get Document No
     CustomerAuto(event) {
         try {
             let query = event.query;
@@ -442,7 +446,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
-                "search": query
+                "search": query,
+                "typ": ""
             }).then(data => {
                 this.CustomerAutodata = data;
             });
@@ -464,67 +469,102 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     }
 
-    //AutoCompletd Product Name
-    getAutoCompleteProd(me: any, arg: number) {
-        var _me = this;
-        try {
-            var duplicateitem = true;
-            this._autoservice.getAutoData({
-                "type": "productwithwh",
-                "whid": this.wareid,
-                "search": arg == 0 ? me.NewItemsName : me.itemsname,
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".ProdName").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.itemsname = ui.item.label;
-                        if (_me.newAddRow.length > 0) {
-                            for (let item of _me.newAddRow) {
-                                if (item.itemsname == me.itemsname) {
-                                    duplicateitem = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if (duplicateitem === true) {
-                            if (arg === 1) {
-                                me.itemsname = ui.item.label;
-                                me.itemsid = ui.item.value;
-                                _me.ItemsSelected(me.itemsid, arg, me.counter);
-                            } else {
-                                me.NewItemsName = ui.item.label;
-                                me.itemsid = ui.item.value;
-                                _me.ItemsSelected(me.itemsid, arg, me.counter);
-                            }
-                        }
-                        else {
-                            _me._msg.Show(messageType.info, "info", "Duplicate item");
-                            return;
-                        }
-
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-            return;
-        }
-
+    ItemAuto(event) {
+        var flag = event.query.charAt(0);
+        let query = flag=='@' ? event.query.substr(1,event.query.length-1):event.query;
+        if(query=='') return;
+        this._autoservice.getAutoDataGET({
+            "type": "productwithwh",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "whid": this.wareid,
+            "search": query,
+            "flag": flag === "@" ? "combo" :""
+        }).then(data => {
+            this.ItemAutodata = data;
+        });
     }
+
+    //Selected Inline Item Selected
+    ItemSelect(event, arg) {
+        var that = this;
+        if (arg === 1) {
+            that.itemsname = event.label;
+            that.itemsid = event.value;
+            that.typ = event.typ;
+            that.ItemsSelected(that.itemsid, arg, that.itemsname, that.typ)
+        } else {
+            that.NewItemsid = event.value;
+            that.NewItemsName = event.label;
+            that.typ = event.typ;
+            that.ItemsSelected(that.NewItemsid, arg, that.NewItemsName, that.typ)
+        }
+    }
+
+    // //AutoCompletd Product Name
+    // getAutoCompleteProd(me: any, arg: number) {
+    //     var _me = this;
+    //     try {
+    //         var duplicateitem = true;
+    //         this._autoservice.getAutoData({
+    //             "type": "productwithwh",
+    //             "whid": this.wareid,
+    //             "search": arg == 0 ? me.NewItemsName : me.itemsname,
+    //             "cmpid": this.loginUser.cmpid,
+    //             "fy": this.loginUser.fy,
+    //             "createdby": this.loginUser.login
+    //         }).subscribe(data => {
+    //             $(".ProdName").autocomplete({
+    //                 source: data.data,
+    //                 width: 300,
+    //                 max: 20,
+    //                 delay: 100,
+    //                 minLength: 0,
+    //                 autoFocus: true,
+    //                 cacheLength: 1,
+    //                 scroll: true,
+    //                 highlight: false,
+    //                 select: function (event, ui) {
+    //                     me.itemsname = ui.item.label;
+    //                     me.typ = ui.item.typ;
+    //                     if (_me.newAddRow.length > 0) {
+    //                         for (let item of _me.newAddRow) {
+    //                             if (item.itemsname == me.itemsname) {
+    //                                 duplicateitem = false;
+    //                                 break;
+    //                             }
+    //                         }
+    //                     }
+    //                     if (duplicateitem === true) {
+    //                         if (arg === 1) {
+    //                             me.itemsname = ui.item.label;
+    //                             me.itemsid = ui.item.value;
+    //                             me.typ = ui.item.typ;
+    //                             _me.ItemsSelected(me.itemsid, arg, me.counter, me.typ);
+    //                         } else {
+    //                             me.NewItemsName = ui.item.label;
+    //                             me.itemsid = ui.item.value;
+    //                             _me.ItemsSelected(me.itemsid, arg, me.counter, me.typ);
+    //                         }
+    //                     }
+    //                     else {
+    //                         _me._msg.Show(messageType.info, "info", "Duplicate item");
+    //                         return;
+    //                     }
+
+    //                 }
+    //             });
+    //         }, err => {
+    //             console.log("Error");
+    //         }, () => {
+    //         })
+    //     } catch (e) {
+    //         this._msg.Show(messageType.error, "error", e.message);
+    //         return;
+    //     }
+
+    // }
 
     // //Selected Customer  Event
     CustomerSelected(custid, custcode) {
@@ -600,7 +640,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
 
     // //Selected Items
-    ItemsSelected(val: number, falg: number, counter: number) {
+    ItemsSelected(val: number, falg: number, itemname: any, typ: any) {
         var that = this;
         console.log(that.wareid);
         try {
@@ -611,19 +651,37 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     "itemsid": val,
                     "whid": that.wareid,
                     "status": that.issaleord,
-                    "createdby": that.loginUser.login
+                    "createdby": that.loginUser.login,
+                    "flag": typ === "combo" ? "combo" : typ
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;
                     if (ItemsResult.length > 0) {
                         if (falg === 0) {
-                            that.qty = 0;
-                            that.totalqty = ItemsResult[0].qty;
-                            that.dis = ItemsResult[0].dis;
-                            that.rateslist = ItemsResult[0].rates;
+                            if (typ === "combo") {
+                                for (let item of ItemsResult)
+                                    this.newAddRow.push({
+                                        "autoid": item.autoid,
+                                        'itemsname': item.itemsname,
+                                        "itemsid": item.itemsid,
+                                        'qty': item.qty,
+                                        'rateslist': item.rates,
+                                        'id': item.newrate,
+                                        'dis': item.dis == "" ? "0" : item.dis,
+                                        'amount': item.amount,
+                                        'counter': this.counter
+                                    });
+                            }
+                            else {
+                                that.qty = 0;
+                                that.totalqty = ItemsResult[0].qty;
+                                that.dis = ItemsResult[0].dis;
+                                that.rateslist = ItemsResult[0].rates;
+                            }
+
                         }
                         else {
                             for (let item of that.newAddRow) {
-                                if (item.counter == counter) {
+                                if (item.itemsname == itemname) {
                                     item.itemsid = val;
                                     item.qty = 0;
                                     item.rateslist = ItemsResult[0].rates;
@@ -654,7 +712,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this._msg.Show(messageType.error, "error", "Please Select Warehouse");
                 return;
             }
-            if (this.itemsname == '' || this.itemsname == undefined) {
+            if (this.NewItemsName == '' || this.NewItemsName == undefined) {
                 this._msg.Show(messageType.error, "error", "Please Enter items Name");
                 return;
             }
@@ -668,7 +726,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             }
             this.Duplicateflag = true;
             for (var i = 0; i < this.newAddRow.length; i++) {
-                if (this.newAddRow[i].ItemsName == this.itemsname) {
+                if (this.newAddRow[i].itemsname == this.NewItemsName) {
                     this.Duplicateflag = false;
                     break;
                 }
@@ -676,8 +734,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
             if (this.Duplicateflag == true) {
                 this.newAddRow.push({
                     "autoid": this.autoid,
-                    'itemsname': this.itemsname,
-                    "itemsid": this.itemsid,
+                    'itemsname': this.NewItemsName,
+                    "itemsid": this.NewItemsid,
                     'qty': this.qty,
                     'rateslist': this.rateslist,
                     'id': this.newrate,
@@ -689,6 +747,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this.counter++;
                 this.itemsname = "";
                 this.NewItemsName = "";
+                this.NewItemsid = 0;
                 this.rateslist = [];
                 this.newrate = "";
                 this.qty = "";

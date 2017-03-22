@@ -22,7 +22,12 @@
 					<label>Parent Code</label>
 					<p-autoComplete [(ngModel)]="parentcodename" class="form-controlAutoComplete parentcode" (onSelect)="ParentcodeSelect($event)"
 						[suggestions]="ParentcodeAutodata" (completeMethod)="ParentcodeAuto($event)" [tabindex]="3" field="label" [size]="30"
-						placeholder="Parent Code" [minLength]="1"></p-autoComplete>
+						placeholder="Parent Code" [minLength]="1">
+						<template let-brand let-value pTemplate="item">
+							{{value.custcode +':' + value.custname}}
+						</template>
+
+					</p-autoComplete>
 				</div>
 			</div>
 			<div class="col-md-6">
@@ -460,32 +465,25 @@
 					<div class="col-md-6">
 						<div class="panel panel-theme">
 							<div class="panel-body">
-								<div class="col-md-4 hide">
+								<div class="col-md-4">
 									<div class='form-group'>
-										<label>Debit</label>
-										<select [(ngModel)]="debit" class="form-control" tabindex="23">
-										<option [value]="'0'">Select Debit</option>
-										<option *ngFor="let row of debitlist" [value]="row.value">
-											{{row.label}}
-										</option>
-									</select>
+										<label>Upper Limit</label>
+										<!--<input type="text" class="form-control text-right" tabindex="23" [(ngModel)]="upperlimit">-->
+										<numtext [iscurrency]="true"  [tabindex]="23" id="{{'nmtxt_1'}}" [(ngModel)]="upperlimit"></numtext>
 									</div>
 								</div>
-								<div class="col-md-4 hide">
+								<div class="col-md-4">
 									<div class='form-group'>
-										<label>Credit</label>
-										<select [(ngModel)]="credit" class="form-control" tabindex="24">
-										<option [value]="'0'">Select Credit</option>
-										<option *ngFor="let row of creditlist" [value]="row.value">
-											{{row.label}}
-										</option>
-									</select>
+										<label>Lower Limit</label>
+										<!--<input type="text" class="form-control text-right" tabindex="24" [(ngModel)]="lowerlimit">-->
+										<numtext [iscurrency]="true"  [tabindex]="24" id="{{'nmtxt_2'}}" [(ngModel)]="lowerlimit"></numtext>
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class='form-group'>
 										<label>Opening Balance</label>
-										<input type="text" class="form-control text-right" tabindex="25" [(ngModel)]="ope">
+										<!--<input type="text" class="form-control text-right" tabindex="25" [(ngModel)]="ope">-->
+										<numtext [iscurrency]="true"  [tabindex]="25" id="{{'nmtxt_3'}}" [(ngModel)]="ope"></numtext>
 									</div>
 								</div>
 							</div>
@@ -521,9 +519,9 @@
 								</template>
 							</p-column>
 							<p-column field="taxname" header="Tax Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+							<p-column field="puramt" header="Type" [style]="{'width':'30px','text-align':'left'}"></p-column>
 							<p-column field="taxval" header="%" [style]="{'width':'30px','text-align':'right'}"></p-column>
-							<p-column field="label" header="On" [style]="{'width':'120px','text-align':'left'}"></p-column>
-							<p-column field="seq" header="Seq" [style]="{'width':'30px','text-align':'left'}"></p-column>
+							<p-column field="ontax" header="On Tax" [style]="{'width':'120px','text-align':'left'}"></p-column>
 							<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
 								<template let-col let-row="rowData" pTemplate="editor">
 									<button class="btn btn-danger btn-sm btn-grid" (click)="TaxDeleteRow(row)"><i class="fa fa-trash"></i></button>

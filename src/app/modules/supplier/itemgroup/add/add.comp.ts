@@ -24,6 +24,7 @@ declare var commonfun: any;
     // local veriable
     NewRowAdd: any = [];
     itemcombo: any = "";
+    itemcode: any = "";
     desc: any = "";
     NewItemsName: any = "";
     itemsname: any = "";
@@ -59,15 +60,15 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Item Group");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
-
+        $(".itemcode").removeAttr('disabled');
         setTimeout(function () {
             commonfun.addrequire();
-            $(".itemconbo").focus();
+            $(".itemcode").focus();
         }, 0);
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
@@ -101,6 +102,7 @@ declare var commonfun: any;
             }).subscribe(itemsdata => {
                 var ItemsResult = itemsdata.data[0];
                 this.itemcombo = ItemsResult[0].itemcombo;
+                this.itemcode=ItemsResult[0].itemcode;
                 this.desc = ItemsResult[0].description;
                 this.NewRowAdd = itemsdata.data[1];
             }, err => {
@@ -326,7 +328,8 @@ declare var commonfun: any;
         this.NewRowAdd = [];
         this.itemcombo = "";
         this.desc = "";
-        $(".itemconbo").focus();
+        this.itemcode="";
+        $(".itemcode").focus();
     }
 
     paramjson() {
@@ -380,12 +383,13 @@ declare var commonfun: any;
                     "fy": this.loginUser.fy,
                     "createdby": this.loginUser.login,
                     "itemcombo": this.itemcombo,
+                    "itemcode":this.itemcode,
                     "desc": this.desc
                 }).subscribe(result => {
                     var dataset = result.data;
                     if (dataset[0].funsave_itemgroup.msgid == '-1') {
                         this._msg.Show(messageType.info, "info", dataset[0].funsave_itemgroup.msg);
-                        $(".itemconbo").focus();
+                        $(".itemcode").focus();
                     }
                     if (dataset[0].funsave_itemgroup.msgid > 0) {
                         this._msg.Show(messageType.success, "success", dataset[0].funsave_itemgroup.msg);
@@ -404,10 +408,10 @@ declare var commonfun: any;
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
             $('textarea').removeAttr('disabled');
-            $(".groupcode").attr('disabled', 'disabled');
+            $(".itemcode").attr('disabled', 'disabled');
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
-            $(".groupName").focus();
+            $(".itemconbo").focus();
             this.actionButton.find(a => a.id === "save").hide = false;
         } else if (evt === "delete") {
             alert("delete called");

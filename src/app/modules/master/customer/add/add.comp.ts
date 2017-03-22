@@ -73,6 +73,8 @@ declare var commonfun: any;
     itemslist: any = [];
     counter: number = 0;
     taxlist: any = [];
+    upperlimit:number=0;
+    lowerlimit:number=0;
 
     //Other Module Declare
     adrbookid: any = [];
@@ -174,7 +176,7 @@ declare var commonfun: any;
                 this.actionButton.find(a => a.id === "edit").hide = true;
             }
         });
-        setTimeout(function() {
+        setTimeout(function () {
             commonfun.addrequire();
         }, 0);
 
@@ -199,7 +201,7 @@ declare var commonfun: any;
         this.fromval = "";
         this.toval = "";
         this.dis = "";
-        setTimeout(function() {
+        setTimeout(function () {
             $(".disattr").focus();
         }, 100);
 
@@ -227,7 +229,7 @@ declare var commonfun: any;
                     cacheLength: 1,
                     scroll: true,
                     highlight: false,
-                    select: function(event, ui) {
+                    select: function (event, ui) {
                         me.disattrid = ui.item.value;
                         me.disattrname = ui.item.label;
                     }
@@ -300,9 +302,9 @@ declare var commonfun: any;
 
     //Parent Code Selected
     ParentcodeSelect(event) {
-        this.parentid = event.value;
-        this.parentcodename = event.label;
-        this.getparentname(this.parentid);
+        this.parentid = event.autoid;
+        this.parentcodename = event.custcode;
+        this.parentname = event.custname;
     }
 
     //Salesman Autoextender
@@ -365,7 +367,7 @@ declare var commonfun: any;
                     cacheLength: 1,
                     scroll: true,
                     highlight: false,
-                    select: function(event, ui) {
+                    select: function (event, ui) {
                         me.itemsid = ui.item.value;
                         me.itemsname = ui.item.label;
                     }
@@ -383,7 +385,6 @@ declare var commonfun: any;
     //attribute list Add Div
     TranspoterAdd() {
         try {
-            debugger;
             if (this.transid > 0) {
                 this.Duplicateflag = true;
                 if (this.translist.length > 0) {
@@ -422,7 +423,7 @@ declare var commonfun: any;
     }
 
     transtab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.transid = 0;
             this.transname = "";
             $(".transname input").val("");
@@ -494,7 +495,7 @@ declare var commonfun: any;
     }
 
     saletab() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.salename = "";
             $(".sales input").focus();
         }, 0);
@@ -555,7 +556,7 @@ declare var commonfun: any;
     }
 
     itemdis() {
-        setTimeout(function() {
+        setTimeout(function () {
             this.itemsname = "";
             this.itemsdis = "";
             this.itemsid = 0;
@@ -846,6 +847,9 @@ declare var commonfun: any;
                 that.custid = _custdata[0].autoid;
                 that.code = _custdata[0].custcode;
                 that.Custname = _custdata[0].custname;
+                that.ope = _custdata[0].ope;
+                that.upperlimit = _custdata[0].upperlimit;
+                that.lowerlimit = _custdata[0].lowerlimit;
                 that.isactive = _custdata[0].isactive;
                 that.taxlist = resultdata._tax == null ? [] : resultdata._tax;
                 that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
@@ -994,7 +998,7 @@ declare var commonfun: any;
                     cacheLength: 1,
                     scroll: true,
                     highlight: false,
-                    select: function(event, ui) {
+                    select: function (event, ui) {
                         me.attrid = ui.item.value;
                         me.attrname = ui.item.label;
                     }
@@ -1102,7 +1106,7 @@ declare var commonfun: any;
     }
 
     Ctrl() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".ctrl").val("");
             $(".ctrl input").focus();
         }, 0)
@@ -1230,6 +1234,8 @@ declare var commonfun: any;
                 "op": this.ope == "" ? 0 : this.ope,
                 "tax": this.taxjson(),
                 "cmpid": this.loginUser.cmpid,
+                "upper":this.upperlimit,
+                "lower":this.lowerlimit,
                 "remark": this.remark,
                 "ctrl": this.Ctrljson(),
                 "createdby": this.loginUser.login,
@@ -1340,22 +1346,50 @@ declare var commonfun: any;
 
     //Attribute Tab Click Event
     Attr() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".attr").val("");
             $(".attr").focus();
         }, 0);
     }
 
+    //get tax master with attribute value
+    getattr() {
+        var attrlist = "";
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
+                attrlist += items.value + ',';
+            }
+        }
+        return attrlist.slice(0, -1);
+    }
+
+    //Tax Tab Click  
     taxtab() {
-        setTimeout(function() {
-            $(".invtype input").val("");
-            $(".invtype input").focus();
-        }, 0);
+        this.taxlist = [];
+        if (this.attribute.attrlist.length > 0) {
+            this.CustAddServies.getcustomer({
+                "custid": this.custid,
+                "cmpid": this.loginUser.cmpid,
+                "fy": this.loginUser.fy,
+                "flag": "taxdetails",
+                "attrcsv": this.getattr()
+            }).subscribe(result => {
+                console.log(result.data)
+                var dataset = result.data[0];
+                if (dataset[0]._tax.length > 0) {
+                    this.taxlist = dataset[0]._tax;
+                }
+            }, err => {
+                console.log("Error")
+            }, () => {
+                //console.log("completed")
+            })
+        }
     }
 
     //Account Info Tab Click Event
     Acinfo() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".key").val("");
             $(".val").val("");
             $(".key").focus();

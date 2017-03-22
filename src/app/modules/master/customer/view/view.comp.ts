@@ -58,6 +58,7 @@ declare var $: any;
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
+                "typ":"",
                 "search": query
             }).then(data => {
                 this.CustomerAutodata = data;

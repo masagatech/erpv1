@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy,ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
@@ -40,7 +40,7 @@ declare var commonfun: any;
     Onlist: any = [];
     Oncharelist: any = [];
     amount: any = 0;
-    seq: number = 0;
+    //seq: number = 0;
     taxcounter: number = 0;
     chargcounter: number = 0;
     private subscribeParameters: any;
@@ -49,6 +49,12 @@ declare var commonfun: any;
     COAAutodata: any = [];
     coaid: number = 0;
     coanam: any = "";
+    Ongross: number = 0;
+    dis: any = 0;
+    narration: any = "";
+    seq: number = 0;
+    purcentamt:any=[];
+
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
@@ -98,8 +104,8 @@ declare var commonfun: any;
 
         $(".taxname").focus();
         this.InvoiceType();
-        this.attribute.labelname="Customer Attribute";
-         this.attribute.attrparam = ["custinfo_attr"];
+        this.attribute.labelname = "Customer Attribute";
+        this.attribute.attrparam = ["custinfo_attr"];
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -109,13 +115,12 @@ declare var commonfun: any;
     //Page Load All Dropdown Bind
     InvoiceType() {
         this._autoservice.getMOM({
-            "group": "taxmaster,taxpos",
+            "group": "taxpurcent,taxpos",
             "flag": "multi",
             "cmpid": this.loginUser.cmpid
         }).subscribe(data => {
-            this.invoicetypelist = data.data.filter(item => item.group === 'taxmaster');
-            // this.Onlist = data.data.filter(item => item.group === 'taxpos');
-            // this.Oncharelist = data.data.filter(item => item.group === 'taxpos');
+            this.Onlist = data.data.filter(item => item.group === 'taxpos');
+            this.purcentamt = data.data.filter(item => item.group === 'taxpurcent');
         }, err => {
             console.log("Error");
         }, () => {
@@ -127,7 +132,7 @@ declare var commonfun: any;
         let query = event.query;
         this._autoservice.getAutoDataGET({
             "type": "customer",
-            "typ":"ac",
+            "typ": "ac",
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
@@ -291,35 +296,64 @@ declare var commonfun: any;
 
     //Paramter Json 
     paramjson() {
-        var params = [];
-        for (let item of this.taxmasterlist) {
-            for (let chritem of this.fiexchageslist) {
-                params.push({
-                    "autoid": item.autoid,
-                    "invtype": this.invtype,
-                    "cmpid": this.loginUser.cmpid,
-                    "fy": this.loginUser.fy,
-                    "taxname": item.taxname,
-                    "coac": item.chartofacid,
-                    "taxval": item.taxval,
-                    "ontax": item.id,
-                    "seq": item.seq,
-                    "createdby": this.loginUser.login,
-                    "charges": chritem.chares,
-                    "amt": chritem.amount,
-                    "charon": chritem.id
-                })
-            }
+        // for (let item of this.taxmasterlist) {
+        //     for (let chritem of this.fiexchageslist) {
+        //         params.push({
+        //             "autoid": item.autoid,
+        //             "invtype": this.invtype,
+        //             "cmpid": this.loginUser.cmpid,
+        //             "fy": this.loginUser.fy,
+        //             "taxname": item.taxname,
+        //             "coac": item.chartofacid,
+        //             "taxval": item.taxval,
+        //             "ontax": item.id,
+        //             "seq": item.seq,
+        //             "createdby": this.loginUser.login,
+        //             "charges": chritem.chares,
+        //             "amt": chritem.amount,
+        //             "charon": chritem.id
+        //         })
+        //     }
+        // }
+        var params = {
+            "taxid": this.autoid,
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "taxname": this.taxname,
+            "coac": this.coaid,
+            "taxval": this.taxval,
+            "ontax": this.Ongross,
+            "dis":this.dis,
+            "seq": this.seq,
+            "attr": this.createattrjson(),
+            "createdby": this.loginUser.login,
+            "narration": this.narration,
+            "remark3": []
         }
         return params;
     }
 
+    createattrjson() {
+        var attrid = [];
+        if (this.attribute.attrlist.length > 0) {
+            for (let items of this.attribute.attrlist) {
+                attrid.push({ "id": items.value });
+            }
+            return attrid;
+        }
+    }
+
     //Control Clear
     ClearControl() {
-        this.invtype = 0;
-        this.fiexchageslist = [];
-        this.taxmasterlist = [];
-        $(".invtype").focus();
+        this.taxname = "";
+        this.coanam = "";
+        this.taxval = "";
+        this.Ongross = 0
+        this.coaid = 0;
+        this.seq = 0;
+        this.attribute.attrlist = [];
+        this.narration = "";
+        $(".taxname").focus();
     }
 
     //Add Top Buttons Add Edit And Save
@@ -339,11 +373,11 @@ declare var commonfun: any;
                     return;
                 }
                 this.actionButton.find(a => a.id === "save").enabled = false;
-                this.taxMasterServies.saveTaxMaster({
-                    "taxmasterdetail": this.paramjson()
-                }).subscribe(result => {
+                this.taxMasterServies.saveTaxMaster(
+                    this.paramjson()
+                ).subscribe(result => {
                     var dataset = result.data;
-                    if (dataset[0].funsave_taxmaster.msgid > 0) {
+                    if (dataset[0].funsave_taxmaster.msxid > 0) {
                         this._msg.Show(messageType.success, "success", dataset[0].funsave_taxmaster.msg);
                         this.ClearControl();
                     }

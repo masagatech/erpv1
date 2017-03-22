@@ -34,8 +34,6 @@
 						</p-column>
 						<p-column header="Item" [style]="{'text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<!--<input type="text" class="form-control ProdName inlinetextbox" autocomplete='off' value="" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
-								/>-->
 								<p-autoComplete [(ngModel)]="row.itemsname" class="form-controlAutoComplete inlinetextbox ProdName" (onSelect)="ItemSelect($event,1)"
 									[suggestions]="ItemAutodata" (completeMethod)="ItemAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Item"
 									[minLength]="1"></p-autoComplete>

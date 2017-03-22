@@ -132,7 +132,6 @@ declare var commonfun: any;
             "createdby": this.loginUser.login
         }).subscribe(data => {
             this.editmode = true;
-            debugger;
             var dataset = data.data[0];
             this.groupcode = dataset[0].groupcode;
             this.groupName = dataset[0].groupname;

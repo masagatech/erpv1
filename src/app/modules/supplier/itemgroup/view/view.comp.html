@@ -6,10 +6,11 @@
 				{{rowIndex+1}}
 			</template>
 		</p-column>
-		<p-column header="More" expander="true" [style]="{'width':'1px','text-align':'left'}"></p-column>
-		<p-column field="itemcombo" header="Item Combo Name" [style]="{'width':'150px','text-align':'left'}"></p-column>
-		<p-column field="itemcount" header="Item count" [style]="{'width':'50px','text-align':'left'}"></p-column>
-		<p-column field="totalqty" header="Total Qty" [style]="{'width':'50px','text-align':'left'}"></p-column>
+		<p-column expander="true" [style]="{'width':'1px','text-align':'left'}"></p-column>
+		<p-column field="itemcode" header="Code" [style]="{'width':'30px','text-align':'left'}"></p-column>
+		<p-column field="itemcombo" header="Item Combo Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+		<p-column field="itemcount" header="Item count" [style]="{'width':'20px','text-align':'left'}"></p-column>
+		<p-column field="totalqty" header="Total Qty" [style]="{'width':'80px','text-align':'left'}"></p-column>
 		<p-column field="description" header="Description" [style]="{'width':'150px','text-align':'left'}"></p-column>
 		<p-column header="Action" [style]="{'width':'50px','text-align':'center'}">
 			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
@@ -25,20 +26,38 @@
 						{{rowIndex+1}}
 					</template>
 				</p-column>
-				<p-column field="itemname" header="Item Name" [style]="{'width':'40px','text-align':'left'}"></p-column>
-				<p-column field="qty" header="Qty" [style]="{'width':'80px','text-align':'left'}"></p-column>
-				<p-column field="rate" header="Rate" [style]="{'width':'30px','text-align':'left'}"></p-column>
-				<p-column field="dis" header="Dis %" [style]="{'width':'30px','text-align':'right'}"></p-column>
-				<p-column field="amt" header="Amount" [style]="{'width':'50px','text-align':'right'}"></p-column>
+				<p-column field="itemname" header="Item Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
+				<p-column field="qty" header="Qty" [style]="{'width':'30px','text-align':'left'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '1'}}" css="inlinetextbox" [(ngModel)]="row.qty"></numtext>
+					</template>
+				</p-column>
+				<p-column field="rate" header="Rate" [style]="{'width':'30px','text-align':'left'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '2'}}" css="inlinetextbox" [(ngModel)]="row.rate"></numtext>
+					</template>
+				</p-column>
+				<p-column field="dis" header="Dis %" [style]="{'width':'30px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '3'}}" css="inlinetextbox" [(ngModel)]="row.dis"></numtext>
+					</template>
+				</p-column>
+				<p-column field="amt" header="Amount" [style]="{'width':'50px','text-align':'right'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<numtext [iscurrency]="false" [islabel]="true" id="{{'nmtxt_' + rowIndex + '4'}}" css="inlinetextbox" [(ngModel)]="row.amt"></numtext>
+					</template>
+				</p-column>
 			</p-dataTable>
 			<footer>
 				<table class="tableNoborder">
 					<tbody>
 						<tr>
-							<td style="width:40px;text-align:left"></td>
-							<td style="width:30px;text-align:left"></td>
+							<td style="width:1px;text-align:left"></td>
+							<td style="width:120px;text-align:left"></td>
 							<td style="width:30px;text-align:right">{{totalqty}}</td>
-							<td style="width:30px;text-align:right">{{totalamt}}</td>
+							<td style="width:30px;text-align:left"></td>
+							<td style="width:30px;text-align:right"></td>
+							<td style="width:50px;text-align:right">{{totalamt}}</td>
 						</tr>
 					</tbody>
 				</table>

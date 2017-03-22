@@ -20,23 +20,44 @@
 			<div class="col-md-1">
 				<div class='form-group'>
 					<label>%</label>
-					<input type="text" class="form-control taxname" placeholder="Dis" validate="" tabindex="1" [(ngModel)]="dis" ng-trim="true">
+					<select [(ngModel)]="dis" class="form-control" tabindex="5">
+						<option *ngFor="let row of purcentamt" [value]="row.id">
+							{{row.val}}
+					    </option>
+					</select>
 				</div>
 			</div>
 			<div class="col-md-1">
 				<div class='form-group'>
 					<label>Value</label>
-					<input type="text" class="form-control taxname" placeholder="Value" validate="" tabindex="1" [(ngModel)]="value" ng-trim="true">
+					<input type="text" class="form-control" placeholder="Value" validate="" tabindex="4" [(ngModel)]="taxval" ng-trim="true">
 				</div>
 			</div>
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<div class='form-group'>
-					<label>Invoice Type</label>
-					<select class="form-control invtype" tabindex="1" name="invtype" [(ngModel)]="invtype">
-							<option *ngFor="let item of invoicetypelist"  [value]="item.id">
-							{{item.val}}
-							</option>
+					<label>On</label>
+					<select [(ngModel)]="Ongross" class="form-control" tabindex="5">
+						<option *ngFor="let row of Onlist" [value]="row.id">
+							{{row.val}}
+					    </option>
 					</select>
+				</div>
+			</div>
+			<div class="col-md-1">
+				<div class='form-group'>
+					<label>Seq</label>
+					<input type="text" class="form-control" placeholder="Seq" maxlength="2" tabindex="6" [(ngModel)]="seq">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Narration</label>
+					<div class="input-group">
+						<textarea [(ngModel)]="narration" placeholder="Narration" tabindex="8" class="form-control medium-text-box" name="Narration"
+							cols="75" autocomplete='off' rows="2"></textarea>
+					</div>
 				</div>
 			</div>
 		</div>

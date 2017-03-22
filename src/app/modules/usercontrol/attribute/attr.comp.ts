@@ -113,14 +113,14 @@ export class AttributeComp implements OnInit, OnDestroy {
                     $(".attr").focus();
                 }
                 else {
-                    this._msg.Show(messageType.info, "info", "Duplicate Attribute");
+                    this._msg.Show(messageType.error, "error", "Duplicate Attribute");
                     $(".attr").focus();
                     return;
                 }
 
             }
             else {
-                this._msg.Show(messageType.info, "info", "Please enter valied attribute name");
+                this._msg.Show(messageType.error, "error", "Please enter valied attribute name");
                 $(".attr").focus();
                 return;
             }
