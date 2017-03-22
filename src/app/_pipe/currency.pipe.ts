@@ -6,6 +6,7 @@ import { Pipe } from "@angular/core";
 export class _currencyPipe {
   transform(money: any, args: any): any {
     
-    return args.currsym +""+ parseFloat(money).toFixed(args.decimals).toString();
+    return args.currsym +""+ money.format(args.decimals, 3, '.', ',');
+    // toFixed(args.decimals).toString();
   }
 }
