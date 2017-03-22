@@ -28,7 +28,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     bankpayid: any = 0;
     bankid: any = 0;
     status: string = "";
-    
+
     bankDT: any = [];
     bankpaymentDT: any = [];
     statusDT: any = [];
@@ -140,17 +140,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
 
         that._bpservice.getBankPayment(params).subscribe(bankpayment => {
             that.totalRecords = bankpayment.data[1][0].recordstotal;
-
-            if (bankpayment.data[0].length > 0) {
-                that.tableLength = false;
-                that.bankpaymentDT = bankpayment.data[0];
-            }
-            else {
-                that._msg.Show(messageType.info, "Info", "No records found");
-                that.bankpaymentDT = [];
-                that.tableLength = true;
-                return false;
-            }
+            that.bankpaymentDT = bankpayment.data[0];
         }, err => {
             console.log('Error');
         }, () => {
@@ -200,34 +190,19 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     // Search Button Click
 
     searchBankPayment(dt: DataTable) {
-        // if (this.rangewise == "docrange") {
-
-        // }
-        // if (this.rangewise == "daterange") {
-        //     if (this.fromdate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select From Date");
-        //         return;
-        //     }
-        //     if (this.todate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select To Date");
-        //         return;
-        //     }
-        // }
-
-        // if (this.fromdate.setDate("")) {
-        //     this._msg.Show(messageType.info, "Info", "Please Enter From Date");
-        //     return;
-        // }
-        // if (this.todate.setDate("")) {
-        //     this._msg.Show(messageType.info, "Info", "Please Enter To Date");
-        //     return;
-        // }
-
-        dt.reset();
+        if (dt !== undefined) {
+            dt.reset();
+        }
+        else {
+            this._msg.Show(messageType.error, "Error", "No records found");
+            this.bankpaymentDT = [];
+            this.tableLength = true;
+            return false;
+        }
     }
 
     // Total Sum in Bank Payment Amount
-    
+
     TotalAmount() {
         if (this.bankpaymentDT != undefined) {
             var total = 0;
