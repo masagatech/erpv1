@@ -1,8 +1,8 @@
 <div class="col-md-12">
     <div class="row">
         <div class="col-md-8">
-            <p-schedule [events]="events" [header]="header" defaultDate="{{defaultDate}}" (viewRender)="getAPARDropDown($event);getMonthWiseAPAR($event)"
-                (onEventClick)="getAPARByType($event);" [eventLimit]="4" [editable]="true"></p-schedule>
+            <p-schedule #ecal [events]="events" [header]="header" defaultDate="{{defaultDate}}" (viewRender)="getAPARDropDown($event);getMonthWiseAPAR($event)"
+                (onEventClick)="getAPARByType($event);" [eventLimit]="4"></p-schedule>
         </div>
         <div class="col-md-4">
             <div class="col-md-12">
@@ -19,7 +19,7 @@
                                                     binary="true"></p-checkbox>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <button id="btnSearch" type="button" class="btn btn-theme btn-sm" (click)="getAPARReports()">
+                                                <button id="btnSearch" type="button" class="btn btn-theme btn-sm" (click)="filterAPARReports()">
                                                     <i class="fa fa-search"></i>
                                                 </button>
                                             </div>
@@ -55,7 +55,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-md-12" style="padding-top: 20px;">
+            <div class="col-md-12" style="padding-top: 25px;">
                 <div class="row">
                     <table class="table table-striped table-bordered table-hover tblcalendar">
                         <tbody *ngFor="let row of monthwiseapar">

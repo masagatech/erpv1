@@ -191,8 +191,11 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     getAutoAccounts(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
-            "type": "acc_cust",
+            "type": "customercc",
             "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "uid": this.loginUser.uid,
+            "typ": "",
             "search": query
         }).then(data => {
             this.accountsDT = data;

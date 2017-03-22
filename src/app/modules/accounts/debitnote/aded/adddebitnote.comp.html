@@ -8,7 +8,7 @@
 							<div class="form-group">
 								<label class="control-label">Account Name</label>
 								<p-autoComplete id="dncustname" name="dncustname" [(ngModel)]="dncustname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event, 1)"
-									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete"></p-autoComplete>
+									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete dnaccname"></p-autoComplete>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Doc Date</label>
@@ -16,7 +16,7 @@
 							</div>
 							<div class="form-group">
 								<label class="control-label">Debit Amount</label>
-								<numtext name="dramt" [(ngModel)]="dramt" tabindex="3"></numtext>
+								<numtext name="dramt" [(ngModel)]="dramt" [tabindex]="3"></numtext>
 							</div>
 						</div>
 						<div class="col-md-8">
@@ -33,59 +33,69 @@
 			</div>
 
 			<div class="panel-body">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th></th>
-							<th>Account</th>
-							<th>Credit</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let row of dnRowData | filterBy: {isactive: true}; let i=index;">
-							<td class="textalign">
-								{{ i + 1 }}
-							</td>
-							<td>
-								<p-autoComplete id="acname{{i+1}}" name="acname{{i+1}}" [(ngModel)]="row.acname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 2)"
+				<div class="col-md-12">
+					<p-dataTable #dt [value]="dnRowData | filterBy : {isactive: true}" [editable]="!isdetails" [lazy]="true">
+						<p-column header="#" [style]="{'width':'40px','text-align':'left'}">
+							<template let-i="rowIndex" pTemplate="editor">
+								{{i + 1}}
+							</template>
+						</p-column>
+						<p-column header="Account" [style]="{'text-align':'left'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+								{{row.acname}}
+							</template>
+							<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+								<p-autoComplete id="acname{{i+1}}" name="acname{{i+1}}" [(ngModel)]="row.acname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 1)"
 									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
-							</td>
-							<td class="textalign">
-								<numtext id="{{'cramt'+i+1}}" name="cramt{{i+1}}" [(ngModel)]="row.cramt"></numtext>
-							</td>
-							<td>
-								<button type="button" name="btnRemove" class="btn btn-theme fa fa-trash" (click)="DeleteRow(row)"></button>
-							</td>
-						</tr>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td>#</td>
-							<td>
-								<p-autoComplete id="newcustname" name="newcustname" [(ngModel)]="newcustname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 0)"
-									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
-							</td>
-							<td>
-								<numtext name="newcramt" [(ngModel)]="newcramt" tabindex="6"></numtext>
-							</td>
-							<td>
-								<button type="button" name="btnAdd" class="btn btn-theme fa fa-plus" (click)="NewRowAdd()"></button>
-							</td>
-						</tr>
-						<tr *ngIf="dnRowData.length">
-							<td>#</td>
-							<td class="text-right">
-								<b>Total :</b>
-							</td>
-							<td class="text-right">
-								<b>{{TotalCreditAmt() | currency:loginUser._globsettings.currency:true}}</b>
-							</td>
-							<td class="text-right">
-							</td>
-						</tr>
-					</tfoot>
-				</table>
+							</template>
+						</p-column>
+						<p-column header="Credit" [style]="{'width':'300px','text-align':'left'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+								{{row.cramt}}
+							</template>
+							<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+								<numtext id="{{'cramt' + i + 1}}" name="cramt{{i+1}}" [(ngModel)]="row.cramt" [tabindex]="6" (keyup)="setDrAmt(row, 1)" css="inlinetextbox"></numtext>
+							</template>
+						</p-column>
+						<p-column [style]="{'width':'60px','text-align':'center'}" *ngIf="!isdetails">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-danger btn-sm" (click)="deleteJVRow(row)"><i class="fa fa-trash"></i></button>
+							</template>
+						</p-column>
+						<footer *ngIf="!isdetails">
+							<table class="table table-striped table-bordered">
+								<tbody>
+									<tr>
+										<td width="40px">
+										</td>
+										<td>
+											<p-autoComplete id="newcustname" name="newcustname" [(ngModel)]="newcustname" placeholder="Accounts" [tabindex]="5" (onSelect)="selectAutoAccounts($event, 0)"
+												[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30"
+												class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
+										</td>
+										<td width="300px">
+											<numtext name="newcramt" [(ngModel)]="newcramt" [tabindex]="6"></numtext>
+										</td>
+										<td width="60px">
+											<button type="button" name="btnAdd" class="btn btn-theme btn-sm fa fa-plus" (click)="addDNRow()"></button>
+										</td>
+									</tr>
+									<tr *ngIf="dnRowData.length">
+										<td>#</td>
+										<td class="text-right">
+											<b>Total :</b>
+										</td>
+										<td class="text-right">
+											<b>{{TotalCreditAmt() | currency:loginUser._globsettings.currency:true}}</b>
+										</td>
+										<td class="text-right">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</footer>
+					</p-dataTable>
+				</div>
 			</div>
 		</div>
 	</div>

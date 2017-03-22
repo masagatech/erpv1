@@ -129,7 +129,8 @@ export class ViewPDC implements OnInit, OnDestroy {
         if (row.calEvent !== undefined) {
             that._pdcservice.getPDCDetails({
                 "flag": "pdctype", "pdctype": row.calEvent.pdctype, "chequedate": row.calEvent.start,
-                "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "month": "0", "year": "2017"
+                "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+                "month": "0", "year": "2017"
             }).subscribe(data => {
                 that.viewPDCDT = data.data;
                 that.pdctype = data.data[0].pdctype;

@@ -7,6 +7,7 @@ import { MessageService, messageType } from '../../../_service/messages/message-
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
 import { ReportsService } from '../../../_service/reports/rpt-service' /* add reference for emp */
+import { Schedule } from 'primeng/primeng';
 
 @Component({
     templateUrl: 'apar.comp.html',
@@ -41,6 +42,7 @@ export class APARReports implements OnInit, OnDestroy {
     selectedBankType: string[] = [];
     selectedBank: string[] = [];
 
+    calendarSelectedRow: any = [];
     // Page Init
 
     constructor(private _router: Router, private _rptservice: ReportsService, private setActionButtons: SharedVariableService,
@@ -115,7 +117,7 @@ export class APARReports implements OnInit, OnDestroy {
         var that = this;
 
         that._rptservice.getAPARReports({
-            "flag": "dropdown", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "monthname": row.view.title
+            "flag": "dropdown", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "monthname": row.view.title
         }).subscribe(data => {
             try {
                 that.fliterAPARDT = data.data[0]._apartype;
@@ -126,7 +128,7 @@ export class APARReports implements OnInit, OnDestroy {
                 that.selectedBankType = Object.keys(that.fliterBankTypeDT).map(function (k) { return that.fliterBankTypeDT[k].key });
                 that.selectedBank = Object.keys(that.fliterBankDT).map(function (k) { return that.fliterBankDT[k].key });
 
-                that.getAPARReports();
+                that.getAPARReports(row);
             }
             catch (e) {
                 //that._msg.Show(messageType.error, "Error", e);
@@ -138,7 +140,9 @@ export class APARReports implements OnInit, OnDestroy {
         })
     }
 
-    getAPARReports() {
+    getAPARReports(row) {
+        this.calendarSelectedRow = row;
+        this.events = [];
         var that = this;
 
         var _apartype: string = "";
@@ -157,9 +161,11 @@ export class APARReports implements OnInit, OnDestroy {
             _bankid += bank + ",";
         }
 
+        //var year = row.view.title.split(' ')[1].toString();
+
         that._rptservice.getAPARReports({
-            "flag": "calendar", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
-            "month": "0", "year": "2017", "apartype": _apartype, "banktype": _banktype, "bankid": _bankid
+            "flag": "calendar", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+            "monthname": row.view.title, "apartype": _apartype, "banktype": _banktype, "bankid": _bankid
         }).subscribe(data => {
             that.events = data.data;
         }, err => {
@@ -167,6 +173,10 @@ export class APARReports implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
+    }
+
+    filterAPARReports() {
+        this.getAPARReports(this.calendarSelectedRow);
     }
 
     getMonthWiseAPAR(row) {
@@ -184,10 +194,11 @@ export class APARReports implements OnInit, OnDestroy {
         }
 
         that._rptservice.getAPARReports({
-            "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
+            "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
             "banktype": _banktype, "bankid": _bankid, "monthname": row.view.title
         }).subscribe(data => {
             try {
+                console.log(row.view);
                 if (data.data.length !== 0) {
                     that.monthwiseapar = data.data;
                 }
@@ -222,8 +233,8 @@ export class APARReports implements OnInit, OnDestroy {
         if (row.calEvent !== undefined) {
             that._rptservice.getAPARReports({
                 "flag": "apartype", "apartype": row.calEvent.apartype, "docdate": row.calEvent.start,
-                "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "monthname": row.calEvent.monthname,
-                "banktype": _banktype, "bankid": _bankid
+                "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+                "monthname": row.calEvent.monthname, "banktype": _banktype, "bankid": _bankid
             }).subscribe(data => {
                 that.viewaparDT = data.data;
                 that.rowheader = data.data[0].aparhead;

@@ -15,7 +15,7 @@ import { AddDynamicTabModule } from '../usercontrol/adddynamictab';
 import { CalendarModule } from '../usercontrol/calendar';
 import { NumTextModule } from '../usercontrol/numtext';
 
-import { LazyLoadEvent, DataTableModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule, AutoCompleteModule } from 'primeng/primeng';
 
 const routerConfig = [
   {
@@ -39,8 +39,8 @@ const routerConfig = [
 ]
 
 @NgModule({
-  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-    DynamicTabModule, AddDynamicTabModule, CalendarModule, NumTextModule, DataTableModule, CheckboxModule],
+  imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, DynamicTabModule,
+    AddDynamicTabModule, CalendarModule, NumTextModule, DataTableModule, CheckboxModule, AutoCompleteModule],
   declarations: [
     ViewEmployee,
     EmployeeAddEdit,

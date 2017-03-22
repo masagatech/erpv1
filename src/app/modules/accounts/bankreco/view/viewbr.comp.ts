@@ -102,7 +102,10 @@ export class ViewBankReco implements OnInit, OnDestroy {
     GetBankWiseGrid() {
         var that = this;
 
-        that._brservice.getBankReco({ "flag": "bankwise", "bankid": that.bankid, "cmpid": that.loginUser.cmpid, "fy": that.fy }).subscribe(bankreco => {
+        that._brservice.getBankReco({
+            "flag": "bankwise", "bankid": that.bankid, "cmpid": that.loginUser.cmpid,
+            "fy": that.fy, "uid": that.loginUser.uid
+        }).subscribe(bankreco => {
             if (bankreco.data.length > 0) {
                 that.bankwiseDT = bankreco.data;
                 that.TotalAmountBankWise();
@@ -125,7 +128,7 @@ export class ViewBankReco implements OnInit, OnDestroy {
 
         that._brservice.getBankReco({
             "flag": flag, "bankid": that.bankid, "fromdt": row.fromdt, "todt": row.todt,
-            "cmpid": that.loginUser.cmpid, "fy": that.fy
+            "cmpid": that.loginUser.cmpid, "fy": that.fy, "uid": that.loginUser.uid
         }).subscribe(bankreco => {
             if (bankreco.data.length > 0) {
                 that.monthwiseDT = bankreco.data;

@@ -133,9 +133,9 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         that.bankpaymentDT = [];
 
         var params = {
-            "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "bankid": that.bankid,
-            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate(),
-            "from": from, "to": to, "isactive": that.status
+            "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+            "bankid": that.bankid, "isactive": that.status, "from": from, "to": to
+            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate()
         }
 
         that._bpservice.getBankPayment(params).subscribe(bankpayment => {

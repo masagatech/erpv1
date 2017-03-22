@@ -202,7 +202,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     getAutoAccounts(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
-            "type": "customer",
+            "type": "customercc",
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "uid": this.loginUser.uid,

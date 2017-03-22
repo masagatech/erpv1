@@ -73,6 +73,9 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     private subscribeParameters: any;
 
+    usersDT: any = [];
+    ccautoDT: any = [];
+
     // dropdown
     genderDT: any[];
     maritalstatusDT: any[];
@@ -112,7 +115,7 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
 
     constructor(private _routeParams: ActivatedRoute, private _router: Router, private setActionButtons: SharedVariableService,
         private _empservice: EmpService, private _actaccsservice: ActionAccess, private _userservice: UserService,
-        private _dynfldserive: DynamicFieldsService, private _commonservice: CommonService, private _msg: MessageService) {
+        private _dynfldserive: DynamicFieldsService, private _autoservice: CommonService, private _msg: MessageService) {
         this.module = "Employee";
         this.loginUser = this._userservice.getUser();
 
@@ -261,34 +264,6 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         this.tabpanel.DeleteTabs(tab);
     }
 
-    // Get Employee Auto Complete
-
-    getUserAuto(me: any) {
-        var that = this;
-
-        that._commonservice.getAutoData({ "type": "userwithcode", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "search": that.uname }).subscribe(data => {
-            $(".username").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.uid = ui.item.value;
-                    me.uname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
     // Fill Gender, MaritalStatus, bldgrp, Country, Department, Designation, SalaryMode Drop Down
 
     fillDropDownList() {
@@ -325,43 +300,57 @@ export class EmployeeAddEdit implements OnInit, OnDestroy {
         })
     }
 
+    // AutoCompleted Users
+
+    getAutoUsers(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "userwithcode",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "search": query
+        }).then(data => {
+            this.usersDT = data;
+        });
+    }
+
+    // Selected Users
+
+    selectAutoUsers(event) {
+        this.uid = event.value;
+        this.uname = event.label;
+    }
+
+    // AutoCompleted Control Center
+
+    getAutoCC(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "ccauto",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "search": query
+        }).then(data => {
+            this.ccautoDT = data;
+        });
+    }
+
+    // Selected Control Center
+
+    selectAutoCC(event) {
+        this.sccid = event.value;
+        this.sccname = event.label;
+    }
+
     // Get Control Center Drop Down
 
     fillCtrlCenterDDL() {
-        this._commonservice.getAutoData({ "type": "ccddl", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
+        this._autoservice.getAutoData({ "type": "ccddl", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
             this.ctrlcenterDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
             console.log("Complete");
-        })
-    }
-
-    // Get Control Center Auto Complete
-
-    getCtrlCenterAuto(me: any) {
-        var that = this;
-
-        that._commonservice.getAutoData({ "type": "ccauto", "search": that.sccname, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy }).subscribe(data => {
-            $(".ccname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.sccid = ui.item.value;
-                    me.sccname = ui.item.label;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
         })
     }
 

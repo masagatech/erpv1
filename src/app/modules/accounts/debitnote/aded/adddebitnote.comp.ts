@@ -105,6 +105,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
     //Document Ready
 
     ngOnInit() {
+        setTimeout(function() {
+            $(".dnaccname input").focus();
+        }, 0);
+        
         this.dndate.initialize(this.loginUser);
         this.dndate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -122,10 +126,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 this.setActionButtons.setTitle("Add Debit Note");
 
                 $('button').prop('disabled', false);
+                $('.dnaccname input').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".dnaccname").focus();
 
                 this.docno = 0;
                 this.resetDebitNote();
@@ -138,10 +142,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 this.setActionButtons.setTitle("Edit Debit Note");
 
                 $('button').prop('disabled', false);
+                $('.dnaccname input').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $(".dnaccname").focus();
 
                 this.docno = params['id'];
                 this.getDNDataByID(this.docno);
@@ -154,6 +158,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
                 this.setActionButtons.setTitle("Details Of Debit Note");
 
                 $('button').prop('disabled', true);
+                $('.dnaccname input').prop('disabled', true);
                 $('input').prop('disabled', true);
                 $('select').prop('disabled', true);
                 $('textarea').prop('disabled', true);
@@ -187,8 +192,11 @@ export class AddDebitNote implements OnInit, OnDestroy {
     getAutoAccounts(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
-            "type": "acc_cust",
+            "type": "customercc",
             "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "uid": this.loginUser.uid,
+            "typ": "",
             "search": query
         }).then(data => {
             this.accountsDT = data;
@@ -215,10 +223,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         var that = this;
 
         if (that.dncustid == that.newcustid) {
-            that._msg.Show(messageType.info, "Info", "Debit Account and Credit Account Not Same");
-            that.newcustid = "";
-            that.newcustname = "";
-            that.newcramt = "";
+            that._msg.Show(messageType.error, "Error", "Debit Account and Credit Account Not Same");
             return true;
         }
 
@@ -226,9 +231,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
             var field = that.dnRowData[i];
 
             if (field.acid == that.newcustid) {
-                that._msg.Show(messageType.info, "Info", "Duplicate Account not Allowed");
-                that.newcustid = "";
-                that.newcustname = "";
+                that._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
                 return true;
             }
         }
@@ -248,18 +251,18 @@ export class AddDebitNote implements OnInit, OnDestroy {
         return CreditAmtTotal;
     }
 
-    private NewRowAdd() {
+    private addDNRow() {
         var that = this;
 
         // Validation
 
         if (that.newcustname == "") {
-            that._msg.Show(messageType.info, "Info", "Please Enter Account Name");
+            that._msg.Show(messageType.error, "Error", "Please Enter Account Name");
             return;
         }
 
         if (that.newcramt == "") {
-            that._msg.Show(messageType.info, "Info", "Please Enter Credit");
+            that._msg.Show(messageType.error, "Error", "Please Enter Credit");
             return;
         }
 

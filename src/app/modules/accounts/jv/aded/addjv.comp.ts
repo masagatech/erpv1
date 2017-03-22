@@ -86,6 +86,10 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        setTimeout(function () {
+            $(".jvdate input").focus();
+        }, 0);
+
         this.jvdate.initialize(this.loginUser);
         this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -170,8 +174,11 @@ export class AddJV implements OnInit, OnDestroy {
     getAutoAccounts(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
-            "type": "acc_cust",
+            "type": "customercc",
             "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "uid": this.loginUser.uid,
+            "typ": "",
             "search": query
         }).then(data => {
             this.accountsDT = data;
@@ -199,11 +206,6 @@ export class AddJV implements OnInit, OnDestroy {
 
             if (field.acid == this.newcustid) {
                 this._msg.Show(messageType.error, "Error", "Duplicate Account not Allowed");
-
-                this.newcustid = 0;
-                this.newcustname = "";
-                this.newdramt = "";
-                this.newcramt = "";
                 return true;
             }
         }
