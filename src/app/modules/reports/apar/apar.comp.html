@@ -1,7 +1,7 @@
 <div class="col-md-12">
     <div class="row">
         <div class="col-md-8">
-            <p-schedule #ecal [events]="events" [header]="header" defaultDate="{{defaultDate}}" (viewRender)="getAPARDropDown($event);getMonthWiseAPAR($event)"
+            <p-schedule #ecal [events]="events" [header]="header" defaultDate="{{defaultDate}}" (viewRender)="getAPARDropDown($event);"
                 (onEventClick)="getAPARByType($event);" [eventLimit]="4"></p-schedule>
         </div>
         <div class="col-md-4">

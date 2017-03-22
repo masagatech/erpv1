@@ -57,6 +57,8 @@ export class APARReports implements OnInit, OnDestroy {
         var that = this;
 
         that.setActionButtons.setTitle("Bank View");
+        that.setActionButtons.hideSideMenu();
+        that.setActionButtons.setActionButtons(this.actionButton);
 
         that.header = {
             left: 'prev,next today',
@@ -129,6 +131,7 @@ export class APARReports implements OnInit, OnDestroy {
                 that.selectedBank = Object.keys(that.fliterBankDT).map(function (k) { return that.fliterBankDT[k].key });
 
                 that.getAPARReports(row);
+                that.getMonthWiseAPAR(row);
             }
             catch (e) {
                 //that._msg.Show(messageType.error, "Error", e);
@@ -175,10 +178,6 @@ export class APARReports implements OnInit, OnDestroy {
         })
     }
 
-    filterAPARReports() {
-        this.getAPARReports(this.calendarSelectedRow);
-    }
-
     getMonthWiseAPAR(row) {
         var that = this;
 
@@ -214,6 +213,11 @@ export class APARReports implements OnInit, OnDestroy {
         }, () => {
             // console.log("Complete");
         })
+    }
+
+    filterAPARReports() {
+        this.getAPARReports(this.calendarSelectedRow);
+        this.getMonthWiseAPAR(this.calendarSelectedRow);
     }
 
     getAPARByType(row) {
@@ -270,6 +274,7 @@ export class APARReports implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.setActionButtons.setTitle("");
+        this.setActionButtons.showSideMenu();
     }
 }
 
