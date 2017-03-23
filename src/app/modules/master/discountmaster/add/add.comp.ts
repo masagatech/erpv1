@@ -3,7 +3,7 @@ import { SharedVariableService } from "../../../../_service/sharedvariable-servi
 import { ActionBtnProp } from '../../../../../app/_model/action_buttons'
 import { Subscription } from 'rxjs/Subscription';
 import { CommonService } from '../../../../_service/common/common-service'
-import { taxMasterService } from "../../../../_service/taxmaster/taxmaster-service";
+import { disMasterService } from "../../../../_service/discountmaster/discount-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
@@ -18,9 +18,9 @@ declare var $: any;
 declare var commonfun: any;
 @Component({
     templateUrl: 'add.comp.html',
-    providers: [taxMasterService, CommonService, ALSService]
+    providers: [disMasterService, CommonService, ALSService]
 
-}) export class taxadd implements OnInit, OnDestroy {
+}) export class disadd implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
@@ -71,8 +71,11 @@ declare var commonfun: any;
     @ViewChild('attribute')
     attribute: AttributeComp;
 
+    @ViewChild('itemattr')
+    itemattr: AttributeComp;
+
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
-        private taxMasterServies: taxMasterService,
+        private taxMasterServies: disMasterService,
         private _autoservice: CommonService, private _routeParams: ActivatedRoute, private _userService: UserService,
         private _msg: MessageService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
@@ -91,7 +94,7 @@ declare var commonfun: any;
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
-        this.setActionButtons.setTitle("Tax Master");
+        this.setActionButtons.setTitle("Discount Master");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         setTimeout(function () {
@@ -126,6 +129,9 @@ declare var commonfun: any;
         this.InvoiceType();
         this.attribute.labelname = "Customer Attribute";
         this.attribute.attrparam = ["custinfo_attr"];
+
+        this.itemattr.labelname = "Item Attribute";
+        this.itemattr.attrtype = "product";
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -135,12 +141,12 @@ declare var commonfun: any;
     //Page Load All Dropdown Bind
     InvoiceType() {
         this._autoservice.getMOM({
-            "group": "taxpurcent,taxpos",
+            "group": "dispurcent",
             "flag": "multi",
             "cmpid": this.loginUser.cmpid
         }).subscribe(data => {
-            this.Onlist = data.data.filter(item => item.group === 'taxpos');
-            this.purcentamt = data.data.filter(item => item.group === 'taxpurcent');
+            this.Onlist = data.data.filter(item => item.group === 'dispurcent');
+            // this.purcentamt = data.data.filter(item => item.group === 'dispurcent');
         }, err => {
             console.log("Error");
         }, () => {
@@ -169,150 +175,150 @@ declare var commonfun: any;
     }
 
     //Autocompleted Chart of ac
-    CharOfAccount(me: any, arg: number) {
-        var _me = this;
-        try {
-            var duplicateitem = true;
-            this._autoservice.getAutoData({
-                "type": "nature",
-                "search": arg == 0 ? me.Newchartofac : me.chartofac,
-                "cmpid": _me.loginUser.cmpid,
-                "fy": _me.loginUser.fy,
-                "createdby": _me.loginUser.login
-            }).subscribe(data => {
-                $(".chartofac").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.chartofac = ui.item.label;
-                        if (_me.taxmasterlist.length > 0) {
-                            if (me.chartofac != "") {
-                                for (let item of _me.taxmasterlist) {
-                                    if (item.chartofac == me.chartofac) {
-                                        duplicateitem = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            else {
-                                for (let item of _me.taxmasterlist) {
-                                    if (item.Newchartofac == me.Newchartofac) {
-                                        duplicateitem = false;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        if (duplicateitem === true) {
-                            if (arg === 1) {
-                                me.Newchartofac = ui.item.label;
-                                me.Newchartofacid = ui.item.value;
-                            } else {
-                                me.chartofac = ui.item.label;
-                                me.chartofacid = ui.item.value;
-                            }
-                        }
-                        else {
-                            _me._msg.Show(messageType.info, "info", "Duplicate Account");
-                            return;
-                        }
+    // CharOfAccount(me: any, arg: number) {
+    //     var _me = this;
+    //     try {
+    //         var duplicateitem = true;
+    //         this._autoservice.getAutoData({
+    //             "type": "nature",
+    //             "search": arg == 0 ? me.Newchartofac : me.chartofac,
+    //             "cmpid": _me.loginUser.cmpid,
+    //             "fy": _me.loginUser.fy,
+    //             "createdby": _me.loginUser.login
+    //         }).subscribe(data => {
+    //             $(".chartofac").autocomplete({
+    //                 source: data.data,
+    //                 width: 300,
+    //                 max: 20,
+    //                 delay: 100,
+    //                 minLength: 0,
+    //                 autoFocus: true,
+    //                 cacheLength: 1,
+    //                 scroll: true,
+    //                 highlight: false,
+    //                 select: function (event, ui) {
+    //                     me.chartofac = ui.item.label;
+    //                     if (_me.taxmasterlist.length > 0) {
+    //                         if (me.chartofac != "") {
+    //                             for (let item of _me.taxmasterlist) {
+    //                                 if (item.chartofac == me.chartofac) {
+    //                                     duplicateitem = false;
+    //                                     break;
+    //                                 }
+    //                             }
+    //                         }
+    //                         else {
+    //                             for (let item of _me.taxmasterlist) {
+    //                                 if (item.Newchartofac == me.Newchartofac) {
+    //                                     duplicateitem = false;
+    //                                     break;
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                     if (duplicateitem === true) {
+    //                         if (arg === 1) {
+    //                             me.Newchartofac = ui.item.label;
+    //                             me.Newchartofacid = ui.item.value;
+    //                         } else {
+    //                             me.chartofac = ui.item.label;
+    //                             me.chartofacid = ui.item.value;
+    //                         }
+    //                     }
+    //                     else {
+    //                         _me._msg.Show(messageType.info, "info", "Duplicate Account");
+    //                         return;
+    //                     }
 
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-            return;
-        }
-    }
+    //                 }
+    //             });
+    //         }, err => {
+    //             console.log("Error");
+    //         }, () => {
+    //         })
+    //     } catch (e) {
+    //         this._msg.Show(messageType.error, "error", e.message);
+    //         return;
+    //     }
+    // }
 
     //Add Tax Master New Row
-    AddNewTax() {
-        var that = this;
-        that.taxmasterlist.push({
-            "autoid": that.autoid,
-            "taxname": that.taxname,
-            "chartofac": that.charegname === "" ? that.Newchartofac : that.charegname,
-            "chartofacid": that.chartofacid === 0 ? that.Newchartofacid : that.chartofacid,
-            "onlist": that.Onlist,
-            "id": that.onmodel,
-            "taxval": that.taxval,
-            "seq": that.seq,
-            "taxcounter": that.taxcounter
-        })
-        that.taxcounter++;
-        that.taxname = "";
-        that.onmodel = 0;
-        that.charegname = "";
-        that.chartofacid = 0;
-        that.Newchartofac = "";
-        that.Newchartofacid = 0;
-        that.taxval = "";
-        that.seq = 0;
-        $(".taxname").focus();
+    // AddNewTax() {
+    //     var that = this;
+    //     that.taxmasterlist.push({
+    //         "autoid": that.autoid,
+    //         "taxname": that.taxname,
+    //         "chartofac": that.charegname === "" ? that.Newchartofac : that.charegname,
+    //         "chartofacid": that.chartofacid === 0 ? that.Newchartofacid : that.chartofacid,
+    //         "onlist": that.Onlist,
+    //         "id": that.onmodel,
+    //         "taxval": that.taxval,
+    //         "seq": that.seq,
+    //         "taxcounter": that.taxcounter
+    //     })
+    //     that.taxcounter++;
+    //     that.taxname = "";
+    //     that.onmodel = 0;
+    //     that.charegname = "";
+    //     that.chartofacid = 0;
+    //     that.Newchartofac = "";
+    //     that.Newchartofacid = 0;
+    //     that.taxval = "";
+    //     that.seq = 0;
+    //     $(".taxname").focus();
 
-    }
+    // }
 
     //Add Chares New Row 
-    AddNewCharges() {
-        var that = this;
-        that.fiexchageslist.push({
-            "autoid": that.autoid,
-            "chares": that.charegname,
-            "amount": that.amount,
-            "Oncharelist": that.Oncharelist,
-            "id": that.oncharemodel,
-            "charcounter": that.chargcounter
-        })
-        that.chargcounter++;
-        that.charegname = "";
-        that.amount = "";
-        that.oncharemodel = 0;
-        $(".taxname").focus();
+    // AddNewCharges() {
+    //     var that = this;
+    //     that.fiexchageslist.push({
+    //         "autoid": that.autoid,
+    //         "chares": that.charegname,
+    //         "amount": that.amount,
+    //         "Oncharelist": that.Oncharelist,
+    //         "id": that.oncharemodel,
+    //         "charcounter": that.chargcounter
+    //     })
+    //     that.chargcounter++;
+    //     that.charegname = "";
+    //     that.amount = "";
+    //     that.oncharemodel = 0;
+    //     $(".taxname").focus();
 
-    }
+    // }
 
     //Tax Master Table Delete Row
-    TaxDeleteRow(counter: number = 0) {
-        var index = -1;
-        for (var i = 0; i < this.taxmasterlist.length; i++) {
-            if (this.taxmasterlist[i].taxcounter === counter) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.taxmasterlist.splice(index, 1);
-        $(".taxname").focus();
-    }
+    // TaxDeleteRow(counter: number = 0) {
+    //     var index = -1;
+    //     for (var i = 0; i < this.taxmasterlist.length; i++) {
+    //         if (this.taxmasterlist[i].taxcounter === counter) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    //     if (index === -1) {
+    //         console.log("Wrong Delete Entry");
+    //     }
+    //     this.taxmasterlist.splice(index, 1);
+    //     $(".taxname").focus();
+    // }
 
     //Chares Table Delete Row
-    CharesDeleteRow(counter: number = 0) {
-        var index = -1;
-        for (var i = 0; i < this.taxmasterlist.length; i++) {
-            if (this.taxmasterlist[i].charcounter === counter) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.taxmasterlist.splice(index, 1);
-        $(".charegname").focus();
-    }
+    // CharesDeleteRow(counter: number = 0) {
+    //     var index = -1;
+    //     for (var i = 0; i < this.taxmasterlist.length; i++) {
+    //         if (this.taxmasterlist[i].charcounter === counter) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    //     if (index === -1) {
+    //         console.log("Wrong Delete Entry");
+    //     }
+    //     this.taxmasterlist.splice(index, 1);
+    //     $(".charegname").focus();
+    // }
 
     //Paramter Json 
     paramjson() {
@@ -324,12 +330,13 @@ declare var commonfun: any;
             "coac": this.coaid,
             "taxval": this.taxval,
             "ontax": this.Ongross,
-            "fromdate":this.fromdatecal.getDate(),
-            "todate":this.todatecal.getDate(),
+            "fromdate": this.fromdatecal.getDate(),
+            "todate": this.todatecal.getDate(),
             "dis": this.dis,
-            "typ":"tax",        //Max length 4 Database
+            "typ": "dis",        //Max length 4 Database
             "seq": this.seq,
             "attr": this.createattrjson(),
+            "itemattr": this.createitemattrjson(),
             "createdby": this.loginUser.login,
             "narration": this.narration,
             "remark3": []
@@ -344,6 +351,16 @@ declare var commonfun: any;
                 attrid.push({ "id": items.value });
             }
             return attrid;
+        }
+    }
+
+    createitemattrjson() {
+        var itemid = [];
+        if (this.itemattr.attrlist.length > 0) {
+            for (let items of this.itemattr.attrlist) {
+                itemid.push({ "id": items.value });
+            }
+            return itemid;
         }
     }
 
@@ -363,10 +380,10 @@ declare var commonfun: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "clear") {
-             this.ClearControl();
+            this.ClearControl();
         }
         if (evt === "back") {
-            this._router.navigate(['accounts/taxmaster']);
+            this._router.navigate(['master/itemdiscount']);
         }
         if (evt === "save") {
             try {
@@ -381,7 +398,7 @@ declare var commonfun: any;
                     this.paramjson()
                 ).subscribe(result => {
                     var dataset = result.data;
-                    if (dataset[0].funsave_taxmaster.msxid==-1) {
+                    if (dataset[0].funsave_taxmaster.msxid == -1) {
                         this._msg.Show(messageType.error, "error", dataset[0].funsave_taxmaster.msg);
                         $(".taxname").focus();
                         return;

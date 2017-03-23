@@ -78,7 +78,7 @@ export class dcview implements OnInit, OnDestroy {
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
-        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, false));
+        this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.setActionButtons.setTitle("Sales Order");
@@ -206,7 +206,8 @@ export class dcview implements OnInit, OnDestroy {
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
-                "search": query
+                "search": query,
+                "typ":""
             }).then(data => {
                 this.CustomerAutodata = data;
             });
@@ -226,6 +227,7 @@ export class dcview implements OnInit, OnDestroy {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
         this.setActionButtons.setTitle("");
+        
     }
 
 }

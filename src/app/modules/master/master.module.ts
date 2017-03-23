@@ -57,6 +57,11 @@ const routerConfig = [
               return comp.default;
             }),
           },
+           {
+            path: 'itemdiscount', loadChildren: () => System.import('./discountmaster').then((comp: any) => {
+              return comp.default;
+            }),
+          },
 
           { path: '', component: MasterDashboardComp, canActivateChid: [AuthGuard], },
         ]

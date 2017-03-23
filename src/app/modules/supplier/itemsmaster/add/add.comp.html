@@ -152,7 +152,10 @@
 								<div class="col-md-5">
 									<div class='form-group'>
 										<label>Title</label>
-										<input type="text" class="form-control saleattr" tabindex="12" (keyup)="getAutoCompleteSale(this)" [(ngModel)]="titlesale">
+										<!--<input type="text" class="form-control saleattr" tabindex="12" (keyup)="getAutoCompleteSale(this)" [(ngModel)]="titlesale">-->
+										<p-autoComplete [(ngModel)]="titlesale" class="form-controlAutoComplete saleattr" (onSelect)="SalesPriceSelect($event)" [suggestions]="salespriceAutodata"
+											(keyup.enter)="SalesAdd()" (completeMethod)="SalesPriceAuto($event)" [tabindex]="12" field="label" [size]="30"
+											placeholder="Sales Attribute" [minLength]="1"></p-autoComplete>
 									</div>
 								</div>
 								<div class="col-md-4">

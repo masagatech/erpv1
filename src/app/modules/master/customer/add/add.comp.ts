@@ -73,8 +73,8 @@ declare var commonfun: any;
     itemslist: any = [];
     counter: number = 0;
     taxlist: any = [];
-    upperlimit:number=0;
-    lowerlimit:number=0;
+    upperlimit: number = 0;
+    lowerlimit: number = 0;
 
     //Other Module Declare
     adrbookid: any = [];
@@ -832,10 +832,10 @@ declare var commonfun: any;
                 "createdby": this.loginUser.login
             }).subscribe(result => {
                 that.editmode = true;
+                debugger;
                 var resultdata = result.data[0][0]
                 var _custdata = resultdata._custdata;
-                var _uploadedfile = resultdata._uploadedfile;
-
+                var _uploadedfile = resultdata._uploadedfile == null ? [] : resultdata._uploadedfile;
                 var _docfile = resultdata._docfile == null ? [] : resultdata._docfile;
                 var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
                 if (_parentname.length > 0) {
@@ -847,12 +847,12 @@ declare var commonfun: any;
                 that.custid = _custdata[0].autoid;
                 that.code = _custdata[0].custcode;
                 that.Custname = _custdata[0].custname;
-                that.ope = _custdata[0].ope;
-                that.upperlimit = _custdata[0].upperlimit;
-                that.lowerlimit = _custdata[0].lowerlimit;
+                that.ope = _custdata[0].ope == null ? 0 : _custdata[0].ope;
+                that.upperlimit = _custdata[0].upperlimit == null ? 0 : _custdata[0].upperlimit;
+                that.lowerlimit = _custdata[0].lowerlimit == null ? 0 : _custdata[0].lowerlimit;
                 that.isactive = _custdata[0].isactive;
                 that.taxlist = resultdata._tax == null ? [] : resultdata._tax;
-                that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
+                //that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
                 that.attribute.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
                 that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
                 that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
@@ -878,10 +878,12 @@ declare var commonfun: any;
 
                 //Warehouse check edit mode
                 if (that.warehouselist.length > 0) {
-                    var wareedit = _custdata[0].warehouseid;
-                    for (var j = 0; j <= wareedit.length - 1; j++) {
-                        var chk = that.warehouselist.find(a => a.value === wareedit[j].id);
-                        chk.Warechk = true;
+                    var wareedit = _custdata[0].warehouseid === null ? [] : _custdata[0].warehouseid;
+                    if (wareedit.length > 0) {
+                        for (var j = 0; j <= wareedit.length - 1; j++) {
+                            var chk = that.warehouselist.find(a => a.value === wareedit[j].id);
+                            chk.Warechk = true;
+                        }
                     }
                 }
 
@@ -1234,8 +1236,8 @@ declare var commonfun: any;
                 "op": this.ope == "" ? 0 : this.ope,
                 "tax": this.taxjson(),
                 "cmpid": this.loginUser.cmpid,
-                "upper":this.upperlimit,
-                "lower":this.lowerlimit,
+                "upper": this.upperlimit,
+                "lower": this.lowerlimit,
                 "remark": this.remark,
                 "ctrl": this.Ctrljson(),
                 "createdby": this.loginUser.login,

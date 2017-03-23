@@ -93,7 +93,7 @@ export class AttributeComp implements OnInit, OnDestroy {
 
     //Add Attribute 
     AttributeAdd() {
-        if ($(".attr").val() != "") {
+        //if ($(".attr").val() != "") {
             if (this.attrid > 0) {
                 this.Duplicateflag = true;
                 if (this.attrlist.length > 0) {
@@ -124,7 +124,7 @@ export class AttributeComp implements OnInit, OnDestroy {
                 $(".attr").focus();
                 return;
             }
-        }
+      //  }
     }
     //Remove  Attribute 
     Removeattr(row) {

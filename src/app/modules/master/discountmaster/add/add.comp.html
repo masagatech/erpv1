@@ -1,0 +1,79 @@
+<div class="panel panel-theme">
+	<div class="panel-body">
+		<div class="col-md-12">
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Discount Name</label>
+					<input type="text" class="form-control taxname" placeholder="Discount name" validate="" tabindex="1" [(ngModel)]="taxname"
+						ng-trim="true">
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>From Date</label>
+					<calendar #fromdatecal [name]="'fromdate'"></calendar>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>To Date</label>
+					<calendar #todatecal [name]="'todate'"></calendar>
+				</div>
+			</div>
+			<div class="col-md-3 hide">
+				<div class='form-group'>
+					<label>COA</label>
+					<p-autoComplete [(ngModel)]="coanam" class="form-controlAutoComplete coa" (onSelect)="COASelect($event)" [suggestions]="COAAutodata"
+						(completeMethod)="COAAuto($event)" [tabindex]="2" field="label" [size]="30" placeholder="Chart Of Account" [minLength]="1"></p-autoComplete>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-1">
+				<div class='form-group'>
+					<label>%</label>
+					<select [(ngModel)]="dis" class="form-control" tabindex="5" [disabled]="true">
+                        <option [value]="'0'">%</option>
+						<option *ngFor="let row of purcentamt" [value]="row.id">
+							{{row.val}}
+					    </option>
+					</select>
+				</div>
+			</div>
+			<div class="col-md-1">
+				<div class='form-group'>
+					<label>Value</label>
+					<numtext [iscurrency]="false" [tabindex]="4" [(ngModel)]="taxval"></numtext>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class='form-group'>
+					<label>On</label>
+					<select [(ngModel)]="Ongross" class="form-control" tabindex="5">
+						<option *ngFor="let row of Onlist" [value]="row.id">
+							{{row.val}}
+					    </option>
+					</select>
+				</div>
+			</div>
+			<div class="col-md-1 hide">
+				<div class='form-group'>
+					<label>Seq</label>
+					<numtext [iscurrency]="false" [tabindex]="6" [max]="99" [(ngModel)]="Seq"></numtext>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class='form-group'>
+					<label>Remark</label>
+					<input type="text" class="form-control" placeholder="Remark" tabindex="8" [(ngModel)]="narration">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-10">
+			<attribute #attribute></attribute>
+		</div>
+		<div class="col-md-10">
+			<attribute #itemattr></attribute>
+		</div>
+	</div>
+</div>
