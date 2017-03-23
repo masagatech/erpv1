@@ -5,6 +5,8 @@ import { ActionBtnProp, Details } from '../../app/_model/action_buttons'
 import { SharedVariableService } from "../_service/sharedvariable-service";
 import { Subscription } from 'rxjs/Subscription';
 
+declare var commonfun: any;
+
 @Component({
     templateUrl: 'module.comp.html',
 })
@@ -14,6 +16,7 @@ export class ModuleComponent implements OnDestroy {
     ActionButtons: ActionBtnProp[] = [];
     eventActDetails: Details;
     title: string = "";
+
     constructor(router: Router, private slimLoadingBarService: SlimLoadingBarService,
         private setActionButtons: SharedVariableService) {
 
@@ -21,23 +24,30 @@ export class ModuleComponent implements OnDestroy {
             if (event instanceof NavigationStart) {
                 // console.log("nav start");
                 //this.ActionButtons = [];
-               
+                commonfun.loader();
                 this.slimLoadingBarService.progress = 30;
                 this.slimLoadingBarService.start(() => {
                     //console.log('Loading complete');
+
                 });
             }
 
             if (event instanceof NavigationEnd) {
                 this.slimLoadingBarService.complete();
+                commonfun.loaderhide();
+
             }
 
             if (event instanceof NavigationError) {
                 this.slimLoadingBarService.complete();
+                commonfun.loaderhide();
+
             }
 
             if (event instanceof NavigationCancel) {
                 this.slimLoadingBarService.complete();
+                commonfun.loaderhide();
+
             }
         });
 
@@ -57,6 +67,7 @@ export class ModuleComponent implements OnDestroy {
     }
 
     ngOnInit() {
+
     }
 
     ngOnDestroy() {
