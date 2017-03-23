@@ -83,9 +83,11 @@ export class UserControlHeadComp implements OnInit {
 
     if ($('.container').hasClass('closeopenpan')) {
       $('#sidebar').show();
+      $('.container').removeClass('closeopenpan');
     } else {
       $('#sidebar').hide();
+      $('.container').addClass('closeopenpan');
     }
-    $('.container').toggleClass('closeopenpan');
+
   }
 }
