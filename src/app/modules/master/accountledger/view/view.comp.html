@@ -1,7 +1,7 @@
 <div class="table-responsive">
 	<p-dataTable #dt [value]="accountledgerlist" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
 		(onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
-		<p-column header="#" [style]="{'width':'30px','text-align':'left'}">
+		<p-column header="#" [style]="{'width':'10px','text-align':'left'}">
 			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 				{{rowIndex+1}}
 			</template>
@@ -9,7 +9,7 @@
 		<p-column field="accode" header="Ac Code" [style]="{'width':'20px','text-align':'left'}"></p-column>
 		<p-column field="acname" header="Ac Name" [style]="{'width':'120px','text-align':'left'}"></p-column>
 		<p-column field="parent" header="Parent Group" [style]="{'width':'80px','text-align':'left'}"></p-column>
-		<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
+		<p-column header="Action" [style]="{'width':'20px','text-align':'center'}">
 				<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 					<button type="button" (click)="EditItem(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
 				</template>
