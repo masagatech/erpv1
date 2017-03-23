@@ -133,7 +133,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
 
     resetBPFields() {
         this.bankid = 0;
-        this.status = "true";
+        this.status = true;
     }
 
     // Open Edit Mode
