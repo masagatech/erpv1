@@ -1,17 +1,17 @@
 <div class="col-md-12">
 	<div class="row">
-		<!--<div class="col-md-3">
+		<div class="col-md-2">
 			<div class="form-group">
 				<label>From Date</label>
 				<calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
 			</div>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class="form-group">
 				<label>To Date</label>
 				<calendar #todate [name]="'todate'" tabindex="3"></calendar>
 			</div>
-		</div>-->
+		</div>
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Bank</label>
@@ -23,18 +23,15 @@
 				</select>
 			</div>
 		</div>
-		<div class="col-md-3">
-			<div class="form-group">
-				<label>Status</label>
-				<select class="form-control" [(ngModel)]="status" tabindex="4">
-					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
-				</select>
+		<div class="col-md-3" *ngIf="trashviewDT !== null">
+			<div class="form-group setfltrbtn">
+				<p-triStateCheckbox [(ngModel)]="status" class="status" (ngModelChange)="getTrashRights()"></p-triStateCheckbox> {{statustitle}}
 			</div>
 		</div>
-		<div class="col-md-1">
+		<div class="col-md-2">
 			<div class="form-group setfltrbtn">
 				<label>&nbsp;</label>
-				<button type="button" class="btn btn-theme btn-sm" (click)="searchBankPayment(dt)">
+				<button type="button" class="btn btn-theme btn-sm" (click)="searchBankPayment()">
 					<i class="fa fa-arrow-right"></i>
 				</button>
 			</div>
@@ -42,10 +39,21 @@
 	</div>
 </div>
 
-<div class="col-md-12">
+<div class="col-md-12" *ngIf="bankpaymentDT.length">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="bankpaymentDT" [lazy]="true" (onRowExpand)="expandDetails($event)" (onLazyLoad)="loadBankPaymentGrid($event)"
-			expandableRows="true">
+		<p-dataTable #dt [value]="bankpaymentDT" [lazy]="true" (onRowExpand)="expandDetails($event)" expandableRows="true">
+			<header>
+				<table class="tableNoborder">
+					<tbody>
+						<tr>
+							<td colspan="7">Total Amount</td>
+							<td width="100px">{{TotalAmount() | _currency:loginUser._globsettings[0] }}</td>
+							<td width="70px"></td>
+							<td width="50px"></td>
+						</tr>
+					</tbody>
+				</table>
+			</header>
 			<p-column expander="true" styleClass="col-icon" [style]="{'width':'30px'}"></p-column>
 			<p-column field="docno" header="Doc No" [style]="{'width':'80px','text-align':'left'}"></p-column>
 			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
@@ -55,7 +63,7 @@
 			<p-column field="cheqno" header="Cheque No" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column header="Amount" [style]="{'width':'100px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
-					{{row.amount | currency:loginUser._globsettings.currency:true}}
+					{{row.amount | _currency:loginUser._globsettings[0] }}
 				</template>
 			</p-column>
 			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
@@ -72,6 +80,18 @@
 					<p-column field="code" header="Code" [style]="{'width':'150px','text-align':'left'}"></p-column>
 				</p-dataTable>
 			</template>
+			<footer>
+				<table class="tableNoborder">
+					<tbody>
+						<tr>
+							<td colspan="7">Total Amount</td>
+							<td width="100px">{{TotalAmount() | _currency:loginUser._globsettings[0] }}</td>
+							<td width="70px"></td>
+							<td width="50px"></td>
+						</tr>
+					</tbody>
+				</table>
+			</footer>
 		</p-dataTable>
 	</div>
 </div>

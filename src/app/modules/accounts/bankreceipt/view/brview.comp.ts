@@ -26,11 +26,13 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
     // Veriable Declare
     bankreid: number = 0;
     bankid: number = 0;
-    status: boolean = false;
+    status: boolean = true;
+    statustitle: string = "";
 
     bankDT: any = [];
     bankreceiptDT: any = [];
     statusDT: any = [];
+    trashviewDT: any = [];
 
     tableLength: any;
     totalRecords: number = 0;
@@ -48,21 +50,24 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillDropDownList();
-        this.fillStatusDropDown();
+        this.getTrashRights();
         this.resetBPFields();
     }
 
     // Document Ready
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Bank Receipt");
-        // this.fromdate.initialize(this.loginUser);
-        // this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        // this.fromdate.setDate(new Date(this.loginUser.fyfrom));
+        this.setActionButtons.setTitle("A/C Receivable");
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-        // this.todate.initialize(this.loginUser);
-        // this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        // this.todate.setDate(new Date(this.loginUser.fyto));
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(today);
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(today);
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
@@ -80,14 +85,29 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
         }
     }
 
-    fillStatusDropDown() {
+    getTrashRights() {
         var that = this;
+        var _actrec = [];
+        var _delrec = [];
+
+        if (that.status == true) {
+            $(".status input").prop('disabled', false);
+            that.statustitle = "Active Records";
+        }
+        else if (that.status == false) {
+            $(".status input").prop('disabled', false);
+            that.statustitle = "Inactive Records";
+        }
+        else {
+            $(".status input").prop('disabled', true);
+            that.statustitle = "All Records";
+        }
 
         that._userService.getMenuDetails({
-            "flag": "trashrights", "ptype": "accs", "mtype": "ar",
+            "flag": "deletedrights", "ptype": "accs", "mtype": "ar",
             "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
-            that.statusDT = data.data;
+            that.trashviewDT = data.data[0]._deletedrecords;
         }, err => {
             console.log("Error");
         }, () => {
@@ -125,7 +145,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
 
     //Bind Bank Receipt Table
 
-    GetBankReceipt(from: number, to: number) {
+    GetBankReceipt() {
         var that = this;
 
         that.tableLength = true;
@@ -133,12 +153,12 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
 
         var params = {
             "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
-            "bankid": that.bankid, "isactive": that.status, "from": from, "to": to
-            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate()
+            "bankid": that.bankid, "isactive": that.status, "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate()
+            // "from": from, "to": to
         }
 
         that._brService.getBankReceipt(params).subscribe(bankreceipt => {
-            that.totalRecords = bankreceipt.data[1][0].recordstotal;
+            // that.totalRecords = bankreceipt.data[1][0].recordstotal;
 
             if (bankreceipt.data.length !== 0) {
                 that.tableLength = false;
@@ -158,7 +178,7 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
     }
 
     loadBankReceiptGrid(event: LazyLoadEvent) {
-        this.GetBankReceipt(event.first, (event.first + event.rows));
+        // this.GetBankReceipt(event.first, (event.first + event.rows));
     }
 
     // Expand Grid Button Click
@@ -198,44 +218,30 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
 
     // Search Button Click
 
-    searchBankRecepit(dt: DataTable) {
-        // if (this.rangewise == "docrange") {
-
-        // }
-        // if (this.rangewise == "daterange") {
-        //     if (this.fromdate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select From Date");
-        //         return;
-        //     }
-        //     if (this.todate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select To Date");
-        //         return;
-        //     }
-        // }
-
-        // if (this.fromno == "") {
-        //     this._msg.Show(messageType.info, "Info", "Please select From No");
+    searchBankRecepit() {
+        // if (this.fromdate.setDate("")) {
+        //     this._msg.Show(messageType.info, "Info", "Please select From Date");
         //     return;
         // }
-        // if (this.tono == "") {
-        //     this._msg.Show(messageType.info, "Info", "Please select To No");
+        // if (this.todate.setDate("")) {
+        //     this._msg.Show(messageType.info, "Info", "Please select To Date");
         //     return;
         // }
 
-        dt.reset();
+        this.GetBankReceipt();
     }
 
     //Total Sum in Bank Receipt Amount
 
     TotalAmount() {
         if (this.bankreceiptDT != undefined) {
-            var total = 0;
+            var totamt = 0;
             for (var i = 0; i < this.bankreceiptDT.length; i++) {
                 var items = this.bankreceiptDT[i];
-                total += parseInt(items.amount);
+                totamt += parseInt(items.amount);
             }
 
-            return total;
+            return totamt;
         }
     }
 

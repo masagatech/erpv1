@@ -27,11 +27,13 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     // Veriable Declare
     bankpayid: any = 0;
     bankid: any = 0;
-    status: string = "";
+    status: boolean = true;
+    statustitle: string = "";
 
     bankDT: any = [];
     bankpaymentDT: any = [];
     statusDT: any = [];
+    trashviewDT: any = [];
 
     tableLength: any;
     totalRecords: number = 0;
@@ -49,21 +51,24 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         private _userService: UserService, private _alsservice: ALSService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillDropDownList();
-        this.fillStatusDropDown();
+        this.getTrashRights();
         this.resetBPFields();
     }
 
     // Document Ready
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Bank Payment");
-        // this.fromdate.initialize(this.loginUser);
-        // this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        // this.fromdate.setDate(new Date(this.loginUser.fyfrom));
+        this.setActionButtons.setTitle("A/C Payble");
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-        // this.todate.initialize(this.loginUser);
-        // this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        // this.todate.setDate(new Date(this.loginUser.fyto));
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(today);
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(today);
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
@@ -79,6 +84,36 @@ export class ViewBankPayment implements OnInit, OnDestroy {
         if (evt === "add") {
             this._router.navigate(['/accounts/bankpayment/add']);
         }
+    }
+
+    getTrashRights() {
+        var that = this;
+        var _actrec = [];
+        var _delrec = [];
+
+        if (that.status === true) {
+            $(".status input").prop('disabled', false);
+            that.statustitle = "Active Records";
+        }
+        else if (that.status === false) {
+            $(".status input").prop('disabled', false);
+            that.statustitle = "Inactive Records";
+        }
+        else {
+            $(".status input").prop('disabled', true);
+            that.statustitle = "All Records";
+        }
+
+        that._userService.getMenuDetails({
+            "flag": "deletedrights", "ptype": "accs", "mtype": "ap",
+            "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
+        }).subscribe(data => {
+            that.trashviewDT = data.data[0]._deletedrecords;
+        }, err => {
+            console.log("Error");
+        }, () => {
+            // console.log("Complete");
+        });
     }
 
     fillStatusDropDown() {
@@ -126,7 +161,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
 
     // Get Button Click Event
 
-    GetBankPayment(from: number, to: number) {
+    GetBankPayment() {
         var that = this;
 
         that.tableLength = true;
@@ -134,8 +169,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
 
         var params = {
             "flag": "all", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
-            "bankid": that.bankid, "isactive": that.status, "from": from, "to": to
-            // "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate()
+            "bankid": that.bankid, "isactive": that.status, "fromdate": that.fromdate.getDate(), "todate": that.todate.getDate()
+            // "from": from, "to": to
         }
 
         that._bpservice.getBankPayment(params).subscribe(bankpayment => {
@@ -149,7 +184,7 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     }
 
     loadBankPaymentGrid(event: LazyLoadEvent) {
-        this.GetBankPayment(event.first, (event.first + event.rows));
+        // this.GetBankPayment(event.first, (event.first + event.rows));
     }
 
     // Expand Grid Button Click
@@ -189,16 +224,8 @@ export class ViewBankPayment implements OnInit, OnDestroy {
 
     // Search Button Click
 
-    searchBankPayment(dt: DataTable) {
-        if (dt !== undefined) {
-            dt.reset();
-        }
-        else {
-            this._msg.Show(messageType.error, "Error", "No records found");
-            this.bankpaymentDT = [];
-            this.tableLength = true;
-            return false;
-        }
+    searchBankPayment() {
+        this.GetBankPayment();
     }
 
     // Total Sum in Bank Payment Amount

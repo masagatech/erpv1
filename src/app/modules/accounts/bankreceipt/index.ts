@@ -7,7 +7,7 @@ import { ViewBankReceipt } from './view/brview.comp';      //Bank Bayment View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, TriStateCheckboxModule, AutoCompleteModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
 
@@ -45,7 +45,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,
-        DataTableModule, AutoCompleteModule, CalendarModule, NumTextModule],
+        DataTableModule, TriStateCheckboxModule, AutoCompleteModule, CalendarModule, NumTextModule],
     declarations: [
         AddEditBankReceipt,
         ViewBankReceipt,
