@@ -47,6 +47,27 @@ commonfun.validate = function validate() {
     return { "status": valisValid, "data": result, "msglist": msglist };
 }
 
+commonfun.loader = function(name) {
+    if (!name) name = '.maincontent';
+    $(name).waitMe({
+        effect: 'bounce',
+        text: '',
+        bg: 'rgba(255, 255, 255, 0.7)',
+        color: '#000',
+        maxSize: '',
+        textPos: 'vertical',
+        fontSize: '',
+        source: ''
+    });
+
+}
+
+
+commonfun.loaderhide = function(name) {
+    if (!name) name = '.maincontent';
+    $(name).waitMe('hide');
+}
+
 
 var browserConf = {};
 browserConf.setTitle = function(title) {
