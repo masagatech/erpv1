@@ -73,6 +73,7 @@ declare var commonfun: any;
 
     //Auto Extender Array
     MaterialAutodata: any = [];
+    salespriceAutodata:any=[];
 
     //user details
     loginUser: LoginUserModel;
@@ -146,7 +147,6 @@ declare var commonfun: any;
             var that = this;
             this.itemsaddServies.getdorpdown({ "cmpid": this.loginUser.cmpid }).subscribe(data => {
                 var dswarehaouse = data.data[0].filter(item => item.group === "warehouse");
-                debugger;
                 that.warehouselist = dswarehaouse;
                 var dsshelflife = data.data[0].filter(item => item.group === "shelflife");
                 that.shelflifelist = dsshelflife;
@@ -314,42 +314,24 @@ declare var commonfun: any;
 
     }
 
-    //Autocompleted Attribute Name
-    getAutoCompleteSale(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "attribute",
-                "search": that.titlesale,
-                "filter": "salesattr",
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.login,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".saleattr").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.titlesaleid = ui.item.value;
-                        me.titlesale = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
+    SalesPriceAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "attribute",
+            "filter":"custinfo_attr",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.salespriceAutodata = data;
+        });
+    }
 
-            }, () => {
-                //me.titlesaleid = 0;
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
+    //Transpoter Selected
+    SalesPriceSelect(event) {
+        this.titlesaleid = event.value;
+        this.titlesale = event.label;
     }
 
     //Autocompleted Attribute Name
@@ -497,14 +479,15 @@ declare var commonfun: any;
     //Add Accounting Row
     SalesAdd() {
         try {
+            debugger;
             var that = this;
             if (this.titlesale == "") {
-                this._msg.Show(messageType.info, "info", "Please enter title");
-                $(".saleattr").focus()
+                this._msg.Show(messageType.error, "error", "Please enter title");
+                $(".saleattr input").focus()
                 return;
             }
             if (this.sales == "") {
-                this._msg.Show(messageType.info, "info", "Please enter sales price");
+                this._msg.Show(messageType.error, "error", "Please enter sales price");
                 $(".sales").focus()
                 return;
             }
@@ -526,13 +509,12 @@ declare var commonfun: any;
                     this.titlesaleid = 0;
                     this.sales = "";
                     this.dis = "";
-                    //that.attrtable = false;
-                    $(".saleattr").focus();
+                    $(".saleattr input").focus();
 
                 }
                 else {
                     that._msg.Show(messageType.info, "info", "Duplicate value");
-                    $(".sales").focus();
+                    $(".saleattr input").focus();
                     return;
                 }
             }

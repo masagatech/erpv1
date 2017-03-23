@@ -43,6 +43,28 @@
 						</select>
 					</div>
 				</div>
+				<div class="col-md-12">
+					<div class='form-group'>
+						<label>Item Combo</label>
+						<!--<span>
+							<input type="text" class="form-control tag label label-info" [(ngModel)]="itemcombo" />
+						</span>-->
+						<!--<div class="bootstrap-tagsinput">
+							<div class="bootstrap-tagsinput" *ngFor="let row of combolist">
+								<span class="tag label label-info" style="font-size: 10px;">{{row.comboname}} 
+							             	<span data-role="remove" (click)="RemoveSale(item,row)"></span>
+								</span>
+							</div>
+						</div>-->
+						<p-chips [(ngModel)]="combolist">
+							<template let-item pTemplate="item">
+								{{item.comboname}}<i class="fa fa-close"></i>
+							</template>
+						</p-chips>
+
+					</div>
+
+				</div>
 			</div>
 			<div class="col-md-12">
 				<div class="table-responsive">
@@ -55,37 +77,39 @@
 						</p-column>
 						<p-column header="Item" [style]="{'text-align':'left'}">
 							<template let-col let-row="rowData" pTemplate="editor">
-								<!--<input type="text" class="form-control ProdName inlinetextbox" tabindex="6" [(ngModel)]="row.itemsname" (keyup)="getAutoCompleteProd(row,1)"
-									autocomplete='off' value="" />-->
 								<p-autoComplete [(ngModel)]="row.itemsname" class="form-controlAutoComplete inlinetextbox ProdName" (onSelect)="ItemSelect($event,1)"
 									[suggestions]="ItemAutodata" (completeMethod)="ItemAuto($event)" [tabindex]="11" field="label" [size]="30" placeholder="Item"
 									[minLength]="1"></p-autoComplete>
 							</template>
 						</p-column>
-						<p-column header="Qty" [style]="{'width':'120px','text-align':'left'}">
+						<p-column header="Qty" [style]="{'width':'120px','text-align':'right'}">
 							<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 								<numtext [iscurrency]="false" [decimals]="2" id="{{'nmtxt_' + rowIndex + '1'}}" [css]="inlinetextbox" [tabindex]="12" [(ngModel)]="row.qty"
 									(keyup)="ratechange(qty,newrate,dis,row,1)"></numtext>
+								<!--{{ row.qty | _currency:{currsym:"",decimals:2 } }}-->
 							</template>
 						</p-column>
-						<p-column header="Rate" [style]="{'width':'120px','text-align':'left'}">
+						<p-column header="Rate" [style]="{'width':'120px','text-align':'right'}">
 							<template let-col let-row="rowData" pTemplate="editor">
 								<select [(ngModel)]="row.id" class="form-control inlinetextbox" tabindex="13" (ngModelChange)="ratechange(qty,newrate,dis,row,1)">
 						<option *ngFor="let row of row.rateslist" [value]="row.id">
 							{{row.val}}
 					    </option>
 							</select>
+								<!--{{ row.id }}-->
 							</template>
 						</p-column>
-						<p-column header="Dis %" [style]="{'width':'120px','text-align':'left'}">
+						<p-column header="Dis %" [style]="{'width':'120px','text-align':'right'}">
 							<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 								<numtext [iscurrency]="false" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '2'}}" [tabindex]="14" (keyup)="ratechange(qty,newrate,dis,row,1)"
 									[(ngModel)]="row.dis"></numtext>
+								<!--{{ row.dis | _currency:loginUser._globsettings[0] }}-->
 							</template>
 						</p-column>
-						<p-column header="Amount" [style]="{'width':'120px','text-align':'left'}">
+						<p-column header="Amount" [style]="{'width':'120px','text-align':'right'}">
 							<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 								<numtext [iscurrency]="true" [islabel]="true" id="{{'nmtxt_' + rowIndex + '3'}}" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
+								<!--{{ row.amount | _currency:loginUser._globsettings[0] }}-->
 							</template>
 						</p-column>
 						<p-column header="Action" [style]="{'width':'80px','text-align':'center'}">
@@ -101,8 +125,6 @@
 											<label>#</label>
 										</td>
 										<td style="vertical-align: top;">
-											<!--<input type="text" tabindex="10" class="form-control ProdName" [(ngModel)]="NewItemsName" (keyup)="getAutoCompleteProd(this,0)"
-												autocomplete='off' value="" />-->
 											<p-autoComplete [(ngModel)]="NewItemsName" class="form-controlAutoComplete inlinetextbox ProdName" (onSelect)="ItemSelect($event,0)"
 												[suggestions]="ItemAutodata" (completeMethod)="ItemAuto($event)" [tabindex]="6" field="label" [size]="30" placeholder="Item"
 												[minLength]="1"></p-autoComplete>

@@ -11,8 +11,22 @@
 			<div class="col-md-3">
 				<div class='form-group'>
 					<label>COA</label>
-					<p-autoComplete [(ngModel)]="coa" class="form-controlAutoComplete coa" (onSelect)="COASelect($event)" [suggestions]="COAAutodata"
+					<p-autoComplete [(ngModel)]="coanam" class="form-controlAutoComplete coa" (onSelect)="COASelect($event)" [suggestions]="COAAutodata"
 						(completeMethod)="COAAuto($event)" [tabindex]="2" field="label" [size]="30" placeholder="Chart Of Account" [minLength]="1"></p-autoComplete>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-12">
+			<div class="col-md-3">
+				<div class='form-group'>
+					<label>From Date</label>
+					<calendar #fromdatecal [name]="'fromdate'"></calendar>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class='form-group'>
+					<label>To Date</label>
+					<calendar #todatecal [name]="'todate'"></calendar>
 				</div>
 			</div>
 		</div>
@@ -30,7 +44,8 @@
 			<div class="col-md-1">
 				<div class='form-group'>
 					<label>Value</label>
-					<input type="text" class="form-control" placeholder="Value" validate="" tabindex="4" [(ngModel)]="taxval" ng-trim="true">
+					
+					<numtext [iscurrency]="false" [tabindex]="4" [(ngModel)]="taxval"></numtext>
 				</div>
 			</div>
 			<div class="col-md-3">
@@ -46,7 +61,7 @@
 			<div class="col-md-1">
 				<div class='form-group'>
 					<label>Seq</label>
-					<input type="text" class="form-control" placeholder="Seq" maxlength="2" tabindex="6" [(ngModel)]="seq">
+						<numtext [iscurrency]="false" [tabindex]="6" [max]="99" [(ngModel)]="Seq"></numtext>
 				</div>
 			</div>
 		</div>
@@ -56,7 +71,7 @@
 					<label>Narration</label>
 					<div class="input-group">
 						<textarea [(ngModel)]="narration" placeholder="Narration" tabindex="8" class="form-control medium-text-box" name="Narration"
-							cols="75" autocomplete='off' rows="2"></textarea>
+							cols="85" autocomplete='off' rows="2"></textarea>
 					</div>
 				</div>
 			</div>

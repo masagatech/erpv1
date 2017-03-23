@@ -1,5 +1,17 @@
 <div class="col-md-12">
 	<div class="row">
+		<div class="col-md-2">
+			<div class="form-group">
+				<label>From Date</label>
+				<calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
+			</div>
+		</div>
+		<div class="col-md-2">
+			<div class="form-group">
+				<label>To Date</label>
+				<calendar #todate [name]="'todate'" tabindex="3"></calendar>
+			</div>
+		</div>
 		<div class="col-md-3">
 			<div class="form-group">
 				<label>Bank</label>
@@ -11,30 +23,15 @@
 				</select>
 			</div>
 		</div>
-		<!--<div class="col-md-3">
-			<div class="form-group">
-				<label>From Date</label>
-				<calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
+		<div class="col-md-3" *ngIf="trashviewDT !== null">
+			<div class="form-group setfltrbtn">
+				<p-triStateCheckbox [(ngModel)]="status" class="status" (ngModelChange)="getTrashRights()"></p-triStateCheckbox> {{statustitle}}
 			</div>
 		</div>
-		<div class="col-md-3">
-			<div class="form-group">
-				<label>To Date</label>
-				<calendar #todate [name]="'todate'" tabindex="3"></calendar>
-			</div>
-		</div>-->
-		<div class="col-md-3">
-			<div class="form-group">
-				<label>Status</label>
-				<select class="form-control" [(ngModel)]="status" tabindex="4">
-					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
-				</select>
-			</div>
-		</div>
-		<div class="col-md-1">
+		<div class="col-md-2">
 			<div class="form-group setfltrbtn">
 				<label>&nbsp;</label>
-				<button type="button" tabindex="5" class="btn btn-theme btn-sm" (click)="searchBankRecepit(dt)">
+				<button type="button" tabindex="5" class="btn btn-theme btn-sm" (click)="searchBankRecepit()">
 					<i class="fa fa-arrow-right"></i>
 				</button>
 			</div>
@@ -42,24 +39,35 @@
 	</div>
 </div>
 
-<div class="col-md-12">
+<div class="col-md-12" *ngIf="bankreceiptDT.length">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="bankreceiptDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
-			(onLazyLoad)="loadBankReceiptGrid($event)" expandableRows="true">
+		<p-dataTable #dt [value]="bankreceiptDT" [lazy]="true" (onRowExpand)="expandDetails($event)" expandableRows="true">
+			<header>
+				<table class="tableNoborder">
+					<tbody>
+						<tr>
+							<td colspan="7">Total Amount</td>
+							<td width="100px">{{TotalAmount() | _currency:loginUser._globsettings[0] }}</td>
+							<td width="70px"></td>
+							<td width="50px"></td>
+						</tr>
+					</tbody>
+				</table>
+			</header>
 			<p-column expander="true" styleClass="col-icon" [style]="{'width':'30px'}"></p-column>
 			<p-column field="docno" header="Doc No" [style]="{'width':'80px','text-align':'left'}"></p-column>
 			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column field="acname" header="A/C Name" [style]="{'text-align':'left'}"></p-column>
-			<p-column field="bankname" header="Bank Name" [style]="{'width':'200px','text-align':'left'}"></p-column>
+			<p-column field="bankname" header="Bank Name" [style]="{'width':'250px','text-align':'left'}"></p-column>
 			<p-column field="banktype" header="Bank Type" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column field="cheqno" header="Cheque No" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column header="Amount" [style]="{'width':'100px','text-align':'right'}">
 				<template let-row="rowData" pTemplate type="body">
-					{{row.amount | currency:loginUser._globsettings.currency:true}}
+					{{row.amount | _currency:loginUser._globsettings[0] }}
 				</template>
 			</p-column>
-			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
-			<p-column [style]="{'width':'45px','text-align':'left'}">
+			<p-column field="status" header="Status" [style]="{'width':'70px','text-align':'left'}"></p-column>
+			<p-column [style]="{'width':'50px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
 					<button type="button" (click)="OpenBankReceipt(row)" class="btn btn-theme btn-sm btn-grid">
 						<i class="fa fa-edit"></i>
@@ -72,75 +80,18 @@
 					<p-column field="custname" header="Code" [style]="{'width':'150px','text-align':'left'}"></p-column>
 				</p-dataTable>
 			</template>
-		</p-dataTable>
-	</div>
-</div>
-
-<!--<table class="table table-striped table-bordered" data-toggle="table" [hidden]="tableLength">
-	<thead>
-		<tr>
-			<th colspan="5"></th>
-			<th><b>Total</b></th>
-			<th class="textboxRight"><b>{{TotalAmount()| number}}</b></th>
-			<th></th>
-		</tr>
-		<tr>
-			<th></th>
-			<th class="col-xs-1" data-field="Doc" data-sortable="true">Doc</th>
-			<th class="col-xs-2" data-field="Date" data-sortable="true">Date</th>
-			<th class="col-xs-3">Party</th>
-			<th class="col-xs-1">Type</th>
-			<th class="col-xs-1">Cheque</th>
-			<th class="col-xs-1">Debit</th>
-			<th class="col-xs-4">Narration</th>
-		</tr>
-	</thead>
-	<tbody *ngFor="let row of bankreceiptDT">
-		<tr>
-			<td>
-				<button (click)="expandDetails(row)">
-						<i class="{{row.issh == 1 ? 'fa fa-folder-open' : 'fa fa-folder'}}"></i>
-					</button>
-			</td>
-			<td>
-				<a role="button" (click)="OpenEdit(row)">{{row.id}}</a>
-			</td>
-			<td>{{row.depdate}}</td>
-			<td>{{row.partyname}}</td>
-			<td>{{row.typ}}</td>
-			<td>{{row.cheqno}}</td>
-			<td class="textboxRight">{{row.amount | number}}</td>
-			<td rowspan="2">
-				{{row.issh == 1 ? row.naration : row.small}}
-			</td>
-		</tr>
-		<tr [style.display]="row.issh == 0?'none':''">
-			<td></td>
-			<td></td>
-			<td colspan="5">
-				<table class="table table-striped table-bordered">
-					<thead>
-						<tr>
-							<th>Refrnce No</th>
-							<th>Account Code</th>
-						</tr>
-					</thead>
+			<footer>
+				<table class="tableNoborder">
 					<tbody>
-						<tr *ngFor="let drow of row.Details">
-							<td>{{drow.refno}}</td>
-							<td>{{drow.code}}</td>
+						<tr>
+							<td colspan="7">Total Amount</td>
+							<td width="100px">{{TotalAmount() | _currency:loginUser._globsettings[0] }}</td>
+							<td width="70px"></td>
+							<td width="50px"></td>
 						</tr>
 					</tbody>
 				</table>
-			<td>
-		</tr>
-	</tbody>
-	<tfoot>
-		<tr>
-			<td colspan="5"></td>
-			<td><b>Total</b></td>
-			<td class="textboxRight"><b>{{TotalAmount()| number}}</b></td>
-			<td></td>
-		</tr>
-	</tfoot>
-</table>-->
+			</footer>
+		</p-dataTable>
+	</div>
+</div>

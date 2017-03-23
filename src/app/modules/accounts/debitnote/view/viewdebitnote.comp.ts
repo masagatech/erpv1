@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
+declare var $: any;
+
 @Component({
     templateUrl: 'viewdebitnote.comp.html',
     providers: [DNService]
@@ -56,6 +58,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
         // this.todate.setDate(new Date(this.loginUser.fyto));
 
         this.setActionButtons.setTitle("Debit Note");
+        $(".fromno input").focus();
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);

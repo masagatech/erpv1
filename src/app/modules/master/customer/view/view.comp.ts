@@ -54,11 +54,11 @@ declare var $: any;
         try {
             let query = event.query;
             this._autoservice.getAutoDataGET({
-                "type": "customer",
+                "type": "customercc",
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login,
-                "typ":"",
+                "uid": this.loginUser.uid,
+                "typ": "",
                 "search": query
             }).then(data => {
                 this.CustomerAutodata = data;
@@ -88,10 +88,10 @@ declare var $: any;
                 "cmpid": that.loginUser.cmpid,
                 "from": from,
                 "to": to,
+                "fy": that.loginUser.fy,
                 "custid": that.CustID,
-                "createdby": that.loginUser.login
+                "uid": that.loginUser.uid
             }).subscribe(result => {
-                debugger;
                 that.totalRecords = result.data[1][0].recordstotal;
                 that.customerlist = result.data[0];
             }, err => {

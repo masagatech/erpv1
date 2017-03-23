@@ -3,8 +3,8 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 
-import { taxadd } from './add/add.comp';
-import { taxview } from './view/view.comp';
+import { disadd } from './add/add.comp';
+import { disview } from './view/view.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -25,14 +25,14 @@ const routerConfig = [
         path: '',
         component: TaxMasterComp,
         canActivate: [AuthGuard],
-        data: { "module": "accs" },
+        data: { "module": "coa" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: 'add', component: taxadd, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "tm", "rights": "add", "urlname": "/add" } },
-                    { path: 'edit/:id', component: taxadd, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "tm", "rights": "edit", "urlname": "/edit" } },
-                    { path: '', component: taxview, canActivateChid: [AuthGuard], data: { "module": "accs", "submodule": "tm", "rights": "view", "urlname": "/taxmaster" } },
+                    { path: 'add', component: disadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "dm", "rights": "add", "urlname": "/add" } },
+                    { path: 'edit/:id', component: disadd, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "dm", "rights": "edit", "urlname": "/edit" } },
+                    { path: '', component: disview, canActivateChid: [AuthGuard], data: { "module": "coa", "submodule": "dm", "rights": "view", "urlname": "/itemdiscount" } },
                 ]
             }
         ]
@@ -44,8 +44,8 @@ const routerConfig = [
         SharedComponentModule, FormsModule, CommonModule, NumTextModule, DataTableModule,
         AutoCompleteModule,CalendarModule],
     declarations: [
-        taxadd,
-        taxview,
+        disadd,
+        disview,
         TaxMasterComp
     ],
     providers: [AuthGuard]
