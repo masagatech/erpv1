@@ -6,7 +6,11 @@ import { Pipe } from "@angular/core";
 export class _currencyPipe {
   transform(money: any, args: any): any {
 
-    return args.currsym + "" + this.amt(money, args.decimals, 3, ',', '.');
+    var decimalSep = args.decsep || '.';
+    var thousandSep = args.thsep || ',';
+    var currSymPlace = args.currsymplace || 'p';
+    
+    return (currSymPlace == "p" ? args.currsym : "") + this.amt(money, args.decimals, 3, thousandSep, decimalSep) + (currSymPlace == "s" ? args.currsym : "");
     // toFixed(args.decimals).toString();
   }
 
