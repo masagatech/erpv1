@@ -153,9 +153,13 @@ export class ViewBankPayment implements OnInit, OnDestroy {
     // DropDown
 
     fillDropDownList() {
-        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
-            var d = data.data;
-            this.bankDT = d.filter(a => a.group === "bank");
+        var that = this;
+
+        that._bpservice.getBankPayment({
+            "flag": "dropdown", "group": "bank", "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy, "uid": that.loginUser.uid
+        }).subscribe(data => {
+            that.bankDT = data.data;
         });
     }
 
