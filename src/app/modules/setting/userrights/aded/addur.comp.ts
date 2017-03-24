@@ -31,19 +31,33 @@ export class AddUserRights implements OnInit, OnDestroy {
     fy: number = 0;
 
     deptid: number = 0;
-    uid: any = "";
-    uname: any = "";
+    uid: string = "";
+    uname: string = "";
 
-    refuid: any = "";
-    refuname: any = "";
-
-    menuname: any;
-    fyname: any;
+    refuid: string = "";
+    refuname: string = "";
+    menuname: string = "";
 
     selectedCompany: any = { "menudetails": [] };
 
+    fliterBankDT: any = [];
+    fliterBankTypeDT: any = [];
+    fliterAPARDT: any = [];
+    fliterCCDT: any = [];
+
+    fliterExtraBankDT: any = [];
+    fliterExtraBankTypeDT: any = [];
+    fliterExtraAPARDT: any = [];
+    fliterExtraCCDT: any = [];
+
+    selectedAPARType: string[] = [];
+    selectedBankType: string[] = [];
+    selectedBank: string[] = [];
+    selectedCC: string[] = [];
+
     selectedMenu: any = [];
     MenuActions: any = [];
+    morerights: boolean = false;
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -71,7 +85,7 @@ export class AddUserRights implements OnInit, OnDestroy {
             }
             else {
                 setTimeout(function () {
-                    $("#uname").focus();
+                    $("#uname input").focus();
                 }, 0);
             }
         });
@@ -80,7 +94,6 @@ export class AddUserRights implements OnInit, OnDestroy {
     actionBarEvt(evt) {
         if (evt === "save") {
             this.saveUserRights();
-            this.resetUserRights();
         }
         else if (evt === "clear") {
             this.resetUserRights();
@@ -135,6 +148,67 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         that.refuid = event.value;
         that.refuname = event.label;
+    }
+
+    openMoreRights(row) {
+        if (this.fy !== 0) {
+            this.morerights = true;
+            this.menuname = row.mname + " > " + row.pname + " > " + row.menuname;
+            this.getExistsRights();
+            this.getMoreRights();
+        }
+        else {
+            this._msg.Show(messageType.error, "Error", "First select Financial Year");
+        }
+    }
+
+    getExistsRights() {
+        var that = this;
+
+        that._userservice.getUserRights({
+            "flag": "existsrights", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.refuid
+        }).subscribe(data => {
+            try {
+                that.fliterAPARDT = data.data.filter(a => a.group === "apar");
+                that.fliterBankDT = data.data.filter(a => a.group === "bank");
+                that.fliterBankTypeDT = data.data.filter(a => a.group === "banktype");
+                that.fliterCCDT = data.data.filter(a => a.group === "cc");
+            }
+            catch (e) {
+                //that._msg.Show(messageType.error, "Error", e);
+            }
+        }, err => {
+            that._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
+    }
+
+    getMoreRights() {
+        var that = this;
+
+        that._userservice.getUserRights({
+            "flag": "morerights", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.refuid
+        }).subscribe(data => {
+            try {
+                that.fliterExtraAPARDT = data.data.filter(a => a.group === "apar");
+                that.fliterExtraBankDT = data.data.filter(a => a.group === "bank");
+                that.fliterExtraBankTypeDT = data.data.filter(a => a.group === "banktype");
+                that.fliterExtraCCDT = data.data.filter(a => a.group === "cc");
+
+                // that.selectedAPARType = Object.keys(that.fliterExtraAPARDT).map(function (k) { return that.fliterExtraAPARDT[k].key });
+                // that.selectedBank = Object.keys(that.fliterExtraBankDT).map(function (k) { return that.fliterExtraBankDT[k].key });
+                // that.selectedBankType = Object.keys(that.fliterExtraBankTypeDT).map(function (k) { return that.fliterExtraBankTypeDT[k].key });
+                // that.selectedCC = Object.keys(that.fliterExtraCCDT).map(function (k) { return that.fliterExtraCCDT[k].key });
+            }
+            catch (e) {
+                //that._msg.Show(messageType.error, "Error", e);
+            }
+        }, err => {
+            that._msg.Show(messageType.error, "Error", err);
+        }, () => {
+            // console.log("Complete");
+        })
     }
 
     getCompanyRights(puid) {
@@ -206,6 +280,16 @@ export class AddUserRights implements OnInit, OnDestroy {
         return GiveRights;
     }
 
+    getMoreUserRights() {
+        var that = this;
+        var _morerights = [];
+        var _moreitem = null;
+
+        _morerights.push({ "apar": this.selectedAPARType, "bank": this.selectedBank, "banktype": this.selectedBankType, "cc": this.selectedCC });
+
+        return _morerights;
+    }
+
     saveUserRights() {
         var that = this;
 
@@ -225,13 +309,15 @@ export class AddUserRights implements OnInit, OnDestroy {
             that._msg.Show(messageType.error, "Error", "Please Select Financial Year");
         }
         else {
-            var giverights = that.getUserRights();
+            var _giverights = that.getUserRights();
+            var _morerights = that.getMoreUserRights();
 
             var saveUR = {
                 "uid": that.uid,
                 "cmpid": that.selectedCompany.cmpid,
                 "fy": that.fy,
-                "giverights": giverights,
+                "giverights": _giverights,
+                "morerights": _morerights,
                 "uidcode": that.loginUser.login
             }
 
@@ -242,6 +328,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                     if (dataResult[0].funsave_userrights.msgid != "-1") {
                         that._msg.Show(messageType.info, "Info", dataResult[0].funsave_userrights.msg);
                         that._router.navigate(['/setting/userrights']);
+                        that.resetUserRights();
                     }
                     else {
                         that._msg.Show(messageType.info, "Info", dataResult[0].funsave_userrights.msg);
@@ -257,8 +344,6 @@ export class AddUserRights implements OnInit, OnDestroy {
             });
         }
     }
-
-    allCheck: boolean = false;
 
     private selectAndDeselectAllCheckboxes() {
         if (this.fy !== 0) {
@@ -302,32 +387,39 @@ export class AddUserRights implements OnInit, OnDestroy {
             try {
                 var viewUR = data.data;
 
-                var userrights = null;
-                var menuitem = null;
-                var actrights = null;
+                var _userrights = null;
+                var _morerights = null;
+                var _menuitem = null;
+                var _actrights = null;
 
                 if (viewUR[0] != null) {
-                    userrights = null;
-                    userrights = viewUR[0].giverights;
+                    _userrights = null;
+                    _userrights = viewUR[0].giverights;
+                    _morerights = viewUR[0].morerights;
 
-                    if (userrights != null) {
-                        for (var i = 0; i <= userrights.length - 1; i++) {
-                            menuitem = null;
-                            menuitem = userrights[i];
+                    that.selectedAPARType = _morerights[0].apar;
+                    that.selectedBank = _morerights[0].bank;
+                    that.selectedBankType = _morerights[0].banktype;
+                    that.selectedCC = _morerights[0].cc;
 
-                            if (menuitem != null) {
-                                actrights = null;
-                                actrights = menuitem.rights.split(',');
+                    if (_userrights != null) {
+                        for (var i = 0; i <= _userrights.length - 1; i++) {
+                            _menuitem = null;
+                            _menuitem = _userrights[i];
 
-                                if (actrights != null) {
-                                    for (var j = 0; j <= actrights.length - 1; j++) {
-                                        $("#M" + menuitem.menuid).find("#" + menuitem.menuid + actrights[j]).prop('checked', true);
+                            if (_menuitem != null) {
+                                _actrights = null;
+                                _actrights = _menuitem.rights.split(',');
+
+                                if (_actrights != null) {
+                                    for (var j = 0; j <= _actrights.length - 1; j++) {
+                                        $("#M" + _menuitem.menuid).find("#" + _menuitem.menuid + _actrights[j]).prop('checked', true);
                                     }
-                                    $(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', true);
+                                    $(".allcheckboxes").find("#" + _menuitem.menuid).prop('checked', true);
                                     $("#menus").prop('checked', true);
                                 }
                                 else {
-                                    $(".allcheckboxes").find("#" + menuitem.menuid).prop('checked', false);
+                                    $(".allcheckboxes").find("#" + _menuitem.menuid).prop('checked', false);
                                     $("#menus").prop('checked', false);
                                 }
                             }

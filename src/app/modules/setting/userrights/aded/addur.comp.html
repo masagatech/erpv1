@@ -20,9 +20,9 @@
 			</div>
 			<div class="col-md-12">
 				<div class="col-xs-4 col-md-3" [style.display]="CompanyDetails.length == 0?'none':''">
-					<p-dataList [value]="CompanyDetails" [paginator]="true" [rows]="10" selectionMode="single">
+					<p-dataList [value]="CompanyDetails" selectionMode="single">
 						<header>
-							List of Companies
+							Company
 						</header>
 						<template let-row>
 							<p-panel [header]="row.cmpname" [style]="{'text-align':'center'}">
@@ -86,7 +86,7 @@
 												<input id="menus" name="menus" type="checkbox" (change)="selectAndDeselectAllCheckboxes()" />&nbsp;Select All
 											</div>
 											<div class="panel-body">
-												<div *ngFor="let row of selectedCompany.menudetails | groupBy:'pname'; let i = index;">
+												<div *ngFor="let row of selectedCompany.menudetails | groupBy:'menuhead'; let i = index;">
 													<div class="panel-heading">
 														<h4>{{row.key}}</h4>
 													</div>
@@ -100,6 +100,9 @@
 																<div class="col-md-8" id="M{{drow.menuid}}">
 																	<span style="margin-right:5px;" *ngFor="let item of getMenuRights(drow.mrights) let i = index">
 																		<input id="{{drow.menuid}}{{item}}" name="menuitem{{i + 1}}" data-menuid="drow.menuid" data-right="item" type="checkbox" value="{{item}}" class="actrights" />&nbsp;{{item}}
+																	</span>
+																	<span *ngIf="drow.ismore">
+																		<a role="button" (click)="openMoreRights(drow)">More</a>
 																	</span>
 																</div>
 															</div>
@@ -117,4 +120,105 @@
 			</div>
 		</div>
 	</div>
+
+	<p-dialog header="{{menuname}}" [(visible)]="morerights" modal="modal" width="700" responsive="true">
+		<div align="right">
+			{{refuname}}
+		</div>
+
+		<div class="col-md-12" style="height: 400px; overflow: auto;">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="text-center">
+						<h3>Existing</h3>
+					</div>
+					<div *ngIf="fliterAPARDT.length">
+						<div class="text-left">
+							<h4>AP / AR</h4>
+						</div>
+						<div class="row">
+							<div *ngFor="let item of fliterAPARDT" class="col-md-3">
+								{{item.val}}
+							</div>
+						</div>
+					</div>
+					<div *ngIf="fliterBankDT.length">
+						<div class="text-left">
+							<h4>Bank</h4>
+						</div>
+						<div *ngFor="let item of fliterBankDT">
+							{{item.val}}
+						</div>
+					</div>
+					<div *ngIf="fliterBankTypeDT.length">
+						<div class="text-left">
+							<h4>Bank Type</h4>
+						</div>
+						<div class="row">
+							<div *ngFor="let item of fliterBankTypeDT" class="col-md-3">
+								{{item.val}}
+							</div>
+						</div>
+					</div>
+					<div *ngIf="fliterCCDT.length">
+						<div class="text-left">
+							<h4>Control Center</h4>
+						</div>
+						<div class="row">
+							<div *ngFor="let item of fliterCCDT" class="col-md-4">
+								{{item.val}}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="text-center">
+						<h3>Extra</h3>
+					</div>
+					<div *ngIf="fliterExtraAPARDT.length">
+						<div class="text-left">
+							<h4>AP / AR</h4>
+						</div>
+						<div class="row">
+							<div *ngFor="let item of fliterExtraAPARDT" class="col-md-3">
+								<p-checkbox name="apartype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedAPARType"></p-checkbox>
+							</div>
+						</div>
+					</div>
+					<div *ngIf="fliterExtraBankDT.length">
+						<div class="text-left">
+							<h4>Bank</h4>
+						</div>
+						<div *ngFor="let item of fliterExtraBankDT">
+							<p-checkbox name="bank" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBank"></p-checkbox>
+						</div>
+					</div>
+					<div *ngIf="fliterExtraBankTypeDT.length">
+						<div class="text-left">
+							<h4>Bank Type</h4>
+						</div>
+						<div class="row">
+							<div *ngFor="let item of fliterExtraBankTypeDT" class="col-md-3">
+								<p-checkbox name="banktype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBankType"></p-checkbox>
+							</div>
+						</div>
+					</div>
+					<div *ngIf="fliterExtraCCDT.length">
+						<div class="text-left">
+							<h4>Control Center</h4>
+						</div>
+						<div class="row">
+							<div *ngFor="let item of fliterExtraCCDT" class="col-md-4">
+								<p-checkbox name="ccname" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedCC"></p-checkbox>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<button type="button" class="btn btn-theme btn-sm" icon="fa-check" (click)="morerights=false">DONE</button>
+		</div>
+	</p-dialog>
 </form>
