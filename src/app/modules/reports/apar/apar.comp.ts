@@ -123,12 +123,12 @@ export class APARReports implements OnInit, OnDestroy {
         }).subscribe(data => {
             try {
                 that.fliterAPARDT = data.data[0]._apartype;
-                that.fliterBankTypeDT = data.data[0]._banktype;
                 that.fliterBankDT = data.data[0]._bank;
+                that.fliterBankTypeDT = data.data[0]._banktype;
 
                 that.selectedAPARType = Object.keys(that.fliterAPARDT).map(function (k) { return that.fliterAPARDT[k].key });
-                that.selectedBankType = Object.keys(that.fliterBankTypeDT).map(function (k) { return that.fliterBankTypeDT[k].key });
                 that.selectedBank = Object.keys(that.fliterBankDT).map(function (k) { return that.fliterBankDT[k].key });
+                that.selectedBankType = Object.keys(that.fliterBankTypeDT).map(function (k) { return that.fliterBankTypeDT[k].key });
 
                 that.getAPARReports(row);
                 that.getMonthWiseAPAR(row);

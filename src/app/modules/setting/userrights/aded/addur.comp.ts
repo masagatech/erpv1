@@ -36,6 +36,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     refuid: string = "";
     refuname: string = "";
+    ufullname: string = "";
     menuname: string = "";
 
     selectedCompany: any = { "menudetails": [] };
@@ -137,6 +138,7 @@ export class AddUserRights implements OnInit, OnDestroy {
 
         that.refuid = event.value;
         that.refuname = event.label;
+        that.ufullname = event.name;
 
         that.getCompanyRights(event.value);
     }
@@ -328,7 +330,9 @@ export class AddUserRights implements OnInit, OnDestroy {
                     if (dataResult[0].funsave_userrights.msgid != "-1") {
                         that._msg.Show(messageType.info, "Info", dataResult[0].funsave_userrights.msg);
                         that._router.navigate(['/setting/userrights']);
-                        that.resetUserRights();
+                        that.fy = 0;
+                        $("#menus").prop('checked', false);
+                        $(".allcheckboxes input[type=checkbox]").prop('checked', false);
                     }
                     else {
                         that._msg.Show(messageType.info, "Info", dataResult[0].funsave_userrights.msg);
@@ -338,7 +342,7 @@ export class AddUserRights implements OnInit, OnDestroy {
                     that._msg.Show(messageType.error, "Error", e);
                 }
             }, err => {
-                that._msg.Show(messageType.info, "Info", err);
+                that._msg.Show(messageType.error, "Error", err);
             }, () => {
                 // console.log("Complete");
             });

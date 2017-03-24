@@ -29,15 +29,7 @@
                                                 <h3>AP / AR</h3>
                                             </div>
                                             <div *ngFor="let item of fliterAPARDT">
-                                                <p-checkbox name="apartype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedAPARType"></p-checkbox>
-                                            </div>
-                                        </div>
-                                        <div *ngIf="fliterBankTypeDT.length">
-                                            <div class="text-left">
-                                                <h3>Bank Type</h3>
-                                            </div>
-                                            <div *ngFor="let item of fliterBankTypeDT">
-                                                <p-checkbox name="banktype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBankType"></p-checkbox>
+                                                <p-checkbox name="apartype" value="{{item.key}}" label="{{item.name}}" [(ngModel)]="selectedAPARType"></p-checkbox>
                                             </div>
                                         </div>
                                         <div *ngIf="fliterBankDT.length">
@@ -46,6 +38,14 @@
                                             </div>
                                             <div *ngFor="let item of fliterBankDT">
                                                 <p-checkbox name="bank" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBank"></p-checkbox>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="fliterBankTypeDT.length">
+                                            <div class="text-left">
+                                                <h3>Bank Type</h3>
+                                            </div>
+                                            <div *ngFor="let item of fliterBankTypeDT">
+                                                <p-checkbox name="banktype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedBankType"></p-checkbox>
                                             </div>
                                         </div>
                                     </form>

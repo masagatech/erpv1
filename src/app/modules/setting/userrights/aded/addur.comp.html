@@ -122,8 +122,15 @@
 	</div>
 
 	<p-dialog header="{{menuname}}" [(visible)]="morerights" modal="modal" width="700" responsive="true">
-		<div align="right">
-			{{refuname}}
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-6">
+					<h3>{{ufullname}}</h3>
+				</div>
+				<div class="col-md-6" align="right">
+					<button type="button" class="btn btn-theme btn-sm" icon="fa-check" (click)="morerights=false">DONE</button>
+				</div>
+			</div>
 		</div>
 
 		<div class="col-md-12" style="height: 400px; overflow: auto;">
@@ -138,7 +145,7 @@
 						</div>
 						<div class="row">
 							<div *ngFor="let item of fliterAPARDT" class="col-md-3">
-								{{item.val}}
+								{{item.name}}
 							</div>
 						</div>
 					</div>
@@ -181,7 +188,7 @@
 						</div>
 						<div class="row">
 							<div *ngFor="let item of fliterExtraAPARDT" class="col-md-3">
-								<p-checkbox name="apartype" value="{{item.key}}" label="{{item.val}}" [(ngModel)]="selectedAPARType"></p-checkbox>
+								<p-checkbox name="apartype" value="{{item.key}}" label="{{item.name}}" [(ngModel)]="selectedAPARType"></p-checkbox>
 							</div>
 						</div>
 					</div>
@@ -215,10 +222,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
-
-		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-			<button type="button" class="btn btn-theme btn-sm" icon="fa-check" (click)="morerights=false">DONE</button>
 		</div>
 	</p-dialog>
 </form>
