@@ -54,52 +54,29 @@ export class ViewPDC implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setActionButtons.setTitle("Post Dated Cheque");
+        var that = this;
 
-        // this.events = [
-        //     {
-        //         "title": "All Day Event",
-        //         "start": "2017-01-05"
-        //     },
-        //     {
-        //         "title": "Long Event",
-        //         "start": "2017-01-10",
-        //         "end": "2017-01-12"
-        //     },
-        //     {
-        //         "title": "Repeating Event",
-        //         "start": "2017-01-15T16:00:00"
-        //     },
-        //     {
-        //         "title": "Repeating Event",
-        //         "start": "2017-01-20T16:00:00"
-        //     },
-        //     {
-        //         "title": "Conference",
-        //         "start": "2017-01-25",
-        //         "end": "2017-01-27"
-        //     }
-        // ];
+        that.setActionButtons.setTitle("Post Dated Cheque");
+        that.setActionButtons.hideSideMenu();
+        that.setActionButtons.setActionButtons(that.actionButton);
 
-        this.getAllPDC();
+        that.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
+        that.setActionButtons.setActionButtons(that.actionButton);
+        that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt =>that.actionBarEvt(evt));
 
-        this.header = {
+        that.header = {
             left: 'prev,next today',
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
         };
-
-        this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
-        this.setActionButtons.setActionButtons(this.actionButton);
-        this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
-    getAllPDC() {
+    getAllPDC(row) {
         var that = this;
 
         that._pdcservice.getPDCDetails({
-            "flag": "calendar", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
-            "month": "0", "year": "2017"
+            "flag": "calendar", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+            "monthname": row.view.title
         }).subscribe(data => {
             that.events = data.data;
         }, err => {
@@ -130,8 +107,9 @@ export class ViewPDC implements OnInit, OnDestroy {
             that._pdcservice.getPDCDetails({
                 "flag": "pdctype", "pdctype": row.calEvent.pdctype, "chequedate": row.calEvent.start,
                 "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
-                "month": "0", "year": "2017"
+                "monthname": row.view.title
             }).subscribe(data => {
+                debugger;
                 that.viewPDCDT = data.data;
                 that.pdctype = data.data[0].pdctype;
             }, err => {
@@ -140,6 +118,17 @@ export class ViewPDC implements OnInit, OnDestroy {
                 // console.log("Complete");
             })
         }
+    }
+
+    TotalPDCAmount() {
+        var PDCAmtTotal = 0;
+
+        for (var i = 0; i < this.viewPDCDT.length; i++) {
+            var items = this.viewPDCDT[i];
+            PDCAmtTotal += parseInt(items.amount);
+        }
+
+        return PDCAmtTotal;
     }
 
     openBankReceipt(row) {
@@ -188,6 +177,7 @@ export class ViewPDC implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subscr_actionbarevt.unsubscribe();
         this.setActionButtons.setTitle("");
+        this.setActionButtons.showSideMenu();
     }
 }
 
