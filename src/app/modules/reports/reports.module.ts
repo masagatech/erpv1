@@ -21,7 +21,13 @@ const routerConfig = [
         path: '',
         children: [
           {
-            path: 'bankview', loadChildren: () => System.import('./apar').then((comp: any) => {
+            path: 'bankview', loadChildren: () => System.import('./bankview').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
+          {
+            path: 'bankbook', loadChildren: () => System.import('./bankbook').then((comp: any) => {
               return comp.default;
             }),
           },
