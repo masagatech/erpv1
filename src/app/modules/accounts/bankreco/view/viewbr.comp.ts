@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 declare var $: any;
+declare var commonfun : any;
 
 @Component({
     templateUrl: 'viewbr.comp.html',
@@ -101,6 +102,8 @@ export class ViewBankReco implements OnInit, OnDestroy {
 
     GetBankWiseGrid() {
         var that = this;
+        that.bankwiseDT = [];
+        commonfun.loader();
 
         that._brservice.getBankReco({
             "flag": "bankwise", "bankid": that.bankid, "cmpid": that.loginUser.cmpid,
@@ -120,6 +123,7 @@ export class ViewBankReco implements OnInit, OnDestroy {
             console.log('Error');
         }, () => {
             // Done Process
+            commonfun.loaderhide();
         });
     }
 
