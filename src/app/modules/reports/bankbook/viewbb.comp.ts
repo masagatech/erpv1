@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SharedVariableService } from "../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
-import { BankBookService } from "../../../_service/bankbook/bankbook-service";  //Service Add Refrence Bankpay-service.ts
+import { ReportsService } from '../../../_service/reports/rpt-service' /* add reference for reports */
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
 import { MessageService, messageType } from '../../../_service/messages/message-service';
@@ -14,7 +14,7 @@ declare var commonfun: any;
 
 @Component({
     templateUrl: 'viewbb.comp.html',
-    providers: [BankBookService]
+    providers: [ReportsService]
 })
 
 export class ViewBankBook implements OnInit, OnDestroy {
@@ -43,7 +43,7 @@ export class ViewBankBook implements OnInit, OnDestroy {
 
     // Page Init
 
-    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _bbservice: BankBookService,
+    constructor(private _router: Router, private setActionButtons: SharedVariableService, private _rptservice: ReportsService,
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillDropDownList();
@@ -76,7 +76,15 @@ export class ViewBankBook implements OnInit, OnDestroy {
 
     actionBarEvt(evt) {
         if (evt === "exppdf") {
-            //this._router.navigate(['http://localhost:3006/bankbook']);
+            if (this.bankid !== "") {
+                var query = { "flag": "bankwise", "bankid": this.bankid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "uid": this.loginUser.uid };
+                var param = $.param(query);
+                var url = "http://localhost:3006/bankbook?" + param;
+                commonfun.openurl(url, "_blank");
+            }
+            else {
+                this._msg.Show(messageType.error, "Error", "Please select Bank");
+            }
         } else if (evt === "back") {
             this.monthwiseDT = [];
             this.actionButton.find(a => a.id === "back").hide = true;
@@ -88,7 +96,7 @@ export class ViewBankBook implements OnInit, OnDestroy {
     fillDropDownList() {
         var that = this;
 
-        that._bbservice.getBankBook({
+        that._rptservice.getBankBook({
             "flag": "dropdown", "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(data => {
@@ -103,7 +111,7 @@ export class ViewBankBook implements OnInit, OnDestroy {
         that.bankwiseDT = [];
         commonfun.loader();
 
-        that._bbservice.getBankBook({
+        that._rptservice.getBankBook({
             "flag": "bankwise", "bankid": that.bankid, "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(bankbook => {
@@ -140,7 +148,7 @@ export class ViewBankBook implements OnInit, OnDestroy {
         var that = this;
         commonfun.loader();
 
-        that._bbservice.getBankBook({
+        that._rptservice.getBankBook({
             "flag": that.group, "bankid": that.bankid, "fromdt": row.fromdt, "todt": row.todt,
             "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(bankbook => {
@@ -173,7 +181,8 @@ export class ViewBankBook implements OnInit, OnDestroy {
             var items = this.bankwiseDT[i];
             if (i < this.bankwiseDT.length - 1) {
                 var nextRow = this.bankwiseDT[i + 1];
-                nextRow.openingbal = items.closingbal;
+                nextRow.openingbal = parseFloat(items.closingbal);
+                nextRow.closingbal = (parseFloat(nextRow.openingbal) + parseFloat(nextRow.dramt)) - parseFloat(nextRow.cramt);
             }
 
             that.gridTotal.OpeningBalTotal += parseFloat(items.openingbal);

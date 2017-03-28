@@ -174,7 +174,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
         for (var i = 0; i < this.viewDebitNoteDT.length; i++) {
             var items = this.viewDebitNoteDT[i];
-            DebitAmtTotal += parseInt(items.totdramt);
+            DebitAmtTotal += parseFloat(items.totdramt);
         }
 
         return DebitAmtTotal;
@@ -185,7 +185,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
 
         for (var i = 0; i < this.viewDebitNoteDT.length; i++) {
             var items = this.viewDebitNoteDT[i];
-            CreditAmtTotal += parseInt(items.totcramt);
+            CreditAmtTotal += parseFloat(items.totcramt);
         }
 
         return CreditAmtTotal;
