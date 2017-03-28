@@ -23,15 +23,20 @@ export class BankDashboardReports implements OnInit, OnDestroy {
 
     selectedAll: boolean = true;
     selectedMonth: string[] = [];
+    selectedType: string[] = ["table", "chart"];
 
     bankwiseDT: any = [];
     fliterMonthDT: any = [];
+    fliterTypeDT: any = [];
     viewchartDT: any = [];
 
     status: boolean = false;
     statustitle: string = "";
 
     colors: any = {};
+
+    istable: boolean = true;
+    ischart: boolean = true;
 
     gridTotal: any = {
         DebitAmtTotal: 0, CreditAmtTotal: 0
@@ -54,6 +59,8 @@ export class BankDashboardReports implements OnInit, OnDestroy {
         that.setActionButtons.hideSideMenu();
         that.setActionButtons.setActionButtons(this.actionButton);
     }
+
+    // Hide When For View Table or Chart
 
     // View Bank Wise Dashboard
 
@@ -79,7 +86,8 @@ export class BankDashboardReports implements OnInit, OnDestroy {
             "flag": "dropdown", "fy": that.loginUser.fy
         }).subscribe(bankbook => {
             if (bankbook.data.length > 0) {
-                that.fliterMonthDT = bankbook.data;
+                that.fliterMonthDT = bankbook.data[0]._month;
+                that.fliterTypeDT = bankbook.data[0]._type;
                 that.selectedMonth = Object.keys(that.fliterMonthDT).map(function (k) { return that.fliterMonthDT[k].monthno });
                 that.GetBankWiseGrid();
             }
@@ -133,7 +141,7 @@ export class BankDashboardReports implements OnInit, OnDestroy {
         var maindata = { labels: [], datasets: [{ data: [], backgroundColor: [], hoverBackgroundColor: [] }] };
         var _labels = [];
         var _datasets = [];
-        var drtotal = 0, crtotal = 0;
+        var drtotal = 0, crtotal = 0, amttotal = 0;
 
         for (var i = 0; i <= row.length - 1; i++) {
             var btype = row[i].banktype;
@@ -143,10 +151,12 @@ export class BankDashboardReports implements OnInit, OnDestroy {
             maindata.datasets[0].backgroundColor.push(that.colors[btype]);
             drtotal += parseFloat(row[i].totdramt);
             crtotal += parseFloat(row[i].totcramt);
+            amttotal += parseFloat(row[i].totamt);
         }
 
         row["drtotal"] = drtotal;
         row["crtotal"] = crtotal;
+        row["amttotal"] = amttotal;
 
         maindata.labels = _labels;
         maindata.datasets[0].data = _datasets;
