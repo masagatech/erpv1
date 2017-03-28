@@ -118,7 +118,7 @@ export class BankViewReports implements OnInit, OnDestroy {
     getAPARDropDown(row) {
         var that = this;
 
-        that._rptservice.getAPARReports({
+        that._rptservice.getBankView({
             "flag": "dropdown", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "monthname": row.view.title
         }).subscribe(data => {
             try {
@@ -130,7 +130,7 @@ export class BankViewReports implements OnInit, OnDestroy {
                 that.selectedBank = Object.keys(that.fliterBankDT).map(function (k) { return that.fliterBankDT[k].key });
                 that.selectedBankType = Object.keys(that.fliterBankTypeDT).map(function (k) { return that.fliterBankTypeDT[k].key });
 
-                that.getAPARReports(row);
+                that.getBankView(row);
                 that.getMonthWiseAPAR(row);
             }
             catch (e) {
@@ -143,7 +143,7 @@ export class BankViewReports implements OnInit, OnDestroy {
         })
     }
 
-    getAPARReports(row) {
+    getBankView(row) {
         this.calendarSelectedRow = row;
         this.events = [];
         var that = this;
@@ -166,7 +166,7 @@ export class BankViewReports implements OnInit, OnDestroy {
 
         //var year = row.view.title.split(' ')[1].toString();
 
-        that._rptservice.getAPARReports({
+        that._rptservice.getBankView({
             "flag": "calendar", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
             "monthname": row.view.title, "apartype": _apartype, "banktype": _banktype, "bankid": _bankid
         }).subscribe(data => {
@@ -197,7 +197,7 @@ export class BankViewReports implements OnInit, OnDestroy {
             _bankid += bank + ",";
         }
 
-        that._rptservice.getAPARReports({
+        that._rptservice.getBankView({
             "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
             "apartype": _apartype, "banktype": _banktype, "bankid": _bankid, "monthname": row.view.title
         }).subscribe(data => {
@@ -221,7 +221,7 @@ export class BankViewReports implements OnInit, OnDestroy {
     }
 
     filterAPARReports() {
-        this.getAPARReports(this.calendarSelectedRow);
+        this.getBankView(this.calendarSelectedRow);
         this.getMonthWiseAPAR(this.calendarSelectedRow);
     }
 
@@ -240,7 +240,7 @@ export class BankViewReports implements OnInit, OnDestroy {
         }
 
         if (row.calEvent !== undefined) {
-            that._rptservice.getAPARReports({
+            that._rptservice.getBankView({
                 "flag": "apartype", "apartype": row.calEvent.apartype, "docdate": row.calEvent.start,
                 "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
                 "monthname": row.calEvent.monthname, "banktype": _banktype, "bankid": _bankid

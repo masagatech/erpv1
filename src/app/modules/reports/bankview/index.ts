@@ -15,7 +15,7 @@ import { NumTextModule } from '../../usercontrol/numtext';
     template: '<router-outlet></router-outlet>'
 })
 
-export class APARComp implements OnInit {
+export class BankViewComp implements OnInit {
     constructor() {
     }
 
@@ -26,7 +26,7 @@ export class APARComp implements OnInit {
 const routerConfig = [
     {
         path: '',
-        component: APARComp,
+        component: BankViewComp,
         canActivate: [AuthGuard],
         data: { "module": "rptaccs" },
         children: [
@@ -45,7 +45,7 @@ const routerConfig = [
         ScheduleModule, DataTableModule, CheckboxModule, ListboxModule, NumTextModule],
     declarations: [
         BankViewReports,
-        APARComp
+        BankViewComp
     ],
     providers: [AuthGuard]
 })

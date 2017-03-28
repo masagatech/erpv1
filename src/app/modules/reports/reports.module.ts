@@ -32,6 +32,12 @@ const routerConfig = [
             }),
           },
           
+          {
+            path: 'bankdashboard', loadChildren: () => System.import('./bankdashboard').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
           { path: '', component: ReportsDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
