@@ -71,7 +71,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
     }
 
     Addbookclick() {
-         this.ClearControll();
+        this.ClearControll();
         setTimeout(function () {
             $(".firstnam").focus();
         }, 500);
@@ -135,9 +135,10 @@ export class AddrbookComp implements OnInit, OnDestroy {
                     }
                 }
                 for (var i = 0; i <= _this.addrbooklist.length - 1; i++) {
-                    _this.adrbookid.push({ "adrid": _this.addrbooklist[i].id });
+                    _this.adrbookid.push(_this.addrbooklist[i].id,",");
                 }
             }
+             return JSON.stringify(_this.adrbookid).replace('[', '{').replace(']', '}');
         }, err => {
             console.log("Error");
         }, () => {
@@ -238,7 +239,7 @@ export class AddrbookComp implements OnInit, OnDestroy {
             "remark2": "",
             "remark3": ""
         }
-        
+
         return Param;
     }
 

@@ -21,7 +21,7 @@
 <div class="table-responsive">
 	<p-dataTable #dt [value]="ItemDetails" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
 		(onRowClick)="EditItem($event)" [(selection)]="selectedRB1" expandableRows="true">
-		<p-column header="#" [style]="{'width':'10px','text-align':'left'}">
+		<p-column header="#" [style]="{'width':'20px','text-align':'left'}">
 			<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 				{{rowIndex+1}}
 			</template>

@@ -13,9 +13,9 @@ import { _currencyPipe } from '../_pipe/currency.pipe';
 
 @NgModule({
     imports: [RouterModule, FormsModule, CommonModule, FileUploadModule, GrowlModule, DialogModule],
-    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe,_currencyPipe],
+    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe, _currencyPipe],
     exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe,
-    _currencyPipe]
+        _currencyPipe]
 })
 
 export class SharedComponentModule { }

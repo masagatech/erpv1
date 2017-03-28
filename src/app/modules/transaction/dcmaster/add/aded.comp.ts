@@ -66,6 +66,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     totalAmt: any = 0;
     CustID: any = 0;
     CustName: any = '';
+    CustCode: any = '';
     itemsname: any = '';
     itemsid: any = 0;
     ProdSelectedCode: any = '';
@@ -96,6 +97,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
     CustomerAutodata: any[];
     ItemAutodata: any = [];
     combolist: any = [];
+    siteemail: any = "";
+    sitemob: any = "";
+    siteupper: any = 0;
+    sitelower: any = 0;
 
     //user details
     loginUser: LoginUserModel;
@@ -242,6 +247,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.addresslist = [];
         $('#CustName input').focus();
         this.clearGridFooter();
+        this.combolist = [];
 
     }
 
@@ -260,7 +266,6 @@ export class dcADDEdit implements OnInit, OnDestroy {
     }
 
     salesorderdetailsjson() {
-        debugger;
         try {
             var jsonparam = [];
             for (let item of this.newAddRow) {
@@ -425,7 +430,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "docno": Docno,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
-                "createdby": this.loginUser.login
+                "createdby": this.loginUser.login,
+                "typ": "order"
             }).subscribe(data => {
                 var dataset = data.data;
                 var CustomerMaster = dataset[0];
@@ -477,7 +483,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
         try {
             this.CustID = event.value;
             this.CustName = event.label;
-            this.CustomerSelected(this.CustID, this.CustName.split(':')[0]);
+            this.CustCode = event.custcode;
+            this.CustomerSelected(this.CustID, this.CustCode);
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
@@ -536,10 +543,16 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     "flag1": ''
                 }).subscribe(details => {
                     var dataset = details.data;
-                    that.addresslist = dataset[0]._address === null ? [] : dataset[0]._address;
-                    that.warehouselist = dataset[0]._warehouse === null ? [] : dataset[0]._warehouse;
-                    that.Transpoterlist = dataset[0]._transpoter === null ? [] : dataset[0]._transpoter;
-                    that.Salesmanlist = dataset[0]._salesman === null ? [] : dataset[0]._salesman;
+                    debugger;
+                    //var ispramarydata = dataset[0]._addressout.filter(item => item.isprimary = true);
+                    that.addresslist = dataset[0]._addressout === null ? [] : dataset[0]._addressout;
+                    that.siteemail = dataset[0]._addressout[0].email;
+                    that.sitemob = dataset[0]._addressout[0].mob;
+                    that.siteupper = dataset[0]._uplimit;
+                    that.sitelower = dataset[0]._lolimit;
+                    that.warehouselist = dataset[0]._whout === null ? [] : dataset[0]._whout;
+                    that.Transpoterlist = dataset[0]._transout === null ? [] : dataset[0]._transout;
+                    that.Salesmanlist = dataset[0]._salesout === null ? [] : dataset[0]._salesout;
                     that.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
                 }, err => {
                     console.log('Error');
@@ -590,10 +603,15 @@ export class dcADDEdit implements OnInit, OnDestroy {
         }
     }
 
+    //Delete Combo Item
+    combodel(item) {
+      debugger;
+    }
+
     // //Selected Items
     ItemsSelected(val: number, falg: number, itemname: any, typ: any) {
         var that = this;
-        console.log(that.wareid);
+        that.rateslist = [];
         try {
             if (val != 0) {
                 this.SalesOrderServies.getItemsAutoCompleted({
@@ -603,6 +621,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     "whid": that.wareid,
                     "status": that.issaleord,
                     "createdby": that.loginUser.login,
+                    "custid": that.CustID,
                     "flag": typ === "combo" ? "combo" : typ
                 }).subscribe(itemsdata => {
                     var ItemsResult = itemsdata.data;
@@ -611,6 +630,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                             if (typ === "combo") {
                                 for (let item of ItemsResult) {
                                     this.newAddRow.push({
+                                        "docno": item.docno,
                                         "autoid": item.autoid,
                                         'itemsname': item.itemsname,
                                         "itemsid": item.itemsid,
@@ -636,7 +656,12 @@ export class dcADDEdit implements OnInit, OnDestroy {
                                 that.qty = 0;
                                 that.totalqty = ItemsResult[0].qty;
                                 that.dis = ItemsResult[0].dis;
-                                that.rateslist = ItemsResult[0].rates;
+                                if (ItemsResult[0]._mrpout === null) {
+                                    that.rateslist = ItemsResult[0].rates;
+                                }
+                                else {
+                                    that.rateslist = ItemsResult[0]._mrpout;
+                                }
                             }
 
                         }
@@ -691,6 +716,11 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     this.Duplicateflag = false;
                     break;
                 }
+            }
+            if (this.Totalamount() > parseFloat(this.siteupper)) {
+                this._msg.Show(messageType.error, "error", "Out of Limit please check customer limit");
+                $(".ProdName").focus();
+                return;
             }
             if (this.Duplicateflag == true) {
                 this.newAddRow.push({
@@ -749,11 +779,12 @@ export class dcADDEdit implements OnInit, OnDestroy {
         return total;
     }
 
+    //Toatal Amount 
     private Totalamount() {
         var totalamt = 0;
         if (this.newAddRow.length > 0) {
             for (var i = 0; i < this.newAddRow.length; i++) {
-                totalamt += parseInt(this.newAddRow[i].amount);
+                totalamt += parseFloat(this.newAddRow[i].amount);
             }
         }
         return totalamt;

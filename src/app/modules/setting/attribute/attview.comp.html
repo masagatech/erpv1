@@ -1,50 +1,88 @@
-<div class="panel panel-theme">
-	<div class="panel-body">
-		<div class="col-md-4">
-			<div class="form-group">
-				<label>Attribute Group</label>
-				<select [(ngModel)]="attrgrp" class="form-control" id="attrdrop" tabindex="1">
-			<option *ngFor="let row of attributegrouplist" [value]="row.id+':'+row.key">
-				{{row.val}}
-			</option>
-		</select>
-			</div>
+<div class="row">
+	<div class="col-md-3" style="border-right: 3px #d1d8dd dashed;">
+		<div class="form-group">
+			<label>Search</label>
+			<input type="text" name="search" class="form-control" />
 		</div>
-		<div class="col-md-4">
-			<div class="form-group">
-				<label>Attribute Name</label>
-				<!--<input type="text" class="form-control" tabindex="2" validate="" id="attnam" [(ngModel)]="attName" />-->
-				<p-autoComplete [(ngModel)]="attName" id="attnam"  class="form-controlAutoComplete" (onSelect)="AttributeSelect($event)"
-				 [suggestions]="AttributeAutodata" (completeMethod)="AttributeAuto($event)"
-				  field="label" [tabindex]="2" [size]="30" placeholder="Attribute" [minLength]="1" (keyup.enter)="NewRowAdd()"></p-autoComplete>
-			</div>
-		</div>
-		<div class="col-md-2">
-			<div class="form-group">
-				<div style="padding-top:28px;">
-					<button type="button" class="btn btn-theme btn-sm" text="Add" tabindex="3" (click)="NewRowAdd()">
-			<i class="fa fa-plus"></i></button>
-					<!--<button type="button" class="btn btn-theme btn-sm" text="claer" tabindex="4" (click)="ClearRow()">
-			<i class="fa fa-trash"></i></button>-->
-				</div>
+		<p-treeTable [value]="parentattrlist" (onNodeSelect)="onSelect($event)" selectionMode="single" [(selection)]="selectedFile"
+			[style]="{'margin-top':'5px'}" (onNodeExpand)="nodeExpand($event)">
+			<p-column field="val" header="Attribute Group ">
+				<template let-node="rowData" pTemplate="body">
+					<span>{{node.val}}</span>
+					<button class="btn btn-sm btn-theme btn-grid pull-right" *ngIf="node.parent" (click)="funAddClild(node)"><i class="fa fa-plus"></i></button>
 
+					<button class="btn btn-sm btn-default btn-grid pull-right" *ngIf="!node.parent" (click)="funEditClild(node)"><i class="fa fa-pencil"></i></button>
+				</template>
+			</p-column>
+		</p-treeTable>
+	</div>
+
+	<div class="col-md-9" id="pnlGriddata">
+		<div class="panel panel-theme">
+			<div class="panel-body">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>Attribute Name</label>
+						<input type="text" class="form-control" placeholder="Attribute Name" tabindex="2"
+						 validate="" id="attrdrop" [disabled]="isDisabled" [(ngModel)]="attnam_normal" (keyup.enter)="NewRowAdd()"/>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group">
+						<div style="padding-top:28px;">
+							<button type="button" class="btn btn-theme btn-sm" [disabled]="isDisabled" text="Add" tabindex="3" (click)="NewRowAdd()">
+							<i class="fa fa-plus"></i></button>
+							<!--<button type="button" class="btn btn-theme btn-sm" text="claer" tabindex="4" (click)="ClearRow()">
+			<i class="fa fa-trash"></i></button>-->
+						</div>
+
+					</div>
+				</div>
 			</div>
+			<p-breadcrumb [model]="items" *ngIf="items" ></p-breadcrumb>
+		</div>
+		
+		<div class="table-responsive" *ngIf="attrList.length>0">
+			<p-dataTable #dt [value]="attrList" [lazy]="true" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
+				(onRowClick)="Editattr($event)" [(selection)]="selectedRB1" expandableRows="true">
+				<p-column header="#" [style]="{'width':'10px','text-align':'left'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						{{rowIndex+1}}
+					</template>
+				</p-column>
+				<p-column field="atname" header="Attribute Name" [style]="{'width':'83px','text-align':'left'}"></p-column>
+					<!--<template let-row="rowData" pTemplate type="body">
+						<a role="button">{{row.atname}}</a>
+					</template>-->
+				
+				<!--<p-column field="momval" header="Attribute Group" [style]="{'width':'150px','text-align':'left'}"></p-column>-->
+				<p-column field="val" header="Action" [style]="{'width':'20px','text-align':'center'}">
+					<template let-row="rowData" pTemplate type="body">
+						<p-checkbox [(ngModel)]="row.active" (click)="DeleteRow(row)" binary="true"></p-checkbox>
+					</template>
+				</p-column>
+				<p-column header="Action" [style]="{'width':'30px','text-align':'center'}">
+					<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
+						<button type="button" (click)="Editattr(row)" class="btn btn-theme btn-sm btn-grid"><i class="fa fa-pencil-square-o"></i></button>
+					</template>
+				</p-column>
+			</p-dataTable>
 		</div>
 	</div>
 </div>
-<div class="table-responsive">
-	<p-dataTable #dt [value]="addNewAttr" [lazy]="true" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadRBIGrid($event)"
-		[(selection)]="selectedRB1" expandableRows="true">
-		<p-column field="atname" header="Attribute Name" [style]="{'width':'83px','text-align':'left'}">
-			<template let-row="rowData" pTemplate type="body">
-				<a role="button" (click)="editrow(row)">{{row.atname}}</a>
-			</template>
-		</p-column>
-		<p-column field="momval" header="Attribute Group" [style]="{'width':'150px','text-align':'left'}"></p-column>
-		<p-column field="val" header="Action" [style]="{'width':'20px','text-align':'center'}">
-			<template let-row="rowData" pTemplate type="body">
-				<p-checkbox [(ngModel)]="row.val" binary="true" [disabled]="true"></p-checkbox>
-			</template>
-		</p-column>
-	</p-dataTable>
-</div>
+
+<p-dialog [(visible)]="dialogShow" (onAfterShow)="onAfterShow($event)" header="Attribute Sub group" modal="modal" width="300"
+	responsive="true">
+	<!--<p-header>
+		Add attribute
+	</p-header>-->
+	<div class="form-group">
+		<label>Sub group name</label>
+		<input type="text" [(ngModel)]="attrname" (keyup.enter)="saveSubAttr(0)" maxlength="100" class="form-control attrname" />
+	</div>
+	<button class="btn btn-theme btn-sm pull-right" (click)="saveSubAttr(0)"><i class="fa fa-save"></i></button>
+
+	<!--<p-footer>
+		 Footer content here
+	</p-footer>-->
+</p-dialog>

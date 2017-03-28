@@ -9,6 +9,7 @@ import { itemview } from './view/view.comp';                         //item View
 import { LazyLoadEvent, DataTableModule, CheckboxModule, AutoCompleteModule } from 'primeng/primeng';
 
 import { NumTextModule } from '../../usercontrol/numtext';
+import { AttributeModuleComp } from '../../usercontrol/attributemodule/attrmod.comp';
 
 
 import { FormsModule } from '@angular/forms';
@@ -49,7 +50,8 @@ const routerConfig = [
     declarations: [
         itemadd,
         itemview,
-        ItemsMasterComp
+        ItemsMasterComp,
+        AttributeModuleComp
     ],
     providers: [AuthGuard]
 })

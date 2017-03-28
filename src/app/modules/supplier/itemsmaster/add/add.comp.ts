@@ -8,6 +8,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
+import { AttributeModuleComp } from "../../../usercontrol/attributemodule/attrmod.comp";
 import { LazyLoadEvent, DataTable, CheckboxModule } from 'primeng/primeng';
 import { NumTextModule } from '../../../usercontrol/numtext';
 
@@ -73,14 +74,17 @@ declare var commonfun: any;
 
     //Auto Extender Array
     MaterialAutodata: any = [];
-    salespriceAutodata:any=[];
+    salespriceAutodata: any = [];
+    KeydataAutodata: any = [];
+    PurchaseAutodata: any = [];
+
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
 
-    @ViewChild('attribute')
-    attribute: AttributeComp;
+    @ViewChild('attributemodule')
+    attributemodule: AttributeModuleComp
 
     allload: any = {
         "wearhouse": false,
@@ -126,9 +130,11 @@ declare var commonfun: any;
             commonfun.addrequire();
         }, 0);
 
-        this.attribute.attrparam = ["item_attr"];
-
-
+        //  this.attribute.attrparam = ["item_attr"];
+        this.attributemodule.attrtype = "attribute";
+        this.attributemodule.attParentNam="item_attr";
+        this.attributemodule.labelname="Item Attribute";
+        //salesAttribute
     }
 
     attrtab() {
@@ -314,11 +320,33 @@ declare var commonfun: any;
 
     }
 
-    SalesPriceAuto(event) {
+    //Sales Price Autoextender
+    KeydataAuto(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
             "type": "attribute",
-            "filter":"custinfo_attr",
+            "filter": "item_attr",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.KeydataAutodata = data;
+        });
+    }
+
+    //Sales Price Selected
+    KeydataSelect(event) {
+        this.titlesaleid = event.value;
+        this.titlesale = event.label;
+    }
+
+    //Sales Price Autoextender
+    SalesPriceAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "subattr",
+            "filter": "item_attr",
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "createdby": this.loginUser.login,
@@ -328,49 +356,72 @@ declare var commonfun: any;
         });
     }
 
-    //Transpoter Selected
+    //Sales Price Selected
     SalesPriceSelect(event) {
         this.titlesaleid = event.value;
         this.titlesale = event.label;
     }
 
-    //Autocompleted Attribute Name
-    getAutoCompletePurc(me: any) {
-        try {
-            var that = this;
-            this._autoservice.getAutoData({
-                "type": "attribute",
-                "search": that.titlepur,
-                "filter": "purattr",
-                "cmpid": this.loginUser.cmpid,
-                "FY": this.loginUser.login,
-                "createdby": this.loginUser.login
-            }).subscribe(data => {
-                $(".purattr").autocomplete({
-                    source: data.data,
-                    width: 300,
-                    max: 20,
-                    delay: 100,
-                    minLength: 0,
-                    autoFocus: true,
-                    cacheLength: 1,
-                    scroll: true,
-                    highlight: false,
-                    select: function (event, ui) {
-                        me.titlepurid = ui.item.value;
-                        me.titlepur = ui.item.label;
-                    }
-                });
-            }, err => {
-                console.log("Error");
-            }, () => {
-                //this.titlepurid = 0;
-            })
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
-
+    //Purchase  Price Selected
+    PurchaseSelect(event) {
+        this.titlepurid = event.value;
+        this.titlepur = event.label;
     }
+
+    //Purchase  Price Autoextender
+    PurchasePriceAuto(event) {
+        let query = event.query;
+        this._autoservice.getAutoDataGET({
+            "type": "subattr",
+            "filter": "item_attr",
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "search": query
+        }).then(data => {
+            this.PurchaseAutodata = data;
+        });
+    }
+
+
+
+    //Autocompleted Attribute Name
+    // getAutoCompletePurc(me: any) {
+    //     try {
+    //         var that = this;
+    //         this._autoservice.getAutoData({
+    //             "type": "attribute",
+    //             "search": that.titlepur,
+    //             "filter": "purattr",
+    //             "cmpid": this.loginUser.cmpid,
+    //             "FY": this.loginUser.login,
+    //             "createdby": this.loginUser.login
+    //         }).subscribe(data => {
+    //             $(".purattr").autocomplete({
+    //                 source: data.data,
+    //                 width: 300,
+    //                 max: 20,
+    //                 delay: 100,
+    //                 minLength: 0,
+    //                 autoFocus: true,
+    //                 cacheLength: 1,
+    //                 scroll: true,
+    //                 highlight: false,
+    //                 select: function (event, ui) {
+    //                     me.titlepurid = ui.item.value;
+    //                     me.titlepur = ui.item.label;
+    //                 }
+    //             });
+    //         }, err => {
+    //             console.log("Error");
+    //         }, () => {
+    //             //this.titlepurid = 0;
+    //         })
+    //     } catch (e) {
+    //         this._msg.Show(messageType.error, "error", e.message);
+    //     }
+
+    // }
 
     //Autocompleted Attribute Name
     getAutoCompletesupp(me: any) {
@@ -799,7 +850,7 @@ declare var commonfun: any;
                 that.itemsdesc = returndata.itemdesc;
                 that.itemsremark = returndata.itemremark;
                 that.materialdetail = returndata._materiallist === null ? [] : returndata._materiallist;
-                that.attribute.attrlist = returndata._attributejson === null ? [] : returndata._attributejson;
+                that.attributemodule.attrlist = returndata._attributejson === null ? [] : returndata._attributejson;
                 that.Keyvallist = returndata._keydatajson === null ? [] : returndata._keydatajson;
                 that.saleslist = returndata._salesjson === null ? [] : returndata._salesjson;
                 that.purchaselist = returndata._purchasejson === null ? [] : returndata._purchasejson;
@@ -841,7 +892,7 @@ declare var commonfun: any;
         this.skucode = "";
         this.saleslist = [];
         this.purchaselist = [];
-        this.attribute.attrlist = [];
+        this.attributemodule.attrlist = [];
         this.Keyvallist = [];
         this.supplist = [];
         this.uploadedFiles = [];
@@ -866,8 +917,8 @@ declare var commonfun: any;
     //Create Json String in Attribute
     private CreatejsonAttribute() {
         var attrlist = [];
-        if (this.attribute.attrlist.length > 0) {
-            for (let item of this.attribute.attrlist) {
+        if (this.attributemodule.attrlist.length > 0) {
+            for (let item of this.attributemodule.attrlist) {
                 attrlist.push({ "id": item.value });
             }
             return attrlist;

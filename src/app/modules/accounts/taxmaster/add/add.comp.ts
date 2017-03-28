@@ -9,6 +9,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
 import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
+import { AttributeModuleComp } from "../../../usercontrol/attributemodule/attrmod.comp";
 import { CalendarComp } from '../../../usercontrol/calendar';
 import { ALSService } from '../../../../_service/auditlock/als-service';
 
@@ -69,7 +70,7 @@ declare var commonfun: any;
     todatecal: CalendarComp;
 
     @ViewChild('attribute')
-    attribute: AttributeComp;
+    attribute: AttributeModuleComp;
 
     constructor(private _router: Router, private setActionButtons: SharedVariableService,
         private taxMasterServies: taxMasterService,
@@ -125,7 +126,8 @@ declare var commonfun: any;
         $(".taxname").focus();
         this.InvoiceType();
         this.attribute.labelname = "Customer Attribute";
-        this.attribute.attrparam = ["custinfo_attr"];
+        this.attribute.attrtype = "attribute";
+        this.attribute.attParentNam = "custinfo_attr";
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -324,10 +326,10 @@ declare var commonfun: any;
             "coac": this.coaid,
             "taxval": this.taxval,
             "ontax": this.Ongross,
-            "fromdate":this.fromdatecal.getDate(),
-            "todate":this.todatecal.getDate(),
+            "fromdate": this.fromdatecal.getDate(),
+            "todate": this.todatecal.getDate(),
             "dis": this.dis,
-            "typ":"tax",        //Max length 4 Database
+            "typ": "tax",        //Max length 4 Database
             "seq": this.seq,
             "attr": this.createattrjson(),
             "createdby": this.loginUser.login,
@@ -363,7 +365,7 @@ declare var commonfun: any;
     //Add Top Buttons Add Edit And Save
     actionBarEvt(evt) {
         if (evt === "clear") {
-             this.ClearControl();
+            this.ClearControl();
         }
         if (evt === "back") {
             this._router.navigate(['accounts/taxmaster']);
@@ -381,7 +383,7 @@ declare var commonfun: any;
                     this.paramjson()
                 ).subscribe(result => {
                     var dataset = result.data;
-                    if (dataset[0].funsave_taxmaster.msxid==-1) {
+                    if (dataset[0].funsave_taxmaster.msxid == -1) {
                         this._msg.Show(messageType.error, "error", dataset[0].funsave_taxmaster.msg);
                         $(".taxname").focus();
                         return;

@@ -10,8 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AddDynamicTabModule } from '../../usercontrol/adddynamictab';
 import { DynamicTabModule } from '../../usercontrol/dynamictab';
-import { LazyLoadEvent, DataTableModule, CheckboxModule,AccordionModule,AutoCompleteModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule, AccordionModule, AutoCompleteModule } from 'primeng/primeng';
 import { NumTextModule } from '../../usercontrol/numtext';
+import { AttributeModuleComp } from '../../usercontrol/attributemodule/attrmod.comp';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -42,12 +43,13 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule,
-    CommonModule, DataTableModule, CheckboxModule,AddDynamicTabModule,DynamicTabModule,
-    AccordionModule,AutoCompleteModule,NumTextModule],
+        CommonModule, DataTableModule, CheckboxModule, AddDynamicTabModule, DynamicTabModule,
+        AccordionModule, NumTextModule, AutoCompleteModule],
     declarations: [
         CustAdd,
         CustView,
         //AddrbookComp,
+        AttributeModuleComp,
         CustomerComp
     ],
     providers: [AuthGuard]

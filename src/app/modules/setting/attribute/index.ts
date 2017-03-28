@@ -6,7 +6,8 @@ import { attrview } from './attview.comp';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, CheckboxModule,AutoCompleteModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, CheckboxModule,AutoCompleteModule
+    ,TreeTableModule,TreeNode,SharedModule,DialogModule,BreadcrumbModule,MenuItem  } from 'primeng/primeng';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -35,7 +36,7 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), FormsModule, CommonModule,
-    DataTableModule, CheckboxModule,AutoCompleteModule],
+    DataTableModule, CheckboxModule,AutoCompleteModule,TreeTableModule,SharedModule,DialogModule,BreadcrumbModule],
     declarations: [
         attrview,
         AttributeComp

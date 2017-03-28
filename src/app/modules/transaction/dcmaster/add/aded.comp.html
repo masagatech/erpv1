@@ -43,22 +43,12 @@
 						</select>
 					</div>
 				</div>
-				<div class="col-md-12">
+				<div class="col-md-12" *ngIf="combolist.length>0">
 					<div class='form-group'>
 						<label>Item Combo</label>
-						<!--<span>
-							<input type="text" class="form-control tag label label-info" [(ngModel)]="itemcombo" />
-						</span>-->
-						<!--<div class="bootstrap-tagsinput">
-							<div class="bootstrap-tagsinput" *ngFor="let row of combolist">
-								<span class="tag label label-info" style="font-size: 10px;">{{row.comboname}} 
-							             	<span data-role="remove" (click)="RemoveSale(item,row)"></span>
-								</span>
-							</div>
-						</div>-->
 						<p-chips [(ngModel)]="combolist">
 							<template let-item pTemplate="item">
-								{{item.comboname}}<i class="fa fa-close"></i>
+								{{item.comboname}}<i class="fa fa-close" (click)="combodel(item)"></i>
 							</template>
 						</p-chips>
 
@@ -154,6 +144,28 @@
 										<td></td>
 										<td></td>
 										<td *ngIf="totalqty.length > 0">{{totalqty}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</footer>
+						<footer>
+							<table>
+								<tbody style="float: right;">
+									<tr class="bg-warning">
+										<td colspan="5"><b style="float:left;">Gross Total</b></td>
+										<td colspan="4" class="textalign"><b>{{Totalamount() | _currency:loginUser._globsettings[0] }}</b></td>
+									</tr>
+									<tr class="bg-warning" *ngFor="let item of taxlist">
+										<td colspan="5"><b style="float:left;">{{item.taxname}}</b></td>
+										<td class="textalign">
+											<span>Total Tax</span>
+										</td>
+										<td class="textalign"><b style="float:right;">Total</b></td>
+									</tr>
+									<tr class="bg-warning">
+										<td colspan="5" class="textalign"><b style="float:left;">Grand Total</b></td>
+										<td></td>
+										<td class="textalign"><b style="float:right;">Grand Total</b></td>
 									</tr>
 								</tbody>
 							</table>
@@ -303,6 +315,22 @@
 					<span>{{items.mob}}</span>
 				</div>
 				<a role="button" class="pull-right" *ngIf="addresslist.length">Change Address</a>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<h3 class="panel-title">Customer Details</h3>
+			</a>
+		</div>
+		<span *ngIf="!addresslist.length">No customer selected</span>
+		<div id="Personal" class="panel-collapse collapse in" *ngIf="addresslist.length">
+			<div class="panel-body">
+				<div>Email : {{siteemail}}</div>
+				<div>Mob : {{sitemob}}</div>
+				<div>Upper Limit : {{siteupper | _currency:loginUser._globsettings[0]}}</div>
+				<div>lower Limit : {{sitelower | _currency:loginUser._globsettings[0]}}</div>
 			</div>
 		</div>
 	</div>

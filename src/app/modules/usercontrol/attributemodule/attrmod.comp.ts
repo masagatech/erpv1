@@ -1,30 +1,36 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, NgModule, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { CommonService } from '../../../_service/common/common-service' /* add reference for master of master */
 import { MessageService, messageType } from '../../../_service/messages/message-service';
 import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
-import { AutoCompleteModule } from 'primeng/primeng';
+
 import { Subscription } from 'rxjs/Subscription';
-// import { SharedVariableService } from "../../../_service/sharedvariable-service";
+import { attributeService } from "../../../_service/attribute/attr-service";
 
 declare var $: any;
 
 @Component({
-    selector: '<attribute></attribute>',
-    templateUrl: 'attr.comp.html',
-    providers: [CommonService]
+    selector: '<attributemodule></attributemodule>',
+    templateUrl: 'attrmod.comp.html',
+    providers: [attributeService, CommonService]
 })
 
-export class AttributeComp implements OnInit, OnDestroy {
+export class AttributeModuleComp implements OnInit, OnDestroy {
     //Local Veriable 
     attrparam: any = [];
     labelname: string = "Attribute";
-    attrtype: string = "multiattr";
+    ddllabel: string = "Attribute Group";
+    attrgrpid: number = 0;
+    attrgrpname: any = "";
+    attrtype: string = "";
+    attgrouplist: any = [];
     attrlist: any = [];
     attrname: any = "";
     attrid: number = 0;
+    attParentNam: any = "";
+    attrgrouplist: any = [];
     Duplicateflag: boolean = false;
-    AttributeAutodata: any = [];
+    AttributeModuleAutodata: any = [];
 
     @Input() isdetails: boolean = false;
 
@@ -32,69 +38,55 @@ export class AttributeComp implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
     loginUserName: string;
 
-    constructor(private _commonservice: CommonService,
+    constructor(private _attrservice: attributeService, private _commonservice: CommonService,
         private _msg: MessageService, private _userService: UserService) {
         this.loginUser = this._userService.getUser();
     }
     ngOnInit() {
+        this.getAllAttributeGroup();
     }
 
-    // Autocompleted Attribute Name
-    getAutoCompleteattr(me: any) {
-        var that = this;
-        this._commonservice.getAutoData({
-            "type": that.attrtype,
-            "search": that.attrname,
-            "cmpid": that.loginUser.cmpid,
-            "fy": that.loginUser.fy,
-            "filter": that.attrparam.join(),
-            "createdby": that.loginUser.login
+    //Attribute Group Dropdown
+    getAllAttributeGroup() {
+        this._attrservice.attget({
+            "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login,
+            "flag": "attrsub",
+            "parentGrp": this.attParentNam,
+            "pid": 0
         }).subscribe(data => {
-            $(".attr").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.attrid = ui.item.value;
-                    me.attrname = ui.item.label;
-                }
-            });
+            this.attrgrouplist = data.data[0];
         }, err => {
             console.log("Error");
         }, () => {
-            this.attrid = 0;
+            console.log("Complete");
         })
     }
 
-    // AttributeAuto(event) {
-    //     let query = event.query;
-    //     this._commonservice.getAutoDataGET({
-    //         "type": this.attrtype,
-    //         "search": query,
-    //         "cmpid": this.loginUser.cmpid,
-    //         "fy": this.loginUser.fy,
-    //         "filter": this.attrparam.join(),
-    //         "createdby": this.loginUser.login
-    //     }).then(data => {
-    //         this.AttributeAutodata = data;
-    //     });
-    // }
+    //Attribute Group Auto Extender
+    AttributeAuto1(event) {
+        let query = event.query;
+        this._commonservice.getAutoDataGET({
+            "type": this.attrtype,
+            "search": this.attrname,
+            "cmpid": this.loginUser.cmpid,
+            "attrgrp": this.attrgrpid,
+            "fy": this.loginUser.fy,
+            "createdby": this.loginUser.login
+        }).then(data => {
+            this.AttributeModuleAutodata = data;
+        });
+    }
 
     // //Selected Attribute
-    // AttributeSelect(event) {
-    //     this.attrid = event.value;
-    //     this.attrname = event.label;
-    // }
+    AttributeSelect1(event) {
+        this.attrid = event.value;
+        this.attrname = event.label;
+    }
 
     //Add Attribute 
     AttributeAdd() {
-        //if ($(".attr").val() != "") {
         if (this.attrid > 0) {
             this.Duplicateflag = true;
             if (this.attrlist.length > 0) {
@@ -125,8 +117,8 @@ export class AttributeComp implements OnInit, OnDestroy {
             $(".attr").focus();
             return;
         }
-        //  }
     }
+
     //Remove  Attribute 
     Removeattr(row) {
         var index = -1;
@@ -144,8 +136,19 @@ export class AttributeComp implements OnInit, OnDestroy {
     }
 
 
-
     ngOnDestroy() {
     }
 }
 
+// @NgModule({
+//     imports: [AttributeModule],
+//     declarations: [
+//         AttributeModuleComp
+//     ],
+//     exports: [AttributeModuleComp]
+// })
+
+
+// export class AttributeModule {
+
+// }

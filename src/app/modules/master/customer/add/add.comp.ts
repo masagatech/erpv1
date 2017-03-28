@@ -9,7 +9,8 @@ import { AddrbookComp } from "../../../usercontrol/addressbook/adrbook.comp";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { AddDynamicTabComp } from "../../../usercontrol/adddynamictab";
-import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
+// import { AttributeComp } from "../../../usercontrol/attribute/attr.comp";
+import { AttributeModuleComp } from "../../../usercontrol/attributemodule/attrmod.comp";
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -127,8 +128,15 @@ declare var commonfun: any;
     @ViewChild('addrbook')
     addressBook: AddrbookComp;
 
-    @ViewChild('attribute')
-    attribute: AttributeComp;
+    // @ViewChild('attribute')
+    // attribute: AttributeComp;
+
+    @ViewChild('attributemodule')
+    attributemodule: AttributeModuleComp
+
+    @ViewChild('attrPrice')
+    attrPrice: AttributeModuleComp
+
 
 
     //  @ViewChild('transpoter')
@@ -179,9 +187,12 @@ declare var commonfun: any;
         setTimeout(function () {
             commonfun.addrequire();
         }, 0);
-
-
-        this.attribute.attrparam = ["custinfo_attr"];
+        this.attributemodule.attrtype = "attribute";
+        this.attributemodule.attParentNam = "custinfo_attr";
+        this.attributemodule.labelname = "Customer Attribute";
+        this.attrPrice.attrtype = "attribute";
+        this.attrPrice.attParentNam = "item_attr";
+        this.attrPrice.labelname = "MRP";
     }
 
     //Get Code Blur Event
@@ -706,11 +717,9 @@ declare var commonfun: any;
     salesmanjson() {
         var salesman = [];
         for (let items of this.salesmanlist) {
-            salesman.push({
-                "id": items.value
-            });
+            salesman.push(items.value);
         }
-        return salesman;
+        return JSON.stringify(salesman).replace('[', '{').replace(']', '}');
     }
 
     //Add Accounting Row
@@ -803,7 +812,7 @@ declare var commonfun: any;
         this.warehouselist = [];
         this.keyvallist = [];
         this.adrbookid = [];
-        this.attribute.attrlist = [];
+        this.attributemodule.attrlist = [];
         this.disattrlist = [];
         this.itemslist = [];
         this.translist = [];
@@ -832,56 +841,53 @@ declare var commonfun: any;
                 "createdby": this.loginUser.login
             }).subscribe(result => {
                 that.editmode = true;
-                debugger;
                 var resultdata = result.data[0][0]
-                var _custdata = resultdata._custdata;
+                //var _custdata = resultdata._custdata;
                 var _uploadedfile = resultdata._uploadedfile == null ? [] : resultdata._uploadedfile;
                 var _docfile = resultdata._docfile == null ? [] : resultdata._docfile;
                 var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
-                if (_parentname.length > 0) {
-                    that.parentcodename = _parentname[0].pcode;
-                    that.parentid = _parentname[0].pid;
-                    that.parentname = _parentname[0].pname;
-                }
-                that.ledid = _custdata[0].ledautoid == null ? 0 : _custdata[0].ledautoid;
-                that.custid = _custdata[0].autoid;
-                that.code = _custdata[0].custcode;
-                that.Custname = _custdata[0].custname;
-                that.ope = _custdata[0].ope == null ? 0 : _custdata[0].ope;
-                that.upperlimit = _custdata[0].upperlimit == null ? 0 : _custdata[0].upperlimit;
-                that.lowerlimit = _custdata[0].lowerlimit == null ? 0 : _custdata[0].lowerlimit;
-                that.isactive = _custdata[0].isactive;
-                that.taxlist = resultdata._tax == null ? [] : resultdata._tax;
-                //that.keyvallist = _custdata[0]._attributejson == null ? [] : _custdata[0].keyval;
-                that.attribute.attrlist = resultdata._attributejson == null ? [] : resultdata._attributejson;
+                that.parentid = resultdata.parentid;
+                that.ledid = resultdata.ledid == null ? 0 : resultdata.ledid;
+                that.custid = resultdata.autoid;
+                that.code = resultdata.custcode;
+                that.Custname = resultdata.custname;
+                that.ope = resultdata.ope == null ? 0 : resultdata.ope;
+                that.upperlimit = resultdata.upperlimit == null ? 0 : resultdata.upperlimit;
+                that.lowerlimit = resultdata.lowerlimit == null ? 0 : resultdata.lowerlimit;
+                that.isactive = resultdata.isactive;
+                that.taxlist = resultdata.taxdetail == null ? [] : resultdata.taxdetail;
+                that.attributemodule.attrlist = resultdata.attr == null ? [] : resultdata.attr;
+                that.attrPrice.attrlist = resultdata.mrp == null ? [] : resultdata.mrp;
                 that.itemslist = resultdata._itemsdiscount == null ? [] : resultdata._itemsdiscount;
                 that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
-                that.translist = resultdata._transpoter == null ? [] : resultdata._transpoter;
-                that.keyvallist = resultdata._keyvalue == null ? [] : resultdata._keyvalue;
-                that.Ctrllist = resultdata._ctrlcenter == null ? [] : resultdata._ctrlcenter;
-                that.salesmanlist = resultdata._salesman == null ? [] : resultdata._salesman;
+                that.translist = resultdata.transpoter == null ? [] : resultdata.transpoter;
+                that.keyvallist = resultdata.accinfo == null ? [] : resultdata.accinfo;
+                that.Ctrllist = resultdata.cc == null ? [] : resultdata.cc;
+                that.salesmanlist = resultdata.salesman == null ? [] : resultdata.salesman;
 
                 that.issh = 1;
-                that.days = _custdata[0].days;
-                that.remark = _custdata[0].remark;
-                that.adrid = _custdata[0].adrid;
+                that.days = resultdata._crday;
+                that.remark = resultdata.remark;
+                that.adrid = resultdata._adr;
 
                 if (_uploadedfile != null) {
                     that.uploadedFiles = _docfile == null ? [] : _uploadedfile;
                     that.suppdoc = _docfile == null ? [] : _docfile;
                 }
                 that.adrcsvid = "";
-                for (let items of _custdata[0].adr) {
-                    that.adrcsvid += items.adrid + ',';
+                if (resultdata.adr != null) {
+                    for (let items of resultdata.adr) {
+                        that.adrcsvid += items + ',';
+                    }
+                    that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
                 }
-                that.addressBook.getAddress(that.adrcsvid.slice(0, -1));
 
                 //Warehouse check edit mode
                 if (that.warehouselist.length > 0) {
-                    var wareedit = _custdata[0].warehouseid === null ? [] : _custdata[0].warehouseid;
+                    var wareedit = resultdata.wh === null ? [] : resultdata.wh;
                     if (wareedit.length > 0) {
                         for (var j = 0; j <= wareedit.length - 1; j++) {
-                            var chk = that.warehouselist.find(a => a.value === wareedit[j].id);
+                            var chk = that.warehouselist.find(a => a.value === wareedit[j]);
                             chk.Warechk = true;
                         }
                     }
@@ -903,10 +909,10 @@ declare var commonfun: any;
         var warehouseid = [];
         for (let wareid of this.warehouselist) {
             if (wareid.Warechk == true) {
-                warehouseid.push({ "id": wareid.value });
+                warehouseid.push(wareid.value);
             }
         }
-        return warehouseid;
+        return JSON.stringify(warehouseid).replace('[', '{').replace(']', '}');
     }
 
     taxjson() {
@@ -970,12 +976,10 @@ declare var commonfun: any;
         var translist = [];
         if (this.translist.length > 0) {
             for (let item of this.translist) {
-                translist.push({
-                    "id": item.value
-                });
+                translist.push(item.value);
             }
         }
-        return translist;
+        return JSON.stringify(translist).replace('[', '{').replace(']', '}');
     }
 
     //Autocompleted Attribute Name
@@ -1114,13 +1118,24 @@ declare var commonfun: any;
         }, 0)
     }
 
+    //Json Attribute 
     createattrjson() {
         var attrid = [];
-        if (this.attribute.attrlist.length > 0) {
-            for (let items of this.attribute.attrlist) {
-                attrid.push({ "id": items.value });
+        if (this.attributemodule.attrlist.length > 0) {
+            for (let items of this.attributemodule.attrlist) {
+                attrid.push(items.value);
             }
-            return attrid;
+            return JSON.stringify(attrid).replace('[', '{').replace(']', '}');
+        }
+    }
+
+    createMRPjson() {
+        var mrpid = [];
+        if (this.attrPrice.attrlist.length > 0) {
+            for (let items of this.attrPrice.attrlist) {
+                mrpid.push(items.value);
+            }
+            return JSON.stringify(mrpid).replace('[', '{').replace(']', '}');
         }
     }
 
@@ -1225,6 +1240,7 @@ declare var commonfun: any;
                 "keyval": this.createkeydatajson(),
                 "dis": this.discountjson(),
                 "attr": this.createattrjson(),
+                "mrp": this.createMRPjson(),
                 "suppdoc": this.suppdoc,
                 "itemsdis": this.itemsdiscountjson(),
                 "trans": this.transpoterjson(),
@@ -1242,7 +1258,7 @@ declare var commonfun: any;
                 "ctrl": this.Ctrljson(),
                 "createdby": this.loginUser.login,
                 "adrid": this.adrbookid,
-                "parentid": this.parentcodename,
+                "parentid": this.parentid,
                 "ledgerparam": this.ledgerparam(),
                 "dynamicfields": this.tabListDT,
                 "remark1": '',
@@ -1357,8 +1373,8 @@ declare var commonfun: any;
     //get tax master with attribute value
     getattr() {
         var attrlist = "";
-        if (this.attribute.attrlist.length > 0) {
-            for (let items of this.attribute.attrlist) {
+        if (this.attributemodule.attrlist.length > 0) {
+            for (let items of this.attributemodule.attrlist) {
                 attrlist += items.value + ',';
             }
         }
@@ -1368,7 +1384,7 @@ declare var commonfun: any;
     //Tax Tab Click  
     taxtab() {
         this.taxlist = [];
-        if (this.attribute.attrlist.length > 0) {
+        if (this.attributemodule.attrlist.length > 0) {
             this.CustAddServies.getcustomer({
                 "custid": this.custid,
                 "cmpid": this.loginUser.cmpid,
