@@ -1450,6 +1450,10 @@ table.tableNoborder td {
     color:#000000!important;
 }
 
+.navbar-nav .dropdown-menu.dropdown-sm {
+    background-color: #FFFFFF !important;
+}
+
 .navbar-nav .dropdown-menu.dropdown-lr {
     width: 325px;
     background-color: #FFFFFF !important;
@@ -1465,6 +1469,10 @@ table.tableNoborder td {
 
 .panel-div{
     padding: 5px;
+}
+
+.panel-table{
+    padding: 0;
 }
 
 /* mobile fix */

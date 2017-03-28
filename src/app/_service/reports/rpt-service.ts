@@ -6,7 +6,15 @@ import { Router } from '@angular/router';
 export class ReportsService {
     constructor(private _dataserver: DataService, private _router: Router) { }
 
-    getAPARReports(req: any) {
-        return this._dataserver.post("getAPARReports", req)
+    getBankView(req: any) {
+        return this._dataserver.post("getBankView", req)
+    }
+
+    getBankBook(req: any) {
+        return this._dataserver.post("getBankBook", req);
+    }
+
+    getBankDashboard(req: any) {
+        return this._dataserver.post("getBankDashboard", req);
     }
 }

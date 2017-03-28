@@ -1,0 +1,105 @@
+<div class="col-md-12">
+    <div class="row" style="padding: 0 15px 5px 0;">
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a role="button" class="dropdown-toggle btn btn-theme btn-sm" data-toggle="dropdown"><i class="fa fa-filter"></i></a>
+                <ul class="dropdown-menu dropdown-lr" role="menu">
+                    <div class="col-md-12">
+                        <form id="frmMonth" method="post" role="form" autocomplete="off">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p-checkbox name="selectall" value="selectall" label="Select All" [(ngModel)]="selectedAll" (ngModelChange)="selectAllMonth()"
+                                        binary="true"></p-checkbox>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button id="btnSearch" type="button" class="btn btn-theme btn-sm" (click)="GetBankWiseGrid()">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div [style.display]="fliterMonthDT !== null ? '' : 'none'">
+                                <div class="text-left">
+                                    <h3>AP / AR</h3>
+                                </div>
+                                <div *ngFor="let item of fliterMonthDT">
+                                    <p-checkbox name="monthname" value="{{item.monthno}}" label="{{item.monthname}}" [(ngModel)]="selectedMonth"></p-checkbox>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="row">
+        <p-dataGrid [value]="bankwiseDT | groupBy:'bankname'" [paginator]="false">
+            <template let-row>
+                <div style="padding:3px" class="col-md-3">
+                    <p-panel [style]="{'text-align':'center'}">
+                        <header>
+                            <div class="col-md-11">
+                                <span class="ui-panel-title">{{row.key}}</span>
+                            </div>
+                            <div class="col-md-1">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li class="dropdown">
+                                        <a role="button" class="dropdown-toggle btn btn-theme btn-sm" data-toggle="dropdown"><i class="fa fa-filter"></i></a>
+                                        <ul class="dropdown-menu dropdown-sm" role="menu">
+                                            <div class="col-md-12">
+                                                <form id="frmType" method="post" role="form" autocomplete="off">
+                                                    <p-checkbox name="type" value="table" label="Table" [(ngModel)]="selectedType"></p-checkbox>
+                                                    <p-checkbox name="type" value="chart" label="Chart" [(ngModel)]="selectedType"></p-checkbox>
+                                                </form>
+                                            </div>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </header>
+                        <div class="panel-div">
+                            <p-chart type="doughnut" [data]="getBankWiseChartData(row.value)"></p-chart>
+                        </div>
+                        <div class="panel-table" style="width: 100%; overflow: auto;">
+                            <p-dataTable #dt [value]="row.value" [lazy]="true">
+                                <p-column header="" [style]="{'width':'100px','text-align':'left'}">
+                                    <template let-row="rowData" pTemplate type="body">
+                                        {{row.banktype}}
+                                    </template>
+                                </p-column>
+                                <p-column header="Debit Amt" [style]="{'width':'150px','text-align':'right'}">
+                                    <template let-row="rowData" pTemplate type="body">
+                                        {{row.totdramt | _currency:loginUser._globsettings[0]}}
+                                    </template>
+                                </p-column>
+                                <p-column header="Credit Amt." [style]="{'width':'150px','text-align':'right'}">
+                                    <template let-row="rowData" pTemplate type="body">
+                                        {{row.totcramt | _currency:loginUser._globsettings[0]}}
+                                    </template>
+                                </p-column>
+                                <footer>
+                                    <table class="tableNoborder">
+                                        <tbody>
+                                            <tr>
+                                                <td width="100px" align="left">
+                                                    <b>Total</b>
+                                                </td>
+                                                <td width="150px" align="right">
+                                                    {{row.value.drtotal | _currency:loginUser._globsettings[0]}}
+                                                </td>
+                                                <td width="150px" align="right">
+                                                    {{row.value.crtotal | _currency:loginUser._globsettings[0]}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </footer>
+                            </p-dataTable>
+                        </div>
+                    </p-panel>
+                </div>
+            </template>
+        </p-dataGrid>
+    </div>
+</div>

@@ -68,6 +68,22 @@ commonfun.loaderhide = function(name) {
     $(name).waitMe('hide');
 }
 
+commonfun.openurl = function(url, target, options) {
+    window.open(url, target, options);
+    //"https://www.w3schools.com", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400"
+}
+
+
+
+commonfun.randomColor = function(brightness) {
+    function randomChannel(brightness) {
+        var r = 255 - brightness;
+        var n = 0 | ((Math.random() * r) + brightness);
+        var s = n.toString(16);
+        return (s.length == 1) ? '0' + s : s;
+    }
+    return '#' + randomChannel(brightness) + randomChannel(brightness) + randomChannel(brightness);
+}
 
 var browserConf = {};
 browserConf.setTitle = function(title) {
