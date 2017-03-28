@@ -26,7 +26,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     // Declare Ledger Variable
-    ledgerid: number = 0;
     ledgerParamDT: any = [];
 
     // Declare local Veriable
@@ -299,7 +298,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
         if (that.ledgerParamDT.length === 0) {
             that.ledgerParamDT.push({
-                "autoid": that.ledgerid,
+                "autoid": 0,
                 "module": "ap",
                 "code": that.custcode,
                 "dramt": that.amount,
@@ -308,7 +307,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             });
 
             that.ledgerParamDT.push({
-                "autoid": that.ledgerid,
+                "autoid": 0,
                 "module": "ap",
                 "code": that.bankid,
                 "dramt": 0,
