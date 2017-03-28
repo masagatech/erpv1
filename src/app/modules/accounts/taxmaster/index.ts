@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { NumTextModule } from '../../usercontrol/numtext';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { LazyLoadEvent, DataTableModule, AutoCompleteModule } from 'primeng/primeng';
+import { AttributeModuleComp } from "../../usercontrol/attributemodule/attrmod.comp";
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -46,7 +47,8 @@ const routerConfig = [
     declarations: [
         taxadd,
         taxview,
-        TaxMasterComp
+        TaxMasterComp,
+        AttributeModuleComp,
     ],
     providers: [AuthGuard]
 })
