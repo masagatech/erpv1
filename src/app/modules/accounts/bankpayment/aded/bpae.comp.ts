@@ -25,10 +25,15 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
+    // Declare Ledger Variable
+    ledgerid: number = 0;
+    ledgerParamDT: any = [];
+
     // Declare local Veriable
     autoid: number = 0;
     bankpayid: number = 0;
     custid: number = 0;
+    custcode: string = "";
     custname: string = "";
     bankid: number = 0;
     bankcode: string = "";
@@ -63,7 +68,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         private _userService: UserService, private _msg: MessageService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Bank Payment";
-        this.fillDropDownList();
+        this.fillBankDDL();
+        this.fillBankTypeDDL();
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
@@ -206,17 +212,26 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
     selectAutoAccounts(event) {
         this.custid = event.value;
+        this.custcode = event.custcode;
         this.custname = event.label;
     }
 
     // Get Bank Master And Type
 
-    fillDropDownList() {
-        this._bpservice.getBankPayment({ "flag": "dropdown" }).subscribe(data => {
-            var d = data.data;
+    fillBankDDL() {
+        this._bpservice.getBankPayment({
+            "flag": "dropdown", "group": "bank", "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy, "uid": this.loginUser.uid
+        }).subscribe(data => {
+            this.bankDT = data.data;
+        });
+    }
 
-            this.bankDT = d.filter(a => a.group === "bank");
-            this.banktypeDT = d.filter(a => a.group === "banktype");
+    fillBankTypeDDL() {
+        this._bpservice.getBankPayment({
+            "flag": "dropdown", "group": "banktype"
+        }).subscribe(data => {
+            this.banktypeDT = data.data;
         });
     }
 
@@ -239,13 +254,15 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             var _bankpayment = data.data[0]._bankpayment;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
+            var _ledgerparam = data.data[0]._acledger;
 
             this.autoid = _bankpayment[0].autoid;
-            this.bankid = _bankpayment[0].bank;
+            this.bankid = _bankpayment[0].bankid;
             var _issuedate = new Date(_bankpayment[0].issuedate);
             this.issuedate.setDate(_issuedate);
             this.custid = _bankpayment[0].custid;
-            this.custname = _bankpayment[0].partyname;
+            this.custcode = _bankpayment[0].custcode;
+            this.custname = _bankpayment[0].custname;
             this.refno = _bankpayment[0].refno;
             this.typ = _bankpayment[0].typ;
             this.cheqno = _bankpayment[0].cheqno;
@@ -255,6 +272,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
             this.uploadedFiles = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _uploadedfile;
             this.suppdoc = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _suppdoc;
+            this.ledgerParamDT = _ledgerparam === null ? [] : _ledgerparam.length === 0 ? [] : _ledgerparam;
         }, err => {
             console.log('Error');
         }, () => {
@@ -266,7 +284,6 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
 
     saveBankPayment(isactive) {
         var that = this;
-
         var validateme = commonfun.validate();
 
         if (that.custname === "") {
@@ -280,37 +297,63 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             return;
         }
 
-        var ParamName = {
-            "autoid": this.autoid,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "bankpayid": this.bankpayid,
-            "refno": this.refno,
-            "acid": this.custid,
-            "bankid": this.bankid,
-            "issuedate": this.issuedate.getDate(),
-            "uidcode": this.loginUser.login,
-            "suppdoc": this.suppdoc,
-            "typ": this.typ,
-            "amount": this.amount,
-            "cheqno": this.cheqno,
-            "narration": this.narration,
-            "ischeqbounce": this.ischeqbounce,
-            "isactive": isactive
+        if (that.ledgerParamDT.length === 0) {
+            that.ledgerParamDT.push({
+                "autoid": that.ledgerid,
+                "module": "ap",
+                "code": that.custcode,
+                "dramt": that.amount,
+                "cramt": 0,
+                "createdby": that.loginUser.login
+            });
+
+            that.ledgerParamDT.push({
+                "autoid": that.ledgerid,
+                "module": "ap",
+                "code": that.bankid,
+                "dramt": 0,
+                "cramt": that.amount,
+                "createdby": that.loginUser.login
+            });
         }
 
-        this._bpservice.saveBankPayment(ParamName).subscribe(result => {
-            var dataResult = result.data;
+        var ParamName = {
+            "autoid": that.autoid,
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "bankpayid": that.bankpayid,
+            "refno": that.refno,
+            "acid": that.custid,
+            "bankid": that.bankid,
+            "issuedate": that.issuedate.getDate(),
+            "uidcode": that.loginUser.login,
+            "suppdoc": that.suppdoc,
+            "typ": that.typ,
+            "amount": that.amount,
+            "cheqno": that.cheqno,
+            "narration": that.narration,
+            "ischeqbounce": that.ischeqbounce,
+            "isactive": isactive,
+            "ledgerparam": that.ledgerParamDT
+        }
 
-            if (dataResult[0].funsave_bankpayment.msgid == "1") {
-                this._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankpayment.msg);
-                this._router.navigate(['/accounts/bankpayment']);
+        that._bpservice.saveBankPayment(ParamName).subscribe(result => {
+            try {
+                var dataResult = result.data;
+
+                if (dataResult[0].funsave_bankpayment.msgid == "1") {
+                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankpayment.msg);
+                    that._router.navigate(['/accounts/bankpayment']);
+                }
+                else {
+                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankpayment.msg);
+                }
             }
-            else {
-                this._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankpayment.msg);
+            catch (e) {
+                that._msg.Show(messageType.error, "Error", e);
             }
         }, err => {
-            this._msg.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
             console.log(err);
         }, () => {
             //Complete

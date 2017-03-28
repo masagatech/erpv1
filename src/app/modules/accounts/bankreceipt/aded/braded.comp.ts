@@ -24,6 +24,10 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
+    // Declare Ledger Variable
+    ledgerid: number = 0;
+    ledgerParamDT: any = [];
+
     autoid: number = 0;
     bankid: number = 0;
 
@@ -32,6 +36,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
     typ: string = "";
     custid: number = 0;
+    custcode: string = "";
     custname: string = "";
     chequeno: string = "";
     amount: any = "";
@@ -60,13 +65,13 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Bank Receipt";
+        this.fillBankDDL();
+        this.fillBankTypeDDL();
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
         this.isdetails = _router.url.indexOf("details") > -1;
         this.ispdc = _router.url.indexOf("pdc") > -1;
-
-        this.fillDropDownList();
     }
 
     // Reset Fields
@@ -78,6 +83,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         this.depdate.setDate(date);
         this.typ = "";
         this.custid = 0;
+        this.custcode = "";
         this.custname = "";
         this.chequeno = "";
         this.amount = "";
@@ -217,32 +223,43 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
     selectAutoAccounts(event) {
         this.custid = event.value;
+        this.custcode = event.custcode;
         this.custname = event.label;
     }
 
-    // DropDown
+    // Get Bank Master And Type
 
-    fillDropDownList() {
-        this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
-            var d = data.data;
+    fillBankDDL() {
+        this._brService.getBankReceipt({
+            "flag": "dropdown", "group": "bank", "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy, "uid": this.loginUser.uid
+        }).subscribe(data => {
+            this.bankDT = data.data;
+        });
+    }
 
-            this.bankDT = d.filter(a => a.group === "bank");
-            this.banktypeDT = d.filter(a => a.group === "banktype");
+    fillBankTypeDDL() {
+        this._brService.getBankReceipt({
+            "flag": "dropdown", "group": "banktype"
+        }).subscribe(data => {
+            this.banktypeDT = data.data;
         });
     }
 
     // Get And Fill Edit Mode
 
     GetBankReceipt(pautoid) {
-        this._brService.getBankReceipt({ "flag": "edit", "autoid": pautoid }).subscribe(data => {
+        this._brService.getBankReceipt({ "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
+            var _ledgerparam = data.data[0]._acledger;
 
             this.bankid = _bankreceipt[0].bankid;
             var chequedate = new Date(_bankreceipt[0].chequedate);
             this.depdate.setDate(chequedate);
             this.custid = _bankreceipt[0].acid;
+            this.custcode = _bankreceipt[0].custcode;
             this.custname = _bankreceipt[0].partyname;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
@@ -252,6 +269,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
             this.uploadedFiles = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _uploadedfile;
             this.suppdoc = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _suppdoc;
+            this.ledgerParamDT = _ledgerparam === null ? [] : _ledgerparam.length === 0 ? [] : _ledgerparam;
         }, err => {
             console.log('Error');
         }, () => {
@@ -260,19 +278,20 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     }
 
     GetBankReceiptByPDC(pautoid) {
-        this._brService.getBankReceipt({ "flag": "pdc", "autoid": pautoid }).subscribe(data => {
+        this._brService.getBankReceipt({ "flag": "pdc", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
             var _bankreceipt = data.data;
 
             this.bankid = _bankreceipt[0].bankid;
             var chequedate = new Date(_bankreceipt[0].chequedate);
             this.depdate.setDate(chequedate);
             this.custid = _bankreceipt[0].acid;
+            this.custcode = _bankreceipt[0].custcode;
             this.custname = _bankreceipt[0].partyname;
             this.refno = "";
             this.typ = _bankreceipt[0].typ;
             this.chequeno = _bankreceipt[0].chequeno;
             this.amount = _bankreceipt[0].amount;
-            this.narration = "";
+            this.narration = _bankreceipt[0].narration;
         }, err => {
             console.log('Error');
         }, () => {
@@ -296,7 +315,6 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
     SaveBankReceipt(isactive: boolean) {
         var that = this;
-
         var validateme = commonfun.validate();
 
         if (that.custname === "") {
@@ -310,34 +328,60 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             return;
         }
 
-        var ParamName = {
-            "autoid": this.autoid,
-            "cmpid": this.loginUser.cmpid,
-            "fy": this.loginUser.fy,
-            "depdate": this.depdate.getDate(),
-            "refno": this.refno,
-            "bankid": this.bankid,
-            "typ": this.typ,
-            "acid": this.custid,
-            "cheqno": this.chequeno,
-            "amount": this.amount,
-            "narration": this.narration,
-            "uidcode": this.loginUser.login,
-            "suppdoc": this.suppdoc,
-            "isactive": isactive
+        if (that.ledgerParamDT.length === 0) {
+            that.ledgerParamDT.push({
+                "autoid": that.ledgerid,
+                "module": "ar",
+                "code": that.custcode,
+                "dramt": that.amount,
+                "cramt": 0,
+                "createdby": that.loginUser.login
+            });
+
+            that.ledgerParamDT.push({
+                "autoid": that.ledgerid,
+                "module": "ar",
+                "code": that.bankid,
+                "dramt": 0,
+                "cramt": that.amount,
+                "createdby": that.loginUser.login
+            });
         }
 
-        this._brService.saveBankReceipt(ParamName).subscribe(bank => {
-            var dataResult = bank.data;
+        var ParamName = {
+            "autoid": that.autoid,
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "depdate": that.depdate.getDate(),
+            "refno": that.refno,
+            "bankid": that.bankid,
+            "typ": that.typ,
+            "acid": that.custid,
+            "cheqno": that.chequeno,
+            "amount": that.amount,
+            "narration": that.narration,
+            "uidcode": that.loginUser.login,
+            "suppdoc": that.suppdoc,
+            "isactive": isactive,
+            "ledgerparam": that.ledgerParamDT
+        }
 
-            if (dataResult[0].funsave_bankreceipt.msgid == 1) {
-                that._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankreceipt.msg);
-                this._router.navigate(['/accounts/bankreceipt']);
-                return false;
+        that._brService.saveBankReceipt(ParamName).subscribe(bank => {
+            try {
+                var dataResult = bank.data;
+
+                if (dataResult[0].funsave_bankreceipt.msgid == 1) {
+                    that._msg.Show(messageType.success, "Success", dataResult[0].funsave_bankreceipt.msg);
+                    this._router.navigate(['/accounts/bankreceipt']);
+                    return false;
+                }
+                else {
+                    that._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankreceipt.msg);
+                    return false;
+                }
             }
-            else {
-                that._msg.Show(messageType.error, "Error", dataResult[0].funsave_bankreceipt.msg);
-                return false;
+            catch (e) {
+                that._msg.Show(messageType.error, "Error", e);
             }
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
