@@ -38,6 +38,12 @@ const routerConfig = [
             }),
           },
           
+          {
+            path: 'ledger', loadChildren: () => System.import('./ledger').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
           { path: '', component: ReportsDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
