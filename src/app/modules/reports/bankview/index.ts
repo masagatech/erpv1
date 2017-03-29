@@ -50,5 +50,5 @@ const routerConfig = [
     providers: [AuthGuard]
 })
 
-export default class APARModule {
+export default class BankViewModule {
 }

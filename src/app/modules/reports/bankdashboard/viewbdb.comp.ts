@@ -84,10 +84,10 @@ export class BankDashboardReports implements OnInit, OnDestroy {
 
         that._rptservice.getBankDashboard({
             "flag": "dropdown", "fy": that.loginUser.fy
-        }).subscribe(bankbook => {
-            if (bankbook.data.length > 0) {
-                that.fliterMonthDT = bankbook.data[0]._month;
-                that.fliterTypeDT = bankbook.data[0]._type;
+        }).subscribe(bankdb => {
+            if (bankdb.data.length > 0) {
+                that.fliterMonthDT = bankdb.data[0]._month;
+                that.fliterTypeDT = bankdb.data[0]._type;
                 that.selectedMonth = Object.keys(that.fliterMonthDT).map(function (k) { return that.fliterMonthDT[k].monthno });
                 that.GetBankWiseGrid();
             }
