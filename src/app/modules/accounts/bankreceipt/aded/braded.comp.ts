@@ -38,7 +38,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     custid: number = 0;
     custcode: string = "";
     custname: string = "";
-    chequeno: string = "";
+    cheqno: string = "";
     amount: any = "";
     refno: string = "";
     narration: string = "";
@@ -85,7 +85,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         this.custid = 0;
         this.custcode = "";
         this.custname = "";
-        this.chequeno = "";
+        this.cheqno = "";
         this.amount = "";
         this.refno = "";
         this.narration = "";
@@ -175,7 +175,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
-                $('.chequeno').prop('disabled', true);
+                $('.cheqno').prop('disabled', true);
 
                 this.autoid = params['pdcid'];
                 this.GetBankReceiptByPDC(this.autoid);
@@ -263,7 +263,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.custname = _bankreceipt[0].partyname;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
-            this.chequeno = _bankreceipt[0].cheqno;
+            this.cheqno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
 
@@ -289,7 +289,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.custname = _bankreceipt[0].partyname;
             this.refno = "";
             this.typ = _bankreceipt[0].typ;
-            this.chequeno = _bankreceipt[0].chequeno;
+            this.cheqno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
         }, err => {
@@ -330,20 +330,32 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
 
         if (that.ledgerParamDT.length === 0) {
             that.ledgerParamDT.push({
-                "autoid": that.ledgerid,
+                "autoid": 0,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
                 "module": "ar",
+                "trndate": that.depdate.getDate(),
+                "actype": "ac",
                 "code": that.custcode,
-                "dramt": that.amount,
-                "cramt": 0,
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.bankid, "name": that.bankid },
+                "dramt": 0,
+                "cramt": that.amount,
+                "narration": that.narration,
                 "createdby": that.loginUser.login
             });
 
             that.ledgerParamDT.push({
-                "autoid": that.ledgerid,
+                "autoid": 0,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
                 "module": "ar",
+                "trndate": that.depdate.getDate(),
+                "actype": "bank",
                 "code": that.bankid,
-                "dramt": 0,
-                "cramt": that.amount,
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.custcode, "name": that.custcode },
+                "dramt": that.amount,
+                "cramt": 0,
+                "narration": that.narration,
                 "createdby": that.loginUser.login
             });
         }
@@ -357,7 +369,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             "bankid": that.bankid,
             "typ": that.typ,
             "acid": that.custid,
-            "cheqno": that.chequeno,
+            "cheqno": that.cheqno,
             "amount": that.amount,
             "narration": that.narration,
             "uidcode": that.loginUser.login,

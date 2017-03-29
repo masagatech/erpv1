@@ -299,19 +299,31 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         if (that.ledgerParamDT.length === 0) {
             that.ledgerParamDT.push({
                 "autoid": 0,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
                 "module": "ap",
+                "trndate": that.issuedate.getDate(),
+                "actype": "ac",
                 "code": that.custcode,
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.bankid, "name": that.bankid },
                 "dramt": that.amount,
                 "cramt": 0,
+                "narration": that.narration,
                 "createdby": that.loginUser.login
             });
 
             that.ledgerParamDT.push({
                 "autoid": 0,
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
                 "module": "ap",
+                "trndate": that.issuedate.getDate(),
+                "actype": "bank",
                 "code": that.bankid,
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.custcode, "name": that.custcode },
                 "dramt": 0,
                 "cramt": that.amount,
+                "narration": that.narration,
                 "createdby": that.loginUser.login
             });
         }
