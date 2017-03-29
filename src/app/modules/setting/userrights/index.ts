@@ -10,6 +10,8 @@ import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { UserMoreRightsModule } from '../../usercontrol/usermorerights';
+
 import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule, PanelModule, DialogModule, AutoCompleteModule } from 'primeng/primeng';
 
 @Component({
@@ -45,7 +47,8 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule, DataListModule, CheckboxModule, PanelModule, DialogModule, AutoCompleteModule],
+        DataTableModule, DataListModule, CheckboxModule, PanelModule, DialogModule, AutoCompleteModule,
+        UserMoreRightsModule],
     declarations: [
         AddUserRights,
         ViewUserRights,

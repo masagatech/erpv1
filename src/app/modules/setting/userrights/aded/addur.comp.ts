@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SharedVariableService } from "../../../../_service/sharedvariable-service";
 import { ActionBtnProp } from '../../../../_model/action_buttons';
 import { Subscription } from 'rxjs/Subscription';
@@ -10,6 +10,7 @@ import { LoginUserModel } from '../../../../_model/user_model';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LazyLoadEvent, DataTable, DataList, DataGrid, Panel, Dialog } from 'primeng/primeng';
+import { UserMoreRightsComp } from '../../../usercontrol/usermorerights';
 
 declare var $: any;
 
@@ -27,41 +28,30 @@ export class AddUserRights implements OnInit, OnDestroy {
     FYDetails: any = [];
     totalRecords: number;
 
+    morerights: boolean = false;
+    menuname: string = "";
+
     cmpid: any = 0;
     fy: number = 0;
 
     deptid: number = 0;
     uid: string = "";
     uname: string = "";
+    ufullname: string = "";
 
     refuid: string = "";
     refuname: string = "";
-    ufullname: string = "";
-    menuname: string = "";
 
     selectedCompany: any = { "menudetails": [] };
 
-    fliterBankDT: any = [];
-    fliterBankTypeDT: any = [];
-    fliterAPARDT: any = [];
-    fliterCCDT: any = [];
-
-    fliterExtraBankDT: any = [];
-    fliterExtraBankTypeDT: any = [];
-    fliterExtraAPARDT: any = [];
-    fliterExtraCCDT: any = [];
-
-    selectedAPARType: string[] = [];
-    selectedBankType: string[] = [];
-    selectedBank: string[] = [];
-    selectedCC: string[] = [];
-
     selectedMenu: any = [];
     MenuActions: any = [];
-    morerights: boolean = false;
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
+
+    @ViewChild("jvdate")
+    dialog: UserMoreRightsComp;
 
     private subscribeParameters: any;
 
@@ -152,67 +142,6 @@ export class AddUserRights implements OnInit, OnDestroy {
         that.refuname = event.label;
     }
 
-    openMoreRights(row) {
-        if (this.fy !== 0) {
-            this.morerights = true;
-            this.menuname = row.mname + " > " + row.pname + " > " + row.menuname;
-            this.getExistsRights();
-            this.getMoreRights();
-        }
-        else {
-            this._msg.Show(messageType.error, "Error", "First select Financial Year");
-        }
-    }
-
-    getExistsRights() {
-        var that = this;
-
-        that._userservice.getUserRights({
-            "flag": "existsrights", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.refuid
-        }).subscribe(data => {
-            try {
-                that.fliterAPARDT = data.data.filter(a => a.group === "apar");
-                that.fliterBankDT = data.data.filter(a => a.group === "bank");
-                that.fliterBankTypeDT = data.data.filter(a => a.group === "banktype");
-                that.fliterCCDT = data.data.filter(a => a.group === "cc");
-            }
-            catch (e) {
-                //that._msg.Show(messageType.error, "Error", e);
-            }
-        }, err => {
-            that._msg.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    getMoreRights() {
-        var that = this;
-
-        that._userservice.getUserRights({
-            "flag": "morerights", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.refuid
-        }).subscribe(data => {
-            try {
-                that.fliterExtraAPARDT = data.data.filter(a => a.group === "apar");
-                that.fliterExtraBankDT = data.data.filter(a => a.group === "bank");
-                that.fliterExtraBankTypeDT = data.data.filter(a => a.group === "banktype");
-                that.fliterExtraCCDT = data.data.filter(a => a.group === "cc");
-
-                // that.selectedAPARType = Object.keys(that.fliterExtraAPARDT).map(function (k) { return that.fliterExtraAPARDT[k].key });
-                // that.selectedBank = Object.keys(that.fliterExtraBankDT).map(function (k) { return that.fliterExtraBankDT[k].key });
-                // that.selectedBankType = Object.keys(that.fliterExtraBankTypeDT).map(function (k) { return that.fliterExtraBankTypeDT[k].key });
-                // that.selectedCC = Object.keys(that.fliterExtraCCDT).map(function (k) { return that.fliterExtraCCDT[k].key });
-            }
-            catch (e) {
-                //that._msg.Show(messageType.error, "Error", e);
-            }
-        }, err => {
-            that._msg.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
     getCompanyRights(puid) {
         var that = this;
 
@@ -259,7 +188,7 @@ export class AddUserRights implements OnInit, OnDestroy {
     }
 
     getUserRights() {
-        var GiveRights = [];
+        var _giverights = [];
         var menuitem = null;
 
         for (var i = 0; i <= this.selectedCompany.menudetails.length - 1; i++) {
@@ -267,6 +196,8 @@ export class AddUserRights implements OnInit, OnDestroy {
             menuitem = this.selectedCompany.menudetails[i];
 
             if (menuitem !== null) {
+                // _giverights.push({ "menuid": menuitem.menuid, "rights": menuitem.selectedrights });
+
                 var actrights = "";
 
                 $("#M" + menuitem.menuid).find("input[type=checkbox]").each(function () {
@@ -274,20 +205,45 @@ export class AddUserRights implements OnInit, OnDestroy {
                 });
 
                 if (actrights != "") {
-                    GiveRights.push({ "menuid": menuitem.menuid, "rights": actrights.slice(0, -1) });
+                    _giverights.push({ "menuid": menuitem.menuid, "rights": actrights.slice(0, -1) });
                 }
             }
         }
 
-        return GiveRights;
+        return _giverights;
+    }
+
+    openMoreRights(row) {
+        if (this.fy !== 0) {
+            this.morerights = true;
+            this.menuname = row.mname + " > " + row.pname + " > " + row.menuname;
+            this.dialog.getExistsRights();
+            this.dialog.getMoreRights();
+            this.dialog.editMoreRights(row);
+        }
+        else {
+            this._msg.Show(messageType.error, "Error", "First select Financial Year");
+        }
     }
 
     getMoreUserRights() {
         var that = this;
         var _morerights = [];
-        var _moreitem = null;
+        var menuitem = null;
 
-        _morerights.push({ "apar": this.selectedAPARType, "bank": this.selectedBank, "banktype": this.selectedBankType, "cc": this.selectedCC });
+        for (var i = 0; i <= that.selectedCompany.menudetails.length - 1; i++) {
+            menuitem = null;
+            menuitem = that.selectedCompany.menudetails[i];
+
+            if (menuitem !== null) {
+                if (menuitem.ismore === true) {
+                    _morerights.push({
+                        "menuid": menuitem.menucode, "apar": menuitem.selectedAPARType,
+                        "bank": menuitem.selectedBank, "banktype": menuitem.selectedBankType, "cc": menuitem.selectedCC
+                    });
+                }
+            }
+        }
 
         return _morerights;
     }
@@ -313,6 +269,8 @@ export class AddUserRights implements OnInit, OnDestroy {
         else {
             var _giverights = that.getUserRights();
             var _morerights = that.getMoreUserRights();
+
+            console.log(_morerights)
 
             var saveUR = {
                 "uid": that.uid,
@@ -392,22 +350,20 @@ export class AddUserRights implements OnInit, OnDestroy {
                 var viewUR = data.data;
 
                 var _userrights = null;
-                var _morerights = null;
                 var _menuitem = null;
                 var _actrights = null;
 
                 if (viewUR[0] != null) {
                     _userrights = null;
                     _userrights = viewUR[0].giverights;
-                    _morerights = viewUR[0].morerights;
-
-                    that.selectedAPARType = _morerights[0].apar;
-                    that.selectedBank = _morerights[0].bank;
-                    that.selectedBankType = _morerights[0].banktype;
-                    that.selectedCC = _morerights[0].cc;
 
                     if (_userrights != null) {
-                        for (var i = 0; i <= _userrights.length - 1; i++) {
+                        for (var i = 0; i < _userrights.length; i++) {
+                            // for (var j = 0; j < row.menudetails.length; j++) {
+                            //     _actrights = _userrights[i].rights;
+                            //     row.menudetails[j].selectedrights = _actrights;
+                            // }
+
                             _menuitem = null;
                             _menuitem = _userrights[i];
 
