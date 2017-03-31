@@ -1372,13 +1372,15 @@ declare var commonfun: any;
 
     //get tax master with attribute value
     getattr() {
-        var attrlist = "";
+        var attrlist = [];
         if (this.attributemodule.attrlist.length > 0) {
             for (let items of this.attributemodule.attrlist) {
-                attrlist += items.value + ',';
+                attrlist.push(items.value);
             }
         }
-        return attrlist.slice(0, -1);
+        debugger;
+        //return attrlist.slice(0, -1);
+        return JSON.stringify(attrlist).replace('[', '{').replace(']', '}');
     }
 
     //Tax Tab Click  
@@ -1394,8 +1396,8 @@ declare var commonfun: any;
             }).subscribe(result => {
                 console.log(result.data)
                 var dataset = result.data[0];
-                if (dataset[0]._tax.length > 0) {
-                    this.taxlist = dataset[0]._tax;
+                if (dataset[0]._attrtax.length > 0) {
+                    this.taxlist = dataset[0]._attrtax;
                 }
             }, err => {
                 console.log("Error")
