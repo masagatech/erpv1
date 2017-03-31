@@ -33,7 +33,7 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: '', component: LedgerReports, canActivateChid: [AuthGuard], data: { "module": "rptaccs", "submodule": "bv", "rights": "view", "urlname": "/Ledger" } },
+                    { path: '', component: LedgerReports, canActivateChid: [AuthGuard], data: { "module": "rptaccs", "submodule": "bv", "rights": "view", "urlname": "/ledger" } },
                 ]
             }
         ]

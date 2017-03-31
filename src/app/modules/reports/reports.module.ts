@@ -44,6 +44,18 @@ const routerConfig = [
             }),
           },
           
+          {
+            path: 'profitnloss', loadChildren: () => System.import('./profitnloss').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
+          {
+            path: 'balancesheet', loadChildren: () => System.import('./balancesheet').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
           { path: '', component: ReportsDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
@@ -55,7 +67,7 @@ const routerConfig = [
   imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule, ScheduleModule],
   declarations: [
     ReportsComp,
-    ReportsDashboardComp
+    ReportsDashboardComp,
   ],
   providers: [AuthGuard]
 })

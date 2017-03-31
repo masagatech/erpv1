@@ -21,4 +21,12 @@ export class ReportsService {
     getLedger(req: any) {
         return this._dataserver.post("getLedger", req);
     }
+
+    getProfitNLoss(req: any) {
+        return this._dataserver.post("getProfitNLoss", req);
+    }
+
+    getBalanceSheet(req: any) {
+        return this._dataserver.post("getBalanceSheet", req);
+    }
 }

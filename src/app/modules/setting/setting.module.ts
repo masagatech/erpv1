@@ -21,8 +21,6 @@ const routerConfig = [
       {
         path: '',
         children: [
-          //{ path: 'auditlocksetting', component: ALSAddEdit, canActivateChid: [AuthGuard], },
-
           {
             path: 'auditlocksetting', loadChildren: () => System.import('./auditlocksetting').then((comp: any) => {
               return comp.default;
@@ -87,7 +85,6 @@ const routerConfig = [
   imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
     DataListModule, DataGridModule, PanelModule, FileUploadModule],
   declarations: [
-    //ALSAddEdit,
     SettingComp,
     SettingDashboardComp
   ],
