@@ -11,10 +11,12 @@ import { FileUploadModule, GrowlModule, DialogModule } from 'primeng/primeng';
 import { FilterByPipe } from '../_pipe/filterby.pipe';
 import { _currencyPipe } from '../_pipe/currency.pipe';
 
+import { GroupByPipe } from '../_pipe/groupby.pipe';
+
 @NgModule({
     imports: [RouterModule, FormsModule, CommonModule, FileUploadModule, GrowlModule, DialogModule],
-    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe, _currencyPipe],
-    exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe,
+    declarations: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe, _currencyPipe, GroupByPipe],
+    exports: [FileUploadComponent, SubMenuComponent, AutoCompleteComponent, AddrbookComp, AttributeComp, FilterByPipe, GroupByPipe,
         _currencyPipe]
 })
 

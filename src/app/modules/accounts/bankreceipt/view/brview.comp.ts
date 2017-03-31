@@ -137,9 +137,12 @@ export class ViewBankReceipt implements OnInit, OnDestroy {
     // DropDown
 
     fillDropDownList() {
-        this._brService.getBankReceipt({ "flag": "dropdown" }).subscribe(data => {
+        this._brService.getBankReceipt({
+            "flag": "dropdown", "group": "bank", "cmpid": this.loginUser.cmpid,
+            "fy": this.loginUser.fy, "uid": this.loginUser.uid
+        }).subscribe(data => {
             var d = data.data;
-            this.bankDT = d.filter(a => a.group === "bank");
+            this.bankDT = data.data;
         });
     }
 

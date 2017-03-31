@@ -26,7 +26,7 @@ declare var commonfun: any;
     subscr_actionbarevt: Subscription;
 
     //Add Local Veriable
-    ledid: number = 0;
+    ledgerParamDT: any = [];
     custid: any = 0;
     code: any = "";
     Custname: any = "";
@@ -826,7 +826,6 @@ declare var commonfun: any;
         this.parentid = 0;
         this.parentcodename = "";
         this.editmode = false;
-        this.ledid = 0;
         this.addressBook.ClearArray();
     }
 
@@ -834,6 +833,7 @@ declare var commonfun: any;
     EditCust(id) {
         try {
             var that = this;
+
             that.CustAddServies.getcustomer({
                 "cmpid": this.loginUser.cmpid,
                 "flag": "Edit",
@@ -846,8 +846,10 @@ declare var commonfun: any;
                 var _uploadedfile = resultdata._uploadedfile == null ? [] : resultdata._uploadedfile;
                 var _docfile = resultdata._docfile == null ? [] : resultdata._docfile;
                 var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
+                var _ledgerparam = resultdata._acledger;
+
+                this.ledgerParamDT = _ledgerparam === null ? [] : _ledgerparam.length === 0 ? [] : _ledgerparam;
                 that.parentid = resultdata.parentid;
-                that.ledid = resultdata.ledid == null ? 0 : resultdata.ledid;
                 that.custid = resultdata.autoid;
                 that.code = resultdata.custcode;
                 that.Custname = resultdata.custname;
@@ -1215,8 +1217,8 @@ declare var commonfun: any;
 
     ledgerparam() {
         var ledgerlist = [];
+        
         ledgerlist.push({
-            "autoid": this.ledid,
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
             "typ": "cust",
@@ -1225,13 +1227,25 @@ declare var commonfun: any;
             "acid": this.code,
             "nar": this.remark,
             "createdby": this.loginUser.login
-        })
+        });
+
         return ledgerlist;
     }
 
     //Paramter Wth Json
     paramterjson() {
         try {
+            if (this.ledgerParamDT.length === 0) {
+                this.ledgerParamDT.push({
+                    "autoid": 0,
+                    "module": "cust",
+                    "code": this.code,
+                    "dramt": this.ope == "" ? 0 : this.ope,
+                    "cramt": 0,
+                    "createdby": this.loginUser.login
+                });
+            }
+
             var param = {
                 "custid": this.custid,
                 "code": this.code,
@@ -1259,7 +1273,7 @@ declare var commonfun: any;
                 "createdby": this.loginUser.login,
                 "adrid": this.adrbookid,
                 "parentid": this.parentid,
-                "ledgerparam": this.ledgerparam(),
+                "ledgerparam": this.ledgerParamDT,
                 "dynamicfields": this.tabListDT,
                 "remark1": '',
                 "remark2": "",

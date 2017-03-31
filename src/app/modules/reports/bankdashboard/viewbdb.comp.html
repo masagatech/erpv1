@@ -36,7 +36,7 @@
     <div class="row">
         <p-dataGrid [value]="bankwiseDT | groupBy:'bankname'" [paginator]="false">
             <template let-row>
-                <div style="padding:3px" class="col-md-3">
+                <div style="padding:3px" class="col-md-4">
                     <p-panel [style]="{'text-align':'center'}">
                         <header>
                             <div class="col-md-11">
@@ -49,8 +49,9 @@
                                         <ul class="dropdown-menu dropdown-sm" role="menu">
                                             <div class="col-md-12">
                                                 <form id="frmType" method="post" role="form" autocomplete="off">
-                                                    <p-checkbox name="type" value="table" label="Table" [(ngModel)]="selectedType"></p-checkbox>
-                                                    <p-checkbox name="type" value="chart" label="Chart" [(ngModel)]="selectedType"></p-checkbox>
+                                                    <div *ngFor="let item of fliterTypeDT">
+                                                        <p-checkbox name="type" value="{{item.typeid}}" label="{{item.typename}}" [(ngModel)]="item.isactive" binary="true"></p-checkbox>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </ul>
@@ -58,38 +59,48 @@
                                 </ul>
                             </div>
                         </header>
-                        <div class="panel-div">
-                            <p-chart type="doughnut" [data]="getBankWiseChartData(row.value)"></p-chart>
+                        <div class="panel-table">
+                            <div class="col-md-8">
+                                <p-chart type="doughnut" [data]="getBankWiseChartData(row.value)"></p-chart>
+                            </div>
                         </div>
-                        <div class="panel-table" style="width: 100%; overflow: auto;">
+                        <div class="panel-div" style="width: 100%; overflow: auto;">
                             <p-dataTable #dt [value]="row.value" [lazy]="true">
-                                <p-column header="" [style]="{'width':'100px','text-align':'left'}">
+                                <p-column header="" [style]="{'width':'130px','text-align':'left'}">
                                     <template let-row="rowData" pTemplate type="body">
                                         {{row.banktype}}
                                     </template>
                                 </p-column>
-                                <p-column header="Debit Amt" [style]="{'width':'150px','text-align':'right'}">
+                                <p-column header="Dr Amt" [style]="{'width':'130px','text-align':'right'}">
                                     <template let-row="rowData" pTemplate type="body">
                                         {{row.totdramt | _currency:loginUser._globsettings[0]}}
                                     </template>
                                 </p-column>
-                                <p-column header="Credit Amt." [style]="{'width':'150px','text-align':'right'}">
+                                <p-column header="Cr Amt." [style]="{'width':'130px','text-align':'right'}">
                                     <template let-row="rowData" pTemplate type="body">
                                         {{row.totcramt | _currency:loginUser._globsettings[0]}}
+                                    </template>
+                                </p-column>
+                                <p-column header="Total Amt." [style]="{'width':'130px','text-align':'right'}">
+                                    <template let-row="rowData" pTemplate type="body">
+                                        {{row.totamt | _currency:loginUser._globsettings[0]}}
                                     </template>
                                 </p-column>
                                 <footer>
                                     <table class="tableNoborder">
                                         <tbody>
                                             <tr>
-                                                <td width="100px" align="left">
+                                                <td width="80px" align="left">
                                                     <b>Total</b>
                                                 </td>
-                                                <td width="150px" align="right">
+                                                <td width="130px" align="right">
                                                     {{row.value.drtotal | _currency:loginUser._globsettings[0]}}
                                                 </td>
-                                                <td width="150px" align="right">
+                                                <td width="130px" align="right">
                                                     {{row.value.crtotal | _currency:loginUser._globsettings[0]}}
+                                                </td>
+                                                <td width="130px" align="right">
+                                                    {{row.value.amttotal | _currency:loginUser._globsettings[0]}}
                                                 </td>
                                             </tr>
                                         </tbody>

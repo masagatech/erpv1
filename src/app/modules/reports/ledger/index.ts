@@ -1,20 +1,21 @@
 import { NgModule, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../../../_service/authguard-service';
-import { BankDashboardReports } from './viewbdb.comp';
+import { LedgerReports } from './viewldr.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DataGridModule, PanelModule, DataTableModule, CheckboxModule, ChartModule } from 'primeng/primeng';
+import { DataTableModule, CheckboxModule, AutoCompleteModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
+import { NumTextModule } from '../../usercontrol/numtext';
 
 @Component({
     template: '<router-outlet></router-outlet>'
 })
 
-export class BankDashboardComp implements OnInit {
+export class LedgerComp implements OnInit {
     constructor() {
     }
 
@@ -25,14 +26,14 @@ export class BankDashboardComp implements OnInit {
 const routerConfig = [
     {
         path: '',
-        component: BankDashboardComp,
+        component: LedgerComp,
         canActivate: [AuthGuard],
         data: { "module": "rptaccs" },
         children: [
             {
                 path: '',
                 children: [
-                    { path: '', component: BankDashboardReports, canActivateChid: [AuthGuard], data: { "module": "rptaccs", "submodule": "bv", "rights": "view", "urlname": "/bankview" } },
+                    { path: '', component: LedgerReports, canActivateChid: [AuthGuard], data: { "module": "rptaccs", "submodule": "bv", "rights": "view", "urlname": "/ledger" } },
                 ]
             }
         ]
@@ -41,13 +42,13 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataGridModule, PanelModule, DataTableModule, CheckboxModule, ChartModule],
+        DataTableModule, CheckboxModule, AutoCompleteModule, CalendarModule, NumTextModule],
     declarations: [
-        BankDashboardReports,
-        BankDashboardComp
+        LedgerReports,
+        LedgerComp
     ],
     providers: [AuthGuard]
 })
 
-export default class APARModule {
+export default class LedgerModule {
 }

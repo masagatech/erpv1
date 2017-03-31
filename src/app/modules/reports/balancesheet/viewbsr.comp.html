@@ -1,0 +1,70 @@
+<div class="col-md-12">
+    <div class="table-responsive">
+        <div class="col-md-6">
+            <div class="panel-div">
+                <div *ngFor="let row of bsrLiabilitiyDT | groupBy:'groupval'">
+                    <div class="panel-div">
+                        <p-dataTable #dt [value]="row.value" [lazy]="true">
+                            <p-column header="{{row.key}}" [style]="{'width':'130px','text-align':'left'}">
+                                <template let-drow="rowData" pTemplate type="body">
+                                    {{drow.custname}}
+                                </template>
+                            </p-column>
+                            <p-column header="Cr. Amt." [style]="{'width':'130px','text-align':'right'}">
+                                <template let-drow="rowData" pTemplate type="body">
+                                    {{drow.amount | _currency:loginUser._globsettings[0]}}
+                                </template>
+                            </p-column>
+                            <!--<footer>
+                                <table class="tableNoborder">
+                                    <tbody>
+                                        <tr>
+                                            <td width="80px" align="left">
+                                                <b>Total</b>
+                                            </td>
+                                            <td width="130px" align="right">
+                                                {{row.value.drtotal | _currency:loginUser._globsettings[0]}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </footer>-->
+                        </p-dataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel-div">
+                <div *ngFor="let row of bsrAssetsDT | groupBy:'groupval'">
+                    <p-dataTable #dt [value]="row.value" [lazy]="true">
+                        <p-column header="{{row.key}}" [style]="{'width':'130px','text-align':'left'}">
+                            <template let-row="rowData" pTemplate type="body">
+                                {{row.custname}}
+                            </template>
+                        </p-column>
+                        <p-column header="Dr. Amt." [style]="{'width':'130px','text-align':'right'}">
+                            <template let-row="rowData" pTemplate type="body">
+                                {{row.amount | _currency:loginUser._globsettings[0]}}
+                            </template>
+                        </p-column>
+                        <!--<footer>
+                            <table class="tableNoborder">
+                                <tbody>
+                                    <tr>
+                                        <td width="80px" align="left">
+                                            <b>Total</b>
+                                        </td>
+                                        <td width="130px" align="right">
+                                            {{row.value.drtotal | _currency:loginUser._globsettings[0]}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </footer>-->
+                    </p-dataTable>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
