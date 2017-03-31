@@ -391,10 +391,13 @@ export class generateInv implements OnInit, OnDestroy {
                     "docdate": CustomerDetails[0].docdate,
                     "subdocid": CustomerDetails[0].subconfid,
                     "acid": CustomerDetails[0].acid,
+                    "remark": CustomerDetails[0].remark,
                     "accode": CustomerDetails[0].custname.split(':')[0]
                 })
             }
+            console.log(param);
             return param;
+
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
@@ -408,23 +411,27 @@ export class generateInv implements OnInit, OnDestroy {
             ledgerparam.push({
                 "autoid": 0,
                 "cmpid": that.loginUser.cmpid,
-                "acid": CustomerDetails[0].acid,
+                "code": CustomerDetails[0].custcode,
+                "actype": "ac",
                 "fy": that.loginUser.fy,
-                "typ": "invoice",
+                "module": "inv",
                 "dramt": that.GrandTotal(tabledetails, taxlist),
                 "cramt": 0,
-                "nar": CustomerDetails[0].remark,
+                "narration": CustomerDetails[0].remark,
+                "trndate": CustomerDetails[0].docdate,
                 "createdby": that.loginUser.login
             })
             ledgerparam.push({
                 "autoid": 0,
                 "cmpid": that.loginUser.cmpid,
-                "acid": that.salesregister,
+                "code": that.salesregister,
+                "actype": "sales",
                 "fy": that.loginUser.fy,
-                "typ": that.salesregister,
+                "module": that.salesregister,
                 "cramt": that.GrandTotal(tabledetails, taxlist),
                 "dramt": 0,
-                "nar": CustomerDetails[0].remark,
+                "narration": CustomerDetails[0].remark,
+                "trndate": CustomerDetails[0].docdate,
                 "createdby": that.loginUser.login
             })
             return ledgerparam;
@@ -465,26 +472,29 @@ export class generateInv implements OnInit, OnDestroy {
         }
     }
 
+    // Generate Invoice Button Click 
     private GenerateInvoice(tabledetails, CustomerDetails, taxlist) {
+        var that = this;
         try {
             this.InvServies.GenerateInvoice({
-                "generatedetails": this.paramjson(tabledetails, CustomerDetails),
+                "generatedetails": that.paramjson(tabledetails, CustomerDetails),
                 "docno": CustomerDetails[0].docno,
-                "ledgerparam": this.paramledger(tabledetails, CustomerDetails, taxlist),
-                "openstockdetails": this.stockledger(tabledetails, CustomerDetails),
-                "totaltax": this.SubtotalTotalTax(tabledetails, taxlist),
-                "netamt": this.GrandTotal(tabledetails, taxlist),
-                "cmpid": this.loginUser.cmpid,
-                "fy": this.loginUser.fy,
+                "subdocid": CustomerDetails[0].subconfid,
+                "ledgerparam": that.paramledger(tabledetails, CustomerDetails, taxlist),
+                "openstockdetails": that.stockledger(tabledetails, CustomerDetails),
+                "totaltax": that.SubtotalTotalTax(tabledetails, taxlist),
+                "netamt": that.GrandTotal(tabledetails, taxlist),
+                "cmpid": that.loginUser.cmpid,
+                "fy": that.loginUser.fy,
                 "ledgerflag": 'true',
                 "stockflag": 'true'
             }).subscribe(details => {
                 var dataset = details.data;
                 if (dataset[0].funsave_generateinvoice.maxid > 0) {
-                    this._msg.Show(messageType.success, "success", dataset[0].funsave_generateinvoice.msg + ' : ' + dataset[0].funsave_generateinvoice.maxid)
+                    that._msg.Show(messageType.success, "success", dataset[0].funsave_generateinvoice.msg + ' : ' + dataset[0].funsave_generateinvoice.maxid)
                     var InvoicelocalNo = dataset.Table;
-                    this.invoices = [];
-                    this.getdocumentNo();
+                    that.invoices = [];
+                    that.getdocumentNo();
                 }
                 else {
                     console.log(dataset);

@@ -46,7 +46,7 @@
 			<template let-row pTemplate="rowexpansion">
 				<span *ngIf="!row.loading">Loading....</span>
 				<p-dataTable *ngIf="row.loading" [value]="row.details" [lazy]="true" [rows]="10" [paginator]="false" expandableRows="true"
-					[totalRecords]="totalDetailsRecords">
+					[totalRecords]="row.totalDetailsRecords">
 					<p-column header="#" [style]="{'width':'1px','text-align':'left'}">
 						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
 							{{rowIndex+1}}
@@ -55,26 +55,26 @@
 					<p-column field="item" header="Item" [style]="{'width':'100px','text-align':'left'}"></p-column>
 					<p-column field="ordqty" header="Qty." [style]="{'width':'20px','text-align':'right'}">
 						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '1'}}" [(ngModel)]="row.ordqty"></numtext>
+							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.ordqty"></numtext>
 						</template>
 					</p-column>
 					<p-column field="dis" header="Dis." [style]="{'width':'20px','text-align':'right'}">
 						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '2'}}" [(ngModel)]="row.dis"></numtext>
+							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.dis"></numtext>
 						</template>
 					</p-column>
 					<p-column field="confqty" header="Confirmqty" [style]="{'width':'20px','text-align':'right'}">
 						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '3'}}" [(ngModel)]="row.confqty"></numtext>
+							<numtext [iscurrency]="false" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.confqty"></numtext>
 						</template>
 					</p-column>
 					<p-column field="amount" header="Amount" [style]="{'width':'30px','text-align':'right'}">
 						<template let-col let-row="rowData" let-rowIndex="rowIndex" pTemplate="editor">
-							<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" id="{{'nmtxt_' + rowIndex + '4'}}" [(ngModel)]="row.amount"></numtext>
+							<numtext [iscurrency]="true" [islabel]="true" css="inlinetextbox" [(ngModel)]="row.amount"></numtext>
 						</template>
 					</p-column>
 				</p-dataTable>
-				<footer>
+				<!--<footer>
 					<table class="tableNoborder">
 						<tbody>
 							<tr>
@@ -87,7 +87,7 @@
 							</tr>
 						</tbody>
 					</table>
-				</footer>
+				</footer>-->
 			</template>
 			<footer>
 				<table class="tableNoborder">

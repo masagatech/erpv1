@@ -170,24 +170,25 @@ export class dcview implements OnInit, OnDestroy {
             row.loading = false;
             this.SalesOrdViewServies.GetSalesOrderView({
                 "flag": "detail",
-                "docno": row.docno,
+                "docno": row.data.docno,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "typ": "order"
             }).subscribe(data => {
                 row.loading = true;
-                row.details = data.data[0];
-                row.subtotal = 0;
-                row.subqty = 0;
-                row.confirmqty = 0;
-                for (let item of row.details) {
-                    row.subtotal += parseFloat(item.amount);
-                    row.subqty += parseFloat(item.ordqty);
-                    row.confirmqty += parseFloat(item.confqty);
-                }
+                var dataset = data.data;
+                row.details = dataset[0];
+                // row.subtotal = 0;
+                // row.subqty = 0;
+                // row.confirmqty = 0;
+                // for (let item of row.details) {
+                //     row.subtotal += parseFloat(item.amount);
+                //     row.subqty += parseFloat(item.ordqty);
+                //     row.confirmqty += parseFloat(item.confqty);
+                // }
             }, err => {
-                this._msg.Show(messageType.error, "error", "Technical issues");
+                this._msg.Show(messageType.error, "error", "Service Error");
             }, () => {
                 // console.log("Complete");
             })
@@ -207,7 +208,7 @@ export class dcview implements OnInit, OnDestroy {
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "search": query,
-                "typ":""
+                "typ": ""
             }).then(data => {
                 this.CustomerAutodata = data;
             });
@@ -227,7 +228,7 @@ export class dcview implements OnInit, OnDestroy {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
         this.setActionButtons.setTitle("");
-        
+
     }
 
 }

@@ -42,6 +42,7 @@ declare var $: any;
     doclist: any[];
     CustomerDetails: any = [];
     dcdetails: any = [];
+    taxlist: any = [];
 
     CustomerAutodata: any[];
 
@@ -97,7 +98,7 @@ declare var $: any;
         this.setActionButtons.setTitle("Pending Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        setTimeout(function () {
+        setTimeout(function() {
             $(".Custcode input").focus();
         }, 0);
 
@@ -114,6 +115,7 @@ declare var $: any;
         this.CustomerDetails = [];
         this.DocDetailslist = [];
         $(".Custcode input").focus();
+        this.setActionButtons.showSideMenu();
     }
 
     //Create Paramter Json
@@ -131,7 +133,7 @@ declare var $: any;
                     "rateid": item.dcrate,
                     "cmpid": this.loginUser.cmpid,
                     "fy": this.loginUser.fy,
-                    "typ":"order",
+                    "typ": "order",
                     "createdby": this.loginUser.login,
                     "confimstatus": 'Menual',
                     "autoconfirm": false
@@ -150,6 +152,10 @@ declare var $: any;
             this.ConfirmServies.ConfirmDC({
                 "confirmdetails": this.paramjson(),
                 "docno": this.docno,
+                "typ": "order",
+                "fy": this.loginUser.fy,
+                "cmpid": this.loginUser.cmpid,
+                "autoconfirm": false
             }).subscribe(documentno => {
                 var dataset = documentno.data;
                 if (dataset[0].funsave_salesorderconfirm.maxid > 0) {
@@ -188,14 +194,14 @@ declare var $: any;
                 "createdby": this.loginUser.login,
                 "from": this.fromcal.getDate(),
                 "to": this.tocal.getDate(),
-                "typ":"order"
+                "typ": "order"
             }).subscribe(ordno => {
                 var dataset = ordno.data === null ? [] : ordno.data;
                 if (dataset.length > 0) {
                     this.doclist = dataset;
                 }
                 else {
-                    this._msg.Show(messageType.info, "info", "Record Not Found");
+                    this._msg.Show(messageType.error, "error", "Record Not Found");
                     this.doclist = [];
                     $(".Custcode input").focus();
                 }
@@ -220,7 +226,7 @@ declare var $: any;
                 "docno": items.docno,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
-                "typ":"order"
+                "typ": "order"
             }).subscribe(documentno => {
                 this.CustomerDetails = documentno.data[0] === null ? [] : documentno.data[0];
                 this.dcdetails = documentno.data[1] === null ? [] : documentno.data[1];
@@ -229,13 +235,15 @@ declare var $: any;
                     this.acid = this.CustomerDetails[0].custid;
                     this.cust = this.CustomerDetails[0].cust;
                     this.salesman = this.CustomerDetails[0].salesman;
+                    this.taxlist = this.CustomerDetails[0].taxdetail === null ? [] : this.CustomerDetails[0].taxdetail;
                     this.docdate = this.CustomerDetails[0].docdate;
                     this.deldate = this.CustomerDetails[0].deldate;
                     this.remark = this.CustomerDetails[0].remark;
                     this.DocDetailslist = this.dcdetails;
+                    this.setActionButtons.hideSideMenu();
                 }
                 else {
-                    this._msg.Show(messageType.info, "info", "Record Not Found");
+                    this._msg.Show(messageType.error, "error", "Record Not Found");
                     this.CustomerDetails = [];
                     this.DocDetailslist = [];
                     this.dcdetails = [];
@@ -252,6 +260,29 @@ declare var $: any;
 
     }
 
+    //Sub Total 
+    Subtotal() {
+        var subtotal = 0;
+        for (var i = 0; i < this.DocDetailslist.length; i++) {
+            subtotal += parseFloat(this.DocDetailslist[i].amount);
+        }
+        return subtotal;
+    }
+
+    //Grand Total 
+    GrandTotal() {
+        return this.Subtotal() + this.SubtotalTax();
+    }
+
+    //Total Tax 
+    SubtotalTax() {
+        var totaltax = 0;
+        for (var i = 0; i < this.taxlist.length; i++) {
+            totaltax += this.Subtotal() * parseFloat(this.taxlist[i].taxval) / 100;
+        }
+        return totaltax;
+    }
+
     //Customer Autoextender
     CustomerAuto(event) {
         try {
@@ -262,7 +293,7 @@ declare var $: any;
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "search": query,
-                "typ":""
+                "typ": ""
             }).then(data => {
                 this.CustomerAutodata = data;
             });
@@ -284,7 +315,7 @@ declare var $: any;
         var DisAmt = 0;
         if (row.ordqty != "" && row.ordqty != "0") {
             if (parseInt(row.ordqty) > parseInt(row.oldqty)) {
-                this._msg.Show(messageType.info, "info", "Please Enter valid Quntity")
+                this._msg.Show(messageType.error, "error", "Please Enter valid Quntity")
                 for (var i = 0; i < this.DocDetailslist.length; i++) {
                     if (this.DocDetailslist[i].detaiid === detaiid) {
                         this.DocDetailslist[i].ordqty = row.oldqty;

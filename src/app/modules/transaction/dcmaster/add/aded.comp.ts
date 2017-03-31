@@ -6,7 +6,7 @@ import { CommonService } from '../../../../_service/common/common-service'
 import { dcmasterService } from "../../../../_service/dcmaster/add/dcmaster-service";
 import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
-import { LazyLoadEvent, DataTable, AutoCompleteModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTable, AutoCompleteModule, DialogModule } from 'primeng/primeng';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
 import { ALSService } from '../../../../_service/auditlock/als-service';
@@ -50,6 +50,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     selected: any = [];
     rateslist: any = [];
     newrate: any = "";
+    taxlist: any = [];
 
     //Declare Table Veriable
     autoid: number = 0;
@@ -93,6 +94,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     isinvoice: boolean;
     issaleord: boolean;
     typ: any = "";
+    dialogShow: boolean;
 
     CustomerAutodata: any[];
     ItemAutodata: any = [];
@@ -101,10 +103,12 @@ export class dcADDEdit implements OnInit, OnDestroy {
     sitemob: any = "";
     siteupper: any = 0;
     sitelower: any = 0;
+    draftno: number = 0;
 
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+    draftlist: any = [];
 
     //Calendor
     @ViewChild("docdatecal")
@@ -125,6 +129,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.loginUser = this._userService.getUser();
     }
 
+    //Get Audit log Date
     setAuditDate() {
         var that = this;
         that._alsservice.getAuditLockSetting({
@@ -150,7 +155,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.setAuditDate();
         this.actionButton.push(new ActionBtnProp("back", "Back to view", "long-arrow-left", true, false));
         var ddlSaveBtns = [];
-        ddlSaveBtns.push(new ActionBtnProp("save", "Save", "save", true, false));
+        ddlSaveBtns.push(new ActionBtnProp("save", "Create Order", "save", true, false));
         ddlSaveBtns.push(new ActionBtnProp("saveasdrft", "Save as Draft", "save", true, false));
 
 
@@ -164,8 +169,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.footer = true;
-        setTimeout(function () {
-            $('#CustName input').focus();
+        setTimeout(function() {
+            $('.CustName input').focus();
             commonfun.addrequire();
         }, 0);
 
@@ -177,7 +182,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this.actionButton.find(a => a.id === "edit").hide = false;
 
                 this.DocNo = params['id'];
-                this.GetEditData(this.DocNo);
+                this.GetEditData(this.DocNo, "order");
 
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
@@ -194,6 +199,21 @@ export class dcADDEdit implements OnInit, OnDestroy {
         });
 
         this.SettingStatus();
+        this.getdraftdocno();
+    }
+
+    //Show Dialog Modal
+    showDialog() {
+        this.dialogShow = true;
+    }
+
+    //Hide Dialog Modal
+    hideDialog() {
+        this.dialogShow = false;
+    }
+
+    onAfterShow(event) {
+
     }
 
     loadRBIGrid(event: LazyLoadEvent) {
@@ -228,6 +248,25 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     }
 
+    //Get Draft Document No
+    getdraftdocno() {
+        var that = this;
+        that.SalesOrderServies.getdcdetails({
+            "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
+            "createdby": that.loginUser.login,
+            "flag": 'draft',
+            "flag1": ''
+        }).subscribe(details => {
+            var dataset = details.data;
+            that.draftlist = dataset;
+        }, err => {
+            console.log('Error');
+        }, () => {
+            // console.log('Complet');
+        });
+    }
+
     //Clear All Controll
     private ClearControll() {
         this.CustName = "";
@@ -243,9 +282,10 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.warehouselist = [];
         this.Transpoterlist = [];
         this.Traspoter = 0;
+        this.draftno = 0;
         this.newAddRow = [];
         this.addresslist = [];
-        $('#CustName input').focus();
+        $('.CustName input').focus();
         this.clearGridFooter();
         this.combolist = [];
 
@@ -265,7 +305,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.amount = "";
     }
 
-    salesorderdetailsjson() {
+    salesorderdetailsjson(typ) {
         try {
             var jsonparam = [];
             for (let item of this.newAddRow) {
@@ -277,7 +317,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     "rate": rate[0].val,
                     "rateid": rate[0].id,
                     "dis": item.dis,
-                    "typ": "order",
+                    "typ": typ,
                     "amount": item.amount
                 })
             }
@@ -305,12 +345,51 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     }
 
-    //Salesorder Invoice Paramter
-    paramterjson() {
+    //Get Draft Details
+    GetdraftDetails(item) {
+        this.GetEditData(item.docno, "draft");
+        this.draftno = item.docno;
+    }
+
+    //Save With Order
+    salesOrderSave(typ) {
         var that = this;
+        var validateme = commonfun.validate();
+        if (!validateme.status) {
+            that._msg.Show(messageType.error, "error", validateme.msglist);
+            validateme.data[0].input.focus();
+            return;
+        }
+        if (this.CustID == 0) {
+            that._msg.Show(messageType.error, "error", "Please enter customer name");
+            $(".CustName input").focus();
+            return false;
+        }
+        if (this.Salesmanlist.length > 0) {
+            if (this.salesid == 0) {
+                that._msg.Show(messageType.error, "error", "Please enter customer name");
+                $(".salesman").focus();
+                return false;
+            }
+        }
+        if (this.warehouselist.length > 0) {
+            if (this.wareid == 0) {
+                that._msg.Show(messageType.error, "error", "Please select warehuse");
+                $(".warehouse").focus();
+                return false;
+            }
+        }
+
+        if (that.newAddRow.length == 0) {
+            that._msg.Show(messageType.error, "error", "Please enter items detail");
+            $(".ProdName").focus();
+            return false;
+        }
         try {
-            var param = {
+            that.actionButton.find(a => a.id === "save").enabled = false;
+            that.SalesOrderServies.saveDcMaster({
                 "docno": that.DocNo,
+                "draftno": that.draftno,
                 "docdate": that.docdatecal.getDate(),
                 "acid": that.CustID,
                 "refno": that.Token,
@@ -318,26 +397,44 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "salesid": that.salesid,
                 "whid": that.wareid,
                 "traspo": that.Traspoter,
-                "status": "",
-                "typ": "order",
+                "typstatus": typ === 'order' ? true : false,
+                "typ": typ,
+                "taxdetail":that.taxlist,
                 "fy": that.loginUser.fy,
                 "cmpid": that.loginUser.cmpid,
                 "createdby": that.loginUser.login,
                 "remark": that.Remark,
                 "directinvoice": that.DirectInvoice,
-                "dcdetails": that.salesorderdetailsjson(),
+                "dcdetails": that.salesorderdetailsjson(typ),
                 "autoconfirm": that.isconfirm,
                 "autoinvoice": that.isinvoice,
                 "confirmparam": that.confirmparam(),
-                "remark1": that.Remark1,
+                "uid": that.loginUser.uid,
+                "module": typ === 'order' ? "salesOrder" : "salesOrderDarft",
+                "loginsessionid": that.loginUser._sessiondetails.sessionid,
+                "remark1": that.draftno > 0 ? "draft No" + that.draftno : that.Remark1,
                 "remark2": that.Remark2,
                 "remark3": that.Remark3
-            }
+            }).subscribe(result => {
+                var returndata = result.data;
+                if (returndata[0].funsave_salesorder.maxid > 0) {
+                    this._msg.Show(messageType.success, "success", returndata[0].funsave_salesorder.msg + ' : ' + returndata[0].funsave_salesorder.maxid)
+                    this.ClearControll();
+                    $('.custname').focus();
+                }
+                else {
+                    console.log(returndata);
+                }
+            }, err => {
+                console.log(err);
+            }, () => {
+                //console.log("Done");
+            })
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
             return;
         }
-        return param;
+        this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
     //Add Top Buttons
@@ -350,40 +447,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this._router.navigate(['transaction/dcmaster']);
         }
         if (evt === "save") {
-            var validateme = commonfun.validate();
-            if (!validateme.status) {
-                this._msg.Show(messageType.error, "error", validateme.msglist);
-                validateme.data[0].input.focus();
-                return;
-            }
-            if (this.newAddRow.length == 0) {
-                this._msg.Show(messageType.error, "error", "Please enter items detail");
-                return false;
-            }
-            try {
-                this.SalesOrderServies.saveDcMaster(
-                    this.paramterjson()
-                ).subscribe(result => {
-                    var returndata = result.data;
-                    if (returndata[0].funsave_salesorder.maxid > 0) {
-                        this._msg.Show(messageType.success, "success", returndata[0].funsave_salesorder.msg + ' : ' + returndata[0].funsave_salesorder.maxid)
-                        this.ClearControll();
-                        $('.custname').focus();
-                    }
-                    else {
-                        console.log(returndata);
-                    }
-                }, err => {
-                    console.log(err);
-                }, () => {
-                    //console.log("Done");
-                })
-            } catch (e) {
-                this._msg.Show(messageType.error, "error", e.message);
-                return;
-            }
-
-            this.actionButton.find(a => a.id === "save").hide = false;
+            this.salesOrderSave("order");
         } else if (evt === "edit") {
             $('input').removeAttr('disabled');
             $('select').removeAttr('disabled');
@@ -391,47 +455,24 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.actionButton.find(a => a.id === "save").hide = false;
             this.actionButton.find(a => a.id === "edit").hide = true;
         } else if (evt === "saveasdrft") {
-            alert("save as draft");
-            // this.SalesOrderServies.deleteDcMaster({
-            //     "DCNo": this.DocNo,
-            //     "DCDetelId": 0,
-            //     "CmpCode": "Mtech",
-            //     "FY": 5,
-            //     "UserCode": "Admin",
-            //     "Flag": "DC"
-            // }).subscribe(data => {
-            //     var dataset = data.data;
-            //     if (dataset.Table[0].doc > 0) {
-            //         alert('Delete Data Successfully Document :' + dataset.Table[0].doc)
-            //         this.ClearControll();
-            //         $('input').removeAttr('disabled');
-            //         $('select').removeAttr('disabled');
-            //         $('textarea').removeAttr('disabled');
-            //         this.actionButton.find(a => a.id === "save").hide = false;
-            //         this.actionButton.find(a => a.id === "save").hide = false;
-            //         $('.custname').focus();
-            //     }
-            //     else {
-            //         console.log(dataset.Table[0].status)
-            //     }
-            // }, err => {
-            //     console.log("Error");
-            // }, () => {
-            //     // console.log("Complete");
-            // })
+            //Save With Draft
+            this.salesOrderSave("draft");
+            this.getdraftdocno();
         }
     }
 
     //Edit Salesoder
-    GetEditData(Docno) {
+    GetEditData(Docno, typ) {
+        this.DocNo = Docno;
         try {
             this.SalesOrderServies.GetSalesOrderView({
                 "flag": "edit",
-                "docno": Docno,
+                "docno": this.DocNo,
                 "cmpid": this.loginUser.cmpid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
-                "typ": "order"
+                "typ": "order" === typ ? "order" : "draft",
+                "darftno": this.draftno
             }).subscribe(data => {
                 var dataset = data.data;
                 var CustomerMaster = dataset[0];
@@ -446,6 +487,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     this.wareid = CustomerMaster[0].whid;
                     this.Traspoter = CustomerMaster[0].transid;
                     this.newAddRow = dataset[1];
+                    console.log(dataset[1]);
                 }
             }, err => {
                 console.log("Error");
@@ -526,6 +568,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     // //Selected Customer  Event
     CustomerSelected(custid, custcode) {
+        commonfun.loader('.loading');
         var that = this;
         try {
             if (custcode != "") {
@@ -543,21 +586,27 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     "flag1": ''
                 }).subscribe(details => {
                     var dataset = details.data;
-                    debugger;
-                    //var ispramarydata = dataset[0]._addressout.filter(item => item.isprimary = true);
+                    // var ispramarydata = dataset[0]._addressout.filter(item => item.isprimary = 'true');
                     that.addresslist = dataset[0]._addressout === null ? [] : dataset[0]._addressout;
-                    that.siteemail = dataset[0]._addressout[0].email;
-                    that.sitemob = dataset[0]._addressout[0].mob;
-                    that.siteupper = dataset[0]._uplimit;
-                    that.sitelower = dataset[0]._lolimit;
+                    if (that.addresslist.length > 0) {
+                        that.siteemail = dataset[0]._addressout[0].email;
+                        that.sitemob = dataset[0]._addressout[0].mob;
+                    }
+                    that.siteupper = dataset[0]._uplimit === null ? 0 : dataset[0]._uplimit;
+                    that.sitelower = dataset[0]._lolimit === null ? 0 : dataset[0]._lolimit;
                     that.warehouselist = dataset[0]._whout === null ? [] : dataset[0]._whout;
                     that.Transpoterlist = dataset[0]._transout === null ? [] : dataset[0]._transout;
                     that.Salesmanlist = dataset[0]._salesout === null ? [] : dataset[0]._salesout;
+                    that.salesid = that.Salesmanlist.length > 0 ? that.Salesmanlist[0].val : 0;
+                    that.taxlist = dataset[0]._taxdetail === null ? [] : dataset[0]._taxdetail;
+
                     that.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
+                    commonfun.loaderhide('.loading');
                 }, err => {
                     console.log('Error');
                 }, () => {
                     // console.log('Complet');
+                    commonfun.loaderhide('.loading');
                 });
                 that.CustfilteredList = [];
             }
@@ -565,6 +614,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this._msg.Show(messageType.error, "error", e.message);
             return;
         }
+
     }
 
     //Rate Change Event
@@ -605,7 +655,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Delete Combo Item
     combodel(item) {
-      debugger;
+        debugger;
     }
 
     // //Selected Items
@@ -694,6 +744,11 @@ export class dcADDEdit implements OnInit, OnDestroy {
     //Add New Row
     private NewRowAdd() {
         try {
+            if (this.CustID === 0) {
+                this._msg.Show(messageType.error, "error", "Please Select Customer");
+                $(".CustName input").focus();
+                return;
+            }
             if (this.wareid === 0) {
                 this._msg.Show(messageType.error, "error", "Please Select Warehouse");
                 return;
@@ -717,11 +772,6 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     break;
                 }
             }
-            if (this.Totalamount() > parseFloat(this.siteupper)) {
-                this._msg.Show(messageType.error, "error", "Out of Limit please check customer limit");
-                $(".ProdName").focus();
-                return;
-            }
             if (this.Duplicateflag == true) {
                 this.newAddRow.push({
                     "autoid": this.autoid,
@@ -736,7 +786,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 });
 
                 this.clearGridFooter();
-                $(".ProdName").focus();
+                $(".ProdName input").focus();
             }
             else {
                 this._msg.Show(messageType.error, "error", "Duplicate Item");

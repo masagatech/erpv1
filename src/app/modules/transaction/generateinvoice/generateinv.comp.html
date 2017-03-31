@@ -90,7 +90,7 @@
 							<p-column field="itemname" header="Item name" [style]="{'width':'130px','text-align':'left'}"></p-column>
 							<p-column header="Qty." [style]="{'width':'50px','text-align':'right'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>
+									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>
 								</template>
 							</p-column>
 							<p-column header="Rate" [style]="{'width':'50px','text-align':'right'}">

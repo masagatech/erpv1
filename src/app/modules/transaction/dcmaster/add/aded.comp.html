@@ -5,9 +5,8 @@
 				<div class="col-md-6">
 					<div class='form-group' id="customerAuto">
 						<label>Customer</label>
-						<p-autoComplete [(ngModel)]="CustName" id="CustName" class="form-controlAutoComplete" (onSelect)="CustomerSelect($event)"
-							[suggestions]="CustomerAutodata" (completeMethod)="CustomerAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Customer"
-							[minLength]="1"></p-autoComplete>
+						<p-autoComplete [(ngModel)]="CustName" class="form-controlAutoComplete CustName" (onSelect)="CustomerSelect($event)" [suggestions]="CustomerAutodata"
+							(completeMethod)="CustomerAuto($event)" [tabindex]="1" field="label" [size]="30" placeholder="Customer" [minLength]="1"></p-autoComplete>
 					</div>
 				</div>
 				<div class="col-md-3">
@@ -26,7 +25,8 @@
 				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Salesman</label>
-						<select class="form-control" [(ngModel)]="salesid" tabindex="4">
+						<select class="form-control salesman" [(ngModel)]="salesid" tabindex="4">
+							<option [value]="'0'">Select Salesman</option>
 								<option *ngFor="let items of Salesmanlist" [value]="items.val">
 									{{items.label}}
 								</option>
@@ -36,7 +36,8 @@
 				<div class="col-md-6">
 					<div class='form-group'>
 						<label>Warehouse</label>
-						<select class="form-control" [(ngModel)]="wareid" tabindex="5">
+						<select class="form-control warehouse" [(ngModel)]="wareid" tabindex="5">
+							<option [value]="'0'">Select Warehouse</option>
 								<option *ngFor="let items of warehouselist" [value]="items.val">
 									{{items.label}}
 								</option>
@@ -148,24 +149,26 @@
 								</tbody>
 							</table>
 						</footer>
+
+						<!--*ngIf="newAddRow.length>0"-->
 						<footer>
-							<table>
-								<tbody style="float: right;">
-									<tr class="bg-warning">
-										<td colspan="5"><b style="float:left;">Gross Total</b></td>
-										<td colspan="4" class="textalign"><b>{{Totalamount() | _currency:loginUser._globsettings[0] }}</b></td>
+							<table class="row">
+								<tbody class="col-md-4 pull-right">
+									<tr>
+										<td><b class="pull-left">Gross Total</b></td>
+										<td><b>{{Totalamount() | _currency:loginUser._globsettings[0] }}</b></td>
 									</tr>
-									<tr class="bg-warning" *ngFor="let item of taxlist">
-										<td colspan="5"><b style="float:left;">{{item.taxname}}</b></td>
-										<td class="textalign">
-											<span>Total Tax</span>
+									<tr *ngFor="let item of taxlist">
+										<td><b class="pull-left">Tax :  {{item.taxname}}</b></td>
+										<td>
+											<span>{{item.taxval}}%</span>
 										</td>
-										<td class="textalign"><b style="float:right;">Total</b></td>
+										<td><b class="pull-right">{{item.taxval}}</b></td>
 									</tr>
-									<tr class="bg-warning">
-										<td colspan="5" class="textalign"><b style="float:left;">Grand Total</b></td>
+									<tr>
+										<td><b class="pull-left">Net Total</b></td>
 										<td></td>
-										<td class="textalign"><b style="float:right;">Grand Total</b></td>
+										<td><b class="pull-right">0.00</b></td>
 									</tr>
 								</tbody>
 							</table>
@@ -297,10 +300,27 @@
 			</div>
 		</div>
 	</div>
+	<p-dialog [(visible)]="dialogShow" (onAfterShow)="onAfterShow($event)" header="All Address" modal="modal" width="550" responsive="true">
+		<div class="col-md-3" style="height:150px;" *ngFor="let item of addresslist">
+			<div class="panel panel-theme">
+				<div class="panel-heading">
+					<h3 class="panel-title text-right"><i title="Primary Address" class="fa fa-check pull-left" *ngIf="item.isprimary"></i><span class="pull-left">{{item.firstnam}} {{item.middlenam}}</span>
+						<button class="btn btn-theme btn-xs" type="button" data-toggle="modal" data-target="#myModal">
+							<i class="fa fa-edit"></i></button>
+					</h3>
+				</div>
+				<div class="panel-body" style="height:100px;overflow:hidden;padding-bottom:5px">
+					<div>{{item.address1}} {{item.city}} {{item.state}} {{item.pin}} </div>
+					<div>Email : {{item.email}}</div>
+					<div>Mob : {{item.mob}}</div>
+				</div>
+			</div>
+		</div>
+	</p-dialog>
 </div>
 <div class="sidepan">
 	<!--widgit-->
-	<div class="panel panel-theme">
+	<div class="panel panel-theme loading" style="min-hight:100px;max-hight:150px;overflow:auto;">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
 				<h3 class="panel-title">Customer Address</h3>
@@ -314,11 +334,11 @@
 					<span>{{items.email}}</span>
 					<span>{{items.mob}}</span>
 				</div>
-				<a role="button" class="pull-right" *ngIf="addresslist.length">Change Address</a>
+				<a role="button" class="pull-right" (click)="showDialog()" *ngIf="addresslist.length">Change Address</a>
 			</div>
 		</div>
 	</div>
-	<div class="panel panel-theme">
+	<div class="panel panel-theme loading" style="min-hight:100px;max-hight:150px;overflow:auto;">
 		<div class="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
 				<h3 class="panel-title">Customer Details</h3>
@@ -331,6 +351,28 @@
 				<div>Mob : {{sitemob}}</div>
 				<div>Upper Limit : {{siteupper | _currency:loginUser._globsettings[0]}}</div>
 				<div>lower Limit : {{sitelower | _currency:loginUser._globsettings[0]}}</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-theme">
+		<div class="panel-heading">
+			<div class="row">
+				<div class="col-md-9">
+					<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+						<h3 class="panel-title">Draft Details</h3>
+					</a>
+				</div>
+				<div class="col-md-3">
+					<ul class="nav navbar-nav navbar-right">
+						<a href="javascript:void(0)" class="btn-grid" (click)="getdraftdocno()"><i class="fa fa-refresh"></i></a>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<span *ngIf="!draftlist.length">No any Draft</span>
+		<div id="Personal" class="panel-collapse collapse in" *ngIf="draftlist.length">
+			<div class="panel-body">
+				<a role="button" *ngFor="let item of draftlist" class="btn btn-theme btn-grid" (click)="GetdraftDetails(item)">{{item.docno}}</a>
 			</div>
 		</div>
 	</div>
