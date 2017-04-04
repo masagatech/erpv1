@@ -34,6 +34,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     custid: number = 0;
     custcode: string = "";
     custname: string = "";
+    ccid: number = 0;
     bankid: number = 0;
     bankcode: string = "";
     amount: number = 0;
@@ -183,7 +184,9 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.autoid = 0;
         this.bankid = 0;
         this.issuedate.setDate("");
+        this.custcode = "";
         this.custname = "";
+        this.ccid = 0;
         this.refno = "";
         this.typ = "";
         this.amount = 0;
@@ -213,6 +216,9 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.custid = event.value;
         this.custcode = event.custcode;
         this.custname = event.label;
+        this.ccid = event.ccid;
+
+        console.log(this.ccid);
     }
 
     // Get Bank Master And Type
@@ -262,6 +268,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             this.custid = _bankpayment[0].custid;
             this.custcode = _bankpayment[0].custcode;
             this.custname = _bankpayment[0].custname;
+            this.ccid = _bankpayment[0].ccid;
             this.refno = _bankpayment[0].refno;
             this.typ = _bankpayment[0].typ;
             this.cheqno = _bankpayment[0].cheqno;
@@ -305,10 +312,12 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 "trndate": that.issuedate.getDate(),
                 "actype": "ac",
                 "code": that.custcode,
-                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.bankid, "name": that.bankid },
+                "name": that.custname,
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "ischeqbounce": that.ischeqbounce, "code": that.bankid, "name": that.bankid },
                 "dramt": that.amount,
                 "cramt": 0,
                 "narration": that.narration,
+                "ccid": that.ccid,
                 "createdby": that.loginUser.login
             });
 
@@ -320,10 +329,12 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
                 "trndate": that.issuedate.getDate(),
                 "actype": "bank",
                 "code": that.bankid,
-                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.custcode, "name": that.custcode },
+                "name": that.bankid,
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "ischeqbounce": that.ischeqbounce, "code": that.custcode, "name": that.custname },
                 "dramt": 0,
                 "cramt": that.amount,
                 "narration": that.narration,
+                "ccid": that.ccid,
                 "createdby": that.loginUser.login
             });
         }
@@ -347,6 +358,8 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             "isactive": isactive,
             "ledgerparam": that.ledgerParamDT
         }
+
+        console.log(that.ledgerParamDT);
 
         that._bpservice.saveBankPayment(ParamName).subscribe(result => {
             try {

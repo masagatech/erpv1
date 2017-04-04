@@ -38,6 +38,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     custid: number = 0;
     custcode: string = "";
     custname: string = "";
+    ccid: number = 0;
     cheqno: string = "";
     amount: any = "";
     refno: string = "";
@@ -225,6 +226,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         this.custid = event.value;
         this.custcode = event.custcode;
         this.custname = event.label;
+        this.ccid = event.ccid;
     }
 
     // Get Bank Master And Type
@@ -261,6 +263,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.custid = _bankreceipt[0].acid;
             this.custcode = _bankreceipt[0].custcode;
             this.custname = _bankreceipt[0].partyname;
+            this.ccid = _bankreceipt[0].ccid;
             this.refno = _bankreceipt[0].refno;
             this.typ = _bankreceipt[0].typ;
             this.cheqno = _bankreceipt[0].cheqno;
@@ -287,6 +290,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.custid = _bankreceipt[0].acid;
             this.custcode = _bankreceipt[0].custcode;
             this.custname = _bankreceipt[0].partyname;
+            this.ccid = _bankreceipt[0].ccid;
             this.refno = "";
             this.typ = _bankreceipt[0].typ;
             this.cheqno = _bankreceipt[0].cheqno;
@@ -337,10 +341,12 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 "trndate": that.depdate.getDate(),
                 "actype": "ac",
                 "code": that.custcode,
+                "name": that.custname,
                 "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.bankid, "name": that.bankid },
                 "dramt": 0,
                 "cramt": that.amount,
                 "narration": that.narration,
+                "ccid": that.ccid,
                 "createdby": that.loginUser.login
             });
 
@@ -352,10 +358,12 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 "trndate": that.depdate.getDate(),
                 "actype": "bank",
                 "code": that.bankid,
+                "name": that.bankid,
                 "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.custcode, "name": that.custcode },
                 "dramt": that.amount,
                 "cramt": 0,
                 "narration": that.narration,
+                "ccid": that.ccid,
                 "createdby": that.loginUser.login
             });
         }
