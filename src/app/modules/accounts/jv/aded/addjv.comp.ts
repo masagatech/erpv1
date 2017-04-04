@@ -346,18 +346,6 @@ export class AddJV implements OnInit, OnDestroy {
         })
     }
 
-    // get jv details by id
-
-    getJVDetailsByJVID(pjvmid: number) {
-        this._jvservice.getJVDetails({ "flag": "details", "jvmid": pjvmid }).subscribe(data => {
-            this.jvRowData = data.data;
-        }, err => {
-            this._msg.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
     // save jv
 
     onUploadStart(e) {
