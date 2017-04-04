@@ -377,6 +377,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             "bankid": that.bankid,
             "typ": that.typ,
             "acid": that.custid,
+            "accode": that.custcode,
             "cheqno": that.cheqno,
             "amount": that.amount,
             "narration": that.narration,

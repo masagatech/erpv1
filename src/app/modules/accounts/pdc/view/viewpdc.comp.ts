@@ -32,7 +32,6 @@ export class ViewPDC implements OnInit, OnDestroy {
     constructor(private _router: Router, private _pdcservice: PDCService, private setActionButtons: SharedVariableService, private _userService: UserService) {
         this.loginUser = this._userService.getUser();
         this.getDefaultDate();
-        this.getMonthWisePDC();
     }
 
     formatDate(date) {
@@ -79,6 +78,7 @@ export class ViewPDC implements OnInit, OnDestroy {
             "monthname": row.view.title
         }).subscribe(data => {
             that.events = data.data;
+            that.getMonthWisePDC(row);
         }, err => {
             console.log("Error");
         }, () => {
@@ -86,11 +86,11 @@ export class ViewPDC implements OnInit, OnDestroy {
         })
     }
 
-    getMonthWisePDC() {
+    getMonthWisePDC(row) {
         var that = this;
 
         that._pdcservice.getPDCDetails({
-            "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "month": "3"
+            "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "monthname": row.view.title
         }).subscribe(data => {
             that.monthwisepdc = data.data;
         }, err => {
@@ -107,9 +107,8 @@ export class ViewPDC implements OnInit, OnDestroy {
             that._pdcservice.getPDCDetails({
                 "flag": "pdctype", "pdctype": row.calEvent.pdctype, "chequedate": row.calEvent.start,
                 "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
-                "monthname": row.view.title
+                "monthname": row.calEvent.monthname
             }).subscribe(data => {
-                debugger;
                 that.viewPDCDT = data.data;
                 that.pdctype = data.data[0].pdctype;
             }, err => {
@@ -139,35 +138,6 @@ export class ViewPDC implements OnInit, OnDestroy {
         this._router.navigate(['/accounts/pdc/edit/', row.pdcid]);
     }
 
-    handleDayClick(event) {
-        this.event = new MyEvent();
-        this.event.start = event.date.format();
-        this.dialogVisible = true;
-    }
-
-    handleEventClick(e) {
-        this.event = new MyEvent();
-        this.event.title = e.calEvent.title;
-
-        let start = e.calEvent.start;
-        let end = e.calEvent.end;
-
-        if (e.view.name === 'month') {
-            start.stripTime();
-        }
-
-        if (end) {
-            end.stripTime();
-            this.event.end = end.format();
-        }
-
-        this.event.id = e.calEvent.id;
-        this.event.start = start.format();
-        this.event.allDay = e.calEvent.allDay;
-
-        this.dialogVisible = true;
-    }
-
     actionBarEvt(evt) {
         if (evt === "add") {
             this._router.navigate(['/accounts/pdc/add']);
@@ -184,6 +154,7 @@ export class ViewPDC implements OnInit, OnDestroy {
 export class MyEvent {
     id: number;
     pdctype: string;
+    monthname: string;
     title: string;
     start: string;
     end: string;

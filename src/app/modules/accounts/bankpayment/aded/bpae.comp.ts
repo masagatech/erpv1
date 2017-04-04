@@ -346,6 +346,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             "bankpayid": that.bankpayid,
             "refno": that.refno,
             "acid": that.custid,
+            "accode": that.custcode,
             "bankid": that.bankid,
             "issuedate": that.issuedate.getDate(),
             "uidcode": that.loginUser.login,
