@@ -29,4 +29,16 @@ export class ReportsService {
     getBalanceSheet(req: any) {
         return this._dataserver.post("getBalanceSheet", req);
     }
+
+    getTrialBalance(req: any) {
+        return this._dataserver.post("getTrialBalance", req);
+    }
+
+    getDebtorsRpt(req: any) {
+        return this._dataserver.post("getDebtorsRpt", req);
+    }
+
+    getJVReport(req: any) {
+        return this._dataserver.post("getJVReport", req);
+    }
 }

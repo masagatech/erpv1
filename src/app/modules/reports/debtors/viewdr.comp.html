@@ -1,0 +1,99 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>From Date</label>
+                <calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>To Date</label>
+                <calendar #todate [name]="'todate'" tabindex="3"></calendar>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group setfltrbtn">
+                <button type="button" class="btn btn-theme btn-sm" (click)="filterDebtorsReport(dt)">
+					<i class="fa fa-arrow-right"></i>
+				</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="debtorsDT" [lazy]="true" [rows]="15" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadDebtorsReport($event)">
+            <p-column header="Code" [style]="{'width':'100px','text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custcode}}
+                </template>
+            </p-column>
+            <p-column header="Customer Name" [style]="{'text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custname}}
+                </template>
+            </p-column>
+            <p-column header="Opening Balance" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.opbal | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Bill Amount" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.billamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Other Amount" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.othamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Received Amount" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.recamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="CN Amount" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.cnamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Net Amount" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.netamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <footer *ngIf="debtorsDT.length">
+                <table class="tableNoborder">
+                    <tbody>
+                        <tr>
+                            <td align="left" colspan="2">
+                                <b>Total Amount</b>
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotal.OPBalTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotal.BillAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotal.OthAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotal.RecAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotal.CNAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotal.NetAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>

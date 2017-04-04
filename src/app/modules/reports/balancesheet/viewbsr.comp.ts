@@ -23,10 +23,11 @@ export class BSRReports implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
+    bsrDT: any = [];
     bsrAssetsDT: any = [];
     bsrLiabilitiyDT: any = [];
 
-    gridTotal: any = { AmtTotal: 0 };
+    gridTotal: any = { LIAmtTotal: 0, ASAmtTotal: 0 };
 
     // Page Init
 
@@ -56,10 +57,14 @@ export class BSRReports implements OnInit, OnDestroy {
         that._rptservice.getBalanceSheet({
             "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(bsr => {
-            that.bsrAssetsDT = bsr.data.filter(a => a.groupcode === "AS");
-            that.bsrLiabilitiyDT = bsr.data.filter(a => a.groupcode === "LI");
-            console.log(that.bsrLiabilitiyDT);
-            //that.TotalAmount();
+            // that.bsrLiabilitiyDT = bsr.data.filter(a => a.pid === "LI");
+            // that.bsrAssetsDT = bsr.data.filter(a => a.pid === "AS");
+
+            that.bsrDT = bsr.data[0];
+            var libcfamt = bsr.data[1][0].libcfamt;
+            var asscfamt = bsr.data[1][0].asscfamt;
+            that.bsrDT.push({ "pname":"LIABILITY", "scname": "BALANCE C/F", "amount": "" + libcfamt + "" });
+            that.bsrDT.push({ "pname":"ASSETS", "scname": "BALANCE C/F", "amount": "" + asscfamt + "" });
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
             commonfun.loaderhide();
@@ -68,14 +73,15 @@ export class BSRReports implements OnInit, OnDestroy {
         });
     }
 
-    TotalAmount() {
+    TotalAmount(row) {
         var that = this;
-        that.gridTotal = { AmtTotal: 0 };
+        var AmtTotal = 0;
 
-        for (var i = 0; i < this.bsrAssetsDT.length; i++) {
-            var items = this.bsrAssetsDT[i];
-            that.gridTotal.AmtTotal += parseFloat(items.dramt);
+        for (var i = 0; i <= row.length - 1; i++) {
+            AmtTotal += parseFloat(row[i].amount);
         }
+
+        return AmtTotal;
     }
 
     ngOnDestroy() {
