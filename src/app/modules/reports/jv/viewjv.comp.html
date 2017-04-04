@@ -19,38 +19,51 @@
 				</button>
             </div>
         </div>
+        <div class="col-md-7">
+            <div class="form-group setfltrbtn">
+                <p-checkbox [(ngModel)]="isnarr" name="chkIsNarr" value="Show Narration" label="Show Narration" binary="true"></p-checkbox>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="col-md-12">
     <div class="table-responsive">
-        <p-dataTable #dt [value]="jvRptDT" [lazy]="true" [rows]="20" [paginator]="true" [totalRecords]="totalRecords" rowGroupMode="subheader"
+        <p-dataTable #dt [value]="jvRptDT" [lazy]="true" [rows]="21" [paginator]="true" [totalRecords]="totalRecords" rowGroupMode="subheader"
             groupField="groupname" (onLazyLoad)="loadJVReport($event)">
             <template pTemplate="rowgroupheader" let-rowData>
                 <table class="tableNoborder">
                     <tr>
-                        <td width="130px">
+                        <td width="150px">
                             {{rowData['docdate']}}
                         </td>
                         <td>
                             {{rowData['docno']}}
                         </td>
                     </tr>
+                    <tr *ngIf="isnarr">
+                        <td width="150px">
+                            <b><u>Narration : </u></b>
+                        </td>
+                        <td style="font-weight: normal;">
+                            {{rowData['narration']}}
+                        </td>
+                    </tr>
                 </table>
             </template>
-            <p-column header="A/C Code" [style]="{'width':'100px','text-align':'left'}">
+            <p-column header="A/C Code" [style]="{'width':'150px','text-align':'left'}">
                 <template let-row="rowData" pTemplate type="body">
                     {{row.custcode}}
                 </template>
             </p-column>
-            <p-column header="A/C Name" [style]="{'width':'300px','text-align':'left'}">
+            <p-column header="A/C Name" [style]="{'text-align':'left'}">
                 <template let-row="rowData" pTemplate type="body">
                     {{row.custname}}
                 </template>
             </p-column>
-            <p-column header="Narration" [style]="{'text-align':'left'}">
+            <p-column [style]="{'width':'100px','text-align':'right'}">
                 <template let-row="rowData" pTemplate type="body">
-                    {{row.narration}}
+                    <b>{{row.head}}</b>
                 </template>
             </p-column>
             <p-column header="Dr. Amt" [style]="{'width':'130px','text-align':'right'}">

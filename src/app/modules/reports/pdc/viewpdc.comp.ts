@@ -15,18 +15,17 @@ declare var $: any;
 declare var commonfun: any;
 
 @Component({
-    templateUrl: 'viewjv.comp.html',
+    templateUrl: 'viewpdc.comp.html',
     providers: [ReportsService, CommonService]
 })
 
-export class JVReports implements OnInit, OnDestroy {
+export class PDCReports implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    jvRptDT: any = [];
+    pdcrptDT: any = [];
     totalRecords: number = 0;
-    isnarr: boolean = true;
 
     @ViewChild("fromdate")
     fromdate: CalendarComp;
@@ -34,7 +33,7 @@ export class JVReports implements OnInit, OnDestroy {
     @ViewChild("todate")
     todate: CalendarComp;
 
-    gridTotal: any = { DrAmtTotal: 0, CrAmtTotal: 0 };
+    gridTotal: any = { AmtTotal: 0 };
 
     // Page Init
 
@@ -48,7 +47,7 @@ export class JVReports implements OnInit, OnDestroy {
     ngOnInit() {
         var that = this;
 
-        that.setActionButtons.setTitle("JV Report");
+        that.setActionButtons.setTitle("PDC Report");
         that.setActionButtons.hideSideMenu();
         that.setActionButtons.setActionButtons(this.actionButton);
 
@@ -64,51 +63,37 @@ export class JVReports implements OnInit, OnDestroy {
         this.todate.setDate(today);
     }
 
-    GetJVReport(from: number, to: number) {
+    GetPDCReport(from: number, to: number) {
         var that = this;
-        that.jvRptDT = [];
-        that.gridTotal = { DrAmtTotal: 0, CrAmtTotal: 0 };
+        that.pdcrptDT = [];
         commonfun.loader();
+        that.gridTotal = { AmtTotal: 0 };
 
         var frmdt = this.fromdate.getDate();
         var todt = this.todate.getDate();
 
-        that._rptservice.getJVReport({
+        that._rptservice.getPDCReport({
             "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
             "frmdt": frmdt.length !== 0 ? frmdt : null, "todt": todt.length !== 0 ? todt : null,
             "from": from, "to": to
-        }).subscribe(jvrpt => {
-            that.totalRecords = jvrpt.data[1][0].recordstotal;
-            that.jvRptDT = jvrpt.data[0];
-            that.gridTotal.DrAmtTotal += parseFloat(jvrpt.data[1][0]._totdramt);
-            that.gridTotal.CrAmtTotal += parseFloat(jvrpt.data[1][0]._totcramt);
+        }).subscribe(pdcrpt => {
+            that.totalRecords = pdcrpt.data[1][0].recordstotal;
+            that.pdcrptDT = pdcrpt.data[0];
+            that.gridTotal.AmtTotal += parseFloat(pdcrpt.data[1][0]._totamt);
         }, err => {
-            that._msg.Show(messageType.error, "Error", err);
+            this._msg.Show(messageType.error, "Error", err);
             commonfun.loaderhide();
         }, () => {
             commonfun.loaderhide();
         });
     }
 
-    loadJVReport(event: LazyLoadEvent) {
-        this.GetJVReport(event.first, (event.first + event.rows));
-    }
-
-    filterJVReport(dt: DataTable) {
+    filterPDCReport(dt: DataTable) {
         dt.reset();
     }
 
-    // Get Tatal Amount
-
-    TotalAmount() {
-        var that = this;
-        that.gridTotal = { DrAmtTotal: 0, CrAmtTotal: 0 };
-
-        for (var i = 0; i < this.jvRptDT.length; i++) {
-            var items = this.jvRptDT[i];
-            that.gridTotal.DrAmtTotal += parseFloat(items.dramt);
-            that.gridTotal.CrAmtTotal += parseFloat(items.cramt);
-        }
+    loadPDCReport(event: LazyLoadEvent) {
+        this.GetPDCReport(event.first, (event.first + event.rows));
     }
 
     ngOnDestroy() {

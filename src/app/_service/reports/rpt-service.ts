@@ -41,4 +41,8 @@ export class ReportsService {
     getJVReport(req: any) {
         return this._dataserver.post("getJVReport", req);
     }
+
+    getPDCReport(req: any) {
+        return this._dataserver.post("getPDCReport", req);
+    }
 }

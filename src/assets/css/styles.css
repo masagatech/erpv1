@@ -1440,18 +1440,17 @@ table.tableHeader h4 {
 }
 
 .setfltrbtn {
-
     padding-top: 28px;
 }
 
 .tblcalendar>tbody>tr.received {
     background-color: #B2FFA4;
-    color: #FFFFFF;
+    color: #000000;
 }
 
 .tblcalendar>tbody>tr.issued {
     background-color: #FFC6A4;
-    color: #FFFFFF;
+    color: #000000;
 }
 
 .tblcalendar>tbody>tr.ap {

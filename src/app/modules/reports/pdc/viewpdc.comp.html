@@ -1,0 +1,64 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>From Date</label>
+                <calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>To Date</label>
+                <calendar #todate [name]="'todate'" tabindex="3"></calendar>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group setfltrbtn">
+				<button type="button" class="btn btn-theme btn-sm" (click)="filterPDCReport(dt)">
+					<i class="fa fa-arrow-right"></i>
+				</button>
+			</div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="pdcrptDT" [lazy]="true" [rows]="20" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadPDCReport($event)">
+            <p-column header="Customer Name" [style]="{'text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custname}}
+                </template>
+            </p-column>
+            <p-column header="Cheque Date" [style]="{'width':'150px','text-align':'center'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.chequedate}}
+                </template>
+            </p-column>
+            <p-column header="Cheque No." [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.chequeno}}
+                </template>
+            </p-column>
+            <p-column header="Amount" [style]="{'width':'150px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.amount | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <footer *ngIf="pdcrptDT.length">
+                <table class="tableNoborder">
+                    <tbody>
+                        <tr>
+                            <td align="left" colspan="3">
+                                <b>Total Amount</b>
+                            </td>
+                            <td width="150px" align="right">
+                               {{gridTotal.AmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>
