@@ -35,6 +35,7 @@ declare var $: any;
     custid: any = 0;
     custname: any = "";
     acid: number = 0;
+    ordauto: number = 0;
 
     //Declare Array Veriable
     DocDetailslist: any[];
@@ -49,6 +50,12 @@ declare var $: any;
     //user details
     loginUser: LoginUserModel;
     loginUserName: string;
+
+    private totals: any = {
+        grstotl: 0,
+        nettotl: 0,
+
+    }
 
     //Calendor
     @ViewChild("fromdatecal")
@@ -89,8 +96,8 @@ declare var $: any;
         this.tocal.initialize(this.loginUser);
         this.tocal.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
-
-        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
+        this.setActionButtons.hideSideMenu();
+        this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, true));
         this.actionButton.push(new ActionBtnProp("edit", "Edit", "edit", true, true));
         this.actionButton.push(new ActionBtnProp("delete", "Delete", "trash", true, true));
         this.actionButton.push(new ActionBtnProp("clear", "Refresh", "refresh", true, false));
@@ -98,7 +105,7 @@ declare var $: any;
         this.setActionButtons.setTitle("Pending Sales Order");
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
-        setTimeout(function() {
+        setTimeout(function () {
             $(".Custcode input").focus();
         }, 0);
 
@@ -125,7 +132,8 @@ declare var $: any;
             for (let item of this.DocDetailslist) {
                 param.push({
                     "autoid": 0,
-                    "docdetail": item.detaiid,
+                    "docdetail": item.orddetid,
+                    "ordauto": item.ordauto,
                     "acid": this.acid,
                     "itemid": item.itemsid,
                     "ordqty": item.ordqty,
@@ -135,7 +143,7 @@ declare var $: any;
                     "fy": this.loginUser.fy,
                     "typ": "order",
                     "createdby": this.loginUser.login,
-                    "confimstatus": 'Menual',
+                    "confimstatus": 'Manual',
                     "autoconfirm": false
                 })
             }
@@ -151,7 +159,7 @@ declare var $: any;
         else if (evt === "save") {
             this.ConfirmServies.ConfirmDC({
                 "confirmdetails": this.paramjson(),
-                "docno": this.docno,
+                "docno":this.docno,
                 "typ": "order",
                 "fy": this.loginUser.fy,
                 "cmpid": this.loginUser.cmpid,
@@ -223,7 +231,7 @@ declare var $: any;
             this.DocDetailslist = [];
             this.ConfirmServies.getPendignDcDetails({
                 "cmpid": this.loginUser.cmpid,
-                "docno": items.docno,
+                "docno": items.autoid,
                 "fy": this.loginUser.fy,
                 "createdby": this.loginUser.login,
                 "typ": "order"
@@ -232,6 +240,7 @@ declare var $: any;
                 this.dcdetails = documentno.data[1] === null ? [] : documentno.data[1];
                 if (this.CustomerDetails.length > 0) {
                     this.docno = this.CustomerDetails[0].docno;
+                    this.ordauto=this.CustomerDetails[0].ordauto;
                     this.acid = this.CustomerDetails[0].custid;
                     this.cust = this.CustomerDetails[0].cust;
                     this.salesman = this.CustomerDetails[0].salesman;
@@ -240,7 +249,9 @@ declare var $: any;
                     this.deldate = this.CustomerDetails[0].deldate;
                     this.remark = this.CustomerDetails[0].remark;
                     this.DocDetailslist = this.dcdetails;
+                    this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
                     this.setActionButtons.hideSideMenu();
+                    this.footerCalculation();
                 }
                 else {
                     this._msg.Show(messageType.error, "error", "Record Not Found");
@@ -260,27 +271,25 @@ declare var $: any;
 
     }
 
-    //Sub Total 
-    Subtotal() {
-        var subtotal = 0;
+    //Footer Culculate
+    private footerCalculation() {
+        var _grossAmt = 0, _netAmt = 0, _taxamt = 0;
         for (var i = 0; i < this.DocDetailslist.length; i++) {
-            subtotal += parseFloat(this.DocDetailslist[i].amount);
+            _grossAmt += parseFloat(this.DocDetailslist[i].amount);
         }
-        return subtotal;
-    }
-
-    //Grand Total 
-    GrandTotal() {
-        return this.Subtotal() + this.SubtotalTax();
-    }
-
-    //Total Tax 
-    SubtotalTax() {
-        var totaltax = 0;
+        this.totals.grstotl = _grossAmt;
+        this.totals.nettotl = _grossAmt;
         for (var i = 0; i < this.taxlist.length; i++) {
-            totaltax += this.Subtotal() * parseFloat(this.taxlist[i].taxval) / 100;
+            let item = this.taxlist[i];
+            if (item.puramt === '%') {
+                _taxamt = _grossAmt * parseFloat(item.taxval) / 100;
+            }
+            else {
+                _taxamt = parseFloat(item.taxval);
+            }
+            this.taxlist[i].amt = _taxamt;
+            this.totals.nettotl += _taxamt;
         }
-        return totaltax;
     }
 
     //Customer Autoextender
@@ -310,14 +319,15 @@ declare var $: any;
     }
 
     //Quntity Calculation
-    private CulculateQty(row: any = [], detaiid: number = 0) {
+    private CulculateQty(row: any = [], orddetid: number = 0) {
         var QtyRate = 0;
         var DisAmt = 0;
+        debugger;
         if (row.ordqty != "" && row.ordqty != "0") {
             if (parseInt(row.ordqty) > parseInt(row.oldqty)) {
                 this._msg.Show(messageType.error, "error", "Please Enter valid Quntity")
                 for (var i = 0; i < this.DocDetailslist.length; i++) {
-                    if (this.DocDetailslist[i].detaiid === detaiid) {
+                    if (this.DocDetailslist[i].orddetid === orddetid) {
                         this.DocDetailslist[i].ordqty = row.oldqty;
                         QtyRate = this.DocDetailslist[i].ordqty * this.DocDetailslist[i].rate;
                         DisAmt = QtyRate * this.DocDetailslist[i].dis / 100;
@@ -329,7 +339,7 @@ declare var $: any;
             else {
 
                 for (var i = 0; i < this.DocDetailslist.length; i++) {
-                    if (this.DocDetailslist[i].detaiid === detaiid) {
+                    if (this.DocDetailslist[i].orddetid === orddetid) {
                         QtyRate = this.DocDetailslist[i].ordqty * this.DocDetailslist[i].rate;
                         DisAmt = QtyRate * this.DocDetailslist[i].dis / 100;
                         this.DocDetailslist[i].amount = Math.round(QtyRate - DisAmt);
@@ -340,17 +350,19 @@ declare var $: any;
         }
         else {
             for (var i = 0; i < this.DocDetailslist.length; i++) {
-                if (this.DocDetailslist[i].detaiid === detaiid) {
+                if (this.DocDetailslist[i].orddetid === orddetid) {
                     this.DocDetailslist[i].Amount = 0;
                     break;
                 }
             }
         }
+        this.footerCalculation();
     }
 
     ngOnDestroy() {
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
         this.setActionButtons.setTitle("");
+        this.setActionButtons.reset();
     }
 }

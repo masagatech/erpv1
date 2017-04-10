@@ -55,6 +55,10 @@ export class generatesample implements OnInit, OnDestroy {
     sampleledger: any = "";
     samplestock: any = "";
     salesregister: any = "";
+    private totals: any = {
+        grstotl: 0,
+        nettotl: 0,
+    }
 
 
 
@@ -129,7 +133,7 @@ export class generatesample implements OnInit, OnDestroy {
                 debugger;
                 that.sampleledger = returnval[0].val;
                 that.samplestock = returnval[0].navigat;
-                that.salesregister=returnval[0].salesord;
+                that.salesregister = returnval[0].salesord;
             }, err => {
                 console.log("Error");
             }, () => {
@@ -227,7 +231,7 @@ export class generatesample implements OnInit, OnDestroy {
                     var invoiceModel = { "header": {}, "details": [] };
                     invoiceModel.header = dataset[1].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
                     invoiceModel.details = dataset[2].filter(a => a.subconfid === InvoicelocalNo[i].subconfid);
-                    this.taxlist = invoiceModel.header[0]._tax == null ? [] : invoiceModel.header[0]._tax;
+                    //this.taxlist = invoiceModel.header[0]._tax == null ? [] : invoiceModel.header[0]._tax;
                     if (this.taxlist.length == 0) {
                         this.taxlist.push({
                             "taxname": "No Tax",
@@ -291,30 +295,47 @@ export class generatesample implements OnInit, OnDestroy {
     }
 
     //Sub  Total 
-    private Subtotal(details) {
-        try {
-            var total = 0;
-            for (var i = 0; i < details.length; i++) {
-                total += parseInt(details[i].amount);
-            }
-            return total;
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
-        }
+    // private Subtotal(details) {
+    //     try {
+    //         var total = 0;
+    //         for (var i = 0; i < details.length; i++) {
+    //             total += parseInt(details[i].amount);
+    //         }
+    //         return total;
+    //     } catch (e) {
+    //         this._msg.Show(messageType.error, "error", e.message);
+    //     }
 
-    }
+    // }
 
     //Sub  Total With Tax 
     private SubtotalTax(details, taxval) {
-        try {
-            var totalTax = 0;
-            for (var i = 0; i < details.length; i++) {
-                totalTax += parseInt(details[i].amount);
-            }
-            return Math.round(totalTax * taxval / 100);
-        } catch (e) {
-            this._msg.Show(messageType.error, "error", e.message);
+        var _grossAmt = 0, _netAmt = 0, _taxamt = 0;
+        // try {
+        for (var i = 0; i < details.length; i++) {
+            _grossAmt += parseFloat(details[i].amount);
         }
+        this.totals.grstotl = _grossAmt;
+        this.totals.nettotl = _grossAmt;
+
+        for (var i = 0; i < taxval.length; i++) {
+            let item = this.taxlist[i];
+            if (item.puramt === '%') {
+                _taxamt = _grossAmt * parseFloat(item.taxval) / 100;
+            }
+            else {
+                _taxamt = parseFloat(item.taxval);
+            }
+            this.taxlist[i].amt = _taxamt;
+            this.totals.nettotl += _taxamt;
+        }
+        // for (var i = 0; i < details.length; i++) {
+        //     totalTax += parseInt(details[i].amount);
+        // }
+        //return Math.round(_taxamt);
+        // } catch (e) {
+        //     this._msg.Show(messageType.error, "error", e.message);
+        // }
 
     }
 

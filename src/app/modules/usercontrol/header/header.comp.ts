@@ -6,7 +6,7 @@ import { ArrayFilterPipe } from '../../../_util/filter'
 import { Router } from '@angular/router';
 
 declare var $: any;
-
+declare var commonfun: any;
 
 @Component({
   selector: '<app-head></app-head>',
@@ -66,6 +66,7 @@ export class UserControlHeadComp implements OnInit {
 
   callRoute(item: any, click: any) {
     if (click === 0) {
+      commonfun.showSideMenu();
       var link = item.menulink.toString();
       this._router.navigate([link]);
     }

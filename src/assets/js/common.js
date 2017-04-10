@@ -19,7 +19,7 @@ function findJSON(obj, key, val, brek) {
 }
 
 commonfun.addrequire = function addrequire() {
-    $("[validate]").each(function() {
+    $("[validate]").each(function () {
         $(this).siblings("label").remove("span").append("&nbsp;<span class='require'>*</span>");
     });
 }
@@ -28,7 +28,7 @@ commonfun.validate = function validate() {
     var valisValid = true;
     var result = [];
     var msglist = "";
-    $("[validate]").each(function() {
+    $("[validate]").each(function () {
         if ($(this).is("input") || $(this).is("textarea")) {
             if ($(this).val().trim() === "") {
                 valisValid = false;
@@ -47,7 +47,7 @@ commonfun.validate = function validate() {
     return { "status": valisValid, "data": result, "msglist": msglist };
 }
 
-commonfun.loader = function(name) {
+commonfun.loader = function (name) {
     if (!name) name = '.maincontent';
     $(name).waitMe({
         effect: 'bounce',
@@ -63,19 +63,19 @@ commonfun.loader = function(name) {
 }
 
 
-commonfun.loaderhide = function(name) {
+commonfun.loaderhide = function (name) {
     if (!name) name = '.maincontent';
     $(name).waitMe('hide');
 }
 
-commonfun.openurl = function(url, target, options) {
+commonfun.openurl = function (url, target, options) {
     window.open(url, target, options);
     //"https://www.w3schools.com", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400"
 }
 
 
 
-commonfun.randomColor = function(brightness) {
+commonfun.randomColor = function (brightness) {
     function randomChannel(brightness) {
         var r = 255 - brightness;
         var n = 0 | ((Math.random() * r) + brightness);
@@ -86,6 +86,16 @@ commonfun.randomColor = function(brightness) {
 }
 
 var browserConf = {};
-browserConf.setTitle = function(title) {
+browserConf.setTitle = function (title) {
     document.title = title;
+}
+
+commonfun.showSideMenu = function () {
+    $('#sidebar').show();
+    $('.container').removeClass('closeopenpan');
+}
+
+commonfun.hideSideMenu = function () {
+    $('#sidebar').hide();
+    $('.container').addClass('closeopenpan');
 }

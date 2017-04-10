@@ -159,6 +159,10 @@ export class dcview implements OnInit, OnDestroy {
         if (!data.IsLocked && data.status != "Confirm") {
             this._router.navigate(['/transaction/dcmaster/edit', data.docno]);
         }
+        else{
+            this._msg.Show(messageType.info,"info","This sales order confirm");
+            return;
+        }
     }
 
     //Document Details

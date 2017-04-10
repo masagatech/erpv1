@@ -151,24 +151,25 @@
 						</footer>
 
 						<!--*ngIf="newAddRow.length>0"-->
-						<footer>
+						<footer *ngIf="newAddRow.length>0">
 							<table class="row">
 								<tbody class="col-md-4 pull-right">
-									<tr>
+									<tr class="bg-warning">
 										<td><b class="pull-left">Gross Total</b></td>
-										<td><b>{{Totalamount() | _currency:loginUser._globsettings[0] }}</b></td>
+										<td></td>
+										<td><b>{{ totals.grstotl | _currency:loginUser._globsettings[0] }}</b></td>
 									</tr>
-									<tr *ngFor="let item of taxlist">
-										<td><b class="pull-left">Tax :  {{item.taxname}}</b></td>
+									<tr class="bg-warning" *ngFor="let txitem of taxlist">
+										<td><b class="pull-left">Tax :  {{txitem.taxname}}</b></td>
 										<td>
-											<span>{{item.taxval}}%</span>
+											<span>{{txitem.puramt === '%' ? (txitem.taxval + '%') : (txitem.taxval |  _currency:loginUser._globsettings[0]) }}</span>
 										</td>
-										<td><b class="pull-right">{{item.taxval}}</b></td>
+										<td><b class="pull-right">{{txitem.amt |  _currency:loginUser._globsettings[0]}}</b></td>
 									</tr>
-									<tr>
+									<tr class="bg-warning">
 										<td><b class="pull-left">Net Total</b></td>
 										<td></td>
-										<td><b class="pull-right">0.00</b></td>
+										<td><b class="pull-right">{{totals.nettotl |  _currency:loginUser._globsettings[0]}}</b></td>
 									</tr>
 								</tbody>
 							</table>

@@ -15,6 +15,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 declare var $: any;
 declare var commonfun: any;
+
 @Component({
     templateUrl: 'aded.comp.html',
     providers: [dcmasterService, CommonService, ALSService]
@@ -54,6 +55,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Declare Table Veriable
     autoid: number = 0;
+    ordauto: number = 0;
     DCDetelId: any;
     dis: any = 0;
     Rate: any = 0;
@@ -77,6 +79,12 @@ export class dcADDEdit implements OnInit, OnDestroy {
     footer: any;
     wareid: number = 0;
     private subscribeParameters: any;
+    private totals: any = {
+        grstotl: 0,
+        nettotl: 0,
+
+    }
+
 
     //Customer Selected
     addresslist: any = [];
@@ -104,6 +112,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
     siteupper: any = 0;
     sitelower: any = 0;
     draftno: number = 0;
+    totaltax: any = 0;
 
     //user details
     loginUser: LoginUserModel;
@@ -169,7 +178,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
 
         this.footer = true;
-        setTimeout(function() {
+        setTimeout(function () {
             $('.CustName input').focus();
             commonfun.addrequire();
         }, 0);
@@ -291,6 +300,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     }
 
+    //Footer Clear
     clearGridFooter() {
         this.counter++;
         this.itemsname = "";
@@ -389,6 +399,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
             that.actionButton.find(a => a.id === "save").enabled = false;
             that.SalesOrderServies.saveDcMaster({
                 "docno": that.DocNo,
+                "ordauto": that.ordauto,
                 "draftno": that.draftno,
                 "docdate": that.docdatecal.getDate(),
                 "acid": that.CustID,
@@ -399,7 +410,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 "traspo": that.Traspoter,
                 "typstatus": typ === 'order' ? true : false,
                 "typ": typ,
-                "taxdetail":that.taxlist,
+                "taxdetail": that.taxlist,
                 "fy": that.loginUser.fy,
                 "cmpid": that.loginUser.cmpid,
                 "createdby": that.loginUser.login,
@@ -463,6 +474,7 @@ export class dcADDEdit implements OnInit, OnDestroy {
 
     //Edit Salesoder
     GetEditData(Docno, typ) {
+        commonfun.loader('.middlepan');
         this.DocNo = Docno;
         try {
             this.SalesOrderServies.GetSalesOrderView({
@@ -477,7 +489,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 var dataset = data.data;
                 var CustomerMaster = dataset[0];
                 if (CustomerMaster.length > 0) {
-                    this.CustomerSelected(CustomerMaster[0].acid, CustomerMaster[0].acname.split(':')[0]);
+                    this.ordauto = CustomerMaster[0].ordauto;
+                    this.CustomerSelected(CustomerMaster[0].acid, CustomerMaster[0].acname.split(':')[0], "edit");
                     this.CustName = CustomerMaster[0].acname;
                     this.CustID = CustomerMaster[0].acid;
                     this.Remark = CustomerMaster[0].remark;
@@ -486,13 +499,15 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     this.deldatecal.setDate(new Date(CustomerMaster[0].deldate));
                     this.wareid = CustomerMaster[0].whid;
                     this.Traspoter = CustomerMaster[0].transid;
+                    this.taxlist = CustomerMaster[0].taxdetail === null ? [] : CustomerMaster[0].taxdetail;
                     this.newAddRow = dataset[1];
-                    console.log(dataset[1]);
+                    this.footerCalculation();
+                    commonfun.loaderhide('.middlepan');
                 }
             }, err => {
                 console.log("Error");
             }, () => {
-                // console.log("Complete");
+                commonfun.loaderhide('.middlepan');
             })
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
@@ -526,13 +541,14 @@ export class dcADDEdit implements OnInit, OnDestroy {
             this.CustID = event.value;
             this.CustName = event.label;
             this.CustCode = event.custcode;
-            this.CustomerSelected(this.CustID, this.CustCode);
+            this.CustomerSelected(this.CustID, this.CustCode, "add");
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
         }
 
     }
 
+    //Inline item Filter
     ItemAuto(event) {
         var flag = event.query.charAt(0);
         let query = flag == '@' ? event.query.substr(1, event.query.length - 1) : event.query;
@@ -562,12 +578,20 @@ export class dcADDEdit implements OnInit, OnDestroy {
             that.NewItemsid = event.value;
             that.NewItemsName = event.label;
             that.typ = event.typ;
+            var ind = this.newAddRow.findIndex(a => a.itemsid == that.NewItemsid);
+            if (ind != -1) {
+                this._msg.Show(messageType.error, "error", "Duplicate Item > " + that.NewItemsName);
+                this.NewItemsName = "";
+                return;
+            }
             that.ItemsSelected(that.NewItemsid, arg, that.NewItemsName, that.typ)
         }
+
+
     }
 
     // //Selected Customer  Event
-    CustomerSelected(custid, custcode) {
+    CustomerSelected(custid, custcode, addedit) {
         commonfun.loader('.loading');
         var that = this;
         try {
@@ -598,7 +622,9 @@ export class dcADDEdit implements OnInit, OnDestroy {
                     that.Transpoterlist = dataset[0]._transout === null ? [] : dataset[0]._transout;
                     that.Salesmanlist = dataset[0]._salesout === null ? [] : dataset[0]._salesout;
                     that.salesid = that.Salesmanlist.length > 0 ? that.Salesmanlist[0].val : 0;
-                    that.taxlist = dataset[0]._taxdetail === null ? [] : dataset[0]._taxdetail;
+                    if (addedit === 'add') {
+                        that.taxlist = dataset[0]._taxdetail === null ? [] : dataset[0]._taxdetail;
+                    }
 
                     that.daylist = dataset[0]._days === null ? [] : dataset[0]._days;
                     commonfun.loaderhide('.loading');
@@ -649,8 +675,8 @@ export class dcADDEdit implements OnInit, OnDestroy {
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
             return;
-
         }
+        this.footerCalculation();
     }
 
     //Delete Combo Item
@@ -765,33 +791,22 @@ export class dcADDEdit implements OnInit, OnDestroy {
                 this._msg.Show(messageType.error, "error", "Please Valid discount");
                 return;
             }
-            this.Duplicateflag = true;
-            for (var i = 0; i < this.newAddRow.length; i++) {
-                if (this.newAddRow[i].itemsname == this.NewItemsName) {
-                    this.Duplicateflag = false;
-                    break;
-                }
-            }
-            if (this.Duplicateflag == true) {
-                this.newAddRow.push({
-                    "autoid": this.autoid,
-                    'itemsname': this.NewItemsName,
-                    "itemsid": this.NewItemsid,
-                    'qty': this.qty,
-                    'rateslist': this.rateslist,
-                    'id': this.newrate,
-                    'dis': this.dis == "" ? "0" : this.dis,
-                    'amount': this.amount,
-                    'counter': this.counter
-                });
+            this.newAddRow.push({
+                "autoid": this.autoid,
+                'itemsname': this.NewItemsName,
+                "itemsid": this.NewItemsid,
+                'qty': this.qty,
+                'rateslist': this.rateslist,
+                'id': this.newrate,
+                'dis': this.dis == "" ? "0" : this.dis,
+                'amount': this.amount,
+                'counter': this.counter
+            });
+            this.footerCalculation();
+            this.clearGridFooter();
+            $(".ProdName input").focus();
 
-                this.clearGridFooter();
-                $(".ProdName input").focus();
-            }
-            else {
-                this._msg.Show(messageType.error, "error", "Duplicate Item");
-                return;
-            }
+
         }
         catch (e) {
             this._msg.Show(messageType.error, "error", e);
@@ -829,49 +844,53 @@ export class dcADDEdit implements OnInit, OnDestroy {
         return total;
     }
 
-    //Toatal Amount 
-    private Totalamount() {
-        var totalamt = 0;
-        if (this.newAddRow.length > 0) {
-            for (var i = 0; i < this.newAddRow.length; i++) {
-                totalamt += parseFloat(this.newAddRow[i].amount);
-            }
+    //Footer Total Gross,Tax and Net Amount
+    private footerCalculation() {
+        var _grossAmt = 0, _netAmt = 0, _taxamt = 0;
+        for (var i = 0; i < this.newAddRow.length; i++) {
+            _grossAmt += parseFloat(this.newAddRow[i].amount);
         }
-        return totalamt;
+        this.totals.grstotl = _grossAmt;
+        this.totals.nettotl = _grossAmt;
+        for (var i = 0; i < this.taxlist.length; i++) {
+            let item = this.taxlist[i];
+            if (item.puramt === '%') {
+                _taxamt = _grossAmt * parseFloat(item.taxval) / 100;
+            }
+            else {
+                _taxamt = parseFloat(item.taxval);
+            }
+            this.taxlist[i].amt = _taxamt;
+            this.totals.nettotl += _taxamt;
+        }
     }
 
     //Delete Row 
-    private DeleteRow(val, DcDelid) {
-        if (DcDelid != "" || DcDelid != undefined) {
-            this.SalesOrderServies.deleteDcMaster({
-                "DCNo": 0,
-                "DCDetelId": DcDelid,
-                "FY": this.loginUser.fy,
-                "cmpid": this.loginUser.cmpid,
-                "UserCode": this.loginUser.login,
-                "Flag": ""
-            }).subscribe(data => {
-                var dataset = JSON.parse(data.data);
-                $("#foot_custname").focus();
-            }, err => {
-                console.log("Error");
-            }, () => {
-                // console.log("Complete");
-            })
+    private DeleteRow(val) {
+        // if (DcDelid != "" || DcDelid != undefined) {
+        //     this.SalesOrderServies.deleteDcMaster({
+        //         "DCNo": 0,
+        //         "DCDetelId": DcDelid,
+        //         "FY": this.loginUser.fy,
+        //         "cmpid": this.loginUser.cmpid,
+        //         "UserCode": this.loginUser.login,
+        //         "Flag": ""
+        //     }).subscribe(data => {
+        //         var dataset = JSON.parse(data.data);
+        //         $("#foot_custname").focus();
+        //     }, err => {
+        //         console.log("Error");
+        //     }, () => {
+        //         // console.log("Complete");
+        //     })
+        // }
+
+        var ind = this.newAddRow.findIndex(a => a.counter == val);
+        if (ind != -1) {
+            this.newAddRow.splice(ind, 1);
+            this.footerCalculation();
+            return;
         }
-        var index = -1;
-        for (var i = 0; i < this.newAddRow.length; i++) {
-            if (this.newAddRow[i].counter === val) {
-                index = i;
-                // this.QtyCount -= parseInt(this.newAddRow[i].Qty);
-                // $scope.amountCount -= this.newAddRow[i].amount;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.newAddRow.splice(index, 1);
     }
 
     private rowclick(val) {

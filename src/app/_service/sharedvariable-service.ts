@@ -60,6 +60,9 @@ export class SharedVariableService {
         $('.container').addClass('closeopenpan');
     }
 
+    reset() {
+        this.setActionButtons([]);
+    }
 
     callActionButtonsEvent(evt: string) {
         this.actionButtonEventSource.next(evt);

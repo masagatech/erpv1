@@ -90,22 +90,26 @@
 							<p-column field="itemname" header="Item name" [style]="{'width':'130px','text-align':'left'}"></p-column>
 							<p-column header="Qty." [style]="{'width':'50px','text-align':'left'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>
+									<!--<numtext [iscurrency]="false" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.docqty"></numtext>-->
+									{{ row.docqty | _currency:{currsym:"",decimals:2 } }}
 								</template>
 							</p-column>
 							<p-column header="Rate" [style]="{'width':'50px','text-align':'left'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.rate"></numtext>
+									<!--<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.rate"></numtext>-->
+									{{ row.rate |  _currency:loginUser._globsettings[0]  }}
 								</template>
 							</p-column>
 							<p-column field="dis" header="Dis." [style]="{'width':'50px','text-align':'left'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [(ngModel)]="row.dis"></numtext>
+									<!--<numtext [iscurrency]="false" [islabel]="true" [css]="inlinetextbox" [(ngModel)]="row.dis"></numtext>-->
+										{{ row.dis |   _currency:{currsym:"",decimals:2 } }}
 								</template>
 							</p-column>
 							<p-column header="Amount" [style]="{'width':'50px','text-align':'left'}">
 								<template let-col let-row="rowData" pTemplate="editor">
-									<numtext [iscurrency]="true" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.amount"></numtext>
+									<!--<numtext [iscurrency]="true" [islabel]="true" [css]="inlinetextbox" [tabindex]="7" [(ngModel)]="row.amount"></numtext>-->
+									{{ row.amount |  _currency:loginUser._globsettings[0]  }}
 								</template>
 							</p-column>
 							<footer>
