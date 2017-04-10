@@ -89,9 +89,9 @@ export class ViewJV implements OnInit, OnDestroy {
         }).subscribe(jv => {
             that.totalRecords = jv.data[1][0].recordstotal;
             that.viewJVDT = jv.data[0];
+            console.log(that.viewJVDT);
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
-            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -136,18 +136,16 @@ export class ViewJV implements OnInit, OnDestroy {
             event.loading = false;
 
             that._jvservice.getJVDetails({
-                "flag": "details", "jvmid": event.jvmid,
-                "from": event.first, "to": (event.first + event.rows)
+                "flag": "details", "jvmid": event.jvmid, "cmpid": that.loginUser.cmpid
             }).subscribe(details => {
                 var dataset = details.data;
 
                 if (dataset[0].length > 0) {
                     event.loading = true;
                     event.details = dataset[0];
-                    event.totalDetailsRecords = dataset[1][0].recordstotal;
                 }
                 else {
-                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    that._msg.Show(messageType.error, "Error", "Record Not Found");
                     return;
                 }
             }, err => {
@@ -160,19 +158,17 @@ export class ViewJV implements OnInit, OnDestroy {
         }
     }
 
-    expandDetails2(dt, event) {
+    expandDetails2(row) {
         var that = this;
-        var row = event.data;
+        //var row = event.data;
 
         if (row.details.length === 0) {
             that._jvservice.getJVDetails({
-                "flag": "details", "jvmid": row.jvmid,
-                "from": event.first, "to": (event.first + event.rows)
+                "flag": "details", "jvmid": row.jvmid, "cmpid": that.loginUser.cmpid
             }).subscribe(details => {
-                that.totalDetailsRecords = details.data[1][0].recordstotal;
                 row.details = details.data[0];
 
-                dt.toggleRow(event.data);
+                //dt.toggleRow(event.data);
             }, err => {
                 that._msg.Show(messageType.error, "Error", err);
                 console.log(err);
@@ -180,7 +176,7 @@ export class ViewJV implements OnInit, OnDestroy {
                 // console.log("Complete");
             })
         } else {
-            dt.toggleRow(event.data);
+            //dt.toggleRow(event.data);
         }
     }
 

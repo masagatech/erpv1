@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 declare var $: any;
-declare var commonfun : any;
+declare var commonfun: any;
 
 @Component({
     templateUrl: 'viewbr.comp.html',
@@ -25,7 +25,6 @@ export class ViewBankReco implements OnInit, OnDestroy {
 
     // Veriable Declare
     bankid: string = "";
-    fy: number = 0;
 
     enterdate: any = "";
 
@@ -48,20 +47,11 @@ export class ViewBankReco implements OnInit, OnDestroy {
         private _userService: UserService, private _msg: MessageService) {
         this.loginUser = this._userService.getUser();
         this.fillDropDownList();
-        this.GetBankWiseGrid();
     }
 
     // Page Load
 
     ngOnInit() {
-        // if (this.monthwiseDT.length !== 0) {
-        //     this.enterdate.initialize(this.loginUser);
-        //     this.enterdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-
-        //     var date = new Date();
-        //     this.enterdate.setDate(date);
-        // }
-
         this.setActionButtons.setTitle("Bank Reconcillation");
 
         this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, true));
@@ -87,14 +77,11 @@ export class ViewBankReco implements OnInit, OnDestroy {
     fillDropDownList() {
         var that = this;
 
-        that._brservice.getBankReco({ "flag": "dropdown", "cmpid": that.loginUser.cmpid }).subscribe(data => {
-            var d = data.data;
-            that.bankDT = data.data[0]._bank;
-
-            that.fyDT = data.data[0]._fy;
-            that.fy = that.loginUser.fy;
-
-            that.GetBankWiseGrid();
+        that._brservice.getBankReco({
+            "flag": "dropdown", "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy, "uid": that.loginUser.uid
+        }).subscribe(data => {
+            that.bankDT = data.data;
         });
     }
 
@@ -107,7 +94,7 @@ export class ViewBankReco implements OnInit, OnDestroy {
 
         that._brservice.getBankReco({
             "flag": "bankwise", "bankid": that.bankid, "cmpid": that.loginUser.cmpid,
-            "fy": that.fy, "uid": that.loginUser.uid
+            "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(bankreco => {
             if (bankreco.data.length > 0) {
                 that.bankwiseDT = bankreco.data;
@@ -120,9 +107,8 @@ export class ViewBankReco implements OnInit, OnDestroy {
                 return false;
             }
         }, err => {
-            console.log('Error');
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
-            // Done Process
             commonfun.loaderhide();
         });
     }
@@ -132,7 +118,7 @@ export class ViewBankReco implements OnInit, OnDestroy {
 
         that._brservice.getBankReco({
             "flag": flag, "bankid": that.bankid, "fromdt": row.fromdt, "todt": row.todt,
-            "cmpid": that.loginUser.cmpid, "fy": that.fy, "uid": that.loginUser.uid
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(bankreco => {
             if (bankreco.data.length > 0) {
                 that.monthwiseDT = bankreco.data;
@@ -149,7 +135,7 @@ export class ViewBankReco implements OnInit, OnDestroy {
                 return false;
             }
         }, err => {
-            console.log('Error');
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // Done Process
         });
@@ -225,8 +211,6 @@ export class ViewBankReco implements OnInit, OnDestroy {
             "recotype": recotype
         }
 
-        console.log(JSON.stringify(saveBRC));
-
         that._brservice.saveBankReco(saveBRC).subscribe(data => {
             try {
                 var dataResult = data.data;
@@ -243,7 +227,6 @@ export class ViewBankReco implements OnInit, OnDestroy {
             }
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
-            console.log(err);
         }, () => {
             // console.log("Complete");
         });
@@ -252,6 +235,5 @@ export class ViewBankReco implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.setActionButtons.setTitle("");
         this.subscr_actionbarevt.unsubscribe();
-        this.setActionButtons.setTitle("");
     }
 }

@@ -84,8 +84,7 @@
 				</template>
 			</p-column>
 			<template let-row pTemplate="rowexpansion">
-				<p-dataTable [value]="row.details" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="row.totalDetailsRecords"
-					expandableRows="true">
+				<p-dataTable [value]="row.details" [lazy]="true">
 					<p-column field="acname" header="A/C Name" [style]="{'width':'450px','text-align':'left'}"></p-column>
 					<p-column header="Dr. Amt" [style]="{'width':'300px','text-align':'right'}">
 						<template let-drow="rowData" pTemplate type="body">
