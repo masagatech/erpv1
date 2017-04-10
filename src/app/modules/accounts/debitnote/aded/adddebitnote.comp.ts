@@ -76,8 +76,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     resetDebitNote() {
         this.dncustid = 0;
-        var date = new Date();
-        this.dndate.setDate(date);
+        this.setAuditDate();
         this.dramt = "";
         this.narration = "";
         this.isactive = true;
@@ -92,9 +91,12 @@ export class AddDebitNote implements OnInit, OnDestroy {
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
-
-            if (lockdate != "")
-                that.dndate.setMinMaxDate(new Date(lockdate), null);
+            
+            if (lockdate != "") {
+                // that.dndate.setMinMaxDate(new Date(lockdate), null);
+                var date = new Date(lockdate);
+                this.dndate.setDate(date);
+            }
         }, err => {
             console.log("Error");
         }, () => {

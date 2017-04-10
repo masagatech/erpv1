@@ -69,6 +69,13 @@ export class AddJV implements OnInit, OnDestroy {
         this.isdetails = _router.url.indexOf("details") > -1;
     }
 
+    resetJVFields() {
+        this.setAuditDate();
+        this.narration = "";
+        this.isactive = true;
+        this.jvRowData = [];
+    }
+
     setAuditDate() {
         var that = this;
 
@@ -77,8 +84,12 @@ export class AddJV implements OnInit, OnDestroy {
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
-            if (lockdate != "")
-                that.jvdate.setMinMaxDate(new Date(lockdate), null);
+            
+            if (lockdate != "") {
+                // that.jvdate.setMinMaxDate(new Date(lockdate), null);
+                var date = new Date(lockdate);
+                this.jvdate.setDate(date);
+            }
         }, err => {
             console.log("Error");
         }, () => {
@@ -87,13 +98,12 @@ export class AddJV implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        setTimeout(function () {
-            $(".jvdate input").focus();
-        }, 0);
+        // setTimeout(function () {
+        //     $(".jvdate input").focus();
+        // }, 0);
 
         this.jvdate.initialize(this.loginUser);
         this.jvdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        this.setAuditDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
         this.actionButton.push(new ActionBtnProp("save", "Save", "save", true, false));
@@ -106,14 +116,12 @@ export class AddJV implements OnInit, OnDestroy {
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (this.isadd) {
                 this.setActionButtons.setTitle("Add Journal Voucher");
-
                 $('button').prop('disabled', false);
                 $('input').prop('disabled', false);
                 $('select').prop('disabled', false);
                 $('textarea').prop('disabled', false);
 
-                var date = new Date();
-                this.jvdate.setDate(date);
+                this.resetJVFields();
 
                 this.actionButton.find(a => a.id === "save").hide = false;
                 this.actionButton.find(a => a.id === "edit").hide = true;
@@ -196,7 +204,7 @@ export class AddJV implements OnInit, OnDestroy {
         } else {
             that.newcustid = event.value;
             that.newcustcode = event.custcode,
-            that.newcustname = event.label;
+                that.newcustname = event.label;
         }
     }
 

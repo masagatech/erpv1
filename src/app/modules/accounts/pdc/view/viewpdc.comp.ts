@@ -7,6 +7,9 @@ import { UserService } from '../../../../_service/user/user-service';
 import { LoginUserModel } from '../../../../_model/user_model';
 import { PDCService } from '../../../../_service/pdc/pdc-service' /* add reference for emp */
 
+declare var $: any;
+declare var commonfun: any;
+
 @Component({
     templateUrl: 'viewpdc.comp.html',
     providers: [PDCService]
@@ -55,13 +58,18 @@ export class ViewPDC implements OnInit, OnDestroy {
     ngOnInit() {
         var that = this;
 
+        setTimeout(function () {
+            $(".fc-prev-button").find('span').removeAttr('class').addClass('fa fa-chevron-left');
+            $(".fc-next-button").find('span').removeAttr('class').addClass('fa fa-chevron-right');
+        }, 0);
+
         that.setActionButtons.setTitle("Post Dated Cheque");
         that.setActionButtons.hideSideMenu();
         that.setActionButtons.setActionButtons(that.actionButton);
 
         that.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         that.setActionButtons.setActionButtons(that.actionButton);
-        that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt =>that.actionBarEvt(evt));
+        that.subscr_actionbarevt = that.setActionButtons.setActionButtonsEvent$.subscribe(evt => that.actionBarEvt(evt));
 
         that.header = {
             left: 'prev,next today',
@@ -72,6 +80,7 @@ export class ViewPDC implements OnInit, OnDestroy {
 
     getAllPDC(row) {
         var that = this;
+        commonfun.loader();
 
         that._pdcservice.getPDCDetails({
             "flag": "calendar", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
@@ -79,8 +88,9 @@ export class ViewPDC implements OnInit, OnDestroy {
         }).subscribe(data => {
             that.events = data.data;
             that.getMonthWisePDC(row);
+            commonfun.loaderhide();
         }, err => {
-            console.log("Error");
+            commonfun.loaderhide();
         }, () => {
             // console.log("Complete");
         })
@@ -88,13 +98,15 @@ export class ViewPDC implements OnInit, OnDestroy {
 
     getMonthWisePDC(row) {
         var that = this;
+        commonfun.loader();
 
         that._pdcservice.getPDCDetails({
             "flag": "monthwise", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "monthname": row.view.title
         }).subscribe(data => {
             that.monthwisepdc = data.data;
+            commonfun.loaderhide();
         }, err => {
-            console.log("Error");
+            commonfun.loaderhide();
         }, () => {
             // console.log("Complete");
         })
@@ -102,6 +114,7 @@ export class ViewPDC implements OnInit, OnDestroy {
 
     getPDCByType(row) {
         var that = this;
+        commonfun.loader();
 
         if (row.calEvent !== undefined) {
             that._pdcservice.getPDCDetails({
@@ -111,8 +124,9 @@ export class ViewPDC implements OnInit, OnDestroy {
             }).subscribe(data => {
                 that.viewPDCDT = data.data;
                 that.pdctype = data.data[0].pdctype;
+                commonfun.loaderhide();
             }, err => {
-                console.log("Error");
+                commonfun.loaderhide();
             }, () => {
                 // console.log("Complete");
             })

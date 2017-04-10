@@ -151,7 +151,7 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         var that = this;
 
         that._budgetservice.viewStartForeCasting({
-            "flag": "ctrlcenter", "bdgtype": "yearly", "bid": that.bid, "status": that.bdgstatus, "isactive": that.status, "from": from, "to": to
+            "flag": "ctrlcenter", "bdgtype": "monthly", "bid": that.bid, "status": that.bdgstatus, "isactive": that.status, "from": from, "to": to
         }).subscribe(sf => {
             that.totalRecords = sf.data[1].recordstotal;
             that.viewSFDT = sf.data[0];
@@ -173,8 +173,8 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
         try {
             event.loading = false;
 
-            this._budgetservice.viewStartForeCasting({
-                "flag": "envelope", "bid": that.bid, "ccid": event.ccid, "status": that.bdgstatus, "isactive": that.status
+            that._budgetservice.viewStartForeCasting({
+                "flag": "envelope", "bdgtype": "monthly", "bid": that.bid, "ccid": event.ccid, "status": that.bdgstatus, "isactive": that.status
             }).subscribe(details => {
                 var dataset = details.data;
 
@@ -183,12 +183,11 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
                     event.details = dataset[0];
                 }
                 else {
-                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    that._msg.Show(messageType.error, "Error", "Record Not Found");
                     return;
                 }
             }, err => {
-                this._msg.Show(messageType.error, "Error", err);
-                console.log(err);
+                that._msg.Show(messageType.error, "Error", err);
             }, () => {
                 // console.log("Complete");
             })
@@ -339,23 +338,23 @@ export class ViewStartForecastingComp implements OnInit, OnDestroy {
 
     expandEnvelopeTypeDT(event) {
         var that = this;
-        //if (event.details && event.details.length > 0) { return; }
+        if (event.details && event.details.length > 0) { return; }
 
         try {
             event.loading = false;
 
             this._budgetservice.viewStartForeCasting({
-                "flag": "envelope", "bdgtype": "monthly", "bid": that.bid, "ccid": event.ccid,
+                "flag": "envelope", "bdgtype": "monthly", "bid": that.bid, "ccid": "4",
                 "status": that.bdgstatus, "isactive": "true", "from": 0, "to": 10
             }).subscribe(details => {
                 var dataset = details.data;
-                
+
                 if (dataset[0].length > 0) {
                     event.loading = true;
                     event.details = dataset[0];
                 }
                 else {
-                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    that._msg.Show(messageType.error, "Error", "Record Not Found");
                     return;
                 }
             }, err => {

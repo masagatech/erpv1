@@ -9,6 +9,9 @@ import { LoginUserModel } from '../../../_model/user_model';
 import { ReportsService } from '../../../_service/reports/rpt-service' /* add reference for emp */
 import { Schedule } from 'primeng/primeng';
 
+declare var $: any;
+declare var commonfun: any;
+
 @Component({
     templateUrl: 'viewbv.comp.html',
     providers: [ReportsService]
@@ -55,6 +58,11 @@ export class BankViewReports implements OnInit, OnDestroy {
 
     ngOnInit() {
         var that = this;
+
+        setTimeout(function () {
+            $(".fc-prev-button").find('span').removeAttr('class').addClass('fa fa-chevron-left');
+            $(".fc-next-button").find('span').removeAttr('class').addClass('fa fa-chevron-right');
+        }, 0);
 
         that.setActionButtons.setTitle("Bank View");
         that.setActionButtons.hideSideMenu();
@@ -117,6 +125,7 @@ export class BankViewReports implements OnInit, OnDestroy {
 
     getAPARDropDown(row) {
         var that = this;
+        commonfun.loader();
 
         that._rptservice.getBankView({
             "flag": "dropdown", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "monthname": row.view.title
@@ -132,12 +141,15 @@ export class BankViewReports implements OnInit, OnDestroy {
 
                 that.getBankView(row);
                 that.getMonthWiseAPAR(row);
+                commonfun.loaderhide();
             }
             catch (e) {
-                //that._msg.Show(messageType.error, "Error", e);
+                that._msg.Show(messageType.error, "Error", e);
+                commonfun.loaderhide();
             }
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
+            commonfun.loaderhide();
         }, () => {
             // console.log("Complete");
         })
@@ -147,6 +159,7 @@ export class BankViewReports implements OnInit, OnDestroy {
         this.calendarSelectedRow = row;
         this.events = [];
         var that = this;
+        commonfun.loader();
 
         var _apartype: string = "";
         var _banktype: string = "";
@@ -171,8 +184,10 @@ export class BankViewReports implements OnInit, OnDestroy {
             "monthname": row.view.title, "apartype": _apartype, "banktype": _banktype, "bankid": _bankid
         }).subscribe(data => {
             that.events = data.data;
+            commonfun.loaderhide();
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
+            commonfun.loaderhide();
         }, () => {
             // console.log("Complete");
         })
@@ -180,6 +195,7 @@ export class BankViewReports implements OnInit, OnDestroy {
 
     getMonthWiseAPAR(row) {
         var that = this;
+        commonfun.loader();
 
         var _apartype: string = "";
         var _banktype: string = "";
@@ -209,12 +225,15 @@ export class BankViewReports implements OnInit, OnDestroy {
                 else {
                     that.monthwiseapar = [];
                 }
+                commonfun.loaderhide();
             }
             catch (e) {
-                //that._msg.Show(messageType.error, "Error", e);
+                that._msg.Show(messageType.error, "Error", e);
+                commonfun.loaderhide();
             }
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
+            commonfun.loaderhide();
         }, () => {
             // console.log("Complete");
         })
@@ -230,6 +249,7 @@ export class BankViewReports implements OnInit, OnDestroy {
 
         var _banktype: string = "";
         var _bankid: string = "";
+        commonfun.loader();
 
         for (let bt of that.selectedBankType) {
             _banktype += bt + ",";
@@ -249,8 +269,10 @@ export class BankViewReports implements OnInit, OnDestroy {
                 that.rowheader = data.data[0].aparhead;
                 that.rowname = data.data[0].aparname;
                 that.rowdate = data.data[0].docdate;
+                commonfun.loaderhide();
             }, err => {
                 that._msg.Show(messageType.error, "Error", err);
+                commonfun.loaderhide();
             }, () => {
                 // console.log("Complete");
             })

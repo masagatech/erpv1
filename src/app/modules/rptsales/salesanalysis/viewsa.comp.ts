@@ -84,8 +84,9 @@ export class SalesAnalysis implements OnInit, OnDestroy {
 
     // Read Get Attributes
 
-    attrjson() {
+    getAttrID() {
         var attrlist = [];
+        var attrid = "";
 
         if (this.attrname.length > 0) {
             for (let item of this.attrname) {
@@ -93,7 +94,8 @@ export class SalesAnalysis implements OnInit, OnDestroy {
             }
         }
 
-        return JSON.stringify(attrlist).replace('[', '').replace(']', '');
+        attrid = JSON.stringify(attrlist).replace('[', '').replace(']', '');
+        return attrid;
     }
 
     // Get Sales Analysis
@@ -110,7 +112,7 @@ export class SalesAnalysis implements OnInit, OnDestroy {
         var todt = this.todate.getDate();
 
         that._rptservice.getDebtorsRpt({
-            "flag": "sa", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "attrid": that.attrjson(),
+            "flag": "sa", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "attrid": that.getAttrID(),
             "frmdt": frmdt.length !== 0 ? frmdt : null, "todt": todt.length !== 0 ? todt : null, "from": from, "to": to
         }).subscribe(sales => {
             that.totalRecords = sales.data[1][0].recordstotal;

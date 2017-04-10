@@ -44,12 +44,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Bank Name</label>
-                                <select validate="" name="bankid" class="form-control" [(ngModel)]="bankid" tabindex="5">
-                                    <option [value]="">Select Bank</option>
-                                    <option *ngFor="let items of bankDT" [value]="items.key">
-                                        {{items.val}}
-                                    </option>
-                                </select>
+                                <input validate="" type="text" [(ngModel)]="bankname" name="bankname" class="form-control" tabindex="5" />
                             </div>
                         </div>
                         <div class="col-md-6">

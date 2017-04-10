@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
 import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
+declare var $: any;
+
 @Component({
     templateUrl: 'viewjv.comp.html',
     providers: [JVService]
@@ -19,7 +21,7 @@ export class ViewJV implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
-    date1: any = "";
+    
     viewJVDT: any = [];
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
@@ -46,6 +48,8 @@ export class ViewJV implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.setActionButtons.setTitle("Journal Voucher");
+        $(".fromno input").focus();
+
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
@@ -136,7 +140,7 @@ export class ViewJV implements OnInit, OnDestroy {
             event.loading = false;
 
             that._jvservice.getJVDetails({
-                "flag": "details", "jvmid": event.jvmid, "cmpid": that.loginUser.cmpid
+                "flag": "details", "jvmid": "6882", "cmpid": that.loginUser.cmpid
             }).subscribe(details => {
                 var dataset = details.data;
 
@@ -149,7 +153,7 @@ export class ViewJV implements OnInit, OnDestroy {
                     return;
                 }
             }, err => {
-                this._msg.Show(messageType.error, "Error", err);
+                that._msg.Show(messageType.error, "Error", err);
             }, () => {
                 // console.log("Complete");
             })

@@ -26,7 +26,7 @@ export class AddPDC implements OnInit, OnDestroy {
     pdcid: number = 0;
     custid: number = 0;
     custname: string = "";
-    bankid: string = "";
+    bankname: string = "";
     chequeno: string = "";
     amount: any = "";
     pdctype: string = "";
@@ -59,23 +59,6 @@ export class AddPDC implements OnInit, OnDestroy {
         this.fillDropDownList();
     }
 
-    setAuditDate() {
-        var that = this;
-
-        that._alsservice.getAuditLockSetting({
-            "flag": "modulewise", "dispnm": "pdc", "fy": that.loginUser.fy
-        }).subscribe(data => {
-            var dataResult = data.data;
-            var lockdate = dataResult[0].lockdate;
-            if (lockdate != "")
-                that.chequedate.setMinMaxDate(new Date(lockdate), null);
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
     setMinMaxDate() {
         var date = new Date();
         var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -84,8 +67,6 @@ export class AddPDC implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.chequedate.initialize(this.loginUser);
-        //this.chequedate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        //this.setAuditDate();
         this.setMinMaxDate();
 
         this.actionButton.push(new ActionBtnProp("back", "Back", "long-arrow-left", true, false));
@@ -174,10 +155,7 @@ export class AddPDC implements OnInit, OnDestroy {
         var that = this;
 
         that._pdcservice.getPDCDetails({ "flag": "dropdown" }).subscribe(data => {
-            var d = data.data;
-            
-            this.pdctypeDT = d.filter(a => a.group === "pdctype");
-            this.bankDT = d.filter(a => a.group === "bank");
+            that.pdctypeDT = data.data;
         }, err => {
             console.log("Error");
         }, () => {
@@ -244,7 +222,7 @@ export class AddPDC implements OnInit, OnDestroy {
             "fy": that.loginUser.fy,
             "acid": that.custid,
             "amount": that.amount,
-            "bankid": that.bankid,
+            "bankname": that.bankname,
             "chequeno": that.chequeno,
             "chequedate": that.chequedate.getDate(),
             "pdctype": that.pdctype,
@@ -291,7 +269,7 @@ export class AddPDC implements OnInit, OnDestroy {
             that.chequedate.setDate(date);
 
             that.amount = _pdcdata[0].amount;
-            that.bankid = _pdcdata[0].bankid;
+            that.bankname = _pdcdata[0].bankname;
             that.chequeno = _pdcdata[0].chequeno;
             that.narration = _pdcdata[0].narration;
             that.isactive = _pdcdata[0].isactive;

@@ -40,14 +40,14 @@
 					<option *ngFor="let item of statusDT" [value]="item.code">{{item.name}}</option>
 				</select>
 			</div>
-		</div>-->
+		</div>
 		<div class="col-md-1">
 			<div class="form-group setfltrbtn">
 				<label>&nbsp;</label>
 				<button type="button" class="btn btn-theme btn-sm" (click)="searchSFDetails(dt)">
 					<i class="fa fa-arrow-right"></i></button>
 			</div>
-		</div>
+		</div>-->
 	</div>
 </div>
 
@@ -62,7 +62,7 @@
 					{{row.totalamount | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<template let-row>
+			<template let-row pTemplate="rowexpansion">
 				<span *ngIf="!row.loading">Loading....</span>
 				<p-dataTable [value]="row.details" [lazy]="true" (onRowExpand)="expandSubItemWise($event)" expandableRows="true">
 					<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
@@ -72,7 +72,7 @@
 							{{drow.totalamount | currency:loginUser._globsettings.currency:true}}
 						</template>
 					</p-column>
-					<template let-sirow>
+					<template let-sirow pTemplate="rowexpansion">
 						<span *ngIf="!row.loading">Loading....</span>
 						<p-dataTable [value]="sirow.details" [lazy]="true" expandableRows="true">
 							<p-column field="subitem" header="Sub Item" [style]="{'width':'600px','text-align':'left'}"></p-column>
@@ -120,7 +120,7 @@
 					{{row.totalamount | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
-			<template let-etrow>
+			<template let-etrow pTemplate="rowexpansion">
 				<span *ngIf="!etrow.loading">Loading....</span>
 				<p-dataTable [value]="etrow.details" [lazy]="true" (onRowExpand)="expandQSubItemWise($event)" expandableRows="true">
 					<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
@@ -150,7 +150,7 @@
 							{{drow.totalamount | currency:loginUser._globsettings.currency:true}}
 						</template>
 					</p-column>
-					<template let-sirow>
+					<template let-sirow pTemplate="rowexpansion">
 						<span *ngIf="!sirow.loading">Loading....</span>
 						<p-dataTable [value]="sirow.details" [lazy]="true" expandableRows="true">
 							<p-column field="subitem" header="Sub Item" [style]="{'width':'150px','text-align':'left'}"></p-column>
@@ -189,48 +189,18 @@
 
 <div class="col-md-12" *ngIf="bdgtype==='1'">
 	<div class="table-responsive">
-		<p-dataTable #dt [value]="ctrlcenterDT" [lazy]="true" [rows]="10000" [paginator]="false" [totalRecords]="totalRecords" (onRowExpand)="expandEnvelopeTypeDT($event)"
-			(onLazyLoad)="loadCCGrid($event)" expandableRows="true">
+		<p-dataTable #dt [value]="ctrlcenterDT" [lazy]="true" [rows]="10000" [paginator]="false" [totalRecords]="totalRecords" (onLazyLoad)="loadCCGrid($event)"
+			(onRowExpand)="expandEnvelopeTypeDT($event)" expandableRows="true">
 			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
 			<p-column field="ccname" header="Control Center" [style]="{'width':'150px','text-align':'left'}"></p-column>
 
-			<p-column *ngFor="let col of monthColumn" header="{{col.disp}}" [style]="{'width':'100px','text-align':'right'}">
-				<template let-row="rowData" pTemplate type="body">
-					{{row[col.month] | currency:loginUser._globsettings.currency:true}}
-				</template>
-			</p-column>
-			<!--<p-column header="Jan" [style]="{'width':'100px','text-align':'right'}">
-				<template let-row="rowData" pTemplate type="body">
-					{{row.jan | currency:loginUser._globsettings.currency:true}}
-				</template>
-			</p-column>
-			<p-column header="Feb" [style]="{'width':'100px','text-align':'right'}">
-				<template let-row="rowData" pTemplate type="body">
-					{{row.feb | currency:loginUser._globsettings.currency:true}}
-				</template>
-			</p-column>-->
-			<p-column header="Total Amount" [style]="{'width':'150px','text-align':'right'}">
-				<template let-drow="rowData" pTemplate type="body">
-					{{drow.totalamount | currency:loginUser._globsettings.currency:true}}
-				</template>
-			</p-column>
-			<template let-etrow>
+			<template let-etrow pTemplate="rowexpansion">
 				<span *ngIf="!etrow.loading">Loading....</span>
 				<p-dataTable [value]="etrow.details" [lazy]="true" (onRowExpand)="expandExpenseBudgetDT($event)" expandableRows="true">
 					<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
 					<p-column field="envtitle" header="Envelope" [style]="{'width':'150px','text-align':'left'}"></p-column>
 
-					<p-column *ngFor="let etcol of monthColumn" header="{{etcol.disp}}" [style]="{'width':'100px','text-align':'right'}">
-						<template let-drow="rowData" pTemplate type="body">
-							{{drow[etcol.month] | currency:loginUser._globsettings.currency:true}}
-						</template>
-					</p-column>
-					<p-column header="Total Amount" [style]="{'width':'150px','text-align':'right'}">
-						<template let-drow="rowData" pTemplate type="body">
-							{{drow.totalamount | currency:loginUser._globsettings.currency:true}}
-						</template>
-					</p-column>
-					<template let-sirow>
+					<template let-sirow pTemplate="rowexpansion">
 						<span *ngIf="!sirow.loading">Loading....</span>
 						<p-dataTable [value]="sirow.details" [lazy]="true" expandableRows="true">
 							<p-column field="subitem" header="Sub Item" [style]="{'width':'150px','text-align':'left'}"></p-column>
@@ -246,8 +216,30 @@
 							</p-column>
 						</p-dataTable>
 					</template>
+
+					<p-column *ngFor="let etcol of monthColumn" header="{{etcol.disp}}" [style]="{'width':'100px','text-align':'right'}">
+						<template let-drow="rowData" pTemplate type="body">
+							{{drow[etcol.month] | currency:loginUser._globsettings.currency:true}}
+						</template>
+					</p-column>
+					<p-column header="Total Amount" [style]="{'width':'150px','text-align':'right'}">
+						<template let-drow="rowData" pTemplate type="body">
+							{{drow.totalamount | currency:loginUser._globsettings.currency:true}}
+						</template>
+					</p-column>
 				</p-dataTable>
 			</template>
+
+			<p-column *ngFor="let col of monthColumn" header="{{col.disp}}" [style]="{'width':'100px','text-align':'right'}">
+				<template let-row="rowData" pTemplate type="body">
+					{{row[col.month] | currency:loginUser._globsettings.currency:true}}
+				</template>
+			</p-column>
+			<p-column header="Total Amount" [style]="{'width':'150px','text-align':'right'}">
+				<template let-drow="rowData" pTemplate type="body">
+					{{drow.totalamount | currency:loginUser._globsettings.currency:true}}
+				</template>
+			</p-column>
 		</p-dataTable>
 	</div>
 </div>

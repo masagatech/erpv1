@@ -21,7 +21,7 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
-
+    
     viewDebitNoteDT: any = [];
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
@@ -143,24 +143,21 @@ export class ViewDebitNote implements OnInit, OnDestroy {
         try {
             event.loading = false;
 
-            this._dnservice.getDebitNote({
-                "flag": "details", "docno": event.docno,
-                "from": event.first, "to": (event.first + event.rows)
+            that._dnservice.getDebitNote({
+                "flag": "details", "docno": event.docno
             }).subscribe(details => {
                 var dataset = details.data;
-                that.totalDetailsRecords = dataset[1][0].recordstotal;
 
                 if (dataset[0].length > 0) {
                     event.loading = true;
                     event.details = dataset[0];
                 }
                 else {
-                    that._msg.Show(messageType.info, "info", "Record Not Found");
+                    that._msg.Show(messageType.error, "Error", "Record Not Found");
                     return;
                 }
             }, err => {
-                this._msg.Show(messageType.error, "Error", err);
-                console.log(err);
+                that._msg.Show(messageType.error, "Error", err);
             }, () => {
                 // console.log("Complete");
             })

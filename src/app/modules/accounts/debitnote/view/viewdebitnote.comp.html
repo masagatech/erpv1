@@ -30,13 +30,13 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>From No</label>
-						<numtext name="fromno" [(ngModel)]="fromno" class="fromno" [iscurrency]="false" [min]="0" [decimals]="0"></numtext>
+						<numtext name="fromno" [(ngModel)]="fromno" class="fromno" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>To No</label>
-						<numtext name="tono" [(ngModel)]="tono" [iscurrency]="false" [min]="0" [decimals]="0"></numtext>
+						<numtext name="tono" [(ngModel)]="tono" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
 					</div>
 				</div>
 			</div>
@@ -85,16 +85,16 @@
 					</button>
 				</template>
 			</p-column>
-			<template let-row>
+			<template let-row pTemplate="rowexpansion">
 				<span *ngIf="!row.loading">Loading....</span>
-				<p-dataTable [value]="row.details" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
-					<p-column field="acname" header="A/C Name" [style]="{'width':'690px','text-align':'left'}"></p-column>
+				<p-dataTable [value]="row.details" [lazy]="true">
+					<p-column field="acname" header="A/C Name" [style]="{'width':'700px','text-align':'left'}"></p-column>
 					<p-column header="Dr. Amt" [style]="{'width':'150px','text-align':'right'}">
 						<template let-drow="rowData" pTemplate type="body">
 							{{drow.dramt | currency:loginUser._globsettings.currency:true}}
 						</template>
 					</p-column>
-					<p-column header="Cr. Amt" [style]="{'text-align':'right'}">
+					<p-column header="Cr. Amt" [style]="{'width':'150px','text-align':'right'}">
 						<template let-drow="rowData" pTemplate type="body">
 							{{drow.cramt | currency:loginUser._globsettings.currency:true}}
 						</template>

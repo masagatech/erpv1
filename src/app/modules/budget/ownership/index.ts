@@ -10,7 +10,6 @@ import { CommonModule } from '@angular/common';
 import { LazyLoadEvent, DataTableModule, DataListModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
-import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -49,8 +48,7 @@ const routerConfig = [
     declarations: [
         AddOwnershipComp,
         ViewOwnershipComp,
-        OwnershipComp,
-        GroupByPipe
+        OwnershipComp
     ],
     providers: [AuthGuard]
 })

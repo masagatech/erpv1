@@ -74,7 +74,7 @@
 					</button>
 				</template>
 			</p-column>
-			<template let-row>
+			<template let-row pTemplate="rowexpansion">
 				<p-dataTable [value]="row.details" [lazy]="true" [rows]="1" [paginator]="true" [totalRecords]="totalRecords" expandableRows="true">
 					<p-column field="refno" header="Reference No" [style]="{'width':'150px','text-align':'left'}"></p-column>
 					<p-column field="custname" header="Code" [style]="{'width':'150px','text-align':'left'}"></p-column>

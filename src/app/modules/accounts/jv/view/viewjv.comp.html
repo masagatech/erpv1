@@ -30,7 +30,7 @@
 				<div class="col-md-6">
 					<div class="form-group">
 						<label>From No</label>
-						<numtext name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
+						<numtext name="fromno" [(ngModel)]="fromno" class="fromno" [iscurrency]="false" [min]="0" [decimals]="0" [grpseperator]=""></numtext>
 					</div>
 				</div>
 				<div class="col-md-6">
@@ -76,6 +76,7 @@
 					{{row.totcramt | currency:loginUser._globsettings.currency:true}}
 				</template>
 			</p-column>
+			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
 			<p-column [style]="{'width':'45px','text-align':'left'}">
 				<template let-row="rowData" pTemplate type="body">
 					<button type="button" (click)="openJVDetails(row)" class="btn btn-theme btn-sm btn-grid">
@@ -84,6 +85,7 @@
 				</template>
 			</p-column>
 			<template let-row pTemplate="rowexpansion">
+				<span *ngIf="!row.loading">Loading....</span>
 				<p-dataTable [value]="row.details" [lazy]="true">
 					<p-column field="acname" header="A/C Name" [style]="{'width':'450px','text-align':'left'}"></p-column>
 					<p-column header="Dr. Amt" [style]="{'width':'300px','text-align':'right'}">
