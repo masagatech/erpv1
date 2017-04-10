@@ -72,7 +72,12 @@ const routerConfig =
                             })
                         },
                         {
-                            path: 'reports', loadChildren: () => System.import('./reports/reports.module').then((comp: any) => {
+                            path: 'rptaccs', loadChildren: () => System.import('./rptaccs/rptaccs.module').then((comp: any) => {
+                                return comp.default;
+                            })
+                        },
+                        {
+                            path: 'rptsales', loadChildren: () => System.import('./rptsales/rptsales.module').then((comp: any) => {
                                 return comp.default;
                             })
                         },

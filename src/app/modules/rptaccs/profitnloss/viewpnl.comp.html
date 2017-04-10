@@ -1,0 +1,114 @@
+<div class="col-md-12">
+    <div class="table-responsive">
+        <p-dataGrid [value]="pnlDT | groupBy:'pname'" [paginator]="false" styleClass="hide-table-header">
+            <template let-row>
+                <div style="padding:3px" class="col-md-6">
+                    <p-panel>
+                        <header>
+                            <table class="tableNoborder" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td align="left">
+                                            {{row.key}}
+                                        </td>
+                                        <td width="130px" align="right">
+                                            Amount
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </header>
+                        <p-dataTable #dt [value]="row.value" [lazy]="true">
+                            <p-column [style]="{'width':'130px','text-align':'left'}">
+                                <template let-row="rowData" pTemplate type="body">
+                                    {{row.custname}}
+                                </template>
+                            </p-column>
+                            <p-column [style]="{'width':'130px','text-align':'right'}">
+                                <template let-row="rowData" pTemplate type="body">
+                                    {{row.amount | _currency:loginUser._globsettings[0]}}
+                                </template>
+                            </p-column>
+                            <footer>
+                                <table class="tableNoborder">
+                                    <tbody>
+                                        <tr>
+                                            <td width="80px" align="left">
+                                                <b>Total</b>
+                                            </td>
+                                            <td width="130px" align="right">
+                                                {{TotalAmount(row.value) | _currency:loginUser._globsettings[0]}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </footer>
+                        </p-dataTable>
+                    </p-panel>
+                </div>
+            </template>
+        </p-dataGrid>
+    </div>
+</div>
+
+
+<!--<div class="col-md-6">
+    <div class="panel-div">
+        <p-dataTable #dt [value]="pnlExpenseDT" [lazy]="true">
+            <p-column header="EXPENSE" [style]="{'width':'130px','text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custname}}
+                </template>
+            </p-column>
+            <p-column header="Dr. Amt." [style]="{'width':'130px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.amount | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <footer>
+                <table class="tableNoborder">
+                    <tbody>
+                        <tr>
+                            <td width="80px" align="left">
+                                <b>Total</b>
+                            </td>
+                            <td width="130px" align="right">
+                                {{gridTotal.ExpAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="panel-div">
+        <p-dataTable #dt [value]="pnlIncomeDT" [lazy]="true">
+            <p-column header="INCOME " [style]="{'width':'130px','text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custname}}
+                </template>
+            </p-column>
+            <p-column header="Cr. Amt." [style]="{'width':'130px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.amount | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <footer>
+                <table class="tableNoborder">
+                    <tbody>
+                        <tr>
+                            <td width="80px" align="left">
+                                <b>Total</b>
+                            </td>
+                            <td width="130px" align="right">
+                                {{gridTotal.IncAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>-->

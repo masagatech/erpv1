@@ -1,0 +1,141 @@
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>From Date</label>
+                <calendar #fromdate [name]="'fromdate'" tabindex="2"></calendar>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>To Date</label>
+                <calendar #todate [name]="'todate'" tabindex="3"></calendar>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class='form-group'>
+                <label>Attributes</label>
+                <p-autoComplete validate="" id="attr" name="attr" [(ngModel)]="attrname" placeholder="Attributes" [tabindex]="1" [suggestions]="attrlistDT"
+                    (completeMethod)="getAutoAttr($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete attr"
+                    [multiple]="true"></p-autoComplete>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group setfltrbtn">
+                <button type="button" class="btn btn-theme btn-sm" (click)="filterSalesAnalysis(dt)">
+					<i class="fa fa-arrow-right"></i>
+				</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="table-responsive">
+        <p-dataTable #dt [value]="salesAnalysisDT" [lazy]="true" [rows]="15" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadSalesAnalysis($event)">
+            <p-column header="Code" [style]="{'width':'100px','text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custcode}}
+                </template>
+            </p-column>
+            <p-column header="Customer Name" [style]="{'text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.custname}}
+                    <div style="font-size: 11px;">
+                        <b>Address : </b>
+                        {{row.address}}
+                    </div>
+                </template>
+            </p-column>
+            <p-column header="Attributes" [style]="{'width':'250px','text-align':'left'}">
+                <template let-row="rowData" pTemplate type="body">
+                    <div *ngFor="let attr of row.attributes" class="attrs">
+                        {{attr.attrname}}
+                    </div>
+                </template>
+            </p-column>
+            <p-column header="Opening Bal." [style]="{'width':'100px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.opbal | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Bill Amt." [style]="{'width':'100px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.billamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Other Amt." [style]="{'width':'100px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.othamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Rec Amt." [style]="{'width':'100px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.recamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="CN Amt." [style]="{'width':'100px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.cnamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <p-column header="Bal Amt." [style]="{'width':'100px','text-align':'right'}">
+                <template let-row="rowData" pTemplate type="body">
+                    {{row.netamt | _currency:loginUser._globsettings[0]}}
+                </template>
+            </p-column>
+            <footer *ngIf="salesAnalysisDT.length">
+                <table class="tableNoborder">
+                    <tbody>
+                        <tr>
+                            <td align="left" colspan="2">
+                                <b>Total Amount</b>
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalPageWise.OPBalTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalPageWise.BillAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalPageWise.OthAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalPageWise.RecAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalPageWise.CNAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalPageWise.NetAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" colspan="2">
+                                <b>Grand Total</b>
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalAll.OPBalTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalAll.BillAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalAll.OthAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalAll.RecAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalAll.CNAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                            <td width="150px" align="right">
+                                {{gridTotalAll.NetAmtTotal | _currency:loginUser._globsettings[0]}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </footer>
+        </p-dataTable>
+    </div>
+</div>

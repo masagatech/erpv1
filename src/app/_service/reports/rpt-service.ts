@@ -45,4 +45,8 @@ export class ReportsService {
     getPDCReport(req: any) {
         return this._dataserver.post("getPDCReport", req);
     }
+
+    getSalesReport(req: any) {
+        return this._dataserver.post("getSalesReport", req);
+    }
 }
