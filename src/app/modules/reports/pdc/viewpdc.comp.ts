@@ -9,32 +9,37 @@ import { UserService } from '../../../_service/user/user-service';
 import { LoginUserModel } from '../../../_model/user_model';
 import { ReportsService } from '../../../_service/reports/rpt-service' /* add reference for emp */
 import { CalendarComp } from '../../usercontrol/calendar';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 
 declare var $: any;
 declare var commonfun: any;
 
 @Component({
-    templateUrl: 'viewbsr.comp.html',
+    templateUrl: 'viewpdc.comp.html',
     providers: [ReportsService, CommonService]
 })
 
-export class BSRReports implements OnInit, OnDestroy {
+export class PDCReports implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
-    bsrDT: any = [];
-    bsrAssetsDT: any = [];
-    bsrLiabilitiyDT: any = [];
+    pdcrptDT: any = [];
+    totalRecords: number = 0;
 
-    gridTotal: any = { LIAmtTotal: 0, ASAmtTotal: 0 };
+    @ViewChild("fromdate")
+    fromdate: CalendarComp;
+
+    @ViewChild("todate")
+    todate: CalendarComp;
+
+    gridTotal: any = { AmtTotal: 0 };
 
     // Page Init
 
     constructor(private _router: Router, private _rptservice: ReportsService, private setActionButtons: SharedVariableService,
         private _autoservice: CommonService, private _userservice: UserService, private _msg: MessageService) {
         this.loginUser = this._userservice.getUser();
-        this.GetBalanceSheet();
     }
 
     // Page Load
@@ -42,29 +47,39 @@ export class BSRReports implements OnInit, OnDestroy {
     ngOnInit() {
         var that = this;
 
-        that.setActionButtons.setTitle("Balance Sheet");
+        that.setActionButtons.setTitle("PDC Report");
         that.setActionButtons.hideSideMenu();
         that.setActionButtons.setActionButtons(this.actionButton);
+
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(today);
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(today);
     }
 
-    // Get bsr Grid
-
-    GetBalanceSheet() {
+    GetPDCReport(from: number, to: number) {
         var that = this;
-        that.bsrAssetsDT = [];
+        that.pdcrptDT = [];
         commonfun.loader();
+        that.gridTotal = { AmtTotal: 0 };
 
-        that._rptservice.getBalanceSheet({
-            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid
-        }).subscribe(bsr => {
-            // that.bsrLiabilitiyDT = bsr.data.filter(a => a.pid === "LI");
-            // that.bsrAssetsDT = bsr.data.filter(a => a.pid === "AS");
+        var frmdt = this.fromdate.getDate();
+        var todt = this.todate.getDate();
 
-            that.bsrDT = bsr.data[0];
-            var libcfamt = bsr.data[1][0].libcfamt;
-            var asscfamt = bsr.data[1][0].asscfamt;
-            that.bsrDT.push({ "pname":"LIABILITY", "scname": "BALANCE C/F", "amount": "" + libcfamt + "" });
-            that.bsrDT.push({ "pname":"ASSETS", "scname": "BALANCE C/F", "amount": "" + asscfamt + "" });
+        that._rptservice.getPDCReport({
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
+            "frmdt": frmdt.length !== 0 ? frmdt : null, "todt": todt.length !== 0 ? todt : null,
+            "from": from, "to": to
+        }).subscribe(pdcrpt => {
+            that.totalRecords = pdcrpt.data[1][0].recordstotal;
+            that.pdcrptDT = pdcrpt.data[0];
+            that.gridTotal.AmtTotal += parseFloat(pdcrpt.data[1][0]._totamt);
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
             commonfun.loaderhide();
@@ -73,15 +88,12 @@ export class BSRReports implements OnInit, OnDestroy {
         });
     }
 
-    TotalAmount(row) {
-        var that = this;
-        var AmtTotal = 0;
+    filterPDCReport(dt: DataTable) {
+        dt.reset();
+    }
 
-        for (var i = 0; i <= row.length - 1; i++) {
-            AmtTotal += parseFloat(row[i].amount);
-        }
-
-        return AmtTotal;
+    loadPDCReport(event: LazyLoadEvent) {
+        this.GetPDCReport(event.first, (event.first + event.rows));
     }
 
     ngOnDestroy() {

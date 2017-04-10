@@ -23,10 +23,11 @@ export class PNLReports implements OnInit, OnDestroy {
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
 
+    pnlDT: any = [];
     pnlExpenseDT: any = [];
     pnlIncomeDT: any = [];
 
-    gridTotal: any = { AmtTotal: 0 };
+    gridTotal: any = { ExpAmtTotal: 0, IncAmtTotal: 0 };
 
     // Page Init
 
@@ -56,9 +57,11 @@ export class PNLReports implements OnInit, OnDestroy {
         that._rptservice.getProfitNLoss({
             "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid
         }).subscribe(pnl => {
-            that.pnlExpenseDT = pnl.data.filter(a => a.groupcode === "EX");
-            that.pnlIncomeDT = pnl.data.filter(a => a.groupcode === "IN");
-            //that.TotalAmount();
+            that.pnlDT = pnl.data[0];
+            var netProfit = pnl.data[1][0].netprofit;
+            var netLoss = pnl.data[1][0].netloss;
+            that.pnlDT.push({ "groupname":"EXPENSE", "custname": "Net Profit", "amount": "" + netProfit + "" });
+            that.pnlDT.push({ "groupname":"INCOME", "custname": "Net Loss", "amount": "" + netLoss + "" });
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
             commonfun.loaderhide();
@@ -67,14 +70,15 @@ export class PNLReports implements OnInit, OnDestroy {
         });
     }
 
-    TotalAmount() {
+    TotalAmount(row) {
         var that = this;
-        that.gridTotal = { AmtTotal: 0 };
+        var AmtTotal = 0;
 
-        for (var i = 0; i < this.pnlExpenseDT.length; i++) {
-            var items = this.pnlExpenseDT[i];
-            that.gridTotal.AmtTotal += parseFloat(items.dramt);
+        for (var i = 0; i <= row.length - 1; i++) {
+            AmtTotal += parseFloat(row[i].amount);
         }
+
+        return AmtTotal;
     }
 
     ngOnDestroy() {

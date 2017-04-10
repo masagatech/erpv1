@@ -38,6 +38,7 @@ export class AddJV implements OnInit, OnDestroy {
 
     newjvdid: number = 0;
     newcustid: any = 0;
+    newcustcode: string = "";
     newcustname: string = "";
     newdramt: any = "";
     newcramt: any = "";
@@ -194,6 +195,7 @@ export class AddJV implements OnInit, OnDestroy {
             that.acname = event.label;
         } else {
             that.newcustid = event.value;
+            that.newcustcode = event.custcode,
             that.newcustname = event.label;
         }
     }
@@ -261,6 +263,7 @@ export class AddJV implements OnInit, OnDestroy {
                 'counter': that.counter,
                 'jvdid': that.newjvdid,
                 'acid': that.newcustid,
+                'accode': that.newcustcode,
                 'acname': that.newcustname,
                 'dramt': that.newdramt,
                 'cramt': that.newcramt,
@@ -270,6 +273,7 @@ export class AddJV implements OnInit, OnDestroy {
             that.counter++;
             that.newjvdid = 0;
             that.newcustid = 0;
+            that.newcustcode = "";
             that.newcustname = "";
             that.newdramt = "";
             that.newcramt = "";
@@ -339,18 +343,6 @@ export class AddJV implements OnInit, OnDestroy {
             catch (e) {
                 that._msg.Show(messageType.error, "Error", e);
             }
-        }, err => {
-            this._msg.Show(messageType.error, "Error", err);
-        }, () => {
-            // console.log("Complete");
-        })
-    }
-
-    // get jv details by id
-
-    getJVDetailsByJVID(pjvmid: number) {
-        this._jvservice.getJVDetails({ "flag": "details", "jvmid": pjvmid }).subscribe(data => {
-            this.jvRowData = data.data;
         }, err => {
             this._msg.Show(messageType.error, "Error", err);
         }, () => {

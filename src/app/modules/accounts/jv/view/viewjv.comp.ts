@@ -152,7 +152,6 @@ export class ViewJV implements OnInit, OnDestroy {
                 }
             }, err => {
                 this._msg.Show(messageType.error, "Error", err);
-                console.log(err);
             }, () => {
                 // console.log("Complete");
             })

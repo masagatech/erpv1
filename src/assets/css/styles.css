@@ -1351,12 +1351,30 @@ table.tableNoborder td {
     padding: 2px!important;
 }
 
+table.tableWhiteBG td {
+    background-color: #FFFFFF!important;
+}
+
+table.tableHeader {
+    background-color: #ebedf0!important;
+    border-color: #d9d9d9!important;
+    margin: 0!important;
+}
+
+table.tableHeader h4 {
+    margin: 0!important;
+}
+
 .ui-datatable-footer {
     padding: 5px 0px!important;
 }
 
 .ui-datatable-footer.ui-widget-header {
     padding: 2px 0px !important;
+}
+
+.hide-table-header thead {
+    display: none;
 }
 
 .form-controlAutoComplete {
@@ -1422,18 +1440,17 @@ table.tableNoborder td {
 }
 
 .setfltrbtn {
-
     padding-top: 28px;
 }
 
 .tblcalendar>tbody>tr.received {
     background-color: #B2FFA4;
-    color: #FFFFFF;
+    color: #000000;
 }
 
 .tblcalendar>tbody>tr.issued {
     background-color: #FFC6A4;
-    color: #FFFFFF;
+    color: #000000;
 }
 
 .tblcalendar>tbody>tr.ap {

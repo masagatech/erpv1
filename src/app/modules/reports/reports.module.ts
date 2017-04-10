@@ -56,6 +56,30 @@ const routerConfig = [
             }),
           },
           
+          {
+            path: 'trialbalance', loadChildren: () => System.import('./trialbalance').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
+          {
+            path: 'debtors', loadChildren: () => System.import('./debtors').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
+          {
+            path: 'jv', loadChildren: () => System.import('./jv').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
+          {
+            path: 'pdc', loadChildren: () => System.import('./pdc').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+          
           { path: '', component: ReportsDashboardComp, canActivateChid: [AuthGuard], },
         ]
       }
