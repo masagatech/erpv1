@@ -54,7 +54,7 @@ declare var commonfun: any;
     invtypid: any = 0;
     ctrlname: any = "";
     ctrlid: any = 0;
-    Ctrllist: any = [];
+    //Ctrllist: any = [];
     attrtable: boolean = true;
     ctrlhide: boolean = true;
     profflag: boolean = true;
@@ -816,7 +816,7 @@ declare var commonfun: any;
         this.disattrlist = [];
         this.itemslist = [];
         this.translist = [];
-        this.Ctrllist = [];
+        // this.Ctrllist = [];
         this.taxlist = [];
         this.debit = 0;
         this.credit = 0;
@@ -846,9 +846,8 @@ declare var commonfun: any;
                 var _uploadedfile = resultdata._uploadedfile == null ? [] : resultdata._uploadedfile;
                 var _docfile = resultdata._docfile == null ? [] : resultdata._docfile;
                 var _parentname = resultdata._parentid == null ? [] : resultdata._parentid;
-                var _ledgerparam = resultdata._acledger;
 
-                this.ledgerParamDT = _ledgerparam === null ? [] : _ledgerparam.length === 0 ? [] : _ledgerparam;
+                this.ledgerParamDT = resultdata._acledger === null ? [] : resultdata._acledger.length === 0 ? [] : resultdata._acledger;
                 that.parentid = resultdata.parentid;
                 that.custid = resultdata.autoid;
                 that.code = resultdata.custcode;
@@ -864,7 +863,8 @@ declare var commonfun: any;
                 that.disattrlist = resultdata._discount == null ? [] : resultdata._discount;
                 that.translist = resultdata.transpoter == null ? [] : resultdata.transpoter;
                 that.keyvallist = resultdata.accinfo == null ? [] : resultdata.accinfo;
-                that.Ctrllist = resultdata.cc == null ? [] : resultdata.cc;
+                that.ctrlname = resultdata.cc[0].ctrlname;
+                that.ctrlid = resultdata.cc[0].id;
                 that.salesmanlist = resultdata.salesman == null ? [] : resultdata.salesman;
 
                 that.issh = 1;
@@ -923,7 +923,8 @@ declare var commonfun: any;
             taxlistjson.push({
                 "taxid": item.autoid,
                 "taxname": item.taxname,
-                "ontax": item.val,
+                "ontax": item.ontax,
+                "puramt": item.puramt,
                 "taxval": item.taxval,
                 "invtyp": item.id,
                 "seq": item.seq
@@ -933,17 +934,17 @@ declare var commonfun: any;
     }
 
     //Create a Json in controll
-    Ctrljson() {
-        var Ctrllistdet = [];
-        for (let ctrid of this.Ctrllist) {
-            Ctrllistdet.push({
-                "id": ctrid.id,
-                "profchk": ctrid.profflag,
-                "conschk": ctrid.constflag
-            });
-        }
-        return Ctrllistdet;
-    }
+    // Ctrljson() {
+    //     var Ctrllistdet = [];
+    //     for (let ctrid of this.Ctrllist) {
+    //         Ctrllistdet.push({
+    //             "id": ctrid.id,
+    //             "profchk": ctrid.profflag,
+    //             "conschk": ctrid.constflag
+    //         });
+    //     }
+    //     return Ctrllistdet;
+    // }
 
     //Create a Json in discount
     discountjson() {
@@ -1038,6 +1039,7 @@ declare var commonfun: any;
 
     //Control Center Selected
     ControlCentSelect(event) {
+        debugger;
         this.ctrlid = event.value;
         this.ctrlname = event.label;
     }
@@ -1113,12 +1115,12 @@ declare var commonfun: any;
         //$(".key").focus();
     }
 
-    Ctrl() {
-        setTimeout(function () {
-            $(".ctrl").val("");
-            $(".ctrl input").focus();
-        }, 0)
-    }
+    // Ctrl() {
+    //     setTimeout(function () {
+    //         $(".ctrl").val("");
+    //         $(".ctrl input").focus();
+    //     }, 0)
+    // }
 
     //Json Attribute 
     createattrjson() {
@@ -1142,82 +1144,91 @@ declare var commonfun: any;
     }
 
     //Add New Controll Center
-    AddNewCtrl() {
-        if (this.ctrlid > 0) {
-            this.CustAddServies.getctrldetail({
-                "id": this.ctrlid,
-                "cmpid": this.loginUser.cmpid
-            }).subscribe(result => {
-                if (result.data.length > 0) {
-                    this.Duplicateflag = true;
-                    for (var i = 0; i < this.Ctrllist.length; i++) {
-                        if (this.Ctrllist[i].ctrlname == this.ctrlname) {
-                            this.Duplicateflag = false;
-                            break;
-                        }
-                    }
-                    if (this.Duplicateflag == true) {
-                        this.Ctrllist.push({
-                            "ctrlname": result.data[0].ctrlname,
-                            "proftcode": result.data[0].proftcode,
-                            "costcode": result.data[0].costcode,
-                            "profflag": this.profflag,
-                            "constflag": this.constflag,
-                            "id": result.data[0].autoid
-                        });
-                        this.ctrlhide = false;
-                        this.ctrlid = 0;
-                        this.ctrlname = "";
-                        $(".ctrl input").focus();
+    // AddNewCtrl() {
+    //     if (this.ctrlid > 0) {
+    //         this.CustAddServies.getctrldetail({
+    //             "id": this.ctrlid,
+    //             "cmpid": this.loginUser.cmpid
+    //         }).subscribe(result => {
+    //             if (result.data.length > 0) {
+    //                 this.Duplicateflag = true;
+    //                 for (var i = 0; i < this.Ctrllist.length; i++) {
+    //                     if (this.Ctrllist[i].ctrlname == this.ctrlname) {
+    //                         this.Duplicateflag = false;
+    //                         break;
+    //                     }
+    //                 }
+    //                 if (this.Duplicateflag == true) {
+    //                     this.Ctrllist.push({
+    //                         "ctrlname": result.data[0].ctrlname,
+    //                         "proftcode": result.data[0].proftcode,
+    //                         "costcode": result.data[0].costcode,
+    //                         "profflag": this.profflag,
+    //                         "constflag": this.constflag,
+    //                         "id": result.data[0].autoid
+    //                     });
+    //                     this.ctrlhide = false;
+    //                     this.ctrlid = 0;
+    //                     this.ctrlname = "";
+    //                     $(".ctrl input").focus();
 
-                    }
-                    else {
-                        this._msg.Show(messageType.error, "error", "Duplicate control center");
-                        this.ctrlname = "";
-                        $(".ctrl input").focus();
-                        return;
-                    }
-                }
-                else {
-                    this._msg.Show(messageType.error, "error", "Control name Not found");
-                    this.ctrlname = "";
-                    $(".ctrl input").focus();
-                    return;
-                }
-            }, err => {
-                console.log("Error")
-            }, () => {
-                //console.log("completed")
-            })
+    //                 }
+    //                 else {
+    //                     this._msg.Show(messageType.error, "error", "Duplicate control center");
+    //                     this.ctrlname = "";
+    //                     $(".ctrl input").focus();
+    //                     return;
+    //                 }
+    //             }
+    //             else {
+    //                 this._msg.Show(messageType.error, "error", "Control name Not found");
+    //                 this.ctrlname = "";
+    //                 $(".ctrl input").focus();
+    //                 return;
+    //             }
+    //         }, err => {
+    //             console.log("Error")
+    //         }, () => {
+    //             //console.log("completed")
+    //         })
+    //     }
+    //     else {
+    //         this._msg.Show(messageType.error, "error", "Please enter valid controll center");
+    //         this.ctrlname = "";
+    //         this.ctrlid = 0;
+    //         $(".ctrl input").focus();
+    //         return;
+    //     }
+    // }
+
+    //Address Book
+    CreateAddressArry() {
+        var adrarry = [];
+        for (var i = 0; i < this.adrbookid.length; i++) {
+            adrarry.push(this.adrbookid[i])
         }
-        else {
-            this._msg.Show(messageType.error, "error", "Please enter valid controll center");
-            this.ctrlname = "";
-            this.ctrlid = 0;
-            $(".ctrl input").focus();
-            return;
-        }
+        return JSON.stringify(adrarry).replace('[', '{').replace(']', '}');
     }
 
     //Delete Control Center Row
-    DeleteCtrl(row) {
-        var index = -1;
-        for (var i = 0; i < this.Ctrllist.length; i++) {
-            if (this.Ctrllist[i].ctrlname === row.ctrlname) {
-                index = i;
-                break;
-            }
-        }
-        if (index === -1) {
-            console.log("Wrong Delete Entry");
-        }
-        this.Ctrllist.splice(index, 1);
-        $(".ctrl").focus();
-    }
+    // DeleteCtrl(row) {
+    //     var index = -1;
+    //     for (var i = 0; i < this.Ctrllist.length; i++) {
+    //         if (this.Ctrllist[i].ctrlname === row.ctrlname) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    //     if (index === -1) {
+    //         console.log("Wrong Delete Entry");
+    //     }
+    //     this.Ctrllist.splice(index, 1);
+    //     $(".ctrl").focus();
+    // }
 
     ledgerparam() {
         var ledgerlist = [];
-        
+
         ledgerlist.push({
             "cmpid": this.loginUser.cmpid,
             "fy": this.loginUser.fy,
@@ -1239,10 +1250,15 @@ declare var commonfun: any;
                 this.ledgerParamDT.push({
                     "autoid": 0,
                     "module": "cust",
+                    "cmpid": this.loginUser.cmpid,
+                    "fy": this.loginUser.fy,
                     "code": this.code,
+                    "trndate": new Date(),
+                    "actype": "cust",
                     "dramt": this.ope == "" ? 0 : this.ope,
                     "cramt": 0,
-                    "createdby": this.loginUser.login
+                    "createdby": this.loginUser.login,
+                    "narration": this.remark
                 });
             }
 
@@ -1269,7 +1285,7 @@ declare var commonfun: any;
                 "upper": this.upperlimit,
                 "lower": this.lowerlimit,
                 "remark": this.remark,
-                "ctrl": this.Ctrljson(),
+                "ctrl": this.ctrlid,
                 "createdby": this.loginUser.login,
                 "adrid": this.adrbookid,
                 "parentid": this.parentid,
@@ -1279,6 +1295,7 @@ declare var commonfun: any;
                 "remark2": "",
                 "remark3": []
             }
+            console.log(param);
             return param;
         } catch (e) {
             this._msg.Show(messageType.error, "error", e.message);
@@ -1329,10 +1346,10 @@ declare var commonfun: any;
                 this._msg.Show(messageType.error, "error", "Please create warehouse master");
                 return;
             }
-            if (this.Ctrllist.length == 0) {
-                this._msg.Show(messageType.error, "error", "Please enter control center");
-                return;
-            }
+            // if (this.Ctrllist.length == 0) {
+            //     this._msg.Show(messageType.error, "error", "Please enter control center");
+            //     return;
+            // }
             this.actionButton.find(a => a.id === "save").enabled = false;
             this.CustAddServies.saveCustomer(
                 this.paramterjson()
@@ -1392,7 +1409,6 @@ declare var commonfun: any;
                 attrlist.push(items.value);
             }
         }
-        debugger;
         //return attrlist.slice(0, -1);
         return JSON.stringify(attrlist).replace('[', '{').replace(']', '}');
     }

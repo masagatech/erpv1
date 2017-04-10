@@ -56,9 +56,17 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="row" *ngIf="editmode">
-			<div class="col-md-10">
+			<div class="col-md-2">
 				<label><p-checkbox [(ngModel)]="isactive" binary="true"></p-checkbox>IsActive</label>
+			</div>
+			<div class="col-md-6">
+				<div class='form-group'>
+					<label>Control Name</label>
+					<p-autoComplete [(ngModel)]="ctrlname" class="form-controlAutoComplete ctrl" (onSelect)="ControlCentSelect($event)" [suggestions]="ControlCentAutodata"
+						(completeMethod)="ControlCentAuto($event)" [tabindex]="3" field="label" [size]="30" placeholder="Control Center" [minLength]="1"></p-autoComplete>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -72,7 +80,7 @@
 			<li><a data-target="#trans" role="button" (click)="transtab()" data-toggle="tab"><i class="fa fa-truck" aria-hidden="true"></i> Transpoter</a></li>
 			<li><a data-target="#sales" role="button" (click)="saletab()" data-toggle="tab"><i class="fa fa-user-secret" aria-hidden="true"></i> Salesman</a></li>
 			<li><a data-target="#ware" role="button" (click)="TabWare()" data-toggle="tab"><i class="fa fa-home" aria-hidden="true"></i> Warehouse</a></li>
-			<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab"><i class="fa fa-cc" aria-hidden="true"></i> Control Center</a></li>
+			<!--<li><a data-target="#control" role="button" (click)="Ctrl()" data-toggle="tab"><i class="fa fa-cc" aria-hidden="true"></i> Control Center</a></li>-->
 			<li><a data-target="#acinfo" role="button" (click)="Acinfo()" data-toggle="tab"><i class="fa fa-calculator" aria-hidden="true"></i> Accounting Info</a></li>
 			<li><a data-target="#tax" role="button" (click)="taxtab()" data-toggle="tab"><i class="fa fa-percent" aria-hidden="true"></i> Tax</a></li>
 			<li><a data-target="#docup" role="button" data-toggle="tab"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Document Upload</a></li>
@@ -89,8 +97,6 @@
 					<attributemodule #attrPrice></attributemodule>
 				</div>
 			</div>
-
-
 			<div class="tab-pane" id="itemdis">
 				<div class="row">
 					<div class="panel panel-theme">
@@ -374,7 +380,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="tab-pane" id="control">
+			<!--<div class="tab-pane" id="control">
 				<div class="row">
 					<div class="col-md-10">
 						<div class="col-md-5">
@@ -424,7 +430,7 @@
 					</div>
 
 				</div>
-			</div>
+			</div>-->
 			<div class="tab-pane" id="acinfo">
 				<div class="row">
 					<div class="col-md-6">
