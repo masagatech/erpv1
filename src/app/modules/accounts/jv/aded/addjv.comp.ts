@@ -26,6 +26,11 @@ export class AddJV implements OnInit, OnDestroy {
     narration: string = "";
     isactive: boolean = false;
 
+    createdby: string = "";
+    createdon: any = "";
+    updatedby: string = "";
+    updatedon: string = "";
+
     module: string = "";
     suppdoc: any = [];
     uploadedFiles: any = [];
@@ -84,7 +89,7 @@ export class AddJV implements OnInit, OnDestroy {
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
-            
+
             if (lockdate != "") {
                 // that.jvdate.setMinMaxDate(new Date(lockdate), null);
                 var date = new Date(lockdate);
@@ -329,7 +334,9 @@ export class AddJV implements OnInit, OnDestroy {
     getJVDataById(pjvmid: number) {
         var that = this;
 
-        that._jvservice.getJVDetails({ "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "jvmid": pjvmid }).subscribe(data => {
+        that._jvservice.getJVDetails({
+            "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "jvmid": pjvmid
+        }).subscribe(data => {
             try {
                 var _jvdata = data.data[0]._jvdata;
                 var _jvdetails = data.data[0]._jvdetails;
@@ -342,6 +349,10 @@ export class AddJV implements OnInit, OnDestroy {
                 that.jvdate.setDate(date);
                 that.narration = _jvdata[0].narration;
                 that.isactive = _jvdata[0].isactive;
+                that.createdby = _jvdata[0].createdby;
+                that.createdon = _jvdata[0].createdon;
+                that.updatedby = _jvdata[0].updatedby;
+                that.updatedon = _jvdata[0].updatedon;
 
                 that.jvRowData = _jvdetails;
 
@@ -402,9 +413,8 @@ export class AddJV implements OnInit, OnDestroy {
         var saveJV = {
             "jvmid": that.jvmid,
             "loginsessionid": that.loginUser._sessiondetails.sessionid,
-            "uid": that.loginUser.uid,
-            "fy": that.loginUser.fy,
             "cmpid": that.loginUser.cmpid,
+            "fy": that.loginUser.fy,
             "docdate": that.jvdate.getDate(),
             "suppdoc": that.suppdoc.length === 0 ? null : that.suppdoc,
             "narration": that.narration,

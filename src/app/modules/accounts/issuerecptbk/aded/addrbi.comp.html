@@ -5,7 +5,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label">Emp Name</label>
-                        <input validate="" id="empname" name="empname" type="text" [(ngModel)]="empname" class="empname form-control" (keyup)="getEmpAuto(this)" tabindex="1" />
+                        <p-autoComplete id="empname" name="empname" [(ngModel)]="empname" placeholder="Search Employee" [tabindex]="1" (onSelect)="selectAutoEmp($event, 1)"
+                            [suggestions]="employeeDT" (completeMethod)="getAutoEmp($event)" field="label" [minLength]="1" [size]="30"
+                            class="form-controlAutoComplete empname"></p-autoComplete>
                     </div>
 
                     <div class="form-group">
@@ -28,13 +30,14 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">From No</label>
-                                <numtext validate="" name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [decimals]="0" (keyup.enter)="getToNoOnTab()" tabindex="4"></numtext>
+                                <numtext validate="0" name="fromno" [(ngModel)]="fromno" [iscurrency]="false" [decimals]="0" (keyup)="getToNoOnKey()" (keydown.enter)="getToNoOnTab()"
+                                    (keydown.tab)="getToNoOnTab()" tabindex="4"></numtext>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">To No</label>
-                                <input validate="" type="text" name="tono" [(ngModel)]="tono" class="form-control text-right" disabled />
+                                <input validate="0" type="text" name="tono" [(ngModel)]="tono" class="form-control text-right" disabled />
                             </div>
                         </div>
                     </div>

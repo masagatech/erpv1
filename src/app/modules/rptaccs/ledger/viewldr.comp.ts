@@ -104,8 +104,8 @@ export class LedgerReports implements OnInit, OnDestroy {
 
         that.gridTotal = { DrAmtTotal: 0, CrAmtTotal: 0 };
 
-        var frmdt = this.fromdate.getDate();
-        var todt = this.todate.getDate();
+        var frmdt = that.fromdate.getDate();
+        var todt = that.todate.getDate();
 
         that._rptservice.getLedger({
             "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid,
@@ -118,7 +118,7 @@ export class LedgerReports implements OnInit, OnDestroy {
             that.gridTotal.CrAmtTotal += parseFloat(ledger.data[1][0]._totcramt);
             //that.TotalAmountMonthWise();
         }, err => {
-            this._msg.Show(messageType.error, "Error", err);
+            that._msg.Show(messageType.error, "Error", err);
             commonfun.loaderhide();
         }, () => {
             commonfun.loaderhide();

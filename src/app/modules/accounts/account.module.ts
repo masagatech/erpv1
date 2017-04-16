@@ -30,6 +30,12 @@ const routerConfig = [
           },
 
           {
+            path: 'creditnote', loadChildren: () => System.import('./creditnote').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
             path: 'bankpayment', loadChildren: () => System.import('./bankpayment').then((comp: any) => {
               return comp.default;
             }),
@@ -52,18 +58,21 @@ const routerConfig = [
               return comp.default;
             }),
           },
-          {
-            path: 'taxmaster', loadChildren: () => System.import('./taxmaster').then((comp: any) => {
-              return comp.default;
-            }),
-          },
+
           {
             path: 'cashflow', loadChildren: () => System.import('./cashflow').then((comp: any) => {
               return comp.default;
             }),
           },
+
           {
             path: 'bankreco', loadChildren: () => System.import('./bankreco').then((comp: any) => {
+              return comp.default;
+            }),
+          },
+
+          {
+            path: 'taxmaster', loadChildren: () => System.import('./taxmaster').then((comp: any) => {
               return comp.default;
             }),
           },

@@ -24,8 +24,6 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">Chart Of Accounts</label>
-                        <!--<input validate="" type="text" name="coaname" [(ngModel)]="coaname" class="coaname form-control" (keyup)="getAutoCOA(this)"
-                        />-->
                         <p-autoComplete id="coaname" name="coaname" [(ngModel)]="coaname" class="form-controlAutoComplete" (onSelect)="selectAutoCOA($event)"
                             [suggestions]="autocoaDT" (completeMethod)="getAutoCOA($event)" [tabindex]="1" field="label" [size]="30"
                             placeholder="Chart Of Accounts" [minLength]="1"></p-autoComplete>

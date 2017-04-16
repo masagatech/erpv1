@@ -1,0 +1,214 @@
+<form id="frmCreditNote">
+	<div class="middlepan">
+		<div class="panel panel-theme">
+			<div class="panel-body">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">Account Name</label>
+								<p-autoComplete id="custname" name="custname" [(ngModel)]="custname" placeholder="Accounts" [tabindex]="1" (onSelect)="selectAutoAccounts($event, 1)"
+									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete cnaccname"></p-autoComplete>
+							</div>
+							<div class="form-group">
+								<label class="control-label">Doc Date</label>
+								<calendar #docdate [name]="'docdate'" tabindex="2"></calendar>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="form-group">
+								<label class="control-label">Narration</label>
+								<textarea name="narration" [(ngModel)]="narration" class="form-control small-text-box" cols="150" rows="5" tabindex="4"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel-body">
+				<div class="col-md-12">
+					<p-dataTable #dt [value]="CNRowData | filterBy : {isactive: true}" [editable]="!isdetails" [lazy]="true">
+						<p-column header="#" [style]="{'width':'40px','text-align':'left'}">
+							<template let-i="rowIndex" pTemplate="editor">
+								{{i + 1}}
+							</template>
+						</p-column>
+						<p-column header="Items" [style]="{'text-align':'left'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+								{{row.itemname}}
+							</template>
+							<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+								<p-autoComplete id="itemname{{i+1}}" name="itemname{{i+1}}" [(ngModel)]="row.itemname" placeholder="Items" [tabindex]="5"
+									(onSelect)="selectAutoItems($event, 1);fillItemPriceDDL(row, 1);" [suggestions]="itemsDT" (completeMethod)="getAutoItems($event)"
+									field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
+							</template>
+						</p-column>
+						<p-column header="Quantity" [style]="{'width':'100px','text-align':'right'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+								{{row.itemqty}}
+							</template>
+							<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+								<!--<numtext id="{{'itemqty' + i + 1}}" name="itemqty{{i+1}}" [(ngModel)]="row.itemqty" css="inlinetextbox itemqty" (keydown.enter)="validItemQty(1)"
+									(keydown.tab)="validItemQty(1)"></numtext>-->
+
+								<input id="{{'itemqty' + i + 1}}" name="itemqty{{i+1}}" [(ngModel)]="row.itemqty" class="form-control text-right itemqty"
+									(keydown.enter)="validItemQty(1)" (keydown.tab)="validItemQty(1)" tabindex="6">
+							</template>
+						</p-column>
+						<p-column header="Price" [style]="{'width':'150px','text-align':'right'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+								{{row.itemprice | currency:loginUser._globsettings.currency:true}}
+							</template>
+							<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+								<select validate="0" name="itemprice{{i+1}}" class="form-control" [(ngModel)]="row.itemprice" tabindex="7">
+									<option [value]="0">Select Price</option>
+									<option *ngFor="let itemprice of row.itemPriceDT" [value]="itemprice.rate">
+										{{itemprice.rate | currency:loginUser._globsettings.currency:true}}
+									</option>
+								</select>
+							</template>
+						</p-column>
+						<p-column header="Discount" [style]="{'width':'150px','text-align':'right'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
+								{{row.itemdisc | currency:loginUser._globsettings.currency:true}}
+							</template>
+							<template let-row="rowData" let-i="rowIndex" pTemplate="editor" *ngIf="!isdetails">
+								<select validate="0" name="itemdisc{{i+1}}" class="form-control" [(ngModel)]="row.itemdisc" tabindex="8" (ngModelChange)="getTotalAmt(row, 1)">
+									<option [value]="0">Select Discount</option>
+									<option *ngFor="let itemdisc of row.itemDiscDT" [value]="itemdisc.disc">
+										{{itemdisc.disc | currency:loginUser._globsettings.currency:true}}
+									</option>
+								</select>
+							</template>
+						</p-column>
+						<p-column header="Amount" [style]="{'width':'100px','text-align':'right'}">
+							<template let-row="rowData" let-i="rowIndex" pTemplate="body">
+								{{row.totalamt | currency:loginUser._globsettings.currency:true}}
+							</template>
+						</p-column>
+						<p-column [style]="{'width':'60px','text-align':'center'}" *ngIf="!isdetails">
+							<template let-col let-row="rowData" pTemplate="editor">
+								<button class="btn btn-danger btn-sm" (click)="deleteCNRow(row)"><i class="fa fa-trash"></i></button>
+							</template>
+						</p-column>
+						<footer>
+							<table class="table table-striped table-bordered">
+								<tbody>
+									<tr *ngIf="!isdetails">
+										<td width="40px">
+										</td>
+										<td>
+											<p-autoComplete id="newitemname" name="newitemname" [(ngModel)]="newitemname" placeholder="Items" [tabindex]="5" (onSelect)="selectAutoItems($event, 0);fillItemPriceDDL(this, 0);"
+												[suggestions]="itemsDT" (completeMethod)="getAutoItems($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName itemname"></p-autoComplete>
+										</td>
+										<td width="100px">
+											<!--<numtext id="newitemqty" name="newitemqty" [(ngModel)]="newitemqty" css="inlinetextbox newitemqty" (keydown.enter)="validItemQty(0)"
+												(keydown.tab)="validItemQty(0)"></numtext>-->
+
+											<input id="newitemqty" name="newitemqty" [(ngModel)]="newitemqty" class="form-control text-right newitemqty" (keydown.enter)="validItemQty(0)"
+												(keydown.tab)="validItemQty(0)" tabindex="6">
+										</td>
+										<td width="150px">
+											<select validate="0" name="newitemprice" class="form-control" [(ngModel)]="newitemprice" tabindex="7">
+												<option [value]="0">Select Price</option>
+												<option *ngFor="let itemprice of itemPriceDT" [value]="itemprice.rate">
+													{{itemprice.rate | currency:loginUser._globsettings.currency:true}}
+												</option>
+											</select>
+										</td>
+										<td width="150px">
+											<select validate="0" name="newitemdisc" class="form-control" [(ngModel)]="newitemdisc" tabindex="8" (ngModelChange)="getTotalAmt(this, 0)">
+												<option [value]="0">Select Discount</option>
+												<option *ngFor="let itemdisc of itemDiscDT" [value]="itemdisc.disc">
+													{{itemdisc.disc | currency:loginUser._globsettings.currency:true}}
+												</option>
+											</select>
+										</td>
+										<td width="100px" class="text-right">
+											{{newtotalamt}}
+										</td>
+										<td width="60px">
+											<button type="button" name="btnAdd" class="btn btn-theme btn-sm fa fa-plus" (click)="addItemRow()"></button>
+										</td>
+									</tr>
+									<tr *ngIf="CNRowData.length">
+										<td width="40px">#</td>
+										<td class="text-right">
+											<b>Total :</b>
+										</td>
+										<td width="100px" class="text-right">
+											<b>{{TotalItemQty()}}</b>
+										</td>
+										<td width="150px" class="text-right">
+										</td>
+										<td width="150px" class="text-right">
+										</td>
+										<td width="100px" class="text-right">
+											<b>{{TotalItemAmt() | currency:loginUser._globsettings.currency:true}}</b>
+										</td>
+										<td width="60px" class="text-right" *ngIf="!isdetails">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</footer>
+					</p-dataTable>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="sidepan">
+		<!--widgit-->
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#personal">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="personal" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
+
+		<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
+			(onComplete)="onUploadComplete($event)"></fileupload>
+
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#other">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="other" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#history">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="history" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="control-label">Created By : </label>
+						<label class="control-field">{{createdby}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Created On : </label>
+						<label class="control-field">{{createdon}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Updated By : </label>
+						<label class="control-field">{{updatedby}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Updated On : </label>
+						<label class="control-field">{{updatedon}}</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>

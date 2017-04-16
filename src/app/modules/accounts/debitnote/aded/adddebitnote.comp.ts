@@ -10,6 +10,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
+import { AuditLogComp } from '../../../usercontrol/auditlog';
 
 declare var $: any;
 
@@ -31,6 +32,11 @@ export class AddDebitNote implements OnInit, OnDestroy {
     isactive: boolean = false;
     dramt: any = "";
 
+    createdby: string = "";
+    createdon: any = "";
+    updatedby: string = "";
+    updatedon: string = "";
+
     uploadedFiles: any = [];
     suppdoc: any = [];
 
@@ -48,12 +54,18 @@ export class AddDebitNote implements OnInit, OnDestroy {
     counter: any = 0;
     title: string = "";
     module: string = "";
+    mname: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
     @ViewChild("dndate")
     dndate: CalendarComp;
+
+    @ViewChild("auditlog")
+    auditlog: AuditLogComp;
+
+    isauditlog: boolean = false;
 
     isadd: boolean = false;
     isedit: boolean = false;
@@ -68,6 +80,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
+        this.mname = "dnm";
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
@@ -91,7 +104,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         }).subscribe(data => {
             var dataResult = data.data;
             var lockdate = dataResult[0].lockdate;
-            
+
             if (lockdate != "") {
                 // that.dndate.setMinMaxDate(new Date(lockdate), null);
                 var date = new Date(lockdate);
@@ -107,10 +120,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
     //Document Ready
 
     ngOnInit() {
-        setTimeout(function() {
+        setTimeout(function () {
             $(".dnaccname input").focus();
         }, 0);
-        
+
         this.dndate.initialize(this.loginUser);
         this.dndate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
         this.setAuditDate();
@@ -187,6 +200,11 @@ export class AddDebitNote implements OnInit, OnDestroy {
         } else if (evt === "back") {
             this._router.navigate(['/accounts/debitnote']);
         }
+    }
+
+    openAuditLog() {
+        this.isauditlog = true;
+        this.auditlog.getAuditLog();
     }
 
     //AutoCompletd Customer
@@ -276,11 +294,13 @@ export class AddDebitNote implements OnInit, OnDestroy {
             that.dnRowData.push({
                 'counter': that.counter,
                 "dnid": 0,
+                "docno": that.docno,
                 'acid': that.newcustid,
                 'acname': that.newcustname,
                 'cramt': that.newcramt,
                 "cmpid": that.loginUser.cmpid,
                 "fy": that.loginUser.fy,
+                "uid": that.loginUser.uid,
                 "docdate": that.dndate.getDate(),
                 "isactive": true
             });
@@ -301,7 +321,9 @@ export class AddDebitNote implements OnInit, OnDestroy {
     getDNDataByID(pdocno: number) {
         var that = this;
 
-        that._dnservice.getDebitNote({ "flag": "edit", "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "docno": pdocno }).subscribe(data => {
+        that._dnservice.getDebitNote({
+            "flag": "edit", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "docno": pdocno
+        }).subscribe(data => {
             var _dndata = data.data[0]._dndata;
             var _dndetails = data.data[0]._dndetails;
             var _uploadedfile = data.data[0]._uploadedfile;
@@ -317,6 +339,10 @@ export class AddDebitNote implements OnInit, OnDestroy {
             that.dramt = _dndata[0].dramt;
             that.narration = _dndata[0].narration;
             that.isactive = _dndata[0].isactive;
+            that.createdby = _dndata[0].createdby;
+            that.createdon = _dndata[0].createdon;
+            that.updatedby = _dndata[0].updatedby;
+            that.updatedon = _dndata[0].updatedon;
 
             that.dnRowData = _dndetails;
 
@@ -358,8 +384,11 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
         var saveDN = {
             "dnid": that.dnid,
+            "loginsessionid": that.loginUser._sessiondetails.sessionid,
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
+            "uid": that.loginUser.uid,
+            "docno": that.docno,
             "docdate": that.dndate.getDate(),
             "acid": that.dncustid,
             "dramt": that.dramt,

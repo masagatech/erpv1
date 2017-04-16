@@ -44,6 +44,11 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     typ: string = "";
     ischeqbounce: boolean = false;
 
+    createdby: string = "";
+    createdon: any = "";
+    updatedby: string = "";
+    updatedon: string = "";
+
     accountsDT: any = [];
     bankDT: any = [];
     banktypeDT: any = [];
@@ -255,7 +260,9 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     //Get Data With Row
 
     GetBankPayment(pautoid) {
-        this._bpservice.getBankPayment({ "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
+        this._bpservice.getBankPayment({
+            "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "uid": this.loginUser.uid
+        }).subscribe(data => {
             var _bankpayment = data.data[0]._bankpayment;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
@@ -275,6 +282,10 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
             this.amount = _bankpayment[0].amount;
             this.narration = _bankpayment[0].narration;
             this.ischeqbounce = _bankpayment[0].ischeqbounce;
+            this.createdby = _bankpayment[0].createdby;
+            this.createdon = _bankpayment[0].createdon;
+            this.updatedby = _bankpayment[0].updatedby;
+            this.updatedon = _bankpayment[0].updatedon;
 
             this.uploadedFiles = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _uploadedfile;
             this.suppdoc = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _suppdoc;

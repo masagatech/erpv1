@@ -164,7 +164,7 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
     getAutoCOA(event) {
         let query = event.query;
         this._autoservice.getAutoDataGET({
-            "type": "autocoa",
+            "type": "acgroup",
             "search": query
         }).then(data => {
             this.autocoaDT = data;
@@ -175,32 +175,6 @@ export class AddEnvelopeComp implements OnInit, OnDestroy {
     selectAutoCOA(event) {
         this.coaid = event.value;
         this.coaname = event.label;
-    }
-
-    getAutoCOAOld(me: any) {
-        var that = this;
-
-        that._budgetservice.getEnvelope({ "flag": "autocoa", "search": me.coaname }).subscribe(data => {
-            $(".coaname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.coaname = ui.item.label;
-                    me.coaid = ui.item.value;
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
     }
 
     private addSubItems() {

@@ -25,14 +25,10 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     loginUser: LoginUserModel;
 
     // Declare Ledger Variable
-    ledgerid: number = 0;
     ledgerParamDT: any = [];
 
     autoid: number = 0;
     bankid: number = 0;
-
-    @ViewChild("depdate")
-    depdate: CalendarComp;
 
     typ: string = "";
     custid: number = 0;
@@ -44,9 +40,17 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
     refno: string = "";
     narration: string = "";
 
+    createdby: string = "";
+    createdon: any = "";
+    updatedby: string = "";
+    updatedon: string = "";
+
     accountsDT: any = [];
     bankDT: any = [];
     banktypeDT: any = [];
+
+    @ViewChild("depdate")
+    depdate: CalendarComp;
 
     module: string = "";
     suppdoc: any = [];
@@ -248,10 +252,26 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
         });
     }
 
+    //Send Paramter In Save Method
+
+    onUploadStart(e) {
+        this.actionButton.find(a => a.id === "save").enabled = false;
+    }
+
+    onUploadComplete(e) {
+        for (var i = 0; i < e.length; i++) {
+            this.suppdoc.push({ "id": e[i].id });
+        }
+
+        this.actionButton.find(a => a.id === "save").enabled = true;
+    }
+
     // Get And Fill Edit Mode
 
     GetBankReceipt(pautoid) {
-        this._brService.getBankReceipt({ "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy }).subscribe(data => {
+        this._brService.getBankReceipt({
+            "flag": "edit", "autoid": pautoid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy, "uid": this.loginUser.uid
+        }).subscribe(data => {
             var _bankreceipt = data.data[0]._bankreceipt;
             var _uploadedfile = data.data[0]._uploadedfile;
             var _suppdoc = data.data[0]._suppdoc;
@@ -269,6 +289,10 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.cheqno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
+            this.createdby = _bankreceipt[0].createdby;
+            this.createdon = _bankreceipt[0].createdon;
+            this.updatedby = _bankreceipt[0].updatedby;
+            this.updatedon = _bankreceipt[0].updatedon;
 
             this.uploadedFiles = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _uploadedfile;
             this.suppdoc = _suppdoc === null ? [] : _suppdoc.length === 0 ? [] : _suppdoc;
@@ -296,25 +320,15 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
             this.cheqno = _bankreceipt[0].cheqno;
             this.amount = _bankreceipt[0].amount;
             this.narration = _bankreceipt[0].narration;
+            this.createdby = _bankreceipt[0].createdby;
+            this.createdon = _bankreceipt[0].createdon;
+            this.updatedby = _bankreceipt[0].updatedby;
+            this.updatedon = _bankreceipt[0].updatedon;
         }, err => {
             console.log('Error');
         }, () => {
             //Done Process
         });
-    }
-
-    //Send Paramter In Save Method
-
-    onUploadStart(e) {
-        this.actionButton.find(a => a.id === "save").enabled = false;
-    }
-
-    onUploadComplete(e) {
-        for (var i = 0; i < e.length; i++) {
-            this.suppdoc.push({ "id": e[i].id });
-        }
-
-        this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
     SaveBankReceipt(isactive: boolean) {
@@ -339,7 +353,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 "fy": that.loginUser.fy,
                 "module": "ar",
                 "trndate": that.depdate.getDate(),
-                "actype": "ac",
+                "actype": "acc_cust",
                 "code": that.custcode,
                 "name": that.custname,
                 "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.bankid, "name": that.bankid },
@@ -359,7 +373,7 @@ export class AddEditBankReceipt implements OnInit, OnDestroy {
                 "actype": "bank",
                 "code": that.bankid,
                 "name": that.bankid,
-                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.custcode, "name": that.custcode },
+                "dualac": { "typ": that.typ, "cheqno": that.cheqno, "code": that.custcode, "name": that.custname },
                 "dramt": that.amount,
                 "cramt": 0,
                 "narration": that.narration,

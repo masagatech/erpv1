@@ -35,8 +35,8 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label>Cheque No</label>
-								<numtext validate="" name="cheqno" [(ngModel)]="cheqno" [islabel]="ischequelabel" [iscurrency]="false" [decimals]="0"
-									[grpseperator]="" css="cheqno" tabindex="7"></numtext>
+								<numtext validate="" name="cheqno" [(ngModel)]="cheqno" [islabel]="ischequelabel" [iscurrency]="false" [decimals]="0" [grpseperator]=""
+									css="cheqno" tabindex="7"></numtext>
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -75,9 +75,13 @@
 	<!--widgit-->
 	<div class="panel panel-theme">
 		<div class="panel-heading">
-			<h3 class="panel-title">Any Other Details</h3>
+			<a data-toggle="collapse" data-parent="#accordion" href="#personal">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
 		</div>
-		<div class="panel-body"></div>
+		<div id="personal" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
 	</div>
 
 	<fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
@@ -85,14 +89,39 @@
 
 	<div class="panel panel-theme">
 		<div class="panel-heading">
-			<h3 class="panel-title">Any Other Details</h3>
+			<a data-toggle="collapse" data-parent="#accordion" href="#other">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
 		</div>
-		<div class="panel-body"></div>
+		<div id="other" class="panel-collapse collapse in">
+			<div class="panel-body"></div>
+		</div>
 	</div>
 	<div class="panel panel-theme">
 		<div class="panel-heading">
-			<h3 class="panel-title">Any Other Details</h3>
+			<a data-toggle="collapse" data-parent="#accordion" href="#history">
+				<h3 class="panel-title">Any Other Details</h3>
+			</a>
 		</div>
-		<div class="panel-body"></div>
+		<div id="history" class="panel-collapse collapse in">
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="control-label">Created By : </label>
+					<label class="control-field">{{createdby}}</label>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Created On : </label>
+					<label class="control-field">{{createdon}}</label>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Updated By : </label>
+					<label class="control-field">{{updatedby}}</label>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Updated On : </label>
+					<label class="control-field">{{updatedon}}</label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

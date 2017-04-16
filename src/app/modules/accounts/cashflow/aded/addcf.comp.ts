@@ -226,7 +226,7 @@ export class AddCashFlow implements OnInit, OnDestroy {
     getAutoCOA(me: any, arg: number) {
         var that = this;
 
-        that._cfservice.getCashFlow({ "flag": "autocoa", "search": arg == 0 ? me.newcoanm : me.coanm }).subscribe(data => {
+        that._cfservice.getCashFlow({ "flag": "acgroup", "search": arg == 0 ? me.newcoanm : me.coanm }).subscribe(data => {
             $(".coanm").autocomplete({
                 source: data.data,
                 width: 300,

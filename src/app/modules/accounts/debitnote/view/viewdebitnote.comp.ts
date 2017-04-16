@@ -27,8 +27,6 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     totalDetailsRecords: number = 0;
 
     rangewise: string = "";
-    fromno: any = "";
-    tono: any = "";
     status: string = "";
 
     statusDT: any = [];
@@ -49,57 +47,66 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     // Document Ready
 
     ngOnInit() {
-        // this.fromdate.initialize(this.loginUser);
-        // this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        // this.fromdate.setDate(new Date(this.loginUser.fyfrom));
-
-        // this.todate.initialize(this.loginUser);
-        // this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
-        // this.todate.setDate(new Date(this.loginUser.fyto));
-
         this.setActionButtons.setTitle("Debit Note");
-        $(".fromno input").focus();
+
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(today);
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(today);
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
 
+    // click button action
+
+    actionBarEvt(evt) {
+        if (evt === "add") {
+            this._router.navigate(['/accounts/debitnote/add']);
+        }
+    }
+
     fillStatusDropDown() {
         var that = this;
 
-        this._userService.getMenuDetails({
+        that._userService.getMenuDetails({
             "flag": "trashrights", "ptype": "accs", "mtype": "dn",
-            "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+            "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
-            console.log("Error");
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         });
     }
 
     resetDNFields() {
-        this.rangewise = "docrange";
-        this.fromno = "";
-        this.tono = "";
+        this.rangewise = "daterange";
         this.status = "true";
     }
 
     getDNDetails(from: number, to: number) {
         var that = this;
 
+        var frmdt = that.fromdate.getDate();
+        var todt = that.todate.getDate();
+
         that._dnservice.getDebitNote({
-            "flag": "docrange", "fromdocno": parseInt(that.fromno), "todocno": parseInt(that.tono),
-            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
-            "from": from, "to": to, "isactive": that.status
+            "flag": "daterange", "fromdt": frmdt.length !== 0 ? frmdt : null, "todt": todt.length !== 0 ? todt : null,
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "uid": that.loginUser.uid, "from": from, "to": to, "isactive": that.status
         }).subscribe(debitnote => {
             that.totalRecords = debitnote.data[1].recordstotal;
             that.viewDebitNoteDT = debitnote.data[0];
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
-            console.log(err);
         }, () => {
             // console.log("Complete");
         })
@@ -110,29 +117,6 @@ export class ViewDebitNote implements OnInit, OnDestroy {
     }
 
     searchDebitNote(dt: DataTable) {
-        // if (this.rangewise == "docrange") {
-
-        // }
-        // if (this.rangewise == "daterange") {
-        //     if (this.fromdate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select From Date");
-        //         return;
-        //     }
-        //     if (this.todate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select To Date");
-        //         return;
-        //     }
-        // }
-
-        if (this.fromno == "") {
-            this._msg.Show(messageType.info, "Info", "Please select From No");
-            return;
-        }
-        if (this.tono == "") {
-            this._msg.Show(messageType.info, "Info", "Please select To No");
-            return;
-        }
-
         dt.reset();
     }
 
@@ -197,12 +181,6 @@ export class ViewDebitNote implements OnInit, OnDestroy {
         }
         else {
             this._router.navigate(['/accounts/debitnote/details', row.docno]);
-        }
-    }
-
-    actionBarEvt(evt) {
-        if (evt === "add") {
-            this._router.navigate(['/accounts/debitnote/add']);
         }
     }
 

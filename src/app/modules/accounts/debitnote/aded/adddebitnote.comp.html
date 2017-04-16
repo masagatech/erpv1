@@ -15,7 +15,7 @@
 								<calendar #dndate [name]="'dndate'" tabindex="2"></calendar>
 							</div>
 							<div class="form-group">
-								<label class="control-label">Debit Amount</label>
+								<label class="control-label">Dr. Amt.</label>
 								<numtext name="dramt" [(ngModel)]="dramt" [tabindex]="3"></numtext>
 							</div>
 						</div>
@@ -49,7 +49,7 @@
 									[suggestions]="accountsDT" (completeMethod)="getAutoAccounts($event)" field="label" [minLength]="1" [size]="30" class="form-controlAutoComplete inlinetextbox ProdName"></p-autoComplete>
 							</template>
 						</p-column>
-						<p-column header="Credit" [style]="{'width':'300px','text-align':'left'}">
+						<p-column header="Cr. Amt." [style]="{'width':'300px','text-align':'left'}">
 							<template let-row="rowData" let-i="rowIndex" pTemplate="body" *ngIf="isdetails">
 								{{row.cramt}}
 							</template>
@@ -103,11 +103,11 @@
 		<!--widgit-->
 		<div class="panel panel-theme">
 			<div class="panel-heading">
-				<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<a data-toggle="collapse" data-parent="#accordion" href="#personal">
 					<h3 class="panel-title">Any Other Details</h3>
 				</a>
 			</div>
-			<div id="Personal" class="panel-collapse collapse in">
+			<div id="personal" class="panel-collapse collapse in">
 				<div class="panel-body"></div>
 			</div>
 		</div>
@@ -117,23 +117,46 @@
 
 		<div class="panel panel-theme">
 			<div class="panel-heading">
-				<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<a data-toggle="collapse" data-parent="#accordion" href="#other">
 					<h3 class="panel-title">Any Other Details</h3>
 				</a>
 			</div>
-			<div id="Personal" class="panel-collapse collapse in">
+			<div id="other" class="panel-collapse collapse in">
 				<div class="panel-body"></div>
 			</div>
 		</div>
 		<div class="panel panel-theme">
 			<div class="panel-heading">
-				<a data-toggle="collapse" data-parent="#accordion" href="#Personal">
+				<a data-toggle="collapse" data-parent="#accordion" href="#history">
 					<h3 class="panel-title">Any Other Details</h3>
 				</a>
 			</div>
-			<div id="Personal" class="panel-collapse collapse in">
-				<div class="panel-body"></div>
+			<div id="history" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="control-label">Created By : </label>
+						<label class="control-field">{{createdby}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Created On : </label>
+						<label class="control-field">{{createdon}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Updated By : </label>
+						<label class="control-field">{{updatedby}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Updated On : </label>
+						<label class="control-field">{{updatedon}}</label>
+					</div>
+					<div class="form-group" align="right">
+						<a role="button" (click)="openAuditLog()">View Log</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+	<p-dialog #dialog header="Audit Log" [(visible)]="isauditlog" modal="modal" width="1200" responsive="true">
+		<auditlog #auditlog [module]="'dnm'" [cmpid]="loginUser.cmpid" [fy]="loginUser.fy" [parentid]="docno"></auditlog>
+	</p-dialog>
 </form>

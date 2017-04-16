@@ -20,16 +20,17 @@
     <div class="table-responsive">
         <p-dataTable #dt [value]="receiptbook" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onLazyLoad)="loadRBGrid($event)"
             [(selection)]="selectedRB1" expandableRows="true">
-            <header>List of Receipt Book</header>
-            <p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+            <p-column expander="true" styleClass="col-icon" [style]="{'width':'30px'}"></p-column>
             <p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'right'}"></p-column>
-            <p-column field="docdate" header="Doc Date" [style]="{'width':'150px','text-align':'left'}"></p-column>
-            <p-column styleClass="col-button">
+            <p-column field="docdate" header="Doc Date" [style]="{'text-align':'left'}"></p-column>
+            <p-column styleClass="col-button" [style]="{'width':'150px','text-align':'left'}">
                 <template let-row="rowData" pTemplate type="body">
-                    <button type="button" pButton (click)="openRBDetails(row)" class="btn btn-primary">Edit</button>
+                    <button type="button" (click)="openRBDetails(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
+					</button>
                 </template>
             </p-column>
-            <template let-rows>
+            <template let-row pTemplate="rowexpansion">
                 <table class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
@@ -40,22 +41,22 @@
                             <th class="text-right">Quantity</th>
                         </tr>
                     </thead>
-                    <tbody *ngFor="let row of rows.rbdetails">
+                    <tbody *ngFor="let drow of row.rbdetails">
                         <tr>
                             <td align="right">
-                                {{row.docno}}
+                                {{drow.docno}}
                             </td>
                             <td width="400px">
-                                {{row.rbtitle}}
+                                {{drow.rbtitle}}
                             </td>
                             <td class="text-right">
-                                {{row.seriesno}}
+                                {{drow.seriesno}}
                             </td>
                             <td class="text-right">
-                                {{row.noofpage}}
+                                {{drow.noofpage}}
                             </td>
                             <td class="text-right">
-                                {{row.qty}}
+                                {{drow.qty}}
                             </td>
                         </tr>
                     </tbody>

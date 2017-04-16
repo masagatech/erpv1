@@ -1,0 +1,30 @@
+<div class="col-md-12">
+	<div class="table-responsive">
+		<p-dataTable #dt [value]="viewCNDT" [lazy]="true" [rows]="10" [paginator]="true" [totalRecords]="totalRecords" (onRowExpand)="expandDetails($event)"
+			(onLazyLoad)="loadCNGrid($event)" expandableRows="true">
+			<p-column expander="true" styleClass="col-icon" [style]="{'width':'50px'}"></p-column>
+			<p-column field="docno" header="Doc No" [style]="{'width':'100px','text-align':'right'}"></p-column>
+			<p-column field="docdate" header="Doc Date" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column field="custname" header="A/C Name" [style]="{'text-align':'left'}"></p-column>
+			<p-column field="status" header="Status" [style]="{'width':'100px','text-align':'left'}"></p-column>
+			<p-column [style]="{'width':'45px','text-align':'left'}">
+				<template let-row="rowData" pTemplate type="body">
+					<button type="button" (click)="openCNDetails(row)" class="btn btn-theme btn-sm btn-grid">
+						<i class="fa fa-edit"></i>
+					</button>
+				</template>
+			</p-column>
+			<template let-row pTemplate="rowexpansion">
+				<span *ngIf="!row.loading">Loading....</span>
+				<p-dataTable [value]="row.details" [lazy]="true">
+					<p-column header="Item Name" field="itemname" [style]="{'width':'700px','text-align':'left'}"></p-column>
+					<p-column header="Item Price" [style]="{'width':'150px','text-align':'right'}">
+						<template let-drow="rowData" pTemplate type="body">
+							{{drow.itemprice | currency:loginUser._globsettings.currency:true}}
+						</template>
+					</p-column>
+				</p-dataTable>
+			</template>
+		</p-dataTable>
+	</div>
+</div>

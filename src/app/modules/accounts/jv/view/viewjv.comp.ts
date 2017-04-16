@@ -21,14 +21,12 @@ export class ViewJV implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
     loginUser: LoginUserModel;
-    
+
     viewJVDT: any = [];
     totalRecords: number = 0;
     totalDetailsRecords: number = 0;
 
     rangewise: string = "";
-    fromno: any = "";
-    tono: any = "";
     status: string = "";
 
     statusDT: any = [];
@@ -46,14 +44,28 @@ export class ViewJV implements OnInit, OnDestroy {
         this.resetJVFields();
     }
 
+    // Document Ready
+
     ngOnInit() {
         this.setActionButtons.setTitle("Journal Voucher");
-        $(".fromno input").focus();
+
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        this.fromdate.initialize(this.loginUser);
+        this.fromdate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.fromdate.setDate(today);
+
+        this.todate.initialize(this.loginUser);
+        this.todate.setMinMaxDate(new Date(this.loginUser.fyfrom), new Date(this.loginUser.fyto));
+        this.todate.setDate(today);
 
         this.actionButton.push(new ActionBtnProp("add", "Add", "plus", true, false));
         this.setActionButtons.setActionButtons(this.actionButton);
         this.subscr_actionbarevt = this.setActionButtons.setActionButtonsEvent$.subscribe(evt => this.actionBarEvt(evt));
     }
+
+    // click button action
 
     actionBarEvt(evt) {
         if (evt === "add") {
@@ -64,36 +76,35 @@ export class ViewJV implements OnInit, OnDestroy {
     fillStatusDropDown() {
         var that = this;
 
-        this._userService.getMenuDetails({
+        that._userService.getMenuDetails({
             "flag": "trashrights", "ptype": "accs", "mtype": "jv",
-            "uid": this.loginUser.uid, "cmpid": this.loginUser.cmpid, "fy": this.loginUser.fy
+            "uid": that.loginUser.uid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             that.statusDT = data.data;
         }, err => {
-            // console.log("Error");
+            that._msg.Show(messageType.error, "Error", err);
         }, () => {
             // console.log("Complete");
         });
     }
 
     resetJVFields() {
-        this.rangewise = "docrange";
-        this.fromno = "";
-        this.tono = "";
+        this.rangewise = "daterange";
         this.status = "true";
     }
 
     getJVDetails(from: number, to: number) {
         var that = this;
 
+        var frmdt = that.fromdate.getDate();
+        var todt = that.todate.getDate();
+
         that._jvservice.getJVDetails({
-            "flag": "docrange", "fromdocno": parseInt(that.fromno), "todocno": parseInt(that.tono),
-            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy,
-            "from": from, "to": to, "isactive": that.status
+            "flag": "daterange", "fromdt": frmdt.length !== 0 ? frmdt : null, "todt": todt.length !== 0 ? todt : null,
+            "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy, "from": from, "to": to, "isactive": that.status
         }).subscribe(jv => {
             that.totalRecords = jv.data[1][0].recordstotal;
             that.viewJVDT = jv.data[0];
-            console.log(that.viewJVDT);
         }, err => {
             that._msg.Show(messageType.error, "Error", err);
         }, () => {
@@ -106,29 +117,6 @@ export class ViewJV implements OnInit, OnDestroy {
     }
 
     searchJV(dt: DataTable) {
-        // if (this.rangewise == "docrange") {
-
-        // }
-        // if (this.rangewise == "daterange") {
-        //     if (this.fromdate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select From Date");
-        //         return;
-        //     }
-        //     if (this.todate.setDate("")) {
-        //         this._msg.Show(messageType.info, "Info", "Please select To Date");
-        //         return;
-        //     }
-        // }
-
-        if (this.fromno == "") {
-            this._msg.Show(messageType.info, "Info", "Please select From No");
-            return;
-        }
-        if (this.tono == "") {
-            this._msg.Show(messageType.info, "Info", "Please select To No");
-            return;
-        }
-
         dt.reset();
     }
 
@@ -140,7 +128,7 @@ export class ViewJV implements OnInit, OnDestroy {
             event.loading = false;
 
             that._jvservice.getJVDetails({
-                "flag": "details", "jvmid": "6882", "cmpid": that.loginUser.cmpid
+                "flag": "details", "jvmid": event.jvmid, "cmpid": that.loginUser.cmpid
             }).subscribe(details => {
                 var dataset = details.data;
 
@@ -159,28 +147,6 @@ export class ViewJV implements OnInit, OnDestroy {
             })
         } catch (error) {
 
-        }
-    }
-
-    expandDetails2(row) {
-        var that = this;
-        //var row = event.data;
-
-        if (row.details.length === 0) {
-            that._jvservice.getJVDetails({
-                "flag": "details", "jvmid": row.jvmid, "cmpid": that.loginUser.cmpid
-            }).subscribe(details => {
-                row.details = details.data[0];
-
-                //dt.toggleRow(event.data);
-            }, err => {
-                that._msg.Show(messageType.error, "Error", err);
-                console.log(err);
-            }, () => {
-                // console.log("Complete");
-            })
-        } else {
-            //dt.toggleRow(event.data);
         }
     }
 

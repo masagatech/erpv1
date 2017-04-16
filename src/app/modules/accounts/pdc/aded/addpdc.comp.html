@@ -68,40 +68,57 @@
         </div>
     </div>
     <div class="sidepan">
-        <!--widgit-->
-        <div class="panel panel-theme">
-            <div class="panel-heading">
-                <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-                    <h3 class="panel-title">Any Other Details</h3>
-                </a>
-            </div>
-            <div id="Personal" class="panel-collapse collapse in">
-                <div class="panel-body"></div>
-            </div>
-        </div>
+		<!--widgit-->
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#personal">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="personal" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
 
         <fileupload [module]="module" [multi]="true" [isRaw]="false" [uploadedFiles]="uploadedFiles" (onStart)="onUploadStart($event)"
             (onComplete)="onUploadComplete($event)"></fileupload>
 
-        <div class="panel panel-theme">
-            <div class="panel-heading">
-                <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-                    <h3 class="panel-title">Any Other Details</h3>
-                </a>
-            </div>
-            <div id="Personal" class="panel-collapse collapse in">
-                <div class="panel-body"></div>
-            </div>
-        </div>
-        <div class="panel panel-theme">
-            <div class="panel-heading">
-                <a data-toggle="collapse" data-parent="#accordion" href="#Personal">
-                    <h3 class="panel-title">Any Other Details</h3>
-                </a>
-            </div>
-            <div id="Personal" class="panel-collapse collapse in">
-                <div class="panel-body"></div>
-            </div>
-        </div>
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#other">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="other" class="panel-collapse collapse in">
+				<div class="panel-body"></div>
+			</div>
+		</div>
+		<div class="panel panel-theme">
+			<div class="panel-heading">
+				<a data-toggle="collapse" data-parent="#accordion" href="#history">
+					<h3 class="panel-title">Any Other Details</h3>
+				</a>
+			</div>
+			<div id="history" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="control-label">Created By : </label>
+						<label class="control-field">{{createdby}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Created On : </label>
+						<label class="control-field">{{createdon}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Updated By : </label>
+						<label class="control-field">{{updatedby}}</label>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Updated On : </label>
+						<label class="control-field">{{updatedon}}</label>
+					</div>
+				</div>
+			</div>
+		</div>
     </div>
 </form>

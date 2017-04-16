@@ -1,0 +1,50 @@
+<div class="col-md-12" style="height: 500px; overflow: auto;">
+    <div class="row">
+        <div *ngFor="let logrow of auditLogDT">
+            <div class="col-md-4">
+                <p-dataGrid #dt [value]="logrow.oldval">
+                    <template let-row>
+                        <div style="padding:3px" class="col-md-12">
+                            <p-panel header="Debit Note">
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="control-label">Doc Date : </label>
+                                        <label class="control-field">{{row.docdate}}</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Account Name : </label>
+                                        <label class="control-field">{{row.acname}}</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Narration : </label>
+                                        <label class="control-field">{{row.narration}}</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Dr. Amt. : </label>
+                                        <label class="control-field">{{row.dramt}}</label>
+                                    </div>
+                                    <div class="form-group" *ngIf="row.updatedby === null">
+                                        <label class="control-label">Created By : </label>
+                                        <label class="control-field">{{row.createdby}}</label>
+                                    </div>
+                                    <div class="form-group" *ngIf="row.updatedon === null">
+                                        <label class="control-label">Created On : </label>
+                                        <label class="control-field">{{row.createdon}}</label>
+                                    </div>
+                                    <div class="form-group" *ngIf="row.updatedby !== null">
+                                        <label class="control-label">Updated By : </label>
+                                        <label class="control-field">{{row.updatedby}}</label>
+                                    </div>
+                                    <div class="form-group" *ngIf="row.updatedon !== null">
+                                        <label class="control-label">Updated On : </label>
+                                        <label class="control-field">{{row.updatedon}}</label>
+                                    </div>
+                                </div>
+                            </p-panel>
+                        </div>
+                    </template>
+                </p-dataGrid>
+            </div>
+        </div>
+    </div>
+</div>

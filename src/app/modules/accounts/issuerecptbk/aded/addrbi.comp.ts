@@ -38,12 +38,13 @@ export class AddRBI implements OnInit, OnDestroy {
     @ViewChild("docdate")
     docdate: CalendarComp;
 
-    fromno: number = 0;
-    tono: number = 0;
+    fromno: any = "";
+    tono: any = "";
     narration: string = "";
 
     SeriesNoDT: any = [];
     latestSeriesDT: any = [];
+    employeeDT: any = [];
     empSeriesDT: any = [];
 
     module: string = "";
@@ -51,7 +52,7 @@ export class AddRBI implements OnInit, OnDestroy {
     uploadedFiles: any = [];
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
-        private _rbservice: RBService, private _commonservice: CommonService, private _msg: MessageService,
+        private _rbservice: RBService, private _autoservice: CommonService, private _msg: MessageService,
         private _userService: UserService, private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
 
@@ -92,7 +93,7 @@ export class AddRBI implements OnInit, OnDestroy {
 
         this.subscribeParameters = this._routeParams.params.subscribe(params => {
             if (params["irbid"] !== undefined) {
-                this.setActionButtons.setTitle("Edit Receipt Book Issued");
+                this.setActionButtons.setTitle("Receipt Book Issued");
 
                 this.actionButton.find(a => a.id === "save").hide = true;
                 this.actionButton.find(a => a.id === "edit").hide = false;
@@ -104,10 +105,10 @@ export class AddRBI implements OnInit, OnDestroy {
                 $('input').attr('disabled', 'disabled');
                 $('select').attr('disabled', 'disabled');
                 $('textarea').attr('disabled', 'disabled');
-                $(".empname").focus();
+                $(".empname input").focus();
             }
             else {
-                this.setActionButtons.setTitle("Add Receipt Book Issued");
+                this.setActionButtons.setTitle("Receipt Book Issued");
 
                 var date = new Date();
                 this.docdate.setDate(date);
@@ -119,7 +120,7 @@ export class AddRBI implements OnInit, OnDestroy {
                 $('input').removeAttr('disabled');
                 $('select').removeAttr('disabled');
                 $('textarea').removeAttr('disabled');
-                $(".empname").focus();
+                $(".empname input").focus();
             }
         });
     }
@@ -141,39 +142,31 @@ export class AddRBI implements OnInit, OnDestroy {
         }
     }
 
-    // get Auto Emp
+    // Auto Completed Employee
 
-    getEmpAuto(me: any) {
+    getAutoEmp(event) {
         var that = this;
 
-        that._commonservice.getAutoData({
+        let query = event.query;
+        that._autoservice.getAutoDataGET({
             "type": "userwithcode",
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
-            "search": that.empname
-        }).subscribe(data => {
-            $(".empname").autocomplete({
-                source: data.data,
-                width: 300,
-                max: 20,
-                delay: 100,
-                minLength: 0,
-                autoFocus: true,
-                cacheLength: 1,
-                scroll: true,
-                highlight: false,
-                select: function (event, ui) {
-                    me.empid = ui.item.value;
-                    me.empname = ui.item.label;
+            "search": query
+        }).then(data => {
+            that.employeeDT = data;
+        });
+    }
 
-                    that.getEmpSeries(me.empid);
-                }
-            });
-        }, err => {
-            console.log("Error");
-        }, () => {
-            // console.log("Complete");
-        })
+    // Selected Employee
+
+    selectAutoEmp(event) {
+        var that = this;
+
+        that.empid = event.value;
+        that.empname = event.label;
+
+        that.getEmpSeries(that.empid);
     }
 
     // Get Latest Series
@@ -181,7 +174,7 @@ export class AddRBI implements OnInit, OnDestroy {
     getLatestSeries() {
         var that = this;
 
-        that._commonservice.getOtherDetails({ "flag": "latestseries", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy }).subscribe(data => {
+        that._autoservice.getOtherDetails({ "flag": "latestseries", "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy }).subscribe(data => {
             that.latestSeriesDT = data.data;
         });
     }
@@ -191,7 +184,9 @@ export class AddRBI implements OnInit, OnDestroy {
     getEmpSeries(pempid) {
         var that = this;
 
-        that._commonservice.getOtherDetails({ "flag": "empseries", "empid": pempid, "cmpid": "2", "fy": "7" }).subscribe(data => {
+        that._autoservice.getOtherDetails({
+            "flag": "empseries", "empid": pempid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
+        }).subscribe(data => {
             that.empSeriesDT = data.data;
         });
     }
@@ -235,8 +230,8 @@ export class AddRBI implements OnInit, OnDestroy {
             that.tono = _rbidata[0].tono;
             that.narration = _rbidata[0].narration;
 
-            that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
-            that.suppdoc = _suppdoc == null ? [] : _suppdoc;
+            that.uploadedFiles = _uploadedfile == null ? [] : _uploadedfile;
+            that.suppdoc = _uploadedfile == null ? [] : _suppdoc;
         });
 
         return nop;
@@ -247,14 +242,16 @@ export class AddRBI implements OnInit, OnDestroy {
     getFromNo() {
         var that = this;
 
-        that._commonservice.checkValidate({ "flag": "seriesno", "rbid": that.rbid, "cmpid": "2", "fy": "7" }).subscribe(data => {
+        that._autoservice.checkValidate({
+            "flag": "seriesno", "rbid": that.rbid, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
+        }).subscribe(data => {
             var dataResult = data.data;
 
             if (dataResult[0].statusid == "1") {
                 that.fromno = 1;
             }
             else {
-                alert(dataResult[0].status);
+                that._msg.Show(messageType.error, "Error", dataResult[0].status);
                 that.fromno = 0;
                 that.rbid = 0;
             }
@@ -265,16 +262,18 @@ export class AddRBI implements OnInit, OnDestroy {
 
     getToNoOnKey() {
         var that = this;
-        var nopfno = 0;
-        var noptno = 0;
+        var noofpage: number = 0;
 
         that._rbservice.getRBDetails({
-            "flag": "id", "docno": this.rbid
+            "flag": "id", "docno": that.rbid
         }).subscribe(seriesno => {
-            nopfno = seriesno.data[0].noofpage;
-            noptno = that.fromno + nopfno;
-
-            that.tono = noptno;
+            if (seriesno.data.length > 0) {
+                noofpage = parseFloat(seriesno.data[0].noofpage);
+                that.tono = parseFloat(that.fromno) + noofpage;
+            }
+            else {
+                that.tono = 0;
+            }
         });
     }
 
@@ -283,14 +282,13 @@ export class AddRBI implements OnInit, OnDestroy {
     getToNoOnTab() {
         var that = this;
 
-        that._commonservice.checkValidate({
+        that._autoservice.checkValidate({
             "flag": "receiptbookissued", "frmno": that.fromno, "tono": that.tono, "cmpid": that.loginUser.cmpid, "fy": that.loginUser.fy
         }).subscribe(data => {
             var dataResult = data.data;
 
             if (dataResult[0].statusid != "1") {
-                alert(dataResult[0].status);
-                that.fromno = 0;
+                that._msg.Show(messageType.error, "Error", dataResult[0].status);
                 that.tono = 0;
             }
         });
@@ -326,17 +324,17 @@ export class AddRBI implements OnInit, OnDestroy {
         }
 
         var saveRBI = {
-            "irbid": this.irbid,
+            "irbid": that.irbid,
             "cmpid": that.loginUser.cmpid,
             "fy": that.loginUser.fy,
-            "docno": this.docno,
-            "docdate": this.docdate.getDate(),
-            "empid": this.empid,
-            "rbid": this.rbid,
-            "fromno": this.fromno,
-            "tono": this.tono,
-            "narration": this.narration,
-            "suppdoc": this.suppdoc,
+            "docno": that.docno,
+            "docdate": that.docdate.getDate(),
+            "empid": that.empid,
+            "rbid": that.rbid,
+            "fromno": that.fromno,
+            "tono": that.tono,
+            "narration": that.narration,
+            "suppdoc": that.suppdoc,
             "uidcode": that.loginUser.login
         }
 
@@ -358,7 +356,6 @@ export class AddRBI implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        console.log("ngOnDestroy");
         this.actionButton = [];
         this.subscr_actionbarevt.unsubscribe();
     }

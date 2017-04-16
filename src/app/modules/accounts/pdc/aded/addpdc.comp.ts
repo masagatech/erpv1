@@ -33,6 +33,11 @@ export class AddPDC implements OnInit, OnDestroy {
     narration: string = "";
     isactive: boolean = false;
 
+    createdby: string = "";
+    createdon: any = "";
+    updatedby: string = "";
+    updatedon: string = "";
+
     module: string = "";
     suppdoc: any = [];
     uploadedFiles: any = [];
@@ -145,7 +150,7 @@ export class AddPDC implements OnInit, OnDestroy {
     }
 
     //Selected Customer
-    
+
     selectAutoAccounts(event) {
         this.custid = event.value;
         this.custname = event.label;
@@ -273,6 +278,10 @@ export class AddPDC implements OnInit, OnDestroy {
             that.chequeno = _pdcdata[0].chequeno;
             that.narration = _pdcdata[0].narration;
             that.isactive = _pdcdata[0].isactive;
+            that.createdby = _pdcdata[0].createdby;
+            that.createdon = _pdcdata[0].createdon;
+            that.updatedby = _pdcdata[0].updatedby;
+            that.updatedon = _pdcdata[0].updatedon;
 
             that.uploadedFiles = _suppdoc == null ? [] : _uploadedfile;
             that.suppdoc = _suppdoc == null ? [] : _suppdoc;
