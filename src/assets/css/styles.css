@@ -849,8 +849,19 @@ label {
     font-weight: 500!important;
     color: #8D99A6;
     font-size: 12px;
-    /*margin-bottom: 5px;*/
     margin: 5px 0;
+}
+
+.control-label{
+    color: #8D99A6;
+    font-size: 12px;
+}
+
+.control-field{
+    color: #000000!important;
+    font-size: 11px!important;
+    margin: 0;
+    padding: 0;
 }
 
 .topdocbar {
