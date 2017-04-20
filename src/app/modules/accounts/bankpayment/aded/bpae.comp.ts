@@ -10,6 +10,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService, messageType } from '../../../../_service/messages/message-service';
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { CalendarComp } from '../../../usercontrol/calendar';
+import { AuditLogComp } from '../../../usercontrol/auditlog';
 
 declare var $: any;
 declare var commonfun: any;
@@ -56,6 +57,11 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
     @ViewChild("issuedate")
     issuedate: CalendarComp;
 
+    @ViewChild("auditlog")
+    auditlog: AuditLogComp;
+
+    isauditlog: boolean = false;
+
     module: string = "";
     suppdoc: any = [];
     uploadedFiles: any = [];
@@ -79,6 +85,22 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
         this.isdetails = _router.url.indexOf("details") > -1;
+    }
+
+    // clear all controls
+
+    resetAPFields() {
+        this.autoid = 0;
+        this.bankid = 0;
+        this.issuedate.setDate("");
+        this.custcode = "";
+        this.custname = "";
+        this.ccid = 0;
+        this.refno = "";
+        this.typ = "";
+        this.amount = 0;
+        this.cheqno = "";
+        this.narration = "";
     }
 
     // On Pre Render
@@ -183,20 +205,11 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         }
     }
 
-    // Clear All Fields
+    // audit log
 
-    ClearFields() {
-        this.autoid = 0;
-        this.bankid = 0;
-        this.issuedate.setDate("");
-        this.custcode = "";
-        this.custname = "";
-        this.ccid = 0;
-        this.refno = "";
-        this.typ = "";
-        this.amount = 0;
-        this.cheqno = "";
-        this.narration = "";
+    openAuditLog() {
+        this.isauditlog = true;
+        this.auditlog.getAuditLog();
     }
 
     //AutoCompletd Customer
@@ -257,7 +270,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         this.actionButton.find(a => a.id === "save").enabled = true;
     }
 
-    //Get Data With Row
+    // Get Data With Row
 
     GetBankPayment(pautoid) {
         this._bpservice.getBankPayment({
@@ -297,7 +310,7 @@ export class AddEditBankPayment implements OnInit, OnDestroy {
         });
     }
 
-    //Send Paramter In Save Method
+    // Send Paramter In Save Method
 
     saveBankPayment(isactive) {
         var that = this;

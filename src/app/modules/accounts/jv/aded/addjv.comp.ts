@@ -10,6 +10,7 @@ import { MessageService, messageType } from '../../../../_service/messages/messa
 import { ALSService } from '../../../../_service/auditlock/als-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarComp } from '../../../usercontrol/calendar';
+import { AuditLogComp } from '../../../usercontrol/auditlog';
 
 declare var $: any;
 declare var commonfun: any;
@@ -57,11 +58,18 @@ export class AddJV implements OnInit, OnDestroy {
     @ViewChild("jvdate")
     jvdate: CalendarComp;
 
+    @ViewChild("auditlog")
+    auditlog: AuditLogComp;
+
+    isauditlog: boolean = false;
+
     isadd: boolean = false;
     isedit: boolean = false;
     isdetails: boolean = false;
 
     private subscribeParameters: any;
+
+    // Page Load
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _jvservice: JVService, private _userService: UserService, private _autoservice: CommonService, private _msg: MessageService,
@@ -74,12 +82,16 @@ export class AddJV implements OnInit, OnDestroy {
         this.isdetails = _router.url.indexOf("details") > -1;
     }
 
+    // clear all controls
+
     resetJVFields() {
         this.setAuditDate();
         this.narration = "";
         this.isactive = true;
         this.jvRowData = [];
     }
+
+    // set audit date in doc date
 
     setAuditDate() {
         var that = this;
@@ -101,6 +113,8 @@ export class AddJV implements OnInit, OnDestroy {
             // console.log("Complete");
         })
     }
+
+    // Document Ready
 
     ngOnInit() {
         // setTimeout(function () {
@@ -169,6 +183,8 @@ export class AddJV implements OnInit, OnDestroy {
         return (this.formvals == $("#frmjv").serialize());
     }
 
+    // action button
+
     actionBarEvt(evt) {
         if (evt === "save") {
             this.saveJVData(true);
@@ -181,6 +197,13 @@ export class AddJV implements OnInit, OnDestroy {
         } else if (evt === "back") {
             this._router.navigate(['/accounts/jv']);
         }
+    }
+
+    // audit log
+
+    openAuditLog() {
+        this.isauditlog = true;
+        this.auditlog.getAuditLog();
     }
 
     //AutoCompletd Customer

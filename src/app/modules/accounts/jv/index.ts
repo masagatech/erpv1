@@ -8,9 +8,10 @@ import { ActionBarModule } from '../../../_shared/shared.module';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, DataListModule, AutoCompleteModule, CheckboxModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule, AutoCompleteModule, DialogModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
+import { AuditLogModule } from '../../usercontrol/auditlog';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -46,7 +47,8 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), CommonModule, FormsModule, SharedComponentModule,
-        DataTableModule, DataListModule, AutoCompleteModule, CheckboxModule, CalendarModule, NumTextModule],
+        DataTableModule, DataListModule, AutoCompleteModule, DialogModule, CheckboxModule, CalendarModule,
+        NumTextModule, AuditLogModule],
     declarations: [
         AddJV,
         ViewJV,

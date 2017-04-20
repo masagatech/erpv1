@@ -7,9 +7,10 @@ import { ViewBankPayment } from './view/bpview.comp';      //Bank Bayment View
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule, TriStateCheckboxModule, AutoCompleteModule } from 'primeng/primeng';
+import { LazyLoadEvent, DataTableModule, DataListModule, CheckboxModule, TriStateCheckboxModule, AutoCompleteModule, DialogModule } from 'primeng/primeng';
 import { CalendarModule } from '../../usercontrol/calendar';
 import { NumTextModule } from '../../usercontrol/numtext';
+import { AuditLogModule } from '../../usercontrol/auditlog';
 
 @Component({
     template: '<router-outlet></router-outlet>'
@@ -43,8 +44,8 @@ const routerConfig = [
 
 @NgModule({
     imports: [RouterModule.forChild(routerConfig), SharedComponentModule, FormsModule, CommonModule,
-        CalendarModule, NumTextModule, DataTableModule, DataListModule, CheckboxModule, TriStateCheckboxModule,
-        AutoCompleteModule],
+        CalendarModule, NumTextModule, AuditLogModule, DataTableModule, DataListModule, CheckboxModule,
+        DialogModule, TriStateCheckboxModule, AutoCompleteModule],
     declarations: [
         AddEditBankPayment,
         ViewBankPayment,

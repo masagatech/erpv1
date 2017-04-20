@@ -54,7 +54,6 @@ export class AddDebitNote implements OnInit, OnDestroy {
     counter: any = 0;
     title: string = "";
     module: string = "";
-    mname: string = "";
 
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
@@ -73,19 +72,20 @@ export class AddDebitNote implements OnInit, OnDestroy {
 
     private subscribeParameters: any;
 
-    //Page Load
+    // Page Load
 
     constructor(private setActionButtons: SharedVariableService, private _routeParams: ActivatedRoute, private _router: Router,
         private _dnservice: DNService, private _userService: UserService, private _autoservice: CommonService, private _msg: MessageService,
         private _alsservice: ALSService) {
         this.loginUser = this._userService.getUser();
         this.module = "Debit Note";
-        this.mname = "dnm";
 
         this.isadd = _router.url.indexOf("add") > -1;
         this.isedit = _router.url.indexOf("edit") > -1;
         this.isdetails = _router.url.indexOf("details") > -1;
     }
+
+    // clear all controls
 
     resetDebitNote() {
         this.dncustid = 0;
@@ -95,6 +95,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
         this.isactive = true;
         this.dnRowData = [];
     }
+
+    // set audit date in doc date
 
     setAuditDate() {
         var that = this;
@@ -117,7 +119,7 @@ export class AddDebitNote implements OnInit, OnDestroy {
         })
     }
 
-    //Document Ready
+    // Document Ready
 
     ngOnInit() {
         setTimeout(function () {
@@ -188,6 +190,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
         });
     }
 
+    // action button
+
     actionBarEvt(evt) {
         if (evt === "save") {
             this.saveDNData(true);
@@ -201,6 +205,8 @@ export class AddDebitNote implements OnInit, OnDestroy {
             this._router.navigate(['/accounts/debitnote']);
         }
     }
+
+    // Audit Log
 
     openAuditLog() {
         this.isauditlog = true;
