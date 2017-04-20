@@ -5,7 +5,6 @@ import { AddUserRights } from './aded/addur.comp';
 import { ViewUserRights } from './view/viewur.comp';
 import { SharedComponentModule } from '../../../_shared/sharedcomp.module';
 import { ActionBarModule } from '../../../_shared/shared.module';
-import { GroupByPipe } from '../../../_pipe/groupby.pipe';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -36,7 +35,12 @@ const routerConfig = [
             {
                 path: '',
                 children: [
-                    { path: '', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "add", "urlname": "/add" } },
+                    {
+                        path: '', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "add", "urlname": "/add" },
+                        // children: [
+                        //     { path: 'morecommon/:id', component: UserMoreRightsModule, outlet: 'morecommon' }
+                        // ]
+                    },
                     { path: 'edit/:id', component: AddUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "edit", "urlname": "/edit" } },
                     { path: 'view', component: ViewUserRights, canActivateChid: [AuthGuard], data: { "module": "pset", "submodule": "ur", "rights": "view", "urlname": "/userrights" } },
                 ]
@@ -52,8 +56,7 @@ const routerConfig = [
     declarations: [
         AddUserRights,
         ViewUserRights,
-        UserRightsComp,
-        GroupByPipe
+        UserRightsComp
     ],
     providers: [AuthGuard]
 })

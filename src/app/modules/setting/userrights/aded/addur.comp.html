@@ -106,7 +106,6 @@
 																	<span *ngIf="drow.ismore">
 																		<a role="button" (click)="openMoreRights(drow)">More</a>
 																	</span>
-																	<!--<usermorerights #dialog [menuname]="menuname" [morerights]="morerights" [umrrow]="drow" [refuid]="refuid" [fy]="fy"></usermorerights>-->
 																</div>
 															</div>
 														</div>
@@ -123,4 +122,7 @@
 			</div>
 		</div>
 	</div>
+
+	<usermorerights #ctrlumr [menuname]="menuname" [morerights]="morerights" [umrrow]="selectedMenu" [refuid]="refuid" [fy]="fy"></usermorerights>
 </form>
+<!--<router-outlet name="morecommon"></router-outlet>-->

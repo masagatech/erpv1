@@ -50,8 +50,8 @@ export class AddUserRights implements OnInit, OnDestroy {
     actionButton: ActionBtnProp[] = [];
     subscr_actionbarevt: Subscription;
 
-    @ViewChild("jvdate")
-    dialog: UserMoreRightsComp;
+    @ViewChild("ctrlumr")
+    ctrlumr: UserMoreRightsComp;
 
     private subscribeParameters: any;
 
@@ -215,11 +215,13 @@ export class AddUserRights implements OnInit, OnDestroy {
 
     openMoreRights(row) {
         if (this.fy !== 0) {
+            this.selectedMenu = row;
             this.morerights = true;
             this.menuname = row.mname + " > " + row.pname + " > " + row.menuname;
-            this.dialog.getExistsRights();
-            this.dialog.getMoreRights();
-            this.dialog.editMoreRights(row);
+            //this._router.navigate(['/setting/userrights', { outlets: { 'morecommon': ['morecommon', row.menuid] } }]);
+            this.ctrlumr.getExistsRights();
+            this.ctrlumr.getMoreRights();
+            this.ctrlumr.editMoreRights(row);
         }
         else {
             this._msg.Show(messageType.error, "Error", "First select Financial Year");
