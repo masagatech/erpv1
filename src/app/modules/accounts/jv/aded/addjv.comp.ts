@@ -232,7 +232,7 @@ export class AddJV implements OnInit, OnDestroy {
         } else {
             that.newcustid = event.value;
             that.newcustcode = event.custcode,
-                that.newcustname = event.label;
+            that.newcustname = event.label;
         }
     }
 

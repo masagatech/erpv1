@@ -15,12 +15,10 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    //  debugger;
     return this.checkFun(route, state);
   }
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    // debugger;
     return this.checkFun(route, state);
   }
 
@@ -107,8 +105,6 @@ export class AuthGuard implements CanActivate, CanLoad, CanActivateChild {
       }, () => {
 
       });
-
-
     } else {
       callback(true);
       return;

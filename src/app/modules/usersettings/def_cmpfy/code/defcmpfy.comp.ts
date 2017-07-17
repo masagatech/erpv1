@@ -93,7 +93,6 @@ export class DefCmpFyComp implements OnInit {
             "uid": this.loginUser.uid, "cmpid": this.cmpid,
             settings, "userid": this.loginUser.login
         }).subscribe(d => {
-
             that._router.navigate(['/']);
         }, err => { }, () => { });
 

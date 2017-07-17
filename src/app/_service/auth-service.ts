@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { UserReq, LoginUserModel } from '../_model/user_model';
 import { DataService } from './dataconnect';
 import { UserService } from './user/user-service';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
+
 declare var swfobject: any;
 
 @Injectable()
 export class AuthenticationService {
-
-  constructor(private _router: Router,
-    private _dataserver: DataService, private _userService: UserService) { }
+  constructor(private _router: Router, private _dataserver: DataService, private _userService: UserService) { }
 
   logout(callback?: any, error?: any) {
     var usr: LoginUserModel = this._userService.getUser();
@@ -19,9 +17,11 @@ export class AuthenticationService {
     this._dataserver.post("getLogout", { "sessionid": usr._sessiondetails.sessionid }).subscribe(r => {
       Cookie.delete('_session_');
       this._userService.setUsers(null);
+
       if (callback) {
         callback(r);
       }
+
       this._router.navigate(['login']);
     }, err => {
       if (error) {
@@ -36,6 +36,7 @@ export class AuthenticationService {
 
   login(user: UserReq) {
     var otherdetails = this.getClientInfo();
+
     let loginRes: any = this._dataserver.post("getLogin", {
       "email": user.email,
       "pwd": user.pwd,
@@ -52,7 +53,6 @@ export class AuthenticationService {
 
     return loginRes;
   }
-
 
   getSession(callback, checks) {
     this.loginsession({ "base": "_sid", "sid": checks.sessionid }).subscribe(d => {
@@ -88,9 +88,7 @@ export class AuthenticationService {
       callback("failed")
     });
   }
-
-
-
+  
   checkmenuaccess(details: any) {
     let Res: any = this._dataserver.post("getMenuAccess", details);
     return Res;
@@ -120,6 +118,7 @@ export class AuthenticationService {
     var nameOffset, verOffset, ix;
     var screenSize = '';
     var windowSize = '';
+
     if (screen.width) {
       var width = (screen.width) ? screen.width : '';
       var height = (screen.height) ? screen.height : '';
@@ -135,43 +134,53 @@ export class AuthenticationService {
     if ((verOffset = nAgt.indexOf("Opera")) != -1) {
       browserName = "Opera";
       fullVersion = nAgt.substring(verOffset + 6);
+
       if ((verOffset = nAgt.indexOf("Version")) != -1)
         fullVersion = nAgt.substring(verOffset + 8);
     }
+
     // In MSIE, the true version is after "MSIE" in userAgent
     else if ((verOffset = nAgt.indexOf("MSIE")) != -1) {
       browserName = "Microsoft Internet Explorer";
       fullVersion = nAgt.substring(verOffset + 5);
     }
+
     // In Chrome, the true version is after "Chrome" 
     else if ((verOffset = nAgt.indexOf("Chrome")) != -1) {
       browserName = "Chrome";
       fullVersion = nAgt.substring(verOffset + 7);
     }
+
     // In Safari, the true version is after "Safari" or after "Version" 
     else if ((verOffset = nAgt.indexOf("Safari")) != -1) {
       browserName = "Safari";
       fullVersion = nAgt.substring(verOffset + 7);
+
       if ((verOffset = nAgt.indexOf("Version")) != -1)
         fullVersion = nAgt.substring(verOffset + 8);
     }
+
     // In Firefox, the true version is after "Firefox" 
     else if ((verOffset = nAgt.indexOf("Firefox")) != -1) {
       browserName = "Firefox";
       fullVersion = nAgt.substring(verOffset + 8);
     }
+
     // In most other browsers, "name/version" is at the end of userAgent 
     else if ((nameOffset = nAgt.lastIndexOf(' ') + 1) <
       (verOffset = nAgt.lastIndexOf('/'))) {
       browserName = nAgt.substring(nameOffset, verOffset);
       fullVersion = nAgt.substring(verOffset + 1);
+
       if (browserName.toLowerCase() == browserName.toUpperCase()) {
         browserName = navigator.appName;
       }
     }
+    
     // trim the fullVersion string at semicolon/space if present
     if ((ix = fullVersion.indexOf(";")) != -1)
       fullVersion = fullVersion.substring(0, ix);
+
     if ((ix = fullVersion.indexOf(" ")) != -1)
       fullVersion = fullVersion.substring(0, ix);
 
